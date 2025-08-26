@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -33,15 +35,19 @@ class ApiKeyScreen : Screen {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             var apiKey by remember { mutableStateOf(SettingsStore.getString(KEY_API_KEY)) }
-            if(apiKey.isNotEmpty()) {
-                navigator.replace(MainScreen())
+            LaunchedEffect(Unit) {
+                if(apiKey.isNotEmpty()) {
+                    navigator.replace(MainScreen())
+                }
             }
-            TextField(value = apiKey, onValueChange = { apiKey = it })
+            TextField(value = apiKey, onValueChange = { apiKey = it }, label = { Text("API key") })
             Spacer(Modifier.height(16.dp))
             Button(onClick = {
                 SettingsStore.setString(KEY_API_KEY, apiKey)
                 navigator.replace(MainScreen())
-            }) {}
+            }) {
+                Text("Save")
+            }
         }
     }
 
