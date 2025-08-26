@@ -68,6 +68,16 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
+
+            //persisted settings
+            implementation("com.russhwolf:multiplatform-settings-no-arg:1.3.0")
+
+            //screen navigation
+            val voyagerVersion = "1.1.0-beta02"
+            // Core Navigator functionality
+            implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+            // Optional: add transitions (page animations)
+            implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
