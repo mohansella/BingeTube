@@ -69,6 +69,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
 
+            //Logger
+            implementation("co.touchlab:kermit:2.0.8")
+
             //persisted settings
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.3.0")
 
