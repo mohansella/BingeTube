@@ -57,6 +57,9 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            //Http Client
+            implementation("io.ktor:ktor-client-okhttp:3.2.3")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -81,6 +84,12 @@ kotlin {
             implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
             // Optional: add transitions (page animations)
             implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
+
+            //Http Client
+            implementation("io.ktor:ktor-client-core:3.2.3")
+            implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
+            implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -88,6 +97,17 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+
+            //Http Client
+            implementation("io.ktor:ktor-client-cio:3.2.3")
+        }
+        iosMain.dependencies {
+            //Http Client
+            implementation("io.ktor:ktor-client-darwin:3.2.3")
+        }
+        jsMain.dependencies {
+            //Http Client
+            implementation("io.ktor:ktor-client-js:3.2.3")
         }
     }
 }

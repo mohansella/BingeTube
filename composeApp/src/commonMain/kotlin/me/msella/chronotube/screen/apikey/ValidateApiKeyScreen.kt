@@ -41,7 +41,7 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
                     } else {
                         logger.i("validating failed. navigation pop and replace")
                         navigator.pop()
-                        navigator.replace(EnterApiKeyScreen("Unknown error. Invalid API Key"))
+                        navigator.replace(EnterApiKeyScreen(errorMessage))
                     }
                 }
             }
