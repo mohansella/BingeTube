@@ -1,17 +1,14 @@
 package me.msella.chronotube.api
 
 import co.touchlab.kermit.Logger
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.http.isSuccess
-import io.ktor.http.parameters
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.delay
-import kotlinx.serialization.json.Json
-import kotlin.random.Random
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 private typealias ApiKeyValidationCallback = (isSuccess: Boolean, errorMessage: String) -> Unit
 
@@ -36,15 +33,10 @@ class YoutubeAPI {
         suspend fun validateApiKey(apiKey: String, callback: ApiKeyValidationCallback) {
             logger.i("checking Youtube API key")
             try {
-                val response = client.get("https://www.googleapis.com/youtube/v3/videos") {
-                    url {
-                        parameters {
-                            append("part", "snippet")
-                            append("forUsername", "youtube")
-                            append("format", "json")
-                            append("key", apiKey)
-                        }
-                    }
+                val response = client.get("https://www.googleapis.com/youtube/v3/channels") {
+                    parameter("part", "snippet")
+                    parameter("forUsername", "Youtube")
+                    parameter("key", apiKey)
                 }
                 if (response.status.isSuccess()) {
                     //success
