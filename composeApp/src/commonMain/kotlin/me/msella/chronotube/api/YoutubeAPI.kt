@@ -50,7 +50,7 @@ class YoutubeAPI {
                     } catch (e: Exception) {
                         "Unknown error: ${e.message}"
                     }
-                    callback(false, "StatusCode: ${response.status.value} Message:${errMessage}")
+                    callback(false, "$errMessage Status:${response.status.value}")
                 }
             } catch (e: Exception) {
                 //failed: network or system error

@@ -1,18 +1,17 @@
 package me.msella.chronotube.screen.apikey
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
-import kotlinx.coroutines.delay
 import me.msella.chronotube.api.YoutubeAPI
 import me.msella.chronotube.screen.MainScreen
 import me.msella.chronotube.store.SettingsStore
@@ -29,6 +28,8 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("Validating key")
+            Spacer(Modifier.height(8.dp))
+            LinearProgressIndicator()
         }
         LaunchedEffect(Unit) {
             YoutubeAPI.validateApiKey(apiKey) { isSuccess, errorMessage ->
