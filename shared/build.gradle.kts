@@ -50,7 +50,7 @@ kotlin {
 }
 
 android {
-    namespace = "me.msella.chronotube.shared"
+    namespace = "me.msella.bingetube.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

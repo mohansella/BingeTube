@@ -4,10 +4,10 @@ plugins {
     application
 }
 
-group = "me.msella.chronotube"
+group = "me.msella.bingetube"
 version = "1.0.0"
 application {
-    mainClass.set("me.msella.chronotube.ApplicationKt")
+    mainClass.set("me.msella.bingetube.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

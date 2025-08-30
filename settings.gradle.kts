@@ -1,4 +1,4 @@
-rootProject.name = "chronotube"
+rootProject.name = "bingetube"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
