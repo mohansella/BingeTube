@@ -59,8 +59,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
-            //Http Client
-            implementation("io.ktor:ktor-client-okhttp:3.2.3")
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -73,24 +72,13 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
 
-            //Logger
-            implementation("co.touchlab:kermit:2.0.8")
-
-            //persisted settings
-            implementation("com.russhwolf:multiplatform-settings-no-arg:1.3.0")
-
-            //screen navigation
-            val voyagerVersion = "1.1.0-beta02"
-            // Core Navigator functionality
-            implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
-            // Optional: add transitions (page animations)
-            implementation("cafe.adriel.voyager:voyager-transitions:$voyagerVersion")
-
-            //Http Client
-            implementation("io.ktor:ktor-client-core:3.2.3")
-            implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
-
+            implementation(libs.kermit)
+            implementation(libs.multiplatform.settings)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.transitions)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -98,27 +86,23 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-
-            //Http Client
-            implementation("io.ktor:ktor-client-cio:3.2.3")
+            implementation(libs.ktor.client.cio)
         }
         iosMain.dependencies {
-            //Http Client
-            implementation("io.ktor:ktor-client-darwin:3.2.3")
+            implementation(libs.ktor.client.darwin)
         }
         jsMain.dependencies {
-            //Http Client
-            implementation("io.ktor:ktor-client-js:3.2.3")
+            implementation(libs.ktor.client.js)
         }
     }
 }
 
 android {
-    namespace = "me.msella.chronotube"
+    namespace = "me.msella.bingetube"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "me.msella.chronotube"
+        applicationId = "me.msella.bingetube"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -146,11 +130,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "me.msella.chronotube.MainKt"
+        mainClass = "me.msella.bingetube.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "me.msella.chronotube"
+            packageName = "me.msella.bingetube"
             packageVersion = "1.0.0"
         }
     }
