@@ -13,11 +13,13 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
 import me.msella.bingetube.api.YoutubeAPI
+import me.msella.bingetube.compose.CompottieImage
 import me.msella.bingetube.screen.MainScreen
 import me.msella.bingetube.store.SettingsStore
 
 data class ValidateApiKeyScreen(val apiKey: String) : Screen {
     val logger = Logger.withTag("ValidateApiKeyScreen")
+
 
     @Composable
     override fun Content() {
@@ -27,6 +29,7 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            CompottieImage("files/lottie/loading-airplane.json")
             Text("Validating key")
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator()

@@ -10,6 +10,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
+import me.msella.bingetube.compose.CompottieImage
 import me.msella.bingetube.store.SettingsStore
 
 data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
@@ -46,9 +47,9 @@ data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
             }
 
             Column(
-                modifier = Modifier.Companion.fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Companion.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (errorMessage.isNotEmpty()) {
                     LaunchedEffect(Unit) {
@@ -56,6 +57,7 @@ data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
                         snackBarHostState.showSnackbar(message = errorMessage, duration = SnackbarDuration.Indefinite)
                     }
                 }
+                CompottieImage("files/lottie/api-key.json")
                 TextField(
                     value = apiKey,
                     onValueChange = { apiKey = it },
@@ -63,7 +65,7 @@ data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
                     singleLine = true,
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
-                Spacer(Modifier.Companion.height(16.dp))
+                Spacer(Modifier.height(16.dp))
                 Button(enabled = apiKey.isNotEmpty(), onClick = {
                     logger.i("Save clicked. navigating to ValidateApiKeyScreen")
                     navigator.push(ValidateApiKeyScreen(apiKey))
