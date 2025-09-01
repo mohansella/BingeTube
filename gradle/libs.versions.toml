@@ -21,6 +21,7 @@ kermit = "2.0.8"
 multiplatform-settings = "1.3.0"
 voyager = "1.1.0-beta03"
 compottie = "2.0.0"
+androidx-splashscreen = "1.0.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -52,6 +53,7 @@ ktor-client-content-negotiation = {module = "io.ktor:ktor-client-content-negotia
 ktor-serialization-kotlinx-json = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor"}
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
+androidx-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splashscreen" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

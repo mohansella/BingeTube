@@ -10,7 +10,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
-import me.msella.bingetube.compose.CompottieImage
+import me.msella.bingetube.store.LottieStore
 import me.msella.bingetube.store.SettingsStore
 
 data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
@@ -57,7 +57,7 @@ data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
                         snackBarHostState.showSnackbar(message = errorMessage, duration = SnackbarDuration.Indefinite)
                     }
                 }
-                CompottieImage("files/lottie/api-key.json")
+                LottieStore.Image(LottieStore.Anim.ApiKey)
                 TextField(
                     value = apiKey,
                     onValueChange = { apiKey = it },
