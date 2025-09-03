@@ -52,6 +52,7 @@ ktor-client-js = {module = "io.ktor:ktor-client-js", version.ref="ktor"}
 ktor-client-content-negotiation = {module = "io.ktor:ktor-client-content-negotiation", version.ref="ktor"}
 ktor-serialization-kotlinx-json = {module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor"}
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
 compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
 androidx-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splashscreen" }
 

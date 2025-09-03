@@ -57,7 +57,7 @@ data class EnterApiKeyScreen(val errorMessage: String = "") : Screen {
                         snackBarHostState.showSnackbar(message = errorMessage, duration = SnackbarDuration.Indefinite)
                     }
                 }
-                LottieStore.Image(LottieStore.Anim.ApiKey)
+                LottieStore.Image(LottieStore.Anim.ShakingKeys, speed = 0.3f)
                 TextField(
                     value = apiKey,
                     onValueChange = { apiKey = it },

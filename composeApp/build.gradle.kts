@@ -81,6 +81,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.compottie)
+            implementation(libs.compottie.dot)
             implementation(libs.compottie.resources)
         }
         commonTest.dependencies {
