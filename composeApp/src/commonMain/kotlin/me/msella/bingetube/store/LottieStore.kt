@@ -2,11 +2,9 @@ package me.msella.bingetube.store
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import bingetube.composeapp.generated.resources.Res
-import io.github.alexzhirkevich.compottie.Compottie
-import io.github.alexzhirkevich.compottie.LottieComposition
-import io.github.alexzhirkevich.compottie.LottieCompositionSpec
-import io.github.alexzhirkevich.compottie.rememberLottiePainter
+import io.github.alexzhirkevich.compottie.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -14,8 +12,8 @@ object LottieStore {
 
     // Enum to identify animations
     enum class Anim(val path: String) {
-        ApiKey("files/lottie/api-key.json"),
-        LoadingAirplane("files/lottie/loading-airplane.json"),
+        ShakingKeys("shaking-keys"),
+        FlyingPaperPlane("flying-paper-plane"),
     }
 
     private val cache = mutableMapOf<Anim, LottieComposition>()
@@ -23,8 +21,8 @@ object LottieStore {
     suspend fun preload() {
         withContext(Dispatchers.Default) {
             for (anim in Anim.entries) {
-                val json = Res.readBytes(anim.path).decodeToString()
-                val composition = LottieCompositionSpec.JsonString(json).load()
+                val bytes = Res.readBytes("files/lottie/${anim.path}.lottie")
+                val composition = LottieCompositionSpec.DotLottie(bytes).load()
                 cache[anim] = composition
             }
         }
@@ -35,13 +33,15 @@ object LottieStore {
 
 
     @Composable
-    fun Image(anim: Anim) {
+    fun Image(anim: Anim, modifier: Modifier = Modifier, speed: Float = 1f) {
         Image(
             painter = rememberLottiePainter(
                 composition = get(anim),
-                iterations = Compottie.IterateForever
+                iterations = Compottie.IterateForever,
+                speed = speed,
             ),
-            contentDescription = "Lottie animation"
+            contentDescription = "Lottie animation",
+            modifier = modifier
         )
     }
 }

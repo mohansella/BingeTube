@@ -18,7 +18,7 @@ fun App() {
     val logger = Logger.withTag("App")
 
     logger.d("app starting")
-    var apiKey = SettingsStore.getString(KEY_API_KEY, "")
+    val apiKey = SettingsStore.getString(KEY_API_KEY, "")
     var screen : Screen
     if(apiKey.isEmpty()) {
         logger.i("api key empty. starting EnterApiKeyScreen")

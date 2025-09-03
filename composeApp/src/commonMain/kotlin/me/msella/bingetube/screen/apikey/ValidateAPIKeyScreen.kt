@@ -30,7 +30,7 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LottieStore.Image(Anim.LoadingAirplane)
+            LottieStore.Image(Anim.FlyingPaperPlane)
             Text("Validating key")
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator()
