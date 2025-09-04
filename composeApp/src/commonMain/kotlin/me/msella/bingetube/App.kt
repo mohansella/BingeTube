@@ -2,32 +2,21 @@ package me.msella.bingetube
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import cafe.adriel.voyager.core.screen.Screen
+import androidx.compose.runtime.LaunchedEffect
 import cafe.adriel.voyager.navigator.Navigator
-import co.touchlab.kermit.Logger
-import me.msella.bingetube.screen.MainScreen
-import me.msella.bingetube.screen.apikey.EnterApiKeyScreen
-import me.msella.bingetube.store.SettingsStore
-import me.msella.bingetube.store.SettingsStore.KEY_API_KEY
+import me.msella.bingetube.screen.BingeSplashScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
 @Preview
 fun App() {
-    val logger = Logger.withTag("App")
-
-    logger.d("app starting")
-    val apiKey = SettingsStore.getString(KEY_API_KEY, "")
-    var screen : Screen
-    if(apiKey.isEmpty()) {
-        logger.i("api key empty. starting EnterApiKeyScreen")
-        screen = EnterApiKeyScreen()
-    } else {
-        logger.i("api key set. starting MainScreen")
-        screen = MainScreen()
+    //below code can be called in android activity also during drawable splash screen
+    LaunchedEffect(Unit) {
+        AppCache.prepareForSplashScreen()
     }
+
     MaterialTheme {
-        Navigator(screen)
+        Navigator(BingeSplashScreen())
     }
 }
