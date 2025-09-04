@@ -9,20 +9,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import me.msella.bingetube.store.LottieStore
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        var isAnimCached = false
         installSplashScreen().setKeepOnScreenCondition {
-            !isAnimCached
+            !AppCache.isReadyForSplashScreen.value
         }
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-
         lifecycleScope.launch {
-            LottieStore.preload()
-            isAnimCached = true
+            println("preparing splash screen")
+            AppCache.prepareForSplashScreen()
+            println("splash screen prepared")
             setContent {
                 App()
             }
