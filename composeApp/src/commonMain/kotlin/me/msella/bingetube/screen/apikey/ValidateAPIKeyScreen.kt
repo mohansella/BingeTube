@@ -13,7 +13,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
 import me.msella.bingetube.api.YoutubeAPI
-import me.msella.bingetube.screen.MainScreen
+import me.msella.bingetube.screen.SearchScreen
 import me.msella.bingetube.store.LottieStore
 import me.msella.bingetube.store.LottieStore.Anim
 import me.msella.bingetube.store.SettingsStore
@@ -42,7 +42,7 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
                         logger.i("validate success. starting screen at MainScreen")
                         SettingsStore.setString(SettingsStore.KEY_API_KEY, apiKey)
                         navigator.popAll()
-                        navigator.replace(MainScreen())
+                        navigator.replace(SearchScreen())
                     } else {
                         logger.i("validating failed. navigation pop and replace")
                         navigator.pop()

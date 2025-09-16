@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.FadeTransition
 import me.msella.bingetube.screen.BingeSplashScreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -17,6 +18,8 @@ fun App() {
     }
 
     MaterialTheme {
-        Navigator(BingeSplashScreen())
+        Navigator(BingeSplashScreen()) { navigator ->
+            FadeTransition(navigator)
+        }
     }
 }
