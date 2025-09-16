@@ -5,13 +5,15 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.unit.IntOffset
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -38,6 +40,7 @@ class BingeSplashScreen : Screen {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            var lottieHeightPx by remember { mutableStateOf(0) }
 
             //animate transition from splash to lottie
             val scale by animateFloatAsState(
@@ -58,8 +61,16 @@ class BingeSplashScreen : Screen {
                         scaleX = scale,
                         scaleY = scale,
                         alpha = alpha
-                    )
+                    ).onGloballyPositioned { coordinates ->
+                        lottieHeightPx = coordinates.size.height
+                    }
             )
+
+            if (lottieHeightPx > 0) {
+                LinearProgressIndicator(modifier = Modifier.align(Alignment.Center).offset {
+                    IntOffset(x = 0, y = (lottieHeightPx / 2) + 32)
+                })
+            }
         }
 
         LaunchedEffect(Unit) {
@@ -77,7 +88,7 @@ class BingeSplashScreen : Screen {
                 logger.i("api key set. starting MainScreen")
                 screen = SearchScreen()
             }
-            val delta = 2.toDuration(DurationUnit.SECONDS) - timeMark.elapsedNow()
+            val delta = 3.toDuration(DurationUnit.SECONDS) - timeMark.elapsedNow()
             if (delta > Duration.ZERO) {
                 delay(delta)
             }
