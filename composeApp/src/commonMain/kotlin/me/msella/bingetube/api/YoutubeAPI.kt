@@ -10,7 +10,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-private typealias ApiKeyValidationCallback = (isSuccess: Boolean, errorMessage: String) -> Unit
+private typealias ApiKeyValidationCallback = suspend (isSuccess: Boolean, errorMessage: String) -> Unit
 
 @Serializable
 data class YouTubeErrorResponse(val error: ErrorDetail) {

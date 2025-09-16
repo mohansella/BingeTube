@@ -12,11 +12,16 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
+import kotlinx.coroutines.delay
 import me.msella.bingetube.api.YoutubeAPI
 import me.msella.bingetube.screen.SearchScreen
 import me.msella.bingetube.store.LottieStore
 import me.msella.bingetube.store.LottieStore.Anim
 import me.msella.bingetube.store.SettingsStore
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
+import kotlin.time.toDuration
 
 data class ValidateApiKeyScreen(val apiKey: String) : Screen {
     val logger = Logger.withTag("ValidateApiKeyScreen")
@@ -36,7 +41,12 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
             LinearProgressIndicator()
         }
         LaunchedEffect(Unit) {
+            val timeMark = TimeSource.Monotonic.markNow()
             YoutubeAPI.validateApiKey(apiKey) { isSuccess, errorMessage ->
+                val delta = 3.toDuration(DurationUnit.SECONDS) - timeMark.elapsedNow()
+                if (delta > Duration.ZERO) {
+                    delay(delta)
+                }
                 if (navigator.lastItem == this@ValidateApiKeyScreen) {
                     if (isSuccess) {
                         logger.i("validate success. starting screen at MainScreen")
