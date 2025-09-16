@@ -1,20 +1,27 @@
 package me.msella.bingetube.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import co.touchlab.kermit.Logger
-import me.msella.bingetube.screen.apikey.EnterApiKeyScreen
-import me.msella.bingetube.store.SettingsStore
-import me.msella.bingetube.store.SettingsStore.KEY_API_KEY
+
+private enum class SearchState {
+    None,
+    Searching,
+    Success,
+    Failed
+}
 
 class SearchScreen : Screen {
 
@@ -25,20 +32,34 @@ class SearchScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("API Key: ${SettingsStore.getString(KEY_API_KEY)}")
-            Button(
-                onClick = {
-                    logger.i("deleted api key. replacing navigation to EnterApiKeyScreen")
-                    SettingsStore.setString(KEY_API_KEY, "")
-                    navigator.popAll()
-                    navigator.replace(EnterApiKeyScreen())
+            var searchText = remember { mutableStateOf("") }
+            var searchState: SearchState by remember { mutableStateOf(SearchState.None) }
+
+            Spacer(Modifier.height(40.dp))
+            TextField(
+                value = searchText.value,
+                onValueChange = { searchText.value = it },
+                placeholder = { Text("Search Videos") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                trailingIcon = {
+                    if (searchText.value.isNotBlank()) {
+                        IconButton(onClick = { searchText.value = "" }) {
+                            Text("X")
+                        }
+                    }
                 },
-            ) {
-                Text("Delete key")
-            }
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+
+                    }
+                ),
+            )
+
+
         }
     }
 

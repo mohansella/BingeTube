@@ -43,16 +43,15 @@ data class ValidateApiKeyScreen(val apiKey: String) : Screen {
         LaunchedEffect(Unit) {
             val timeMark = TimeSource.Monotonic.markNow()
             YoutubeAPI.validateApiKey(apiKey) { isSuccess, errorMessage ->
-                val delta = 3.toDuration(DurationUnit.SECONDS) - timeMark.elapsedNow()
-                if (delta > Duration.ZERO) {
-                    delay(delta)
-                }
                 if (navigator.lastItem == this@ValidateApiKeyScreen) {
                     if (isSuccess) {
+                        val delta = 3.toDuration(DurationUnit.SECONDS) - timeMark.elapsedNow()
+                        if (delta > Duration.ZERO) {
+                            delay(delta)
+                        }
                         logger.i("validate success. starting screen at MainScreen")
                         SettingsStore.setString(SettingsStore.KEY_API_KEY, apiKey)
-                        navigator.popAll()
-                        navigator.replace(SearchScreen())
+                        navigator.replaceAll(SearchScreen())
                     } else {
                         logger.i("validating failed. navigation pop and replace")
                         navigator.pop()
