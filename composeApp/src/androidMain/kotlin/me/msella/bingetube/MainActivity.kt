@@ -26,7 +26,8 @@ class MainActivity : ComponentActivity() {
                 .setDuration(200)
                 .withEndAction { splashScreenView.remove() }
         }
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+        )
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             println("preparing splash screen")
