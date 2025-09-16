@@ -16,7 +16,7 @@ import me.msella.bingetube.screen.apikey.EnterApiKeyScreen
 import me.msella.bingetube.store.SettingsStore
 import me.msella.bingetube.store.SettingsStore.KEY_API_KEY
 
-class MainScreen : Screen {
+class SearchScreen : Screen {
 
     val logger = Logger.withTag("MainScreen")
 
