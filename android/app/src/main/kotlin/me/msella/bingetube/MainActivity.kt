@@ -1,4 +1,4 @@
-package com.example.bingetube
+package me.msella.bingetube
 
 import io.flutter.embedding.android.FlutterActivity
 
