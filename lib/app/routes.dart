@@ -1,12 +1,53 @@
-import 'package:bingetube/pages/home_page.dart';
 import 'package:flutter/material.dart';
+
+import 'package:bingetube/pages/Pages.dart';
+import 'package:bingetube/pages/root/root_page.dart';
+import 'package:bingetube/pages/home/home_page.dart';
+import 'package:bingetube/pages/myshows/myshows_page.dart';
+import 'package:bingetube/pages/settings/settings_page.dart';
+
 import 'package:go_router/go_router.dart';
 
 MaterialApp getRoutedApp() {
   return MaterialApp.router(routerConfig: routes);
 }
 
-final GoRouter routes = GoRouter(routes: [
-  GoRoute(path: '/', builder: (context, state)=>const HomePage())
-]);
+class CustomGoRoute extends GoRoute {
+  final GoRouterWidgetBuilder customBuilder;
 
+  CustomGoRoute({required super.path, required this.customBuilder})
+    : super(
+        builder: customBuilder,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          transitionDuration: const Duration(milliseconds: 250),
+          child: customBuilder(context, state),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+}
+
+final GoRouter routes = GoRouter(
+  initialLocation: Pages.home.path,
+  routes: [
+    ShellRoute(
+      routes: [
+        CustomGoRoute(
+          path: Pages.home.path,
+          customBuilder: (context, state) => const HomePage(),
+        ),
+        CustomGoRoute(
+          path: Pages.myshows.path,
+          customBuilder: (context, state) => const MyShowsPage(),
+        ),
+        CustomGoRoute(
+          path: Pages.settings.path,
+          customBuilder: (context, state) => const SettingsPage(),
+        ),
+      ],
+      builder: (context, state, child) => RootPage(body: child),
+    ),
+  ],
+);
