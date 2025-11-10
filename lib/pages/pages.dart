@@ -1,4 +1,6 @@
 enum Pages {
+  splash('/splash', 'Splash'),
+
   home('/home', 'Home'),
   myshows('/myshows', 'My Shows'),
   settings('/settings', 'Settings'),

@@ -1,5 +1,6 @@
 import 'package:bingetube/pages/keyconfig/keyconfig_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
+import 'package:bingetube/pages/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bingetube/pages/Pages.dart';
@@ -14,26 +15,13 @@ MaterialApp getRoutedApp() {
   return MaterialApp.router(routerConfig: routes, debugShowCheckedModeBanner: true);
 }
 
-class CustomGoRoute extends GoRoute {
-  final GoRouterWidgetBuilder customBuilder;
-
-  CustomGoRoute({required super.path, required this.customBuilder})
-    : super(
-        builder: customBuilder,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          transitionDuration: const Duration(milliseconds: 250),
-          child: customBuilder(context, state),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        ),
-      );
-}
-
 final GoRouter routes = GoRouter(
-  initialLocation: Pages.home.path,
+  initialLocation: Pages.splash.path,
   routes: [
+    CustomGoRoute(
+      path: Pages.splash.path,
+      customBuilder: (context, state) => const SplashPage(),
+    ),
     ShellRoute(
       routes: [
         CustomGoRoute(
@@ -61,3 +49,20 @@ final GoRouter routes = GoRouter(
     ),
   ],
 );
+
+class CustomGoRoute extends GoRoute {
+  final GoRouterWidgetBuilder customBuilder;
+
+  CustomGoRoute({required super.path, required this.customBuilder})
+    : super(
+        builder: customBuilder,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          transitionDuration: const Duration(milliseconds: 250),
+          child: customBuilder(context, state),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+}

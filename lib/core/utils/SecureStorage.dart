@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+enum SecureStorageKey { apikey }
+
 class SecureStorage {
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   final Map<String, String> _cache = {};
@@ -10,7 +12,9 @@ class SecureStorage {
   bool _initialized = false;
 
   SecureStorage._internal() {
-    _streamController.stream.asyncMap((f) => f).listen((f) {});
+    _streamController.stream.asyncMap((f) => f).listen((f) {
+      print('test');
+    });
   }
 
   static final SecureStorage _instance = SecureStorage._internal();
@@ -26,16 +30,16 @@ class SecureStorage {
 
   factory SecureStorage() => _instance;
 
-  void set(String key, String val) {
-    _cache[key] = val;
-    _streamController.add(_storage.write(key: key, value: val));
+  void set(SecureStorageKey key, String val) {
+    _cache[key.name] = val;
+    _streamController.add(_storage.write(key: key.name, value: val));
   }
 
-  String? get(String key) {
-    return _cache[key];
+  String? get(SecureStorageKey key) {
+    return _cache[key.name];
   }
 
-  void remove(String key) {
-    _cache.remove(key);
+  void remove(SecureStorageKey key) {
+    _cache.remove(key.name);
   }
 }
