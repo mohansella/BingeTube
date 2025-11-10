@@ -1,4 +1,4 @@
-import 'package:bingetube/core/utils/SecureStorage.dart';
+import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:flutter/material.dart';
 
 class KeyConfigPage extends StatefulWidget {

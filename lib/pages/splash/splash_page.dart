@@ -1,4 +1,4 @@
-import 'package:bingetube/core/utils/SecureStorage.dart';
+import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +11,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class SplashPageState extends State<SplashPage> {
-  @override
   @override
   void initState() {
     super.initState();
