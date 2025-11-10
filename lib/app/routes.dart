@@ -11,7 +11,7 @@ import 'package:bingetube/pages/settings/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
 MaterialApp getRoutedApp() {
-  return MaterialApp.router(routerConfig: routes, debugShowCheckedModeBanner: false);
+  return MaterialApp.router(routerConfig: routes, debugShowCheckedModeBanner: true);
 }
 
 class CustomGoRoute extends GoRoute {
