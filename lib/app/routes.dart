@@ -1,3 +1,5 @@
+import 'package:bingetube/pages/keyconfig/keyconfig_page.dart';
+import 'package:bingetube/pages/search/search_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bingetube/pages/Pages.dart';
@@ -9,7 +11,7 @@ import 'package:bingetube/pages/settings/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
 MaterialApp getRoutedApp() {
-  return MaterialApp.router(routerConfig: routes);
+  return MaterialApp.router(routerConfig: routes, debugShowCheckedModeBanner: false);
 }
 
 class CustomGoRoute extends GoRoute {
@@ -48,6 +50,14 @@ final GoRouter routes = GoRouter(
         ),
       ],
       builder: (context, state, child) => RootPage(body: child),
+    ),
+    CustomGoRoute(
+      path: Pages.keyconfig.path,
+      customBuilder: (context, state) => const KeyConfigPage(),
+    ),
+    CustomGoRoute(
+      path: Pages.search.path,
+      customBuilder: (context, state) => const SearchPage(),
     ),
   ],
 );
