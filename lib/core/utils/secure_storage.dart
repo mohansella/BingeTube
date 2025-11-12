@@ -41,5 +41,6 @@ class SecureStorage {
 
   void remove(SecureStorageKey key) {
     _cache.remove(key.name);
+    _streamController.add(_storage.delete(key: key.name));
   }
 }

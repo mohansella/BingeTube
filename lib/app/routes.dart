@@ -1,4 +1,4 @@
-import 'package:bingetube/pages/keyconfig/keyconfig_page.dart';
+import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ final GoRouter routes = GoRouter(
     ),
     CustomGoRoute(
       path: Pages.keyconfig.path,
-      customBuilder: (context, state) => const KeyConfigPage(),
+      customBuilder: (context, state) => const ConfigKeyPage(),
     ),
     CustomGoRoute(
       path: Pages.search.path,
