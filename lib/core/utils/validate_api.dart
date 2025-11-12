@@ -17,7 +17,6 @@ class ValidateApi {
     );
 
     final response = await http.get(url);
-    print('response: $response');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return data['items'] != null && data['items'].isNotEmpty;

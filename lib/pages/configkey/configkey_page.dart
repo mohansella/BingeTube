@@ -105,7 +105,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
   num validateId = 0;
   Future<void> valdiate(BuildContext context) async {
     var currValidateId = ++validateId;
-    var result = await ValidateApi.validateTest(controller.text);
+    var result = await ValidateApi.validateYouTubeApiKey(controller.text);
     if (validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
