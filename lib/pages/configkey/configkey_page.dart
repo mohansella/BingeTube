@@ -1,5 +1,6 @@
+import 'package:bingetube/common/widget/custom_dialog.dart';
+import 'package:bingetube/core/api/validate_api.dart';
 import 'package:bingetube/core/utils/secure_storage.dart';
-import 'package:bingetube/core/utils/validate_api.dart';
 import 'package:flutter/material.dart';
 
 class ConfigKeyPage extends StatefulWidget {
@@ -78,7 +79,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
   }
 
   void onValidate(BuildContext context) {
-    showCustomDialog(
+    CustomDialog.show(
       context,
       'Validating API Key',
       'Cancel',
@@ -102,11 +103,11 @@ class KeyConfigState extends State<ConfigKeyPage> {
     });
   }
 
-  num validateId = 0;
+  num _validateId = 0;
   Future<void> valdiate(BuildContext context) async {
-    var currValidateId = ++validateId;
+    var currValidateId = ++_validateId;
     var result = await ValidateApi.validateYouTubeApiKey(controller.text);
-    if (validateId == currValidateId && context.mounted) {
+    if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
         storage.set(SecureStorageKey.apikey, controller.text);
@@ -115,35 +116,9 @@ class KeyConfigState extends State<ConfigKeyPage> {
           isEditMode = false;
         });
       } else {
-        showCustomDialog(context, 'Validation Failed', 'Okay', null);
+        CustomDialog.show(context, 'Validation Failed', 'Okay', null);
       }
     }
   }
 
-  Future<dynamic> showCustomDialog(
-    BuildContext context,
-    String title,
-    String buttonTxt,
-    Widget? content,
-  ) {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: content,
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(buttonTxt),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
