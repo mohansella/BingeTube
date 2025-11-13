@@ -27,4 +27,28 @@ class SearchApi {
       return null;
     }
   }
+
+  static Future<List<YouTubeVideo>?> searchYouTubeVideos(
+    String query,
+    String apiKey,
+  ) async {
+    final url = Uri.parse(
+      'https://www.googleapis.com/youtube/v3/search'
+      '?part=snippet'
+      '&q=${Uri.encodeQueryComponent(query)}'
+      '&type=video'
+      '&maxResults=10'
+      '&key=$apiKey',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final items = (data['items'] as List?) ?? [];
+      return items.map((item) => YouTubeVideo.fromJson(item)).toList();
+    } else {
+      return null;
+    }
+  }
 }
