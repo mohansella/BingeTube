@@ -1,9 +1,10 @@
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
+import 'package:bingetube/pages/video/video_page.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bingetube/pages/Pages.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/root/root_page.dart';
 import 'package:bingetube/pages/home/home_page.dart';
 import 'package:bingetube/pages/myshows/myshows_page.dart';
@@ -12,7 +13,10 @@ import 'package:bingetube/pages/settings/settings_page.dart';
 import 'package:go_router/go_router.dart';
 
 MaterialApp getRoutedApp() {
-  return MaterialApp.router(routerConfig: routes, debugShowCheckedModeBanner: true);
+  return MaterialApp.router(
+    routerConfig: routes,
+    debugShowCheckedModeBanner: true,
+  );
 }
 
 final GoRouter routes = GoRouter(
@@ -29,7 +33,7 @@ final GoRouter routes = GoRouter(
           customBuilder: (context, state) => const HomePage(),
         ),
         CustomGoRoute(
-          path: Pages.myshows.path,
+          path: Pages.myShows.path,
           customBuilder: (context, state) => const MyShowsPage(),
         ),
         CustomGoRoute(
@@ -40,12 +44,19 @@ final GoRouter routes = GoRouter(
       builder: (context, state, child) => RootPage(body: child),
     ),
     CustomGoRoute(
-      path: Pages.keyconfig.path,
+      path: Pages.keyConfig.path,
       customBuilder: (context, state) => const ConfigKeyPage(),
     ),
     CustomGoRoute(
       path: Pages.search.path,
       customBuilder: (context, state) => const SearchPage(),
+    ),
+    CustomGoRoute(
+      path: Pages.playVideo.path,
+      customBuilder: (context, state) {
+        final videoId = state.pathParameters['id']!;
+        return SearchVideoPage(videoId: videoId);
+      },
     ),
   ],
 );

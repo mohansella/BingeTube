@@ -3,6 +3,7 @@ import 'package:bingetube/core/api/search_api.dart';
 import 'package:bingetube/core/api/youtube_data.dart';
 import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -75,9 +76,7 @@ class SearchPageState extends State<SearchPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {
-            // Handle click, maybe navigate to channel page
-          },
+          onTap: () {},
           child: Row(
             children: [
               // Thumbnail
@@ -135,7 +134,7 @@ class SearchPageState extends State<SearchPage> {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
-            // Handle click — e.g., open YouTube player or details page
+            context.push('/video/${video.id}');
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,13 +229,17 @@ class SearchPageState extends State<SearchPage> {
       return;
     }
     if (isChannelSearch) {
-      await _onChannelSearch(context, query);
+      await _onChannelSearch(context, query, apiKey);
     } else {
-      await _onVideoSearch(context, query);
+      await _onVideoSearch(context, query, apiKey);
     }
   }
 
-  Future<void> _onChannelSearch(BuildContext context, String query) async {
+  Future<void> _onChannelSearch(
+    BuildContext context,
+    String query,
+    String apiKey,
+  ) async {
     final currSearchId = ++_searchId;
     CustomDialog.show(
       context,
@@ -262,7 +265,11 @@ class SearchPageState extends State<SearchPage> {
     }
   }
 
-  Future<void> _onVideoSearch(BuildContext context, String query) async {
+  Future<void> _onVideoSearch(
+    BuildContext context,
+    String query,
+    String apiKey,
+  ) async {
     final currSearchId = ++_searchId;
     CustomDialog.show(
       context,

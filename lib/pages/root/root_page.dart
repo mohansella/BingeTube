@@ -13,7 +13,7 @@ class RootPage extends StatelessWidget {
         title: const Text('BingeTube'),
         actions: [
           IconButton(
-            onPressed: () => context.push(Pages.keyconfig.path),
+            onPressed: () => context.push(Pages.keyConfig.path),
             icon: Icon(Icons.key),
           ),
           Padding(
@@ -34,7 +34,7 @@ class RootPage extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.movie),
-            label: Pages.myshows.text,
+            label: Pages.myShows.text,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -42,7 +42,7 @@ class RootPage extends StatelessWidget {
           ),
         ],
         onTap: (index) {
-          List<Pages> navPages = [Pages.home, Pages.myshows, Pages.settings];
+          List<Pages> navPages = [Pages.home, Pages.myShows, Pages.settings];
           context.push(navPages[index].path);
         },
       ),
