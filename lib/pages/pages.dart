@@ -2,11 +2,13 @@ enum Pages {
   splash('/splash', 'Splash'),
 
   home('/home', 'Home'),
-  myshows('/myshows', 'My Shows'),
+  myShows('/myshows', 'My Shows'),
   settings('/settings', 'Settings'),
 
-  keyconfig('/keyconfig', 'Key Config'),
-  search('/search', 'Search');
+  keyConfig('/keyconfig', 'Key Config'),
+  search('/search', 'Search'),
+
+  playVideo('/video/:id', 'Play Video');
   
 
   final String path;
