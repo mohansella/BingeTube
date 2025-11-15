@@ -1,7 +1,6 @@
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
-import 'package:bingetube/pages/video/video_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bingetube/pages/pages.dart';
@@ -50,13 +49,6 @@ final GoRouter routes = GoRouter(
     CustomGoRoute(
       path: Pages.search.path,
       customBuilder: (context, state) => const SearchPage(),
-    ),
-    CustomGoRoute(
-      path: Pages.playVideo.path,
-      customBuilder: (context, state) {
-        final videoId = state.pathParameters['id']!;
-        return SearchVideoPage(videoId: videoId);
-      },
     ),
   ],
 );
