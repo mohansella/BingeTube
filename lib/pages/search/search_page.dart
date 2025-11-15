@@ -3,7 +3,6 @@ import 'package:bingetube/core/api/search_api.dart';
 import 'package:bingetube/core/api/youtube_data.dart';
 import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -134,7 +133,7 @@ class SearchPageState extends State<SearchPage> {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
-            context.push('/video/${video.id}');
+
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

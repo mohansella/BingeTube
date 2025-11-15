@@ -11,6 +11,10 @@ class RootPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('BingeTube'),
+        leading: Padding(padding: EdgeInsets.only(left: 8.0),
+        child: Image.asset('assets/images/logo.png')),
+        leadingWidth: 45,
+        titleSpacing: 10,
         actions: [
           IconButton(
             onPressed: () => context.push(Pages.keyConfig.path),

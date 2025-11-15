@@ -6,10 +6,7 @@ enum Pages {
   settings('/settings', 'Settings'),
 
   keyConfig('/keyconfig', 'Key Config'),
-  search('/search', 'Search'),
-
-  playVideo('/video/:id', 'Play Video');
-  
+  search('/search', 'Search');
 
   final String path;
   final String text;
