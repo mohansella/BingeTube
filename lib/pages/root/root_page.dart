@@ -2,17 +2,27 @@ import 'package:bingetube/pages/Pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class RootPage extends StatelessWidget {
+class RootPage extends StatefulWidget {
   const RootPage({required this.body, super.key});
   final Widget body;
+
+  @override
+  State<StatefulWidget> createState() => RootPageState();
+}
+
+class RootPageState extends State<RootPage> {
+
+  int _bottomNavBarIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('BingeTube'),
-        leading: Padding(padding: EdgeInsets.only(left: 8.0),
-        child: Image.asset('assets/images/logo.png')),
+        leading: Padding(
+          padding: EdgeInsets.only(left: 8.0),
+          child: Image.asset('assets/images/logo.png'),
+        ),
         leadingWidth: 45,
         titleSpacing: 10,
         actions: [
@@ -29,8 +39,9 @@ class RootPage extends StatelessWidget {
           ),
         ],
       ),
-      body: body,
+      body: widget.body,
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _bottomNavBarIndex,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -47,7 +58,10 @@ class RootPage extends StatelessWidget {
         ],
         onTap: (index) {
           List<Pages> navPages = [Pages.home, Pages.myShows, Pages.settings];
-          context.push(navPages[index].path);
+          context.go(navPages[index].path);
+          setState(() {
+            _bottomNavBarIndex = index;
+          });
         },
       ),
     );
