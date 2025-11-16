@@ -1,7 +1,9 @@
+import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -21,7 +23,7 @@ class SplashPageState extends State<SplashPage> {
     final stopwatch = Stopwatch()..start();
     await SecureStorage.init();
     stopwatch.stop();
-    final delta = Duration(seconds: 1) - stopwatch.elapsed;
+    final delta = Duration(seconds: 2) - stopwatch.elapsed;
     if (delta > Duration.zero) {
       await Future.delayed(delta);
     }
@@ -32,6 +34,13 @@ class SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return Scaffold(
+      body: Center(
+        child: FractionallySizedBox(
+          widthFactor: 0.4, // 40% of screen width
+          child: Lottie.asset(Assets.bingePanda.path),
+        ),
+      ),
+    );
   }
 }
