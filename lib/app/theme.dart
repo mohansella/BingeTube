@@ -31,7 +31,7 @@ class Themes {
   static final lightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue, // Pick your brand color
+      seedColor: Colors.blue,
       brightness: Brightness.light,
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -40,7 +40,7 @@ class Themes {
   static final darkTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue, // Same seed as light theme
+      seedColor: Colors.blue,
       brightness: Brightness.dark,
     ),
     visualDensity: VisualDensity.adaptivePlatformDensity,

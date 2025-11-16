@@ -1,3 +1,4 @@
+import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/pages/Pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +22,7 @@ class RootPageState extends State<RootPage> {
         title: const Text('BingeTube'),
         leading: Padding(
           padding: EdgeInsets.only(left: 8.0),
-          child: Image.asset('assets/images/logo.png'),
+          child: Image.asset(Assets.logoPng.path),
         ),
         leadingWidth: 45,
         titleSpacing: 10,

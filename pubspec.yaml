@@ -39,6 +39,7 @@ dependencies:
   http: ^1.5.0
   riverpod: ^3.0.3
   hooks_riverpod: ^3.0.3
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +75,7 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/lottie/binge_panda.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
