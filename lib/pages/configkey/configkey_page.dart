@@ -20,7 +20,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
   @override
   void initState() {
     super.initState();
-    final apiKey = storage.get(SecureStorageKey.apikey);
+    final apiKey = storage.get(SecureStorageKey.apiKey);
     if (apiKey != null) {
       controller.text = apiKey;
     }
@@ -28,7 +28,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final apiKey = storage.get(SecureStorageKey.apikey);
+    final apiKey = storage.get(SecureStorageKey.apiKey);
     isConfigured = apiKey != null;
     return Scaffold(
       appBar: AppBar(title: const Text('API Key Configuration')),
@@ -96,7 +96,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
 
   void onDelete(BuildContext context) {
     controller.clear();
-    storage.remove(SecureStorageKey.apikey);
+    storage.remove(SecureStorageKey.apiKey);
     setState(() {
       isEditMode = true;
       isConfigured = false;
@@ -110,7 +110,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
     if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
-        storage.set(SecureStorageKey.apikey, controller.text);
+        storage.set(SecureStorageKey.apiKey, controller.text);
         setState(() {
           isConfigured = true;
           isEditMode = false;
