@@ -1,3 +1,4 @@
+import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
@@ -10,15 +11,20 @@ import 'package:bingetube/pages/myshows/myshows_page.dart';
 import 'package:bingetube/pages/settings/settings_page.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-MaterialApp getRoutedApp() {
+MaterialApp getRoutedApp(WidgetRef ref) {
+  final themeMode = ref.watch(themeModeProvider);
   return MaterialApp.router(
-    routerConfig: routes,
+    themeMode: themeMode,
+    theme: Themes.lightTheme,
+    darkTheme: Themes.darkTheme,
+    routerConfig: _routes,
     debugShowCheckedModeBanner: true,
   );
 }
 
-final GoRouter routes = GoRouter(
+final GoRouter _routes = GoRouter(
   initialLocation: Pages.splash.path,
   routes: [
     CustomGoRoute(

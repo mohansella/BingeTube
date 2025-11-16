@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-enum SecureStorageKey { apikey }
+enum SecureStorageKey { apiKey, themeMode }
 
 class SecureStorage {
   final FlutterSecureStorage _storage = FlutterSecureStorage();
@@ -12,9 +12,7 @@ class SecureStorage {
   bool _initialized = false;
 
   SecureStorage._internal() {
-    _streamController.stream.asyncMap((f) => f).listen((f) {
-      print('test');
-    });
+    _streamController.stream.asyncMap((f) => f).listen((f) {});
   }
 
   static final SecureStorage _instance = SecureStorage._internal();
@@ -28,7 +26,12 @@ class SecureStorage {
     _instance._initialized = true;
   }
 
-  factory SecureStorage() => _instance;
+  factory SecureStorage() {
+    if (!_instance._initialized) {
+      throw 'SecureStorage factory should not be accessed before initialization';
+    }
+    return _instance;
+  }
 
   void set(SecureStorageKey key, String val) {
     _cache[key.name] = val;

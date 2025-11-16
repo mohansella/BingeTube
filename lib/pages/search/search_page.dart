@@ -20,7 +20,7 @@ class SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    var isConfigured = SecureStorage().get(SecureStorageKey.apikey) != null;
+    var isConfigured = SecureStorage().get(SecureStorageKey.apiKey) != null;
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -223,7 +223,7 @@ class SearchPageState extends State<SearchPage> {
       _channels = null;
       _videos = null;
     });
-    final apiKey = SecureStorage().get(SecureStorageKey.apikey);
+    final apiKey = SecureStorage().get(SecureStorageKey.apiKey);
     if (apiKey == null) {
       return;
     }
