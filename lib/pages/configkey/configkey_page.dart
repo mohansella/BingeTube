@@ -130,22 +130,19 @@ class KeyConfigState extends State<ConfigKeyPage> {
       children: [
         TextButton.icon(
           icon: Icon(_showHelp ? Icons.expand_less : Icons.expand_more),
-          label: const Text(
-            "How to get your YouTube API Key",
-            style: TextStyle(fontSize: 16),
-          ),
+          label: const Text("How to get your YouTube API Key"),
           onPressed: () {
             setState(() => _showHelp = !_showHelp);
           },
         ),
-
-        AnimatedCrossFade(
-          firstChild: const SizedBox.shrink(),
-          secondChild: const ConfigKeyHelpWidget(),
-          crossFadeState: _showHelp
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 250),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: _showHelp
+              ? const ConfigKeyHelpWidget(key: ValueKey("help_content"))
+              : const SizedBox(key: ValueKey("empty_space")),
         ),
       ],
     );
