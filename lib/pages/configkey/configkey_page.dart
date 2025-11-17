@@ -1,6 +1,7 @@
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/validate_api.dart';
 import 'package:bingetube/core/utils/secure_storage.dart';
+import 'package:bingetube/pages/configkey/help_widget.dart';
 import 'package:flutter/material.dart';
 
 class ConfigKeyPage extends StatefulWidget {
@@ -11,109 +12,181 @@ class ConfigKeyPage extends StatefulWidget {
 }
 
 class KeyConfigState extends State<ConfigKeyPage> {
-  final storage = SecureStorage();
-  final controller = TextEditingController();
+  final _storage = SecureStorage();
+  final _textController = TextEditingController();
 
-  bool isConfigured = false;
-  bool isEditMode = false;
+  bool _isConfigured = false;
+  bool _isEditMode = false;
+  bool _isObscure = true;
+  bool _showHelp = false;
 
   @override
   void initState() {
     super.initState();
-    final apiKey = storage.get(SecureStorageKey.apiKey);
+    _updateKeyToController();
+  }
+
+  void _updateKeyToController() {
+    final apiKey = _storage.get(SecureStorageKey.apiKey);
     if (apiKey != null) {
-      controller.text = apiKey;
+      _textController.text = apiKey;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final apiKey = storage.get(SecureStorageKey.apiKey);
-    isConfigured = apiKey != null;
+    final apiKey = _storage.get(SecureStorageKey.apiKey);
+    _isConfigured = apiKey != null;
     return Scaffold(
-      appBar: AppBar(title: const Text('API Key Configuration')),
+      appBar: AppBar(title: const Text('Configure API Key')),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              'Youtube Data API Key',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 20),
-            ),
-            TextField(
-              enabled: !isConfigured || isEditMode,
-              controller: controller,
-              decoration: InputDecoration(hintText: 'Enter your key here'),
-            ),
+            _buildInput(),
             Padding(padding: EdgeInsets.only(top: 8)),
-            if (isConfigured && !isEditMode) ...[
-              TextButton(
-                onPressed: () => onEdit(context),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text('Edit', style: TextStyle(fontSize: 18)),
-              ),
-              TextButton(
-                onPressed: () => onDelete(context),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text('Delete', style: TextStyle(fontSize: 18)),
-              ),
+            if (_isConfigured && !_isEditMode) ...[
+              _buildEditDelete(context),
             ] else ...[
-              TextButton(
-                onPressed: () => onValidate(context),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text('Validate', style: TextStyle(fontSize: 18)),
-              ),
+              _buildCancelValidate(context),
             ],
+            Padding(padding: EdgeInsets.only(top: 24)),
+            _buildShowHelp(context),
           ],
         ),
       ),
     );
   }
 
-  void onValidate(BuildContext context) {
+  Center _buildCancelValidate(BuildContext context) {
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isConfigured && _isEditMode) ...[
+            OutlinedButton(
+              onPressed: () => _onEditCancel(context),
+              child: const Text('Cancel'),
+            ),
+            SizedBox(width: 10),
+          ],
+          FilledButton(
+            onPressed: () => _onValidate(context),
+            child: const Text('Validate'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Center _buildEditDelete(BuildContext context) {
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          OutlinedButton(
+            onPressed: () => _onEdit(context),
+            child: const Text('Edit'),
+          ),
+          SizedBox(width: 10),
+          TextButton(
+            onPressed: () => _onDelete(context),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  TextField _buildInput() {
+    return TextField(
+      enabled: !_isConfigured || _isEditMode,
+      controller: _textController,
+      textAlign: TextAlign.center,
+      autofocus: true,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: 'Youtube Data API Key',
+        helperText: 'Your key is stored only on this device',
+        suffixIcon: IconButton(
+          icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: () {
+            setState(() => _isObscure = !_isObscure);
+          },
+        ),
+      ),
+      obscureText: (!_isConfigured || _isEditMode) ? _isObscure : true,
+    );
+  }
+
+  Widget _buildShowHelp(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextButton.icon(
+          icon: Icon(_showHelp ? Icons.expand_less : Icons.expand_more),
+          label: const Text(
+            "How to get your YouTube API Key",
+            style: TextStyle(fontSize: 16),
+          ),
+          onPressed: () {
+            setState(() => _showHelp = !_showHelp);
+          },
+        ),
+
+        AnimatedCrossFade(
+          firstChild: const SizedBox.shrink(),
+          secondChild: const ConfigKeyHelpWidget(),
+          crossFadeState: _showHelp
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 250),
+        ),
+      ],
+    );
+  }
+
+  void _onValidate(BuildContext context) {
     CustomDialog.show(
       context,
       'Validating API Key',
       'Cancel',
       const LinearProgressIndicator(),
     );
-    valdiate(context);
+    _validate(context);
   }
 
-  void onEdit(BuildContext context) {
+  void _onEdit(BuildContext context) {
     setState(() {
-      isEditMode = true;
+      _isEditMode = true;
     });
   }
 
-  void onDelete(BuildContext context) {
-    controller.clear();
-    storage.remove(SecureStorageKey.apiKey);
+  void _onDelete(BuildContext context) {
+    _textController.clear();
+    _storage.remove(SecureStorageKey.apiKey);
     setState(() {
-      isEditMode = true;
-      isConfigured = false;
+      _isEditMode = true;
+      _isConfigured = false;
     });
   }
 
   num _validateId = 0;
-  Future<void> valdiate(BuildContext context) async {
+  Future<void> _validate(BuildContext context) async {
     var currValidateId = ++_validateId;
-    var result = await ValidateApi.validateYouTubeApiKey(controller.text);
+    var result = await ValidateApi.validateYouTubeApiKey(_textController.text);
     if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
-        storage.set(SecureStorageKey.apiKey, controller.text);
+        _storage.set(SecureStorageKey.apiKey, _textController.text);
         setState(() {
-          isConfigured = true;
-          isEditMode = false;
+          _isConfigured = true;
+          _isEditMode = false;
         });
       } else {
         CustomDialog.show(context, 'Validation Failed', 'Okay', null);
@@ -121,4 +194,10 @@ class KeyConfigState extends State<ConfigKeyPage> {
     }
   }
 
+  void _onEditCancel(BuildContext context) {
+    setState(() {
+      _isEditMode = false;
+      _updateKeyToController();
+    });
+  }
 }

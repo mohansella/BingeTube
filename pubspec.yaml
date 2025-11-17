@@ -40,6 +40,7 @@ dependencies:
   riverpod: ^3.0.3
   hooks_riverpod: ^3.0.3
   lottie: ^3.3.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
