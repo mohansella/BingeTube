@@ -2,6 +2,24 @@ import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod/riverpod.dart';
 
+class Themes {
+  static final lightTheme = ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: Brightness.light,
+    ),
+  );
+
+  static final darkTheme = ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: Brightness.dark,
+    ),
+  );
+}
+
 class ThemeModeController extends Notifier<ThemeMode> {
   @override
   build() {
@@ -26,23 +44,3 @@ class ThemeModeController extends Notifier<ThemeMode> {
 final themeModeProvider = NotifierProvider<ThemeModeController, ThemeMode>(
   ThemeModeController.new,
 );
-
-class Themes {
-  static final lightTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.light,
-    ),
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-  );
-
-  static final darkTheme = ThemeData(
-    useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.blue,
-      brightness: Brightness.dark,
-    ),
-    visualDensity: VisualDensity.adaptivePlatformDensity,
-  );
-}

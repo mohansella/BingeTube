@@ -23,7 +23,7 @@ class SplashPageState extends State<SplashPage> {
     final stopwatch = Stopwatch()..start();
     await SecureStorage.init();
     stopwatch.stop();
-    final delta = Duration(seconds: 2) - stopwatch.elapsed;
+    final delta = Duration(seconds: 1) - stopwatch.elapsed;
     if (delta > Duration.zero) {
       await Future.delayed(delta);
     }
