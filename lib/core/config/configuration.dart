@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bingetube/core/config/serializer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod/riverpod.dart';
@@ -103,4 +102,15 @@ class ConfigStore {
     _cache.remove(key.name);
     _streamController.add(_storage.delete(key: key.name));
   }
+}
+
+sealed class ConfigSerializer {
+  static String serializeThemeMode(ThemeMode value) {
+    return value.name;
+  }
+
+  static ThemeMode deserializeTheMode(String value) {
+    return ThemeMode.values.byName(value);
+  }
+
 }
