@@ -1,5 +1,5 @@
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/constants/assets.dart';
-import 'package:bingetube/core/utils/secure_storage.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +21,7 @@ class SplashPageState extends State<SplashPage> {
 
   void initAll() async {
     final stopwatch = Stopwatch()..start();
-    await SecureStorage.init();
+    await ConfigStore.init();
     stopwatch.stop();
     final delta = Duration(seconds: 1) - stopwatch.elapsed;
     if (delta > Duration.zero) {

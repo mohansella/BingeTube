@@ -1,7 +1,6 @@
-import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod/legacy.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -14,7 +13,7 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Container _buildTheme(BuildContext context, WidgetRef ref) {
-    var selectedThemeMode = ref.watch(themeModeProvider);
+    var selectedThemeMode = ref.watch(ConfigProviders.theme);
     return Container(
       height: 56,
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -36,7 +35,7 @@ class SettingsPage extends ConsumerWidget {
                 .toList(),
             selected: {selectedThemeMode},
             onSelectionChanged: (s) {
-              ref.read(themeModeProvider.notifier).setThemeMode(s.first);
+              ref.read(ConfigProviders.theme.notifier).save(s.first);
             },
             showSelectedIcon: false,
           ),
