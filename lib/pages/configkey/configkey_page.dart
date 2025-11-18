@@ -1,7 +1,7 @@
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/validate_api.dart';
 import 'package:bingetube/core/config/configuration.dart';
-import 'package:bingetube/pages/configkey/help_widget.dart';
+import 'package:bingetube/pages/configkey/widgets/help_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
