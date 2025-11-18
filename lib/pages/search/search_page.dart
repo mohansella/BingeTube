@@ -1,17 +1,18 @@
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/search_api.dart';
 import 'package:bingetube/core/api/youtube_data.dart';
-import 'package:bingetube/core/utils/secure_storage.dart';
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => SearchPageState();
+  ConsumerState<ConsumerStatefulWidget> createState() => SearchPageState();
 }
 
-class SearchPageState extends State<SearchPage> {
+class SearchPageState extends ConsumerState<SearchPage> {
   List<bool> _selected = [true, false];
   get isChannelSearch => _selected[0];
 
@@ -20,7 +21,7 @@ class SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    var isConfigured = SecureStorage().get(SecureStorageKey.apiKey) != null;
+    var isConfigured = ref.watch(ConfigProviders.apiKey).isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -223,8 +224,8 @@ class SearchPageState extends State<SearchPage> {
       _channels = null;
       _videos = null;
     });
-    final apiKey = SecureStorage().get(SecureStorageKey.apiKey);
-    if (apiKey == null) {
+    final apiKey = ref.read(ConfigProviders.apiKey);
+    if (apiKey.isEmpty) {
       return;
     }
     if (isChannelSearch) {

@@ -1,18 +1,19 @@
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/validate_api.dart';
-import 'package:bingetube/core/utils/secure_storage.dart';
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/pages/configkey/help_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ConfigKeyPage extends StatefulWidget {
+class ConfigKeyPage extends ConsumerStatefulWidget {
   const ConfigKeyPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => KeyConfigState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _KeyConfigState();
+
 }
 
-class KeyConfigState extends State<ConfigKeyPage> {
-  final _storage = SecureStorage();
+class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   final _textController = TextEditingController();
 
   bool _isConfigured = false;
@@ -27,16 +28,16 @@ class KeyConfigState extends State<ConfigKeyPage> {
   }
 
   void _updateKeyToController() {
-    final apiKey = _storage.get(SecureStorageKey.apiKey);
-    if (apiKey != null) {
+    final apiKey = ref.read(ConfigProviders.apiKey);
+    if (apiKey.isNotEmpty) {
       _textController.text = apiKey;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final apiKey = _storage.get(SecureStorageKey.apiKey);
-    _isConfigured = apiKey != null;
+    final apiKey = ref.watch(ConfigProviders.apiKey);
+    _isConfigured = apiKey.isNotEmpty;
     return Scaffold(
       appBar: AppBar(title: const Text('Configure API Key')),
       body: SingleChildScrollView(
@@ -166,7 +167,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
 
   void _onDelete(BuildContext context) {
     _textController.clear();
-    _storage.remove(SecureStorageKey.apiKey);
+    ref.read(ConfigProviders.apiKey.notifier).remove();
     setState(() {
       _isEditMode = true;
       _isConfigured = false;
@@ -180,7 +181,7 @@ class KeyConfigState extends State<ConfigKeyPage> {
     if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
-        _storage.set(SecureStorageKey.apiKey, _textController.text);
+        ref.read(ConfigProviders.apiKey.notifier).save(_textController.text);
         setState(() {
           _isConfigured = true;
           _isEditMode = false;
