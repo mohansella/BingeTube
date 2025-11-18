@@ -1,5 +1,6 @@
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/validate_api.dart';
+import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/pages/configkey/widgets/help_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ class ConfigKeyPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _KeyConfigState();
-
 }
 
 class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
@@ -28,16 +28,14 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   }
 
   void _updateKeyToController() {
-    final apiKey = ref.read(ConfigProviders.apiKey);
-    if (apiKey.isNotEmpty) {
-      _textController.text = apiKey;
-    }
+    final apiKey = ref.read(ConfigProviders.apiKeyMeta);
+    _textController.text = apiKey.apiKey;
   }
 
   @override
   Widget build(BuildContext context) {
-    final apiKey = ref.watch(ConfigProviders.apiKey);
-    _isConfigured = apiKey.isNotEmpty;
+    final apiKeyMeta = ref.watch(ConfigProviders.apiKeyMeta);
+    _isConfigured = apiKeyMeta.apiKey.isNotEmpty;
     return Scaffold(
       appBar: AppBar(title: const Text('Configure API Key')),
       body: SingleChildScrollView(
@@ -167,7 +165,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
 
   void _onDelete(BuildContext context) {
     _textController.clear();
-    ref.read(ConfigProviders.apiKey.notifier).remove();
+    ref.read(ConfigProviders.apiKeyMeta.notifier).remove();
     setState(() {
       _isEditMode = true;
       _isConfigured = false;
@@ -181,15 +179,27 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
     if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
-        ref.read(ConfigProviders.apiKey.notifier).save(_textController.text);
-        setState(() {
-          _isConfigured = true;
-          _isEditMode = false;
-        });
+        _saveApiKey();
       } else {
         CustomDialog.show(context, 'Validation Failed', 'Okay', null);
       }
     }
+  }
+
+  void _saveApiKey() {
+    final apiKeyMeta = ref.read(ConfigProviders.apiKeyMeta);
+    ref
+        .read(ConfigProviders.apiKeyMeta.notifier)
+        .save(
+          apiKeyMeta.copyWith(
+            apiKey: _textController.text,
+            status: ApiKeyStatus.keyValid,
+          ),
+        );
+    setState(() {
+      _isConfigured = true;
+      _isEditMode = false;
+    });
   }
 
   void _onEditCancel(BuildContext context) {

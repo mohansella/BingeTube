@@ -21,7 +21,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    var isConfigured = ref.watch(ConfigProviders.apiKey).isNotEmpty;
+    var isConfigured = ref.watch(ConfigProviders.apiKeyMeta).apiKey.isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
@@ -133,9 +133,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: () {
-
-          },
+          onTap: () {},
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -224,7 +222,7 @@ class SearchPageState extends ConsumerState<SearchPage> {
       _channels = null;
       _videos = null;
     });
-    final apiKey = ref.read(ConfigProviders.apiKey);
+    final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
     if (apiKey.isEmpty) {
       return;
     }

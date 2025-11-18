@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod/riverpod.dart';
@@ -7,11 +8,15 @@ import 'package:riverpod/riverpod.dart';
 enum ConfigKey<T> {
   themeMode<ThemeMode>(
     ThemeMode.system,
-    ConfigSerializer.serializeThemeMode,
-    ConfigSerializer.deserializeTheMode,
+    ConfigSerializer.fromThemeMode,
+    ConfigSerializer.toThemeMode,
   ),
 
-  apiKey<String>('', noOp, noOp);
+  apiKeyMeta<ApiKeyMeta>(
+    ApiKeyMeta(),
+    ApiKeyMeta.toJsonString,
+    ApiKeyMeta.fromJsonString,
+  );
 
   final T defaultValue;
   final String Function(T) serializer;
@@ -27,9 +32,8 @@ sealed class ConfigProviders {
     () => ConfigController<ThemeMode>(ConfigKey.themeMode),
   );
 
-
-  static final apiKey = NotifierProvider(
-    () => ConfigController<String>(ConfigKey.apiKey),
+  static final apiKeyMeta = NotifierProvider(
+    () => ConfigController<ApiKeyMeta>(ConfigKey.apiKeyMeta),
   );
 }
 
@@ -105,12 +109,11 @@ class ConfigStore {
 }
 
 sealed class ConfigSerializer {
-  static String serializeThemeMode(ThemeMode value) {
+  static String fromThemeMode(ThemeMode value) {
     return value.name;
   }
 
-  static ThemeMode deserializeTheMode(String value) {
+  static ThemeMode toThemeMode(String value) {
     return ThemeMode.values.byName(value);
   }
-
 }
