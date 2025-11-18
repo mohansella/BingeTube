@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bingetube/core/config/apikey_meta.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:riverpod/riverpod.dart';
@@ -70,7 +71,8 @@ class ConfigStore {
   }
 
   static final ConfigStore _instance = ConfigStore._internal();
-
+  static final logger = LogManager.getLogger('ConfigStore');
+  
   static Future<void> init() async {
     if (_instance._initialized) {
       return;
@@ -78,6 +80,7 @@ class ConfigStore {
     var lcache = await _instance._storage.readAll();
     _instance._cache.addAll(lcache);
     _instance._initialized = true;
+    logger.info('loaded ConfigStore : $lcache');
   }
 
   factory ConfigStore() {
