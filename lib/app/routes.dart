@@ -16,10 +16,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 MaterialApp getRoutedApp(WidgetRef ref) {
   final themeMode = ref.watch(ConfigProviders.theme);
+  final appFontSize = ref.watch(ConfigProviders.appFontSize);
   return MaterialApp.router(
     themeMode: themeMode,
-    theme: Themes.lightTheme,
-    darkTheme: Themes.darkTheme,
+    theme: Themes.light(appFontSize),
+    darkTheme: Themes.dark(appFontSize),
     routerConfig: _routes,
     debugShowCheckedModeBanner: true,
   );

@@ -1,4 +1,5 @@
 import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/config/font_size.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -8,7 +9,9 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
-      child: Column(children: [_buildTheme(context, ref)]),
+      child: Column(
+        children: [_buildTheme(context, ref), _buildFontSize(context, ref)],
+      ),
     );
   }
 
@@ -36,6 +39,38 @@ class SettingsPage extends ConsumerWidget {
             selected: {selectedThemeMode},
             onSelectionChanged: (s) {
               ref.read(ConfigProviders.theme.notifier).save(s.first);
+            },
+            showSelectedIcon: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _buildFontSize(BuildContext context, WidgetRef ref) {
+    var appFontSize = ref.watch(ConfigProviders.appFontSize);
+    return Container(
+      height: 56,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Icon(Icons.text_fields, size: 24),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text('Font Size', style: Theme.of(context).textTheme.bodyLarge),
+          ),
+          SegmentedButton(
+            segments: AppFontSize.values
+                .map(
+                  (v) => ButtonSegment(
+                    label: Text(v.name[0].toUpperCase() + v.name.substring(1)),
+                    value: v,
+                  ),
+                )
+                .toList(),
+            selected: {appFontSize},
+            onSelectionChanged: (s) {
+              ref.read(ConfigProviders.appFontSize.notifier).save(s.first);
             },
             showSelectedIcon: false,
           ),
