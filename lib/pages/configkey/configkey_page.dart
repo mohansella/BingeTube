@@ -2,12 +2,15 @@ import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/validate_api.dart';
 import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/configkey/widgets/help_widget.dart';
 import 'package:bingetube/pages/configkey/widgets/quota_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ConfigKeyPage extends ConsumerStatefulWidget {
+  static final logger = LogManager.getLogger('ConfigKeyPage');
+
   const ConfigKeyPage({super.key});
 
   @override
@@ -192,18 +195,34 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   }
 
   void _saveApiKey() {
-    final apiKeyMeta = ref.read(ConfigProviders.apiKeyMeta);
-    ref
-        .read(ConfigProviders.apiKeyMeta.notifier)
-        .save(
-          apiKeyMeta.copyWith(
-            apiKey: _textController.text,
-            status: ApiKeyStatus.keyValid,
-            configuredAtMillis: DateTime.now().millisecondsSinceEpoch,
-            lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
-            lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
-          ),
-        );
+    final newKey = _textController.text;
+    final oldMeta = ref.read(ConfigProviders.apiKeyMeta);
+    final ApiKeyMeta newMeta;
+    if (oldMeta.apiKey == newKey) {
+      ConfigKeyPage.logger.info('existing key configured with quota:${oldMeta.quotaSections}');
+      newMeta = oldMeta.copyWith(
+        apiKey: newKey,
+        status: ApiKeyStatus.keyValid,
+        lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
+        lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
+        quotaSections: {
+          ApiKeyQuotaType.validateKey:
+              1 + (oldMeta.quotaSections[ApiKeyQuotaType.validateKey] ?? 0),
+        },
+      );
+    } else {
+      ConfigKeyPage.logger.info('configuring new key');
+      newMeta = ApiKeyMeta(
+        apiKey: newKey,
+        status: ApiKeyStatus.keyValid,
+        configuredAtMillis: DateTime.now().millisecondsSinceEpoch,
+        lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
+        lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
+        quotaSections: {ApiKeyQuotaType.validateKey: 1},
+      );
+    }
+
+    ref.read(ConfigProviders.apiKeyMeta.notifier).save(newMeta);
     setState(() {
       _isConfigured = true;
       _isEditMode = false;
