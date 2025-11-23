@@ -312,6 +312,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.4"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.2"
   io:
     dependency: transitive
     description:
@@ -669,6 +677,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.12"
+  timeago:
+    dependency: "direct main"
+    description:
+      name: timeago
+      sha256: b05159406a97e1cbb2b9ee4faa9fb096fe0e2dfcd8b08fcd2a00553450d3422e
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.1"
+  timeago_flutter:
+    dependency: "direct main"
+    description:
+      name: timeago_flutter
+      sha256: "0fd70e79f35f5ea6507f04b3852ba3df3de595901cc1a916e4abc452115b09ac"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.0"
   typed_data:
     dependency: transitive
     description:

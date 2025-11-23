@@ -3,6 +3,7 @@ import 'package:bingetube/core/api/validate_api.dart';
 import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/pages/configkey/widgets/help_widget.dart';
+import 'package:bingetube/pages/configkey/widgets/quota_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -51,7 +52,11 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
               _buildCancelValidate(context),
             ],
             Padding(padding: EdgeInsets.only(top: 24)),
-            _buildShowHelp(context),
+            if (_isConfigured && !_isEditMode) ...[
+              ApiKeyQuotaWidget(meta: apiKeyMeta),
+            ] else ...[
+              _buildShowHelp(context),
+            ],
           ],
         ),
       ),
@@ -194,6 +199,8 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
           apiKeyMeta.copyWith(
             apiKey: _textController.text,
             status: ApiKeyStatus.keyValid,
+            configuredAtMillis: DateTime.now().millisecondsSinceEpoch,
+            lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
           ),
         );
     setState(() {

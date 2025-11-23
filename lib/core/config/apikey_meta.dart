@@ -1,11 +1,18 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 enum ApiKeyStatus {
-  notConfigured,
-  keyValid,
-  keyInvalid,
-  limitedScope,
-  quotaExceeded,
+  notConfigured("Not Configured", Colors.grey),
+  keyValid("Valid Key", Colors.green),
+  keyInvalid("Invalid Key", Colors.red),
+  limitedScope("Limited Scope", Colors.orange),
+  quotaExceeded("Quota Exceeded", Colors.red);
+
+  final String label;
+  final Color color;
+
+  const ApiKeyStatus(this.label, this.color);
 }
 
 enum ApiKeyQuotaType {
@@ -18,12 +25,14 @@ enum ApiKeyQuotaType {
 class ApiKeyMeta {
   final ApiKeyStatus status;
   final String apiKey;
-  final int lastUsedAtMillis;
   final int configuredAtMillis;
+  final int lastUsedAtMillis;
+  final int lastQuotaResetMillis;
 
   //private since mutate from reference will cause error
   final Map<ApiKeyQuotaType, int> _quotaSections;
 
+  Map<ApiKeyQuotaType, int> get quotaSections => {..._quotaSections};
   int get quotaUsed => _quotaSections.values.fold(0, (a, b) => a + b);
 
   static const int quotaLimit = 10000;
@@ -31,23 +40,26 @@ class ApiKeyMeta {
   const ApiKeyMeta({
     this.status = ApiKeyStatus.notConfigured,
     this.apiKey = '',
-    this.lastUsedAtMillis = 0,
     this.configuredAtMillis = 0,
+    this.lastUsedAtMillis = 0,
+    this.lastQuotaResetMillis = 0,
     Map<ApiKeyQuotaType, int> quotaSections = const {},
   }) : _quotaSections = quotaSections;
 
   ApiKeyMeta copyWith({
     ApiKeyStatus? status,
     String? apiKey,
-    int? lastUsedAtMillis,
     int? configuredAtMillis,
+    int? lastUsedAtMillis,
+    int? lastQuotaResetMillis,
     Map<ApiKeyQuotaType, int>? quotaSections,
   }) {
     return ApiKeyMeta(
       status: status ?? this.status,
       apiKey: apiKey ?? this.apiKey,
-      lastUsedAtMillis: lastUsedAtMillis ?? this.lastUsedAtMillis,
       configuredAtMillis: configuredAtMillis ?? this.configuredAtMillis,
+      lastUsedAtMillis: lastUsedAtMillis ?? this.lastUsedAtMillis,
+      lastQuotaResetMillis: lastQuotaResetMillis ?? this.lastQuotaResetMillis,
       quotaSections: quotaSections ?? _quotaSections,
     );
   }
@@ -60,8 +72,10 @@ class ApiKeyMeta {
         orElse: () => ApiKeyStatus.notConfigured,
       ),
       apiKey: json['apikey'] ?? '',
-      lastUsedAtMillis: (json['lastUsedAtMillis'] as num?)?.toInt() ?? 0,
       configuredAtMillis: (json['configuredAtMillis'] as num?)?.toInt() ?? 0,
+      lastUsedAtMillis: (json['lastUsedAtMillis'] as num?)?.toInt() ?? 0,
+      lastQuotaResetMillis:
+          (json['lastQuotaResetMillis'] as num?)?.toInt() ?? 0,
       quotaSections: {
         for (final qsEntry in qsMap.entries)
           if (ApiKeyQuotaType.values.any((e) => e.name == qsEntry.key))
@@ -71,12 +85,15 @@ class ApiKeyMeta {
     );
   }
 
+  int get nextResetAtMillis => lastQuotaResetMillis;
+
   Map<String, dynamic> toJson() {
     return {
       'status': status.name,
       'apikey': apiKey,
-      'lastUsedAtMillis': lastUsedAtMillis,
       'configuredAtMillis': configuredAtMillis,
+      'lastUsedAtMillis': lastUsedAtMillis,
+      'lastQuotaResetMillis': lastQuotaResetMillis,
       'quotaSections': _quotaSections.map((k, v) => MapEntry(k.name, v)),
     };
   }
