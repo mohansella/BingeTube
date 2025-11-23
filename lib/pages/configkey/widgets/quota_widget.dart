@@ -1,6 +1,5 @@
 import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:flutter/material.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 
 class ApiKeyQuotaWidget extends StatelessWidget {
