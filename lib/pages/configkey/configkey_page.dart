@@ -201,6 +201,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
             status: ApiKeyStatus.keyValid,
             configuredAtMillis: DateTime.now().millisecondsSinceEpoch,
             lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
+            lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
           ),
         );
     setState(() {

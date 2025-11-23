@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 sealed class LogManager {
@@ -17,7 +18,7 @@ sealed class LogManager {
       final error = record.error != null ? ' | ERROR: ${record.error}' : '';
       final stack = record.stackTrace != null ? '\nSTACKTRACE:\n${record.stackTrace}' : '';
 
-      print(
+      debugPrint(
         '[${record.level.name}] '
         '${record.time.toIso8601String()} '
         '${record.loggerName}: '

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import 'package:timezone/timezone.dart' as tz;
+
 enum ApiKeyStatus {
   notConfigured("Not Configured", Colors.grey),
   keyValid("Valid Key", Colors.green),
@@ -85,7 +87,7 @@ class ApiKeyMeta {
     );
   }
 
-  int get nextResetAtMillis => lastQuotaResetMillis;
+  int get nextResetAtMillis => ApiKeyMeta.nextQuotaReset();
 
   Map<String, dynamic> toJson() {
     return {
@@ -104,5 +106,19 @@ class ApiKeyMeta {
 
   static String toJsonString(ApiKeyMeta meta) {
     return jsonEncode(meta.toJson());
+  }
+
+  static int lastQuotaReset() {
+    final pacific = tz.getLocation('America/Los_Angeles');
+    final now = tz.TZDateTime.now(pacific);
+    final lastReset = tz.TZDateTime(pacific, now.year, now.month, now.day);
+    return lastReset.millisecondsSinceEpoch;
+  }
+
+  static int nextQuotaReset() {
+    final pacific = tz.getLocation('America/Los_Angeles');
+    final now = tz.TZDateTime.now(pacific);
+    final nextReset = tz.TZDateTime(pacific, now.year, now.month, now.day + 1);
+    return nextReset .millisecondsSinceEpoch;
   }
 }
