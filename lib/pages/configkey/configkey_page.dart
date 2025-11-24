@@ -1,5 +1,5 @@
 import 'package:bingetube/common/widget/custom_dialog.dart';
-import 'package:bingetube/core/api/validate_api.dart';
+import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/log/log_manager.dart';
@@ -183,7 +183,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   num _validateId = 0;
   Future<void> _validate(BuildContext context) async {
     var currValidateId = ++_validateId;
-    var result = await ValidateApi.validateYouTubeApiKey(_textController.text);
+    var result = await YoutubeApi.validateYouTubeApiKey(_textController.text);
     if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
       if (result) {
