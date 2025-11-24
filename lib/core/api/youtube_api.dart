@@ -1,8 +1,22 @@
 import 'dart:convert';
-import 'package:bingetube/core/api/youtube_data.dart';
 import 'package:http/http.dart' as http;
 
-class SearchApi {
+import 'package:bingetube/core/api/youtube_data.dart';
+
+class YoutubeApi {
+  static Future<bool> validateYouTubeApiKey(String apiKey) async {
+    final url = Uri.parse(
+      'https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=@youtube&key=$apiKey',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['items'] != null && data['items'].isNotEmpty;
+    }
+    return false;
+  }
+
   static Future<List<YouTubeChannel>?> searchYouTubeChannels(
     String query,
     String apiKey,

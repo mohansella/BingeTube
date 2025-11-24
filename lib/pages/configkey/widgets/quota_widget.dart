@@ -14,7 +14,7 @@ class ApiKeyQuotaWidget extends StatelessWidget {
         ListTile(
           title: const Text('Key Status'),
           subtitle: Text(
-            meta.status.name,
+            meta.status.label,
             style: TextStyle(color: meta.status.color),
           ),
         ),
