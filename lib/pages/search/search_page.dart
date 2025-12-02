@@ -118,6 +118,7 @@ class _SearchChannelPageState extends ConsumerState<_SearchChannelPage> {
     if(widget.query?.isEmpty ?? true) {
       return Text('search channel');
     } else {
+      SearchPage.logger.info('Channel Search: ${widget.query}');
       return Text('search channel for result: ${widget.query}');
     }
   }
@@ -139,6 +140,7 @@ class _SearchVideoPageState extends ConsumerState<_SearchVideoPage> {
     if(widget.query?.isEmpty ?? true) {
       return Text('search video');
     } else {
+      SearchPage.logger.info('Video Search: ${widget.query}');
       return Text('search video for result: ${widget.query}');
     }
   }
