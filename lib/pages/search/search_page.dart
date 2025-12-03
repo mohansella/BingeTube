@@ -1,5 +1,6 @@
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/pages/search/widgets/search_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
@@ -17,6 +18,7 @@ class SearchPageState extends ConsumerState<SearchPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late TextEditingController _textController;
+  late String apiKey;
 
   String? _searchQuery;
 
@@ -29,6 +31,7 @@ class SearchPageState extends ConsumerState<SearchPage>
       animationDuration: Duration(milliseconds: 250),
     );
     _textController = TextEditingController();
+    apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
   }
 
   @override
@@ -39,17 +42,14 @@ class SearchPageState extends ConsumerState<SearchPage>
 
   @override
   Widget build(BuildContext context) {
-    bool isKeyConfigured = ref
-        .watch(ConfigProviders.apiKeyMeta)
-        .apiKey
-        .isNotEmpty;
+    apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(
           height: 40,
           child: TextField(
             autofocus: true,
-            enabled: isKeyConfigured,
+            enabled: apiKey.isNotEmpty,
             controller: _textController,
             decoration: InputDecoration(
               hintText: 'Search...',
@@ -69,7 +69,7 @@ class SearchPageState extends ConsumerState<SearchPage>
       ),
       body: Column(
         children: [
-          if (isKeyConfigured) ...[
+          if (apiKey.isNotEmpty) ...[
             TabBar(
               controller: _tabController,
               tabs: [
@@ -81,8 +81,8 @@ class SearchPageState extends ConsumerState<SearchPage>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _SearchChannelPage(query: _searchQuery),
-                  _SearchVideoPage(query: _searchQuery),
+                  SearchChannelWidget(_searchQuery),
+                  _SearchVideoPage(apiKey: apiKey, query: _searchQuery),
                 ],
               ),
             ),
@@ -102,32 +102,11 @@ class SearchPageState extends ConsumerState<SearchPage>
   }
 }
 
-class _SearchChannelPage extends ConsumerStatefulWidget {
-  final String? query;
-
-  const _SearchChannelPage({required this.query});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SearchChannelPageState();
-}
-
-class _SearchChannelPageState extends ConsumerState<_SearchChannelPage> {
-  @override
-  Widget build(BuildContext context) {
-    if(widget.query?.isEmpty ?? true) {
-      return Text('search channel');
-    } else {
-      SearchPage.logger.info('Channel Search: ${widget.query}');
-      return Text('search channel for result: ${widget.query}');
-    }
-  }
-}
-
 class _SearchVideoPage extends ConsumerStatefulWidget {
   final String? query;
+  final String apiKey;
 
-  const _SearchVideoPage({required this.query});
+  const _SearchVideoPage({required this.apiKey, required this.query});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -137,8 +116,14 @@ class _SearchVideoPage extends ConsumerStatefulWidget {
 class _SearchVideoPageState extends ConsumerState<_SearchVideoPage> {
   @override
   Widget build(BuildContext context) {
-    if(widget.query?.isEmpty ?? true) {
-      return Text('search video');
+    if (widget.query?.isEmpty ?? true) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: Text(
+          'Search videos to add to your collection',
+          textAlign: .center,
+        ),
+      );
     } else {
       SearchPage.logger.info('Video Search: ${widget.query}');
       return Text('search video for result: ${widget.query}');

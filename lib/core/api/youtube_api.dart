@@ -17,9 +17,9 @@ class YoutubeApi {
     return false;
   }
 
-  static Future<List<YouTubeChannel>?> searchYouTubeChannels(
-    String query,
+  static Future<List<YouTubeChannel>?> searchChannels(
     String apiKey,
+    String query,
   ) async {
     final url = Uri.parse(
       'https://www.googleapis.com/youtube/v3/search'
