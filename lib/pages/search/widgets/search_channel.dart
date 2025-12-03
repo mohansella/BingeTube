@@ -3,7 +3,6 @@ import 'package:bingetube/core/api/youtube_data.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -22,6 +21,8 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
   bool _isValidQuery = false;
   bool _isLoaded = false;
   List<YouTubeChannel>? _channels;
+
+  static MapEntry<String, List<YouTubeChannel>?>? prevResult;
 
   _SearchChannelState();
 
@@ -70,6 +71,8 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
                         title: Text(channel.title),
                         subtitle: Text(
                           '@${channel.id} * ${channel.description}',
+                          maxLines: 2,
+                          overflow: .ellipsis,
                         ),
                         leading: Image.network(channel.thumbnailUrl),
                         mouseCursor: SystemMouseCursors.click,
@@ -95,6 +98,18 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       setState(() {
         _isValidQuery = true;
       });
+
+      if (query == prevResult?.key && prevResult?.value != null) {
+        SearchChannelWidget.logger.info(
+          'Showing cached result for query:$query',
+        );
+        setState(() {
+          _channels = prevResult?.value;
+          _isLoaded = true;
+        });
+        return;
+      }
+
       SearchChannelWidget.logger.info(
         'Initiating channel search for query: $query',
       );
@@ -105,8 +120,9 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       );
       if (query == widget.query) {
         setState(() {
-          _isLoaded = true;
           _channels = channels;
+          _isLoaded = true;
+          prevResult = MapEntry(query, channels);
         });
       } else {
         SearchChannelWidget.logger.info(
