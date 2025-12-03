@@ -3,6 +3,7 @@ import 'package:bingetube/core/api/youtube_data.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -71,6 +72,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
                           '@${channel.id} * ${channel.description}',
                         ),
                         leading: Image.network(channel.thumbnailUrl),
+                        mouseCursor: SystemMouseCursors.click,
                       ),
                     ),
                   );
