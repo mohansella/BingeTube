@@ -1,9 +1,8 @@
-
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/api/youtube_data.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/log/log_manager.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -15,8 +14,7 @@ class SearchChannelWidget extends ConsumerStatefulWidget {
   const SearchChannelWidget(this.query, {super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SearchChannelState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _SearchChannelState();
 }
 
 class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
@@ -48,19 +46,46 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var text = 'loading...';
     if (!_isValidQuery) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 24),
-        child: Text(
-          'Search channels to add to your collection',
-          textAlign: .center,
-        ),
-      );
+      text = 'Search channels to add to your collection';
     } else if (_isLoaded) {
-      return Text('total results: ${_channels?.length ?? -1}');
-    } else {
-      return Text('loading...');
+      final channels = _channels;
+      if (channels == null) {
+        text = 'Some error occured';
+      } else if (channels.isEmpty) {
+        text = 'No results found';
+      } else {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Column(
+              children: [
+                ...channels.map((channel) {
+                  return Card(
+                    child: InkWell(
+                      onTap: () {},
+                      child: ListTile(
+                        title: Text(channel.title),
+                        subtitle: Text(
+                          '@${channel.id} * ${channel.description}',
+                        ),
+                        leading: Image.network(channel.thumbnailUrl),
+                      ),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      }
     }
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Text(text, textAlign: .center),
+    );
   }
 
   void processRequest(String? query) async {
@@ -68,11 +93,13 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       setState(() {
         _isValidQuery = true;
       });
-      SearchChannelWidget.logger.info('Initiating channel search for query: $query');
+      SearchChannelWidget.logger.info(
+        'Initiating channel search for query: $query',
+      );
       final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
       final channels = await YoutubeApi.searchChannels(apiKey, query);
       SearchChannelWidget.logger.info(
-        'Found: ${_channels?.length ?? -1} channels for query: $query',
+        'Found: ${channels?.length ?? -1} channels for query: $query',
       );
       if (query == widget.query) {
         setState(() {
@@ -87,4 +114,3 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
     }
   }
 }
-
