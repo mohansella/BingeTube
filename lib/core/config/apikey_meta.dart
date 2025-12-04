@@ -30,12 +30,15 @@ class ApiKeyMeta {
   final int configuredAtMillis;
   final int lastUsedAtMillis;
   final int lastQuotaResetMillis;
+  final int nextQuotaResetMillis;
 
   //private since mutate from reference will cause error
   final Map<ApiKeyQuotaType, int> _quotaSections;
 
-  Map<ApiKeyQuotaType, int> get quotaSections => {..._quotaSections};
   int get quotaUsed => _quotaSections.values.fold(0, (a, b) => a + b);
+  bool get isQuotaUsedInvalid =>
+      ApiKeyMeta.nextQuotaReset() != nextQuotaResetMillis;
+  Map<ApiKeyQuotaType, int> get quotaSections => {..._quotaSections};
 
   static const int quotaLimit = 10000;
 
@@ -45,6 +48,7 @@ class ApiKeyMeta {
     this.configuredAtMillis = 0,
     this.lastUsedAtMillis = 0,
     this.lastQuotaResetMillis = 0,
+    this.nextQuotaResetMillis = 0,
     Map<ApiKeyQuotaType, int> quotaSections = const {},
   }) : _quotaSections = quotaSections;
 
@@ -54,6 +58,7 @@ class ApiKeyMeta {
     int? configuredAtMillis,
     int? lastUsedAtMillis,
     int? lastQuotaResetMillis,
+    int? nextQuotaResetMillis,
     Map<ApiKeyQuotaType, int>? quotaSections,
   }) {
     return ApiKeyMeta(
@@ -62,6 +67,7 @@ class ApiKeyMeta {
       configuredAtMillis: configuredAtMillis ?? this.configuredAtMillis,
       lastUsedAtMillis: lastUsedAtMillis ?? this.lastUsedAtMillis,
       lastQuotaResetMillis: lastQuotaResetMillis ?? this.lastQuotaResetMillis,
+      nextQuotaResetMillis: nextQuotaResetMillis ?? this.nextQuotaResetMillis,
       quotaSections: quotaSections ?? _quotaSections,
     );
   }
@@ -78,6 +84,8 @@ class ApiKeyMeta {
       lastUsedAtMillis: (json['lastUsedAtMillis'] as num?)?.toInt() ?? 0,
       lastQuotaResetMillis:
           (json['lastQuotaResetMillis'] as num?)?.toInt() ?? 0,
+      nextQuotaResetMillis:
+          (json['nextQuotaResetMillis'] as num?)?.toInt() ?? 0,
       quotaSections: {
         for (final qsEntry in qsMap.entries)
           if (ApiKeyQuotaType.values.any((e) => e.name == qsEntry.key))
@@ -87,8 +95,6 @@ class ApiKeyMeta {
     );
   }
 
-  int get nextResetAtMillis => ApiKeyMeta.nextQuotaReset();
-
   Map<String, dynamic> toJson() {
     return {
       'status': status.name,
@@ -96,8 +102,17 @@ class ApiKeyMeta {
       'configuredAtMillis': configuredAtMillis,
       'lastUsedAtMillis': lastUsedAtMillis,
       'lastQuotaResetMillis': lastQuotaResetMillis,
+      'nextQuotaResetMillis': nextQuotaResetMillis,
       'quotaSections': _quotaSections.map((k, v) => MapEntry(k.name, v)),
     };
+  }
+
+  ApiKeyMeta resetQuota() {
+    return copyWith(
+      lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
+      nextQuotaResetMillis: ApiKeyMeta.nextQuotaReset(),
+      quotaSections: {},
+    );
   }
 
   static ApiKeyMeta fromJsonString(String source) {
@@ -119,6 +134,6 @@ class ApiKeyMeta {
     final pacific = tz.getLocation('America/Los_Angeles');
     final now = tz.TZDateTime.now(pacific);
     final nextReset = tz.TZDateTime(pacific, now.year, now.month, now.day + 1);
-    return nextReset .millisecondsSinceEpoch;
+    return nextReset.millisecondsSinceEpoch;
   }
 }

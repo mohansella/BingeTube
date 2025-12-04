@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:bingetube/core/config/apikey_util.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:bingetube/core/api/youtube_data.dart';
@@ -18,6 +20,7 @@ class YoutubeApi {
   }
 
   static Future<List<YouTubeChannel>?> searchChannels(
+    WidgetRef ref,
     String apiKey,
     String query,
   ) async {
@@ -33,6 +36,7 @@ class YoutubeApi {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      ApiKeyUtil.addQuota(ref, .searchChannel, 100);
       final data = json.decode(response.body);
 
       final items = (data['items'] as List?) ?? [];

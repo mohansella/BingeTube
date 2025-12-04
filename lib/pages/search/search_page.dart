@@ -6,7 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
-  static final Logger logger = LogManager.getLogger('SearchPage');
+  static final Logger _logger = LogManager.getLogger('SearchPage');
 
   const SearchPage({super.key});
 
@@ -125,7 +125,7 @@ class _SearchVideoPageState extends ConsumerState<_SearchVideoPage> {
         ),
       );
     } else {
-      SearchPage.logger.info('Video Search: ${widget.query}');
+      SearchPage._logger.info('Video Search: ${widget.query}');
       return Text('search video for result: ${widget.query}');
     }
   }
