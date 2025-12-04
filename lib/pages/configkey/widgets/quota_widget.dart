@@ -21,11 +21,11 @@ class ApiKeyQuotaWidget extends ConsumerWidget {
             style: TextStyle(color: meta.status.color),
           ),
         ),
+        _buildQuotaUsed(meta),
         _buildTimeList('Configured On', meta.configuredAtMillis),
         _buildTimeList('Last Used At', meta.lastUsedAtMillis),
         _buildTimeList('Last Quota Reset At', meta.lastQuotaResetMillis),
         _buildTimeList('Next Quota Reset At', meta.nextQuotaResetMillis),
-        _buildQuotaUsed(meta),
       ],
     );
   }
