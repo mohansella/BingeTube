@@ -5,7 +5,7 @@ class MyShowsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Hi from MyShowsPage');
+    return Center(child: Text('My Show Page'));
   }
   
 }
