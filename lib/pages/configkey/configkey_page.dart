@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ConfigKeyPage extends ConsumerStatefulWidget {
-  static final logger = LogManager.getLogger('ConfigKeyPage');
+  static final _logger = LogManager.getLogger('ConfigKeyPage');
 
   const ConfigKeyPage({super.key});
 
@@ -56,7 +56,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
             ],
             Padding(padding: EdgeInsets.only(top: 24)),
             if (_isConfigured && !_isEditMode) ...[
-              ApiKeyQuotaWidget(meta: apiKeyMeta),
+              ApiKeyQuotaWidget(),
             ] else ...[
               _buildShowHelp(context),
             ],
@@ -199,19 +199,21 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
     final oldMeta = ref.read(ConfigProviders.apiKeyMeta);
     final ApiKeyMeta newMeta;
     if (oldMeta.apiKey == newKey) {
-      ConfigKeyPage.logger.info('existing key configured with quota:${oldMeta.quotaSections}');
+      ConfigKeyPage._logger.info(
+        'existing key configured with quota:${oldMeta.quotaSections}',
+      );
+      final quotaSection = oldMeta.quotaSections;
+      quotaSection[.validateKey] = 1 + (quotaSection[ApiKeyQuotaType.validateKey] ?? 0);
       newMeta = oldMeta.copyWith(
         apiKey: newKey,
         status: ApiKeyStatus.keyValid,
         lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
         lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
-        quotaSections: {
-          ApiKeyQuotaType.validateKey:
-              1 + (oldMeta.quotaSections[ApiKeyQuotaType.validateKey] ?? 0),
-        },
+        nextQuotaResetMillis: ApiKeyMeta.nextQuotaReset(),
+        quotaSections: quotaSection
       );
     } else {
-      ConfigKeyPage.logger.info('configuring new key');
+      ConfigKeyPage._logger.info('configuring new key');
       newMeta = ApiKeyMeta(
         apiKey: newKey,
         status: ApiKeyStatus.keyValid,

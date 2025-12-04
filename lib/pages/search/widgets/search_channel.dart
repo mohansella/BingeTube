@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
 class SearchChannelWidget extends ConsumerStatefulWidget {
-  static final Logger logger = LogManager.getLogger('SearchChannelWidget');
+  static final Logger _logger = LogManager.getLogger('SearchChannelWidget');
 
   final String? query;
 
@@ -119,7 +119,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       });
 
       if (query == prevResult?.key && prevResult?.value != null) {
-        SearchChannelWidget.logger.info(
+        SearchChannelWidget._logger.info(
           'Showing cached result for query:$query',
         );
         setState(() {
@@ -129,12 +129,12 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
         return;
       }
 
-      SearchChannelWidget.logger.info(
+      SearchChannelWidget._logger.info(
         'Initiating channel search for query: $query',
       );
       final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
-      final channels = await YoutubeApi.searchChannels(apiKey, query);
-      SearchChannelWidget.logger.info(
+      final channels = await YoutubeApi.searchChannels(ref, apiKey, query);
+      SearchChannelWidget._logger.info(
         'Found: ${channels?.length ?? -1} channels for query: $query',
       );
       if (query == widget.query) {
@@ -144,7 +144,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
           prevResult = MapEntry(query, channels);
         });
       } else {
-        SearchChannelWidget.logger.info(
+        SearchChannelWidget._logger.info(
           'Ignored search results due to user moved to next query:${widget.query} from:$query',
         );
       }
