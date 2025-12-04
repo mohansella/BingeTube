@@ -6,7 +6,9 @@ enum Pages {
   settings('/settings', 'Settings'),
 
   keyConfig('/keyconfig', 'Key Config'),
-  search('/search', 'Search');
+  search('/search', 'Search'),
+
+  bingeResults('/binge-results', 'Binge Results');
 
   final String path;
   final String text;

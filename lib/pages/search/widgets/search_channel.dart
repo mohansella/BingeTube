@@ -119,9 +119,6 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       });
 
       if (query == prevResult?.key && prevResult?.value != null) {
-        SearchChannelWidget._logger.info(
-          'Showing cached result for query:$query',
-        );
         setState(() {
           _channels = prevResult?.value;
           _isLoaded = true;

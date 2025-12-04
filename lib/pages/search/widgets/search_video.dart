@@ -145,9 +145,6 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
       });
 
       if (query == prevResult?.key && prevResult?.value != null) {
-        SearchVideoWidget._logger.info(
-          'Showing cached result for query:$query',
-        );
         setState(() {
           _videos = prevResult?.value;
           _isLoaded = true;

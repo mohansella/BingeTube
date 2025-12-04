@@ -9,7 +9,7 @@ import 'package:riverpod/riverpod.dart';
 
 enum ConfigKey<T> {
   themeMode<ThemeMode>(
-    ThemeMode.system,
+    ThemeMode.dark,
     ConfigSerializer.fromThemeMode,
     ConfigSerializer.toThemeMode,
   ),
