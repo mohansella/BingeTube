@@ -38,7 +38,6 @@ class YoutubeApi {
     if (response.statusCode == 200) {
       ApiKeyUtil.addQuota(ref, .searchChannel, 100);
       final data = json.decode(response.body);
-
       final items = (data['items'] as List?) ?? [];
       return items.map((item) => YouTubeChannel.fromJson(item)).toList();
     } else {
@@ -46,25 +45,32 @@ class YoutubeApi {
     }
   }
 
-  static Future<List<YouTubeVideo>?> searchYouTubeVideos(
-    String query,
+  static Future<List<YouTubeVideo>?> searchVideos(
+    WidgetRef ref,
     String apiKey,
+    String query,
   ) async {
     final url = Uri.parse(
       'https://www.googleapis.com/youtube/v3/search'
       '?part=snippet'
       '&q=${Uri.encodeQueryComponent(query)}'
       '&type=video'
-      '&maxResults=10'
+      '&maxResults=50'
       '&key=$apiKey',
     );
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      ApiKeyUtil.addQuota(ref, .searchVideo, 100);
       final data = json.decode(response.body);
       final items = (data['items'] as List?) ?? [];
-      return items.map((item) => YouTubeVideo.fromJson(item)).toList();
+      return items
+          .where((item) {
+            return item['id']['kind'] == 'youtube#video';
+          })
+          .map((item) => YouTubeVideo.fromJson(item))
+          .toList();
     } else {
       return null;
     }

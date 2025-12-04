@@ -1,13 +1,10 @@
 import 'package:bingetube/core/config/configuration.dart';
-import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/search/widgets/search_channel.dart';
+import 'package:bingetube/pages/search/widgets/search_video.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:logging/logging.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
-  static final Logger _logger = LogManager.getLogger('SearchPage');
-
   const SearchPage({super.key});
 
   @override
@@ -73,8 +70,26 @@ class SearchPageState extends ConsumerState<SearchPage>
             TabBar(
               controller: _tabController,
               tabs: [
-                Tab(text: 'Channels'),
-                Tab(text: 'Videos'),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 8),
+                      Text('Channels'),
+                    ],
+                  ),
+                ),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.ondemand_video),
+                      SizedBox(width: 8),
+                      Text('Videos'),
+                    ],
+                  ),
+                ),
               ],
             ),
             Expanded(
@@ -82,7 +97,7 @@ class SearchPageState extends ConsumerState<SearchPage>
                 controller: _tabController,
                 children: [
                   SearchChannelWidget(_searchQuery),
-                  _SearchVideoPage(apiKey: apiKey, query: _searchQuery),
+                  SearchVideoWidget(_searchQuery),
                 ],
               ),
             ),
@@ -99,34 +114,5 @@ class SearchPageState extends ConsumerState<SearchPage>
         ],
       ),
     );
-  }
-}
-
-class _SearchVideoPage extends ConsumerStatefulWidget {
-  final String? query;
-  final String apiKey;
-
-  const _SearchVideoPage({required this.apiKey, required this.query});
-
-  @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      _SearchVideoPageState();
-}
-
-class _SearchVideoPageState extends ConsumerState<_SearchVideoPage> {
-  @override
-  Widget build(BuildContext context) {
-    if (widget.query?.isEmpty ?? true) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 24),
-        child: Text(
-          'Search videos to add to your collection',
-          textAlign: .center,
-        ),
-      );
-    } else {
-      SearchPage._logger.info('Video Search: ${widget.query}');
-      return Text('search video for result: ${widget.query}');
-    }
   }
 }
