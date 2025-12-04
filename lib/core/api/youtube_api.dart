@@ -26,7 +26,7 @@ class YoutubeApi {
       '?part=snippet'
       '&q=${Uri.encodeQueryComponent(query)}'
       '&type=channel'
-      '&maxResults=10'
+      '&maxResults=50'
       '&key=$apiKey',
     );
 
