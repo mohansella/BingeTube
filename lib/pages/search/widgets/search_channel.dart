@@ -48,7 +48,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var text = 'loading...';
+    var text = '';
     if (!_isValidQuery) {
       text = 'Search channels to add to your collection';
     } else if (_isLoaded) {
@@ -68,13 +68,16 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
                     child: InkWell(
                       onTap: () {},
                       child: ListTile(
+                        leading: CircleAvatar(
+                          foregroundImage: NetworkImage(channel.thumbnailUrl),
+                        ),
                         title: Text(channel.title),
                         subtitle: Text(
-                          '@${channel.id} * ${channel.description}',
+                          channel.description,
                           maxLines: 2,
                           overflow: .ellipsis,
+                          style: TextStyle(fontWeight: .w300),
                         ),
-                        leading: Image.network(channel.thumbnailUrl),
                         mouseCursor: SystemMouseCursors.click,
                       ),
                     ),
@@ -87,10 +90,26 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 24),
-      child: Text(text, textAlign: .center),
-    );
+    if (text.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: .center,
+          children: [
+            Text('Loading...'),
+            SizedBox(height: 16),
+            FractionallySizedBox(
+              widthFactor: 0.4,
+              child: LinearProgressIndicator(),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: Text(text, textAlign: .center),
+      );
+    }
   }
 
   void processRequest(String? query) async {
