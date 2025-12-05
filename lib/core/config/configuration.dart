@@ -91,7 +91,7 @@ class ConfigStore {
     var lcache = await _instance._storage.readAll();
     _instance._cache.addAll(lcache);
     _instance._initialized = true;
-    _logger.info('loaded ConfigStore : $lcache');
+    _logger.info('loaded ConfigStore : ${lcache.keys}');
   }
 
   factory ConfigStore() {
