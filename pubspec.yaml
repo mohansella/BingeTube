@@ -45,8 +45,8 @@ dependencies:
   timeago: ^3.7.1
   timeago_flutter: ^3.7.0
   timezone: ^0.10.1
-  drift: ^2.29.0
-  drift_flutter: ^0.2.7
+  drift: ^2.30.0
+  drift_flutter: ^0.2.8
   path_provider: ^2.1.5
 
 dev_dependencies:
@@ -55,7 +55,7 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
   build_runner: ^2.10.4
-  drift_dev: ^2.29.0
+  drift_dev: ^2.30.0
 
 flutter_launcher_icons:
   android: true
