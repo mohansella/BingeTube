@@ -11,7 +11,16 @@ class Database extends _$Database {
 
   static final _database = Database._internal();
   factory Database() => _database;
-  Database._internal() : super(driftDatabase(name: 'database'));
+  Database._internal()
+    : super(
+        driftDatabase(
+          name: 'database',
+          web: DriftWebOptions(
+            sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+            driftWorker: Uri.parse('drift_worker.js'),
+          ),
+        ),
+      );
 
   @override
   int get schemaVersion => 1;
