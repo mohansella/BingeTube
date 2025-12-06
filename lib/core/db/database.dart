@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:logging/logging.dart';
 
-part 'database.g.dart';
+part '../../generated/core/db/database.g.dart';
 
 @DriftDatabase(tables: [VideoMeta, VideoSnippet, VideoThumbnail])
 class Database extends _$Database {
