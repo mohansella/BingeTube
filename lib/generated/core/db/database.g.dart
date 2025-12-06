@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'database.dart';
+part of '../../../core/db/database.dart';
 
 // ignore_for_file: type=lint
 class $VideoMetaTable extends VideoMeta
