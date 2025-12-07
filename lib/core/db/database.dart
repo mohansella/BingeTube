@@ -1,3 +1,7 @@
+import 'package:bingetube/core/db/tables/binge.dart';
+import 'package:bingetube/core/db/tables/channels.dart';
+import 'package:bingetube/core/db/tables/search.dart';
+import 'package:bingetube/core/db/tables/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -5,7 +9,39 @@ import 'package:logging/logging.dart';
 
 part '../../generated/core/db/database.g.dart';
 
-@DriftDatabase(tables: [VideoMeta, VideoSnippet, VideoThumbnail])
+@DriftDatabase(
+  tables: [
+    //channels
+    Channels,
+    ChannelSnippets,
+    ChannelThumbnails,
+    ChannelContentDetails,
+    ChannelStatistics,
+    ChannelStatuses,
+
+    //videos
+    Videos,
+    VideoSnippets,
+    VideoThumbnails,
+    VideoContentDetails,
+    VideoStatuses,
+    VideoStatistics,
+    VideoProgress,
+
+    //search
+    ChannelSearches,
+    ChannelSearchVsChannels,
+    VideoSearches,
+    VideoSearchVsVideos,
+
+    //binge
+    Series,
+    SeriesVsVideos,
+    Collections,
+    CollectionVsSeries,
+    PersonalCollections,
+  ],
+)
 class Database extends _$Database {
   static final Logger _logger = LogManager.getLogger('Database');
 
@@ -26,52 +62,18 @@ class Database extends _$Database {
   int get schemaVersion => 1;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-    beforeOpen: (OpeningDetails openDetails) async {
-      await customStatement('PRAGMA foreign_keys = ON');
-      _logger.info(
-        'opening database version:${openDetails.versionNow} before:${openDetails.versionBefore}',
-      );
-    },
-    onCreate: (Migrator m) async {
-      _logger.info('creating tables');
-      await m.createAll();
-    },
-  );
-}
+  MigrationStrategy get migration =>
+      MigrationStrategy(beforeOpen: listenOpen, onCreate: listenFirstTimeOpen);
 
-@TableIndex(name: 'index_etag', columns: {#etag})
-class VideoMeta extends Table {
-  TextColumn get id => text()();
-  TextColumn get etag => text()();
+  Future<void> listenFirstTimeOpen(Migrator m) async {
+    _logger.info('creating tables');
+    await m.createAll();
+  }
 
-  @override
-  Set<Column> get primaryKey => {id};
-}
-
-class VideoSnippet extends Table {
-  TextColumn get id => text().references(VideoMeta, #id)();
-
-  DateTimeColumn get publishedAt => dateTime()();
-  TextColumn get channelId => text()();
-  TextColumn get title => text()();
-  TextColumn get description => text()();
-  TextColumn get channelTitle => text()();
-  TextColumn get liveBroadcastContent => text()();
-
-  @override
-  Set<Column> get primaryKey => {id};
-}
-
-class VideoThumbnail extends Table {
-  TextColumn get id => text().references(VideoMeta, #id)();
-
-  TextColumn get defaultUrl => text()();
-  TextColumn get mediumUrl => text()();
-  TextColumn get highUrl => text()();
-  TextColumn get standardUrl => text().nullable()();
-  TextColumn get maxresUrl => text().nullable()();
-
-  @override
-  Set<Column> get primaryKey => {id};
+  Future<void> listenOpen(OpeningDetails openDetails) async {
+    await customStatement('PRAGMA foreign_keys = ON');
+    _logger.info(
+      'opened database. version:${openDetails.versionNow} before:${openDetails.versionBefore}',
+    );
+  }
 }
