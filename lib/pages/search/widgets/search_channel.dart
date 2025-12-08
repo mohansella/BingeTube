@@ -130,7 +130,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
         'Initiating channel search for query: $query',
       );
       final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
-      final channels = await YoutubeApi.searchChannels(ref, apiKey, query);
+      final channels = await YoutubeApi.searchChannelsOld(ref, apiKey, query);
       SearchChannelWidget._logger.info(
         'Found: ${channels?.length ?? -1} channels for query: $query',
       );
