@@ -46,9 +46,9 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
   late final GeneratedColumn<String> etag = GeneratedColumn<String>(
     'etag',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   @override
   List<GeneratedColumn> get $columns => [createdAt, updatedAt, id, etag];
@@ -86,8 +86,6 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
       );
-    } else if (isInserting) {
-      context.missing(_etagMeta);
     }
     return context;
   }
@@ -113,7 +111,7 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
       etag: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
-      )!,
+      ),
     );
   }
 
@@ -127,12 +125,12 @@ class Channel extends DataClass implements Insertable<Channel> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String id;
-  final String etag;
+  final String? etag;
   const Channel({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
-    required this.etag,
+    this.etag,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -140,7 +138,9 @@ class Channel extends DataClass implements Insertable<Channel> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
-    map['etag'] = Variable<String>(etag);
+    if (!nullToAbsent || etag != null) {
+      map['etag'] = Variable<String>(etag);
+    }
     return map;
   }
 
@@ -149,7 +149,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       id: Value(id),
-      etag: Value(etag),
+      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
     );
   }
 
@@ -162,7 +162,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
-      etag: serializer.fromJson<String>(json['etag']),
+      etag: serializer.fromJson<String?>(json['etag']),
     );
   }
   @override
@@ -172,7 +172,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
-      'etag': serializer.toJson<String>(etag),
+      'etag': serializer.toJson<String?>(etag),
     };
   }
 
@@ -180,12 +180,12 @@ class Channel extends DataClass implements Insertable<Channel> {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? id,
-    String? etag,
+    Value<String?> etag = const Value.absent(),
   }) => Channel(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
-    etag: etag ?? this.etag,
+    etag: etag.present ? etag.value : this.etag,
   );
   Channel copyWithCompanion(ChannelsCompanion data) {
     return Channel(
@@ -223,7 +223,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<String> id;
-  final Value<String> etag;
+  final Value<String?> etag;
   final Value<int> rowid;
   const ChannelsCompanion({
     this.createdAt = const Value.absent(),
@@ -236,10 +236,9 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     required String id,
-    required String etag,
+    this.etag = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       etag = Value(etag);
+  }) : id = Value(id);
   static Insertable<Channel> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -260,7 +259,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<String>? id,
-    Value<String>? etag,
+    Value<String?>? etag,
     Value<int>? rowid,
   }) {
     return ChannelsCompanion(
@@ -2528,9 +2527,9 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
   late final GeneratedColumn<String> etag = GeneratedColumn<String>(
     'etag',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _channelIdMeta = const VerificationMeta(
     'channelId',
@@ -2588,8 +2587,6 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
       );
-    } else if (isInserting) {
-      context.missing(_etagMeta);
     }
     if (data.containsKey('channel_id')) {
       context.handle(
@@ -2623,7 +2620,7 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
       etag: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
-      )!,
+      ),
       channelId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}channel_id'],
@@ -2641,13 +2638,13 @@ class Video extends DataClass implements Insertable<Video> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String id;
-  final String etag;
+  final String? etag;
   final String channelId;
   const Video({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
-    required this.etag,
+    this.etag,
     required this.channelId,
   });
   @override
@@ -2656,7 +2653,9 @@ class Video extends DataClass implements Insertable<Video> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
-    map['etag'] = Variable<String>(etag);
+    if (!nullToAbsent || etag != null) {
+      map['etag'] = Variable<String>(etag);
+    }
     map['channel_id'] = Variable<String>(channelId);
     return map;
   }
@@ -2666,7 +2665,7 @@ class Video extends DataClass implements Insertable<Video> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       id: Value(id),
-      etag: Value(etag),
+      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
       channelId: Value(channelId),
     );
   }
@@ -2680,7 +2679,7 @@ class Video extends DataClass implements Insertable<Video> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
-      etag: serializer.fromJson<String>(json['etag']),
+      etag: serializer.fromJson<String?>(json['etag']),
       channelId: serializer.fromJson<String>(json['channelId']),
     );
   }
@@ -2691,7 +2690,7 @@ class Video extends DataClass implements Insertable<Video> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
-      'etag': serializer.toJson<String>(etag),
+      'etag': serializer.toJson<String?>(etag),
       'channelId': serializer.toJson<String>(channelId),
     };
   }
@@ -2700,13 +2699,13 @@ class Video extends DataClass implements Insertable<Video> {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? id,
-    String? etag,
+    Value<String?> etag = const Value.absent(),
     String? channelId,
   }) => Video(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
-    etag: etag ?? this.etag,
+    etag: etag.present ? etag.value : this.etag,
     channelId: channelId ?? this.channelId,
   );
   Video copyWithCompanion(VideosCompanion data) {
@@ -2748,7 +2747,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<String> id;
-  final Value<String> etag;
+  final Value<String?> etag;
   final Value<String> channelId;
   final Value<int> rowid;
   const VideosCompanion({
@@ -2763,11 +2762,10 @@ class VideosCompanion extends UpdateCompanion<Video> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     required String id,
-    required String etag,
+    this.etag = const Value.absent(),
     required String channelId,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       etag = Value(etag),
        channelId = Value(channelId);
   static Insertable<Video> custom({
     Expression<DateTime>? createdAt,
@@ -2791,7 +2789,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<String>? id,
-    Value<String>? etag,
+    Value<String?>? etag,
     Value<String>? channelId,
     Value<int>? rowid,
   }) {
@@ -8295,6 +8293,7 @@ abstract class _$Database extends GeneratedDatabase {
     'VideoSearchesIndexQuery',
     'CREATE INDEX VideoSearchesIndexQuery ON video_searches ("query")',
   );
+  late final ChannelsDao channelsDao = ChannelsDao(this as Database);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8334,7 +8333,7 @@ typedef $$ChannelsTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       required String id,
-      required String etag,
+      Value<String?> etag,
       Value<int> rowid,
     });
 typedef $$ChannelsTableUpdateCompanionBuilder =
@@ -8342,7 +8341,7 @@ typedef $$ChannelsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<String> id,
-      Value<String> etag,
+      Value<String?> etag,
       Value<int> rowid,
     });
 
@@ -8984,7 +8983,7 @@ class $$ChannelsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
-                Value<String> etag = const Value.absent(),
+                Value<String?> etag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelsCompanion(
                 createdAt: createdAt,
@@ -8998,7 +8997,7 @@ class $$ChannelsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
-                required String etag,
+                Value<String?> etag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelsCompanion.insert(
                 createdAt: createdAt,
@@ -11004,7 +11003,7 @@ typedef $$VideosTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       required String id,
-      required String etag,
+      Value<String?> etag,
       required String channelId,
       Value<int> rowid,
     });
@@ -11013,7 +11012,7 @@ typedef $$VideosTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<String> id,
-      Value<String> etag,
+      Value<String?> etag,
       Value<String> channelId,
       Value<int> rowid,
     });
@@ -11793,7 +11792,7 @@ class $$VideosTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
-                Value<String> etag = const Value.absent(),
+                Value<String?> etag = const Value.absent(),
                 Value<String> channelId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideosCompanion(
@@ -11809,7 +11808,7 @@ class $$VideosTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
-                required String etag,
+                Value<String?> etag = const Value.absent(),
                 required String channelId,
                 Value<int> rowid = const Value.absent(),
               }) => VideosCompanion.insert(

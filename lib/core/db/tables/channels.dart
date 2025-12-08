@@ -4,7 +4,7 @@ import 'package:bingetube/core/db/tables/mixins.dart';
 @TableIndex(name: 'ChannelsIndexETag', columns: {#etag})
 class Channels extends Table with TableTimedMixin {
   late final id = text()();
-  late final etag = text()();
+  late final etag = text().nullable()();
 
   @override
   get primaryKey => {id};
