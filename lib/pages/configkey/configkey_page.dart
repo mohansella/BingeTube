@@ -172,6 +172,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   }
 
   void _onDelete(BuildContext context) {
+    ConfigKeyPage._logger.warning('Api Key Deleted');
     _textController.clear();
     ref.read(ConfigProviders.apiKeyMeta.notifier).remove();
     setState(() {
@@ -183,13 +184,17 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   num _validateId = 0;
   Future<void> _validate(BuildContext context) async {
     var currValidateId = ++_validateId;
-    var result = await YoutubeApi.validateYouTubeApiKey(_textController.text);
+    var result = await YoutubeApi.validateYouTubeApiKey(
+      ref,
+      _textController.text,
+    );
     if (_validateId == currValidateId && context.mounted) {
       Navigator.pop(context);
-      if (result) {
+      if (result.isSuccess()) {
         _saveApiKey();
       } else {
-        CustomDialog.show(context, 'Validation Failed', 'Okay', null);
+        final message = result.exceptionOrNull()?.toString() ?? '';
+        CustomDialog.show(context, 'Validation Failed', 'Okay', Text(message));
       }
     }
   }
@@ -203,14 +208,15 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
         'existing key configured with quota:${oldMeta.quotaSections}',
       );
       final quotaSection = oldMeta.quotaSections;
-      quotaSection[.validateKey] = 1 + (quotaSection[ApiKeyQuotaType.validateKey] ?? 0);
+      quotaSection[.validateKey] =
+          1 + (quotaSection[ApiKeyQuotaType.validateKey] ?? 0);
       newMeta = oldMeta.copyWith(
         apiKey: newKey,
         status: ApiKeyStatus.keyValid,
         lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
         lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
         nextQuotaResetMillis: ApiKeyMeta.nextQuotaReset(),
-        quotaSections: quotaSection
+        quotaSections: quotaSection,
       );
     } else {
       ConfigKeyPage._logger.info('configuring new key');

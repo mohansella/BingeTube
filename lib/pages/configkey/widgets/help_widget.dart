@@ -109,7 +109,8 @@ class ConfigKeyHelpWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .center,
+              mainAxisAlignment: .center,
               children: [
                 Icon(
                   Icons.security_rounded,
