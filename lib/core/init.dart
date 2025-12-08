@@ -5,7 +5,7 @@ import 'package:timezone/data/latest.dart' as tz;
 sealed class CoreInit {
   static bool _isInitialized = false;
 
-  static initAll() async {
+  static Future<void> initAll() async {
     if (_isInitialized) return;
 
     //initialize secure storage

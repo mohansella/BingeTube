@@ -1,3 +1,4 @@
+import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/tables/binge.dart';
 import 'package:bingetube/core/db/tables/channels.dart';
 import 'package:bingetube/core/db/tables/search.dart';
@@ -41,6 +42,7 @@ part '../../generated/core/db/database.g.dart';
     CollectionVsSeries,
     PersonalCollections,
   ],
+  daos: [ChannelsDao],
 )
 class Database extends _$Database {
   static final Logger _logger = LogManager.getLogger('Database');
