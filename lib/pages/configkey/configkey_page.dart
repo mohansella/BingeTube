@@ -184,7 +184,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
   num _validateId = 0;
   Future<void> _validate(BuildContext context) async {
     var currValidateId = ++_validateId;
-    var result = await YoutubeApi.validateYouTubeApiKey(
+    var result = await YoutubeApi.validateKey(
       ref,
       _textController.text,
     );
