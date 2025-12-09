@@ -50,8 +50,17 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _setagMeta = const VerificationMeta('setag');
   @override
-  List<GeneratedColumn> get $columns => [createdAt, updatedAt, id, etag];
+  late final GeneratedColumn<String> setag = GeneratedColumn<String>(
+    'setag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [createdAt, updatedAt, id, etag, setag];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -87,6 +96,12 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
       );
     }
+    if (data.containsKey('setag')) {
+      context.handle(
+        _setagMeta,
+        setag.isAcceptableOrUnknown(data['setag']!, _setagMeta),
+      );
+    }
     return context;
   }
 
@@ -112,6 +127,10 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
       ),
+      setag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}setag'],
+      ),
     );
   }
 
@@ -126,11 +145,13 @@ class Channel extends DataClass implements Insertable<Channel> {
   final DateTime updatedAt;
   final String id;
   final String? etag;
+  final String? setag;
   const Channel({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
     this.etag,
+    this.setag,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -141,6 +162,9 @@ class Channel extends DataClass implements Insertable<Channel> {
     if (!nullToAbsent || etag != null) {
       map['etag'] = Variable<String>(etag);
     }
+    if (!nullToAbsent || setag != null) {
+      map['setag'] = Variable<String>(setag);
+    }
     return map;
   }
 
@@ -150,6 +174,9 @@ class Channel extends DataClass implements Insertable<Channel> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      setag: setag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setag),
     );
   }
 
@@ -163,6 +190,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       etag: serializer.fromJson<String?>(json['etag']),
+      setag: serializer.fromJson<String?>(json['setag']),
     );
   }
   @override
@@ -173,6 +201,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'etag': serializer.toJson<String?>(etag),
+      'setag': serializer.toJson<String?>(setag),
     };
   }
 
@@ -181,11 +210,13 @@ class Channel extends DataClass implements Insertable<Channel> {
     DateTime? updatedAt,
     String? id,
     Value<String?> etag = const Value.absent(),
+    Value<String?> setag = const Value.absent(),
   }) => Channel(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     etag: etag.present ? etag.value : this.etag,
+    setag: setag.present ? setag.value : this.setag,
   );
   Channel copyWithCompanion(ChannelsCompanion data) {
     return Channel(
@@ -193,6 +224,7 @@ class Channel extends DataClass implements Insertable<Channel> {
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       etag: data.etag.present ? data.etag.value : this.etag,
+      setag: data.setag.present ? data.setag.value : this.setag,
     );
   }
 
@@ -202,13 +234,14 @@ class Channel extends DataClass implements Insertable<Channel> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
-          ..write('etag: $etag')
+          ..write('etag: $etag, ')
+          ..write('setag: $setag')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, etag);
+  int get hashCode => Object.hash(createdAt, updatedAt, id, etag, setag);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -216,7 +249,8 @@ class Channel extends DataClass implements Insertable<Channel> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
-          other.etag == this.etag);
+          other.etag == this.etag &&
+          other.setag == this.setag);
 }
 
 class ChannelsCompanion extends UpdateCompanion<Channel> {
@@ -224,12 +258,14 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
   final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String?> etag;
+  final Value<String?> setag;
   final Value<int> rowid;
   const ChannelsCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.etag = const Value.absent(),
+    this.setag = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChannelsCompanion.insert({
@@ -237,6 +273,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     this.updatedAt = const Value.absent(),
     required String id,
     this.etag = const Value.absent(),
+    this.setag = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<Channel> custom({
@@ -244,6 +281,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? etag,
+    Expression<String>? setag,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -251,6 +289,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (etag != null) 'etag': etag,
+      if (setag != null) 'setag': setag,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -260,6 +299,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String?>? etag,
+    Value<String?>? setag,
     Value<int>? rowid,
   }) {
     return ChannelsCompanion(
@@ -267,6 +307,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       etag: etag ?? this.etag,
+      setag: setag ?? this.setag,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -286,6 +327,9 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
     if (etag.present) {
       map['etag'] = Variable<String>(etag.value);
     }
+    if (setag.present) {
+      map['setag'] = Variable<String>(setag.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -299,6 +343,7 @@ class ChannelsCompanion extends UpdateCompanion<Channel> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('etag: $etag, ')
+          ..write('setag: $setag, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1514,17 +1559,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _commentCountMeta = const VerificationMeta(
-    'commentCount',
-  );
-  @override
-  late final GeneratedColumn<int> commentCount = GeneratedColumn<int>(
-    'comment_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _subscriberCountMeta = const VerificationMeta(
     'subscriberCount',
   );
@@ -1567,7 +1601,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
     updatedAt,
     id,
     viewCount,
-    commentCount,
     subscriberCount,
     hiddenSubscriberCount,
     videoCount,
@@ -1608,17 +1641,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
       );
     } else if (isInserting) {
       context.missing(_viewCountMeta);
-    }
-    if (data.containsKey('comment_count')) {
-      context.handle(
-        _commentCountMeta,
-        commentCount.isAcceptableOrUnknown(
-          data['comment_count']!,
-          _commentCountMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_commentCountMeta);
     }
     if (data.containsKey('subscriber_count')) {
       context.handle(
@@ -1675,10 +1697,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
         DriftSqlType.int,
         data['${effectivePrefix}view_count'],
       )!,
-      commentCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}comment_count'],
-      )!,
       subscriberCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}subscriber_count'],
@@ -1706,7 +1724,6 @@ class ChannelStatistic extends DataClass
   final DateTime updatedAt;
   final String id;
   final int viewCount;
-  final int commentCount;
   final int subscriberCount;
   final bool hiddenSubscriberCount;
   final int videoCount;
@@ -1715,7 +1732,6 @@ class ChannelStatistic extends DataClass
     required this.updatedAt,
     required this.id,
     required this.viewCount,
-    required this.commentCount,
     required this.subscriberCount,
     required this.hiddenSubscriberCount,
     required this.videoCount,
@@ -1727,7 +1743,6 @@ class ChannelStatistic extends DataClass
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['view_count'] = Variable<int>(viewCount);
-    map['comment_count'] = Variable<int>(commentCount);
     map['subscriber_count'] = Variable<int>(subscriberCount);
     map['hidden_subscriber_count'] = Variable<bool>(hiddenSubscriberCount);
     map['video_count'] = Variable<int>(videoCount);
@@ -1740,7 +1755,6 @@ class ChannelStatistic extends DataClass
       updatedAt: Value(updatedAt),
       id: Value(id),
       viewCount: Value(viewCount),
-      commentCount: Value(commentCount),
       subscriberCount: Value(subscriberCount),
       hiddenSubscriberCount: Value(hiddenSubscriberCount),
       videoCount: Value(videoCount),
@@ -1757,7 +1771,6 @@ class ChannelStatistic extends DataClass
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       viewCount: serializer.fromJson<int>(json['viewCount']),
-      commentCount: serializer.fromJson<int>(json['commentCount']),
       subscriberCount: serializer.fromJson<int>(json['subscriberCount']),
       hiddenSubscriberCount: serializer.fromJson<bool>(
         json['hiddenSubscriberCount'],
@@ -1773,7 +1786,6 @@ class ChannelStatistic extends DataClass
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'viewCount': serializer.toJson<int>(viewCount),
-      'commentCount': serializer.toJson<int>(commentCount),
       'subscriberCount': serializer.toJson<int>(subscriberCount),
       'hiddenSubscriberCount': serializer.toJson<bool>(hiddenSubscriberCount),
       'videoCount': serializer.toJson<int>(videoCount),
@@ -1785,7 +1797,6 @@ class ChannelStatistic extends DataClass
     DateTime? updatedAt,
     String? id,
     int? viewCount,
-    int? commentCount,
     int? subscriberCount,
     bool? hiddenSubscriberCount,
     int? videoCount,
@@ -1794,7 +1805,6 @@ class ChannelStatistic extends DataClass
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     viewCount: viewCount ?? this.viewCount,
-    commentCount: commentCount ?? this.commentCount,
     subscriberCount: subscriberCount ?? this.subscriberCount,
     hiddenSubscriberCount: hiddenSubscriberCount ?? this.hiddenSubscriberCount,
     videoCount: videoCount ?? this.videoCount,
@@ -1805,9 +1815,6 @@ class ChannelStatistic extends DataClass
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       viewCount: data.viewCount.present ? data.viewCount.value : this.viewCount,
-      commentCount: data.commentCount.present
-          ? data.commentCount.value
-          : this.commentCount,
       subscriberCount: data.subscriberCount.present
           ? data.subscriberCount.value
           : this.subscriberCount,
@@ -1827,7 +1834,6 @@ class ChannelStatistic extends DataClass
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('viewCount: $viewCount, ')
-          ..write('commentCount: $commentCount, ')
           ..write('subscriberCount: $subscriberCount, ')
           ..write('hiddenSubscriberCount: $hiddenSubscriberCount, ')
           ..write('videoCount: $videoCount')
@@ -1841,7 +1847,6 @@ class ChannelStatistic extends DataClass
     updatedAt,
     id,
     viewCount,
-    commentCount,
     subscriberCount,
     hiddenSubscriberCount,
     videoCount,
@@ -1854,7 +1859,6 @@ class ChannelStatistic extends DataClass
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.viewCount == this.viewCount &&
-          other.commentCount == this.commentCount &&
           other.subscriberCount == this.subscriberCount &&
           other.hiddenSubscriberCount == this.hiddenSubscriberCount &&
           other.videoCount == this.videoCount);
@@ -1865,7 +1869,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
   final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<int> viewCount;
-  final Value<int> commentCount;
   final Value<int> subscriberCount;
   final Value<bool> hiddenSubscriberCount;
   final Value<int> videoCount;
@@ -1875,7 +1878,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.viewCount = const Value.absent(),
-    this.commentCount = const Value.absent(),
     this.subscriberCount = const Value.absent(),
     this.hiddenSubscriberCount = const Value.absent(),
     this.videoCount = const Value.absent(),
@@ -1886,14 +1888,12 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     this.updatedAt = const Value.absent(),
     required String id,
     required int viewCount,
-    required int commentCount,
     required int subscriberCount,
     required bool hiddenSubscriberCount,
     required int videoCount,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        viewCount = Value(viewCount),
-       commentCount = Value(commentCount),
        subscriberCount = Value(subscriberCount),
        hiddenSubscriberCount = Value(hiddenSubscriberCount),
        videoCount = Value(videoCount);
@@ -1902,7 +1902,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<int>? viewCount,
-    Expression<int>? commentCount,
     Expression<int>? subscriberCount,
     Expression<bool>? hiddenSubscriberCount,
     Expression<int>? videoCount,
@@ -1913,7 +1912,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (viewCount != null) 'view_count': viewCount,
-      if (commentCount != null) 'comment_count': commentCount,
       if (subscriberCount != null) 'subscriber_count': subscriberCount,
       if (hiddenSubscriberCount != null)
         'hidden_subscriber_count': hiddenSubscriberCount,
@@ -1927,7 +1925,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<int>? viewCount,
-    Value<int>? commentCount,
     Value<int>? subscriberCount,
     Value<bool>? hiddenSubscriberCount,
     Value<int>? videoCount,
@@ -1938,7 +1935,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       viewCount: viewCount ?? this.viewCount,
-      commentCount: commentCount ?? this.commentCount,
       subscriberCount: subscriberCount ?? this.subscriberCount,
       hiddenSubscriberCount:
           hiddenSubscriberCount ?? this.hiddenSubscriberCount,
@@ -1961,9 +1957,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     }
     if (viewCount.present) {
       map['view_count'] = Variable<int>(viewCount.value);
-    }
-    if (commentCount.present) {
-      map['comment_count'] = Variable<int>(commentCount.value);
     }
     if (subscriberCount.present) {
       map['subscriber_count'] = Variable<int>(subscriberCount.value);
@@ -1989,7 +1982,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('viewCount: $viewCount, ')
-          ..write('commentCount: $commentCount, ')
           ..write('subscriberCount: $subscriberCount, ')
           ..write('hiddenSubscriberCount: $hiddenSubscriberCount, ')
           ..write('videoCount: $videoCount, ')
@@ -2085,9 +2077,9 @@ class $ChannelStatusesTable extends ChannelStatuses
   late final GeneratedColumn<bool> madeForKids = GeneratedColumn<bool>(
     'made_for_kids',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.bool,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("made_for_kids" IN (0, 1))',
     ),
@@ -2169,8 +2161,6 @@ class $ChannelStatusesTable extends ChannelStatuses
           _madeForKidsMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_madeForKidsMeta);
     }
     return context;
   }
@@ -2208,7 +2198,7 @@ class $ChannelStatusesTable extends ChannelStatuses
       madeForKids: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}made_for_kids'],
-      )!,
+      ),
     );
   }
 
@@ -2225,7 +2215,7 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   final String privacyStatus;
   final bool isLinked;
   final String longUploadsStatus;
-  final bool madeForKids;
+  final bool? madeForKids;
   const ChannelStatuse({
     required this.createdAt,
     required this.updatedAt,
@@ -2233,7 +2223,7 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
     required this.privacyStatus,
     required this.isLinked,
     required this.longUploadsStatus,
-    required this.madeForKids,
+    this.madeForKids,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2244,7 +2234,9 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
     map['privacy_status'] = Variable<String>(privacyStatus);
     map['is_linked'] = Variable<bool>(isLinked);
     map['long_uploads_status'] = Variable<String>(longUploadsStatus);
-    map['made_for_kids'] = Variable<bool>(madeForKids);
+    if (!nullToAbsent || madeForKids != null) {
+      map['made_for_kids'] = Variable<bool>(madeForKids);
+    }
     return map;
   }
 
@@ -2256,7 +2248,9 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
       privacyStatus: Value(privacyStatus),
       isLinked: Value(isLinked),
       longUploadsStatus: Value(longUploadsStatus),
-      madeForKids: Value(madeForKids),
+      madeForKids: madeForKids == null && nullToAbsent
+          ? const Value.absent()
+          : Value(madeForKids),
     );
   }
 
@@ -2272,7 +2266,7 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
       privacyStatus: serializer.fromJson<String>(json['privacyStatus']),
       isLinked: serializer.fromJson<bool>(json['isLinked']),
       longUploadsStatus: serializer.fromJson<String>(json['longUploadsStatus']),
-      madeForKids: serializer.fromJson<bool>(json['madeForKids']),
+      madeForKids: serializer.fromJson<bool?>(json['madeForKids']),
     );
   }
   @override
@@ -2285,7 +2279,7 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
       'privacyStatus': serializer.toJson<String>(privacyStatus),
       'isLinked': serializer.toJson<bool>(isLinked),
       'longUploadsStatus': serializer.toJson<String>(longUploadsStatus),
-      'madeForKids': serializer.toJson<bool>(madeForKids),
+      'madeForKids': serializer.toJson<bool?>(madeForKids),
     };
   }
 
@@ -2296,7 +2290,7 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
     String? privacyStatus,
     bool? isLinked,
     String? longUploadsStatus,
-    bool? madeForKids,
+    Value<bool?> madeForKids = const Value.absent(),
   }) => ChannelStatuse(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -2304,7 +2298,7 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
     privacyStatus: privacyStatus ?? this.privacyStatus,
     isLinked: isLinked ?? this.isLinked,
     longUploadsStatus: longUploadsStatus ?? this.longUploadsStatus,
-    madeForKids: madeForKids ?? this.madeForKids,
+    madeForKids: madeForKids.present ? madeForKids.value : this.madeForKids,
   );
   ChannelStatuse copyWithCompanion(ChannelStatusesCompanion data) {
     return ChannelStatuse(
@@ -2368,7 +2362,7 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
   final Value<String> privacyStatus;
   final Value<bool> isLinked;
   final Value<String> longUploadsStatus;
-  final Value<bool> madeForKids;
+  final Value<bool?> madeForKids;
   final Value<int> rowid;
   const ChannelStatusesCompanion({
     this.createdAt = const Value.absent(),
@@ -2387,13 +2381,12 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
     required String privacyStatus,
     required bool isLinked,
     required String longUploadsStatus,
-    required bool madeForKids,
+    this.madeForKids = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        privacyStatus = Value(privacyStatus),
        isLinked = Value(isLinked),
-       longUploadsStatus = Value(longUploadsStatus),
-       madeForKids = Value(madeForKids);
+       longUploadsStatus = Value(longUploadsStatus);
   static Insertable<ChannelStatuse> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -2423,7 +2416,7 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
     Value<String>? privacyStatus,
     Value<bool>? isLinked,
     Value<String>? longUploadsStatus,
-    Value<bool>? madeForKids,
+    Value<bool?>? madeForKids,
     Value<int>? rowid,
   }) {
     return ChannelStatusesCompanion(
@@ -8334,6 +8327,7 @@ typedef $$ChannelsTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       required String id,
       Value<String?> etag,
+      Value<String?> setag,
       Value<int> rowid,
     });
 typedef $$ChannelsTableUpdateCompanionBuilder =
@@ -8342,6 +8336,7 @@ typedef $$ChannelsTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<String> id,
       Value<String?> etag,
+      Value<String?> setag,
       Value<int> rowid,
     });
 
@@ -8531,6 +8526,11 @@ class $$ChannelsTableFilterComposer
 
   ColumnFilters<String> get etag => $composableBuilder(
     column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get setag => $composableBuilder(
+    column: $table.setag,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8740,6 +8740,11 @@ class $$ChannelsTableOrderingComposer
     column: $table.etag,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get setag => $composableBuilder(
+    column: $table.setag,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ChannelsTableAnnotationComposer
@@ -8762,6 +8767,9 @@ class $$ChannelsTableAnnotationComposer
 
   GeneratedColumn<String> get etag =>
       $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<String> get setag =>
+      $composableBuilder(column: $table.setag, builder: (column) => column);
 
   Expression<T> channelSnippetsRefs<T extends Object>(
     Expression<T> Function($$ChannelSnippetsTableAnnotationComposer a) f,
@@ -8984,12 +8992,14 @@ class $$ChannelsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String?> etag = const Value.absent(),
+                Value<String?> setag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelsCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
                 etag: etag,
+                setag: setag,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8998,12 +9008,14 @@ class $$ChannelsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 Value<String?> etag = const Value.absent(),
+                Value<String?> setag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelsCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
                 etag: etag,
+                setag: setag,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -10239,7 +10251,6 @@ typedef $$ChannelStatisticsTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       required String id,
       required int viewCount,
-      required int commentCount,
       required int subscriberCount,
       required bool hiddenSubscriberCount,
       required int videoCount,
@@ -10251,7 +10262,6 @@ typedef $$ChannelStatisticsTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<String> id,
       Value<int> viewCount,
-      Value<int> commentCount,
       Value<int> subscriberCount,
       Value<bool> hiddenSubscriberCount,
       Value<int> videoCount,
@@ -10307,11 +10317,6 @@ class $$ChannelStatisticsTableFilterComposer
 
   ColumnFilters<int> get viewCount => $composableBuilder(
     column: $table.viewCount,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get commentCount => $composableBuilder(
-    column: $table.commentCount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10378,11 +10383,6 @@ class $$ChannelStatisticsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get commentCount => $composableBuilder(
-    column: $table.commentCount,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get subscriberCount => $composableBuilder(
     column: $table.subscriberCount,
     builder: (column) => ColumnOrderings(column),
@@ -10439,11 +10439,6 @@ class $$ChannelStatisticsTableAnnotationComposer
 
   GeneratedColumn<int> get viewCount =>
       $composableBuilder(column: $table.viewCount, builder: (column) => column);
-
-  GeneratedColumn<int> get commentCount => $composableBuilder(
-    column: $table.commentCount,
-    builder: (column) => column,
-  );
 
   GeneratedColumn<int> get subscriberCount => $composableBuilder(
     column: $table.subscriberCount,
@@ -10521,7 +10516,6 @@ class $$ChannelStatisticsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<int> viewCount = const Value.absent(),
-                Value<int> commentCount = const Value.absent(),
                 Value<int> subscriberCount = const Value.absent(),
                 Value<bool> hiddenSubscriberCount = const Value.absent(),
                 Value<int> videoCount = const Value.absent(),
@@ -10531,7 +10525,6 @@ class $$ChannelStatisticsTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 viewCount: viewCount,
-                commentCount: commentCount,
                 subscriberCount: subscriberCount,
                 hiddenSubscriberCount: hiddenSubscriberCount,
                 videoCount: videoCount,
@@ -10543,7 +10536,6 @@ class $$ChannelStatisticsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required int viewCount,
-                required int commentCount,
                 required int subscriberCount,
                 required bool hiddenSubscriberCount,
                 required int videoCount,
@@ -10553,7 +10545,6 @@ class $$ChannelStatisticsTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 viewCount: viewCount,
-                commentCount: commentCount,
                 subscriberCount: subscriberCount,
                 hiddenSubscriberCount: hiddenSubscriberCount,
                 videoCount: videoCount,
@@ -10637,7 +10628,7 @@ typedef $$ChannelStatusesTableCreateCompanionBuilder =
       required String privacyStatus,
       required bool isLinked,
       required String longUploadsStatus,
-      required bool madeForKids,
+      Value<bool?> madeForKids,
       Value<int> rowid,
     });
 typedef $$ChannelStatusesTableUpdateCompanionBuilder =
@@ -10648,7 +10639,7 @@ typedef $$ChannelStatusesTableUpdateCompanionBuilder =
       Value<String> privacyStatus,
       Value<bool> isLinked,
       Value<String> longUploadsStatus,
-      Value<bool> madeForKids,
+      Value<bool?> madeForKids,
       Value<int> rowid,
     });
 
@@ -10896,7 +10887,7 @@ class $$ChannelStatusesTableTableManager
                 Value<String> privacyStatus = const Value.absent(),
                 Value<bool> isLinked = const Value.absent(),
                 Value<String> longUploadsStatus = const Value.absent(),
-                Value<bool> madeForKids = const Value.absent(),
+                Value<bool?> madeForKids = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelStatusesCompanion(
                 createdAt: createdAt,
@@ -10916,7 +10907,7 @@ class $$ChannelStatusesTableTableManager
                 required String privacyStatus,
                 required bool isLinked,
                 required String longUploadsStatus,
-                required bool madeForKids,
+                Value<bool?> madeForKids = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelStatusesCompanion.insert(
                 createdAt: createdAt,

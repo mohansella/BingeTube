@@ -5,6 +5,7 @@ import 'package:bingetube/core/db/tables/mixins.dart';
 class Channels extends Table with TableTimedMixin {
   late final id = text()();
   late final etag = text().nullable()();
+  late final setag = text().nullable()();
 
   @override
   get primaryKey => {id};
@@ -38,7 +39,6 @@ class ChannelContentDetails extends Table with TableTimedMixin {
 class ChannelStatistics extends Table with TableTimedMixin {
   late final id = text().references(Channels, #id)();
   late final viewCount = integer()();
-  late final commentCount = integer()();
   late final subscriberCount = integer()();
   late final hiddenSubscriberCount = boolean()();
   late final videoCount = integer()();
@@ -52,7 +52,7 @@ class ChannelStatuses extends Table with TableTimedMixin {
   late final privacyStatus = text()();
   late final isLinked = boolean()();
   late final longUploadsStatus = text()();
-  late final madeForKids = boolean()();
+  late final madeForKids = boolean().nullable()();
 
   @override
   get primaryKey => {id};

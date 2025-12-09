@@ -1,6 +1,5 @@
 import 'package:bingetube/core/api/youtube_api.dart';
-import 'package:bingetube/core/api/youtube_data.dart';
-import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,9 +19,9 @@ class SearchChannelWidget extends ConsumerStatefulWidget {
 class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
   bool _isValidQuery = false;
   bool _isLoaded = false;
-  List<YouTubeChannel>? _channels;
+  List<ChannelModel>? _channels;
 
-  static MapEntry<String, List<YouTubeChannel>?>? prevResult;
+  static MapEntry<String, List<ChannelModel>?>? prevResult;
 
   _SearchChannelState();
 
@@ -69,11 +68,13 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
                       onTap: () {},
                       child: ListTile(
                         leading: CircleAvatar(
-                          foregroundImage: NetworkImage(channel.thumbnailUrl),
+                          foregroundImage: NetworkImage(
+                            channel.thumbnails.defaultUrl,
+                          ),
                         ),
-                        title: Text(channel.title),
+                        title: Text(channel.snippet.title),
                         subtitle: Text(
-                          channel.description,
+                          channel.snippet.description,
                           maxLines: 2,
                           overflow: .ellipsis,
                           style: TextStyle(fontWeight: .w300),
@@ -129,12 +130,9 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       SearchChannelWidget._logger.info(
         'Initiating channel search for query: $query',
       );
-      final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
-      final channels = await YoutubeApi.searchChannelsOld(ref, apiKey, query);
-      SearchChannelWidget._logger.info(
-        'Found: ${channels?.length ?? -1} channels for query: $query',
-      );
+      final channelsResult = await YoutubeApi.searchChannels(ref, query);
       if (query == widget.query) {
+        final channels = channelsResult.fold((l) => l, (e) => null);
         setState(() {
           _channels = channels;
           _isLoaded = true;

@@ -39,7 +39,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     await into(channels).insert(channel, mode: InsertMode.insertOrReplace);
   }
 
-  Future<void> insertChannelInfo(
+  Future<void> insertChannelModel(
     ChannelsCompanion channel,
     ChannelSnippetsCompanion snippet,
     ChannelThumbnailsCompanion thumbnails,
@@ -67,7 +67,9 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     });
   }
 
-  Future<ChannelModel?> getChannelById(String channelId) async {
+  Future<List<ChannelModel>> getChannelModelByIds(
+    List<String> channelIds,
+  ) async {
     final c = channels;
     final s = channelSnippets;
     final t = channelThumbnails;
@@ -81,20 +83,24 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       leftOuterJoin(cd, cd.id.equalsExp(c.id)),
       leftOuterJoin(st, st.id.equalsExp(c.id)),
       leftOuterJoin(cs, cs.id.equalsExp(c.id)),
-    ]);
+    ])..where(c.id.isIn(channelIds));
 
-    query.where(c.id.equals(channelId));
+    final results = await query.get();
+    return results.map((result) {
+      return ChannelModel(
+        channel: result.readTable(c),
+        snippet: result.readTable(s),
+        thumbnails: result.readTable(t),
+        contentDetails: result.readTable(cd),
+        statistics: result.readTable(st),
+        status: result.readTable(cs),
+      );
+    }).toList();
+  }
 
-    final result = await query.getSingleOrNull();
-    if (result == null) return null;
-
-    return ChannelModel(
-      channel: result.readTable(c),
-      snippet: result.readTable(s),
-      thumbnails: result.readTable(t),
-      contentDetails: result.readTable(cd),
-      statistics: result.readTable(st),
-      status: result.readTable(cs),
-    );
+  Future<List<Channel>> getChannelsById(List<String> channelIds) async {
+    final query = select(channels);
+    query.where((id) => channels.id.isIn(channelIds));
+    return await query.get();
   }
 }
