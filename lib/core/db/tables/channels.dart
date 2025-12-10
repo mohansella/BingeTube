@@ -15,6 +15,9 @@ class ChannelSnippets extends Table with TableTimedMixin {
   late final id = text().references(Channels, #id)();
   late final title = text()();
   late final description = text()();
+
+  @override
+  get primaryKey => {id};
 }
 
 class ChannelThumbnails extends Table with TableTimedMixin {
