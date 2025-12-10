@@ -57,36 +57,31 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       } else if (channels.isEmpty) {
         text = 'No results found';
       } else {
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Column(
-              children: [
-                ...channels.map((channel) {
-                  return Card(
-                    child: InkWell(
-                      onTap: () {},
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          foregroundImage: NetworkImage(
-                            channel.thumbnails.defaultUrl,
-                          ),
-                        ),
-                        title: Text(channel.snippet.title),
-                        subtitle: Text(
-                          channel.snippet.description,
-                          maxLines: 2,
-                          overflow: .ellipsis,
-                          style: TextStyle(fontWeight: .w300),
-                        ),
-                        mouseCursor: SystemMouseCursors.click,
-                      ),
+        return ListView.builder(
+          itemCount: channels.length,
+          itemBuilder: (context, index) {
+            final channel = channels[index];
+            return Card(
+              child: InkWell(
+                onTap: () {},
+                child: ListTile(
+                  leading: CircleAvatar(
+                    foregroundImage: NetworkImage(
+                      channel.thumbnails.defaultUrl,
                     ),
-                  );
-                }),
-              ],
-            ),
-          ),
+                  ),
+                  title: Text(channel.snippet.title),
+                  subtitle: Text(
+                    channel.snippet.description,
+                    maxLines: 2,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w300),
+                  ),
+                  mouseCursor: SystemMouseCursors.click,
+                ),
+              ),
+            );
+          },
         );
       }
     }
