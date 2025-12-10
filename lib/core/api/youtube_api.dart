@@ -54,10 +54,12 @@ class YoutubeApi {
 
     //0. build channelIds vs Etag
     Map<String, String> channelIdVsSEtag = {};
+    List<String> channelIds = [];
     for (var item in items) {
       final channelId = item['id']['channelId'] as String;
       final etag = item['etag'] as String;
       channelIdVsSEtag[channelId] = etag;
+      channelIds.add(channelId);
     }
     _logger.info('found ${channelIdVsSEtag.length} unique channel ids');
 
@@ -95,9 +97,7 @@ class YoutubeApi {
       await forceSyncChannelsWithSETag(ref, channelsNeedUpdate);
     }
 
-    final channelModels = await channelsDao.getChannelModelByIds(
-      channelIdVsSEtag.keys.toList(),
-    );
+    final channelModels = await channelsDao.getChannelModelByIds(channelIds);
     _logger.info('returning ${channelModels.length} models');
     return Success(channelModels);
   }
