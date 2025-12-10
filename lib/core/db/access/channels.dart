@@ -78,11 +78,11 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     final cs = channelStatuses;
 
     final query = select(c).join([
-      leftOuterJoin(s, s.id.equalsExp(c.id)),
-      leftOuterJoin(t, t.id.equalsExp(c.id)),
-      leftOuterJoin(cd, cd.id.equalsExp(c.id)),
-      leftOuterJoin(st, st.id.equalsExp(c.id)),
-      leftOuterJoin(cs, cs.id.equalsExp(c.id)),
+      innerJoin(s, s.id.equalsExp(c.id)),
+      innerJoin(t, t.id.equalsExp(c.id)),
+      innerJoin(cd, cd.id.equalsExp(c.id)),
+      innerJoin(st, st.id.equalsExp(c.id)),
+      innerJoin(cs, cs.id.equalsExp(c.id)),
     ])..where(c.id.isIn(channelIds));
 
     final results = await query.get();
