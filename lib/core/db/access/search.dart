@@ -35,11 +35,13 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
       );
       await deleteQuery.go();
 
+      var priority = 1;
       for (final channelId in channelIds) {
         await into(channelSearchVsChannels).insert(
           ChannelSearchVsChannelsCompanion(
             searchId: Value(searchId),
             channelId: Value(channelId),
+            priority: Value(priority++),
           ),
         );
       }
@@ -60,6 +62,7 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
       ),
     ]);
     query.where(channelSearches.query.equals(searchValue));
+    query.orderBy([OrderingTerm.asc(channelSearchVsChannels.priority)]);
     final results = await query.get();
     if (results.isEmpty) {
       return null;

@@ -5883,8 +5883,19 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
       'REFERENCES channels (id)',
     ),
   );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
-  List<GeneratedColumn> get $columns => [searchId, channelId];
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [searchId, channelId, priority];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5913,6 +5924,14 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
     } else if (isInserting) {
       context.missing(_channelIdMeta);
     }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
+    }
     return context;
   }
 
@@ -5930,6 +5949,10 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
         DriftSqlType.string,
         data['${effectivePrefix}channel_id'],
       )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
     );
   }
 
@@ -5943,15 +5966,18 @@ class ChannelSearchVsChannel extends DataClass
     implements Insertable<ChannelSearchVsChannel> {
   final int searchId;
   final String channelId;
+  final int priority;
   const ChannelSearchVsChannel({
     required this.searchId,
     required this.channelId,
+    required this.priority,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['search_id'] = Variable<int>(searchId);
     map['channel_id'] = Variable<String>(channelId);
+    map['priority'] = Variable<int>(priority);
     return map;
   }
 
@@ -5959,6 +5985,7 @@ class ChannelSearchVsChannel extends DataClass
     return ChannelSearchVsChannelsCompanion(
       searchId: Value(searchId),
       channelId: Value(channelId),
+      priority: Value(priority),
     );
   }
 
@@ -5970,6 +5997,7 @@ class ChannelSearchVsChannel extends DataClass
     return ChannelSearchVsChannel(
       searchId: serializer.fromJson<int>(json['searchId']),
       channelId: serializer.fromJson<String>(json['channelId']),
+      priority: serializer.fromJson<int>(json['priority']),
     );
   }
   @override
@@ -5978,20 +6006,26 @@ class ChannelSearchVsChannel extends DataClass
     return <String, dynamic>{
       'searchId': serializer.toJson<int>(searchId),
       'channelId': serializer.toJson<String>(channelId),
+      'priority': serializer.toJson<int>(priority),
     };
   }
 
-  ChannelSearchVsChannel copyWith({int? searchId, String? channelId}) =>
-      ChannelSearchVsChannel(
-        searchId: searchId ?? this.searchId,
-        channelId: channelId ?? this.channelId,
-      );
+  ChannelSearchVsChannel copyWith({
+    int? searchId,
+    String? channelId,
+    int? priority,
+  }) => ChannelSearchVsChannel(
+    searchId: searchId ?? this.searchId,
+    channelId: channelId ?? this.channelId,
+    priority: priority ?? this.priority,
+  );
   ChannelSearchVsChannel copyWithCompanion(
     ChannelSearchVsChannelsCompanion data,
   ) {
     return ChannelSearchVsChannel(
       searchId: data.searchId.present ? data.searchId.value : this.searchId,
       channelId: data.channelId.present ? data.channelId.value : this.channelId,
+      priority: data.priority.present ? data.priority.value : this.priority,
     );
   }
 
@@ -5999,45 +6033,53 @@ class ChannelSearchVsChannel extends DataClass
   String toString() {
     return (StringBuffer('ChannelSearchVsChannel(')
           ..write('searchId: $searchId, ')
-          ..write('channelId: $channelId')
+          ..write('channelId: $channelId, ')
+          ..write('priority: $priority')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(searchId, channelId);
+  int get hashCode => Object.hash(searchId, channelId, priority);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChannelSearchVsChannel &&
           other.searchId == this.searchId &&
-          other.channelId == this.channelId);
+          other.channelId == this.channelId &&
+          other.priority == this.priority);
 }
 
 class ChannelSearchVsChannelsCompanion
     extends UpdateCompanion<ChannelSearchVsChannel> {
   final Value<int> searchId;
   final Value<String> channelId;
+  final Value<int> priority;
   final Value<int> rowid;
   const ChannelSearchVsChannelsCompanion({
     this.searchId = const Value.absent(),
     this.channelId = const Value.absent(),
+    this.priority = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChannelSearchVsChannelsCompanion.insert({
     required int searchId,
     required String channelId,
+    required int priority,
     this.rowid = const Value.absent(),
   }) : searchId = Value(searchId),
-       channelId = Value(channelId);
+       channelId = Value(channelId),
+       priority = Value(priority);
   static Insertable<ChannelSearchVsChannel> custom({
     Expression<int>? searchId,
     Expression<String>? channelId,
+    Expression<int>? priority,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (searchId != null) 'search_id': searchId,
       if (channelId != null) 'channel_id': channelId,
+      if (priority != null) 'priority': priority,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6045,11 +6087,13 @@ class ChannelSearchVsChannelsCompanion
   ChannelSearchVsChannelsCompanion copyWith({
     Value<int>? searchId,
     Value<String>? channelId,
+    Value<int>? priority,
     Value<int>? rowid,
   }) {
     return ChannelSearchVsChannelsCompanion(
       searchId: searchId ?? this.searchId,
       channelId: channelId ?? this.channelId,
+      priority: priority ?? this.priority,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6063,6 +6107,9 @@ class ChannelSearchVsChannelsCompanion
     if (channelId.present) {
       map['channel_id'] = Variable<String>(channelId.value);
     }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6074,6 +6121,7 @@ class ChannelSearchVsChannelsCompanion
     return (StringBuffer('ChannelSearchVsChannelsCompanion(')
           ..write('searchId: $searchId, ')
           ..write('channelId: $channelId, ')
+          ..write('priority: $priority, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -14536,12 +14584,14 @@ typedef $$ChannelSearchVsChannelsTableCreateCompanionBuilder =
     ChannelSearchVsChannelsCompanion Function({
       required int searchId,
       required String channelId,
+      required int priority,
       Value<int> rowid,
     });
 typedef $$ChannelSearchVsChannelsTableUpdateCompanionBuilder =
     ChannelSearchVsChannelsCompanion Function({
       Value<int> searchId,
       Value<String> channelId,
+      Value<int> priority,
       Value<int> rowid,
     });
 
@@ -14612,6 +14662,11 @@ class $$ChannelSearchVsChannelsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$ChannelSearchesTableFilterComposer get searchId {
     final $$ChannelSearchesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -14668,6 +14723,11 @@ class $$ChannelSearchVsChannelsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ChannelSearchesTableOrderingComposer get searchId {
     final $$ChannelSearchesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -14724,6 +14784,9 @@ class $$ChannelSearchVsChannelsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
   $$ChannelSearchesTableAnnotationComposer get searchId {
     final $$ChannelSearchesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -14812,20 +14875,24 @@ class $$ChannelSearchVsChannelsTableTableManager
               ({
                 Value<int> searchId = const Value.absent(),
                 Value<String> channelId = const Value.absent(),
+                Value<int> priority = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelSearchVsChannelsCompanion(
                 searchId: searchId,
                 channelId: channelId,
+                priority: priority,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required int searchId,
                 required String channelId,
+                required int priority,
                 Value<int> rowid = const Value.absent(),
               }) => ChannelSearchVsChannelsCompanion.insert(
                 searchId: searchId,
                 channelId: channelId,
+                priority: priority,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
