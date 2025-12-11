@@ -12,6 +12,7 @@ class ChannelSearches extends Table with TableTimedMixin {
 class ChannelSearchVsChannels extends Table {
   late final searchId = integer().references(ChannelSearches, #id)();
   late final channelId = text().references(Channels, #id)();
+  late final priority = integer()();
 
   @override
   get primaryKey => {searchId, channelId};
