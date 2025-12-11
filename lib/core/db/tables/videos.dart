@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 class Videos extends Table with TableTimedMixin {
   late final id = text()();
   late final etag = text().nullable()();
+  late final setag = text().nullable()();
   late final channelId = text().references(Channels, #id)();
 
   @override

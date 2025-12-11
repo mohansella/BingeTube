@@ -22,8 +22,6 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
   bool _isLoaded = false;
   List<YouTubeVideo>? _videos;
 
-  static MapEntry<String, List<YouTubeVideo>?>? prevResult;
-
   _SearchVideoState();
 
   @override
@@ -139,38 +137,28 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
   }
 
   void processRequest(String? query) async {
-    if (query != null) {
+    if (query == null) {
+      return;
+    }
+    setState(() {
+      _isValidQuery = true;
+    });
+
+    SearchVideoWidget._logger.info('Initiating video search for query: $query');
+    final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
+    final videos = await YoutubeApi.searchVideos(ref, apiKey, query);
+    SearchVideoWidget._logger.info(
+      'Found: ${videos?.length ?? -1} videos for query: $query',
+    );
+    if (query == widget.query) {
       setState(() {
-        _isValidQuery = true;
+        _videos = videos;
+        _isLoaded = true;
       });
-
-      if (query == prevResult?.key && prevResult?.value != null) {
-        setState(() {
-          _videos = prevResult?.value;
-          _isLoaded = true;
-        });
-        return;
-      }
-
+    } else {
       SearchVideoWidget._logger.info(
-        'Initiating video search for query: $query',
+        'Ignored search results due to user moved to next query:${widget.query} from:$query',
       );
-      final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
-      final videos = await YoutubeApi.searchVideos(ref, apiKey, query);
-      SearchVideoWidget._logger.info(
-        'Found: ${videos?.length ?? -1} videos for query: $query',
-      );
-      if (query == widget.query) {
-        setState(() {
-          _videos = videos;
-          _isLoaded = true;
-          prevResult = MapEntry(query, videos);
-        });
-      } else {
-        SearchVideoWidget._logger.info(
-          'Ignored search results due to user moved to next query:${widget.query} from:$query',
-        );
-      }
     }
   }
 }

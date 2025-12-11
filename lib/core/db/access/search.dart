@@ -5,7 +5,14 @@ import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/search.g.dart';
 
-@DriftAccessor(tables: [ChannelSearches, ChannelSearchVsChannels])
+@DriftAccessor(
+  tables: [
+    ChannelSearches,
+    ChannelSearchVsChannels,
+    VideoSearches,
+    VideoSearchVsVideos,
+  ],
+)
 class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
   SearchDao(super.attachedDatabase);
 
