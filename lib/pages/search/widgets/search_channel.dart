@@ -21,8 +21,6 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
   bool _isLoaded = false;
   List<ChannelModel>? _channels;
 
-  static MapEntry<String, List<ChannelModel>?>? prevResult;
-
   _SearchChannelState();
 
   @override
@@ -114,14 +112,6 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
         _isValidQuery = true;
       });
 
-      if (query == prevResult?.key && prevResult?.value != null) {
-        setState(() {
-          _channels = prevResult?.value;
-          _isLoaded = true;
-        });
-        return;
-      }
-
       SearchChannelWidget._logger.info(
         'Initiating channel search for query: $query',
       );
@@ -131,7 +121,6 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
         setState(() {
           _channels = channels;
           _isLoaded = true;
-          prevResult = MapEntry(query, channels);
         });
       } else {
         SearchChannelWidget._logger.info(
