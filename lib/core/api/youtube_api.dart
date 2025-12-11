@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:bingetube/core/constants/constants.dart';
 import 'package:bingetube/core/db/access/channels.dart';
+import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:drift/drift.dart';
 import 'package:http/http.dart';
@@ -41,10 +43,24 @@ class YoutubeApi {
     WidgetRef ref,
     String query,
   ) async {
+    final database = Database();
+    final searchDao = SearchDao(database);
+    final channelSearchSize = PageSizeConstants.channelEntriesInSearchPage;
+
+    final searchResults = await searchDao.getChannelModels(query);
+    if (searchResults != null) {
+      _logger.info(
+        'found ${searchResults.length} results in db for query: $query. expecting size: $channelSearchSize',
+      );
+      if (searchResults.length >= channelSearchSize) {
+        return Success(searchResults);
+      }
+    }
+
     final jsonResult = await _getJsonResponse(
       ref,
       'SearchChannels',
-      '$_searchBaseUrl?key=API_KEY&part=snippet&type=channel&maxResults=50&q=${Uri.encodeQueryComponent(query)}',
+      '$_searchBaseUrl?key=API_KEY&part=snippet&type=channel&maxResults=$channelSearchSize&q=${Uri.encodeQueryComponent(query)}',
     );
     if (jsonResult.isError()) {
       return Failure(jsonResult.exceptionOrNull()!);
@@ -63,7 +79,6 @@ class YoutubeApi {
     }
     _logger.info('found ${channelIdVsSEtag.length} unique channel ids');
 
-    final database = Database();
     final channelsDao = ChannelsDao(database);
 
     //1. find channelIds that needs update
@@ -96,6 +111,7 @@ class YoutubeApi {
     if (channelsNeedUpdate.isNotEmpty) {
       await forceSyncChannelsWithSETag(ref, channelsNeedUpdate);
     }
+    searchDao.insertChannelSearch(query, channelIds);
 
     final channelModels = await channelsDao.getChannelModelByIds(channelIds);
     _logger.info('returning ${channelModels.length} models');
