@@ -27,6 +27,7 @@ class VideoSearches extends Table with TableTimedMixin {
 class VideoSearchVsVideos extends Table {
   late final searchId = integer().references(VideoSearches, #id)();
   late final videoId = text().references(Videos, #id)();
+  late final priority = integer()();
 
   @override
   get primaryKey => {searchId, videoId};

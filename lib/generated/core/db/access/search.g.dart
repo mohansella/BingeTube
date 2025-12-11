@@ -8,4 +8,8 @@ mixin _$SearchDaoMixin on DatabaseAccessor<Database> {
   $ChannelsTable get channels => attachedDatabase.channels;
   $ChannelSearchVsChannelsTable get channelSearchVsChannels =>
       attachedDatabase.channelSearchVsChannels;
+  $VideoSearchesTable get videoSearches => attachedDatabase.videoSearches;
+  $VideosTable get videos => attachedDatabase.videos;
+  $VideoSearchVsVideosTable get videoSearchVsVideos =>
+      attachedDatabase.videoSearchVsVideos;
 }

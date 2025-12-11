@@ -2524,6 +2524,15 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _setagMeta = const VerificationMeta('setag');
+  @override
+  late final GeneratedColumn<String> setag = GeneratedColumn<String>(
+    'setag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _channelIdMeta = const VerificationMeta(
     'channelId',
   );
@@ -2544,6 +2553,7 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
     updatedAt,
     id,
     etag,
+    setag,
     channelId,
   ];
   @override
@@ -2581,6 +2591,12 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
       );
     }
+    if (data.containsKey('setag')) {
+      context.handle(
+        _setagMeta,
+        setag.isAcceptableOrUnknown(data['setag']!, _setagMeta),
+      );
+    }
     if (data.containsKey('channel_id')) {
       context.handle(
         _channelIdMeta,
@@ -2614,6 +2630,10 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
       ),
+      setag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}setag'],
+      ),
       channelId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}channel_id'],
@@ -2632,12 +2652,14 @@ class Video extends DataClass implements Insertable<Video> {
   final DateTime updatedAt;
   final String id;
   final String? etag;
+  final String? setag;
   final String channelId;
   const Video({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
     this.etag,
+    this.setag,
     required this.channelId,
   });
   @override
@@ -2649,6 +2671,9 @@ class Video extends DataClass implements Insertable<Video> {
     if (!nullToAbsent || etag != null) {
       map['etag'] = Variable<String>(etag);
     }
+    if (!nullToAbsent || setag != null) {
+      map['setag'] = Variable<String>(setag);
+    }
     map['channel_id'] = Variable<String>(channelId);
     return map;
   }
@@ -2659,6 +2684,9 @@ class Video extends DataClass implements Insertable<Video> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      setag: setag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setag),
       channelId: Value(channelId),
     );
   }
@@ -2673,6 +2701,7 @@ class Video extends DataClass implements Insertable<Video> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       etag: serializer.fromJson<String?>(json['etag']),
+      setag: serializer.fromJson<String?>(json['setag']),
       channelId: serializer.fromJson<String>(json['channelId']),
     );
   }
@@ -2684,6 +2713,7 @@ class Video extends DataClass implements Insertable<Video> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'etag': serializer.toJson<String?>(etag),
+      'setag': serializer.toJson<String?>(setag),
       'channelId': serializer.toJson<String>(channelId),
     };
   }
@@ -2693,12 +2723,14 @@ class Video extends DataClass implements Insertable<Video> {
     DateTime? updatedAt,
     String? id,
     Value<String?> etag = const Value.absent(),
+    Value<String?> setag = const Value.absent(),
     String? channelId,
   }) => Video(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     etag: etag.present ? etag.value : this.etag,
+    setag: setag.present ? setag.value : this.setag,
     channelId: channelId ?? this.channelId,
   );
   Video copyWithCompanion(VideosCompanion data) {
@@ -2707,6 +2739,7 @@ class Video extends DataClass implements Insertable<Video> {
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       etag: data.etag.present ? data.etag.value : this.etag,
+      setag: data.setag.present ? data.setag.value : this.setag,
       channelId: data.channelId.present ? data.channelId.value : this.channelId,
     );
   }
@@ -2718,13 +2751,15 @@ class Video extends DataClass implements Insertable<Video> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('etag: $etag, ')
+          ..write('setag: $setag, ')
           ..write('channelId: $channelId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, etag, channelId);
+  int get hashCode =>
+      Object.hash(createdAt, updatedAt, id, etag, setag, channelId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2733,6 +2768,7 @@ class Video extends DataClass implements Insertable<Video> {
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.etag == this.etag &&
+          other.setag == this.setag &&
           other.channelId == this.channelId);
 }
 
@@ -2741,6 +2777,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
   final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String?> etag;
+  final Value<String?> setag;
   final Value<String> channelId;
   final Value<int> rowid;
   const VideosCompanion({
@@ -2748,6 +2785,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.etag = const Value.absent(),
+    this.setag = const Value.absent(),
     this.channelId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -2756,6 +2794,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
     this.updatedAt = const Value.absent(),
     required String id,
     this.etag = const Value.absent(),
+    this.setag = const Value.absent(),
     required String channelId,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -2765,6 +2804,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
     Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? etag,
+    Expression<String>? setag,
     Expression<String>? channelId,
     Expression<int>? rowid,
   }) {
@@ -2773,6 +2813,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (etag != null) 'etag': etag,
+      if (setag != null) 'setag': setag,
       if (channelId != null) 'channel_id': channelId,
       if (rowid != null) 'rowid': rowid,
     });
@@ -2783,6 +2824,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
     Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String?>? etag,
+    Value<String?>? setag,
     Value<String>? channelId,
     Value<int>? rowid,
   }) {
@@ -2791,6 +2833,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       etag: etag ?? this.etag,
+      setag: setag ?? this.setag,
       channelId: channelId ?? this.channelId,
       rowid: rowid ?? this.rowid,
     );
@@ -2811,6 +2854,9 @@ class VideosCompanion extends UpdateCompanion<Video> {
     if (etag.present) {
       map['etag'] = Variable<String>(etag.value);
     }
+    if (setag.present) {
+      map['setag'] = Variable<String>(setag.value);
+    }
     if (channelId.present) {
       map['channel_id'] = Variable<String>(channelId.value);
     }
@@ -2827,6 +2873,7 @@ class VideosCompanion extends UpdateCompanion<Video> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('etag: $etag, ')
+          ..write('setag: $setag, ')
           ..write('channelId: $channelId, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -6456,8 +6503,19 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
       'REFERENCES videos (id)',
     ),
   );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
-  List<GeneratedColumn> get $columns => [searchId, videoId];
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [searchId, videoId, priority];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -6486,6 +6544,14 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
     } else if (isInserting) {
       context.missing(_videoIdMeta);
     }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
+    }
     return context;
   }
 
@@ -6503,6 +6569,10 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
         DriftSqlType.string,
         data['${effectivePrefix}video_id'],
       )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
     );
   }
 
@@ -6516,12 +6586,18 @@ class VideoSearchVsVideo extends DataClass
     implements Insertable<VideoSearchVsVideo> {
   final int searchId;
   final String videoId;
-  const VideoSearchVsVideo({required this.searchId, required this.videoId});
+  final int priority;
+  const VideoSearchVsVideo({
+    required this.searchId,
+    required this.videoId,
+    required this.priority,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['search_id'] = Variable<int>(searchId);
     map['video_id'] = Variable<String>(videoId);
+    map['priority'] = Variable<int>(priority);
     return map;
   }
 
@@ -6529,6 +6605,7 @@ class VideoSearchVsVideo extends DataClass
     return VideoSearchVsVideosCompanion(
       searchId: Value(searchId),
       videoId: Value(videoId),
+      priority: Value(priority),
     );
   }
 
@@ -6540,6 +6617,7 @@ class VideoSearchVsVideo extends DataClass
     return VideoSearchVsVideo(
       searchId: serializer.fromJson<int>(json['searchId']),
       videoId: serializer.fromJson<String>(json['videoId']),
+      priority: serializer.fromJson<int>(json['priority']),
     );
   }
   @override
@@ -6548,18 +6626,24 @@ class VideoSearchVsVideo extends DataClass
     return <String, dynamic>{
       'searchId': serializer.toJson<int>(searchId),
       'videoId': serializer.toJson<String>(videoId),
+      'priority': serializer.toJson<int>(priority),
     };
   }
 
-  VideoSearchVsVideo copyWith({int? searchId, String? videoId}) =>
-      VideoSearchVsVideo(
-        searchId: searchId ?? this.searchId,
-        videoId: videoId ?? this.videoId,
-      );
+  VideoSearchVsVideo copyWith({
+    int? searchId,
+    String? videoId,
+    int? priority,
+  }) => VideoSearchVsVideo(
+    searchId: searchId ?? this.searchId,
+    videoId: videoId ?? this.videoId,
+    priority: priority ?? this.priority,
+  );
   VideoSearchVsVideo copyWithCompanion(VideoSearchVsVideosCompanion data) {
     return VideoSearchVsVideo(
       searchId: data.searchId.present ? data.searchId.value : this.searchId,
       videoId: data.videoId.present ? data.videoId.value : this.videoId,
+      priority: data.priority.present ? data.priority.value : this.priority,
     );
   }
 
@@ -6567,44 +6651,52 @@ class VideoSearchVsVideo extends DataClass
   String toString() {
     return (StringBuffer('VideoSearchVsVideo(')
           ..write('searchId: $searchId, ')
-          ..write('videoId: $videoId')
+          ..write('videoId: $videoId, ')
+          ..write('priority: $priority')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(searchId, videoId);
+  int get hashCode => Object.hash(searchId, videoId, priority);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoSearchVsVideo &&
           other.searchId == this.searchId &&
-          other.videoId == this.videoId);
+          other.videoId == this.videoId &&
+          other.priority == this.priority);
 }
 
 class VideoSearchVsVideosCompanion extends UpdateCompanion<VideoSearchVsVideo> {
   final Value<int> searchId;
   final Value<String> videoId;
+  final Value<int> priority;
   final Value<int> rowid;
   const VideoSearchVsVideosCompanion({
     this.searchId = const Value.absent(),
     this.videoId = const Value.absent(),
+    this.priority = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   VideoSearchVsVideosCompanion.insert({
     required int searchId,
     required String videoId,
+    required int priority,
     this.rowid = const Value.absent(),
   }) : searchId = Value(searchId),
-       videoId = Value(videoId);
+       videoId = Value(videoId),
+       priority = Value(priority);
   static Insertable<VideoSearchVsVideo> custom({
     Expression<int>? searchId,
     Expression<String>? videoId,
+    Expression<int>? priority,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (searchId != null) 'search_id': searchId,
       if (videoId != null) 'video_id': videoId,
+      if (priority != null) 'priority': priority,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6612,11 +6704,13 @@ class VideoSearchVsVideosCompanion extends UpdateCompanion<VideoSearchVsVideo> {
   VideoSearchVsVideosCompanion copyWith({
     Value<int>? searchId,
     Value<String>? videoId,
+    Value<int>? priority,
     Value<int>? rowid,
   }) {
     return VideoSearchVsVideosCompanion(
       searchId: searchId ?? this.searchId,
       videoId: videoId ?? this.videoId,
+      priority: priority ?? this.priority,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6630,6 +6724,9 @@ class VideoSearchVsVideosCompanion extends UpdateCompanion<VideoSearchVsVideo> {
     if (videoId.present) {
       map['video_id'] = Variable<String>(videoId.value);
     }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -6641,6 +6738,7 @@ class VideoSearchVsVideosCompanion extends UpdateCompanion<VideoSearchVsVideo> {
     return (StringBuffer('VideoSearchVsVideosCompanion(')
           ..write('searchId: $searchId, ')
           ..write('videoId: $videoId, ')
+          ..write('priority: $priority, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -11043,6 +11141,7 @@ typedef $$VideosTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       required String id,
       Value<String?> etag,
+      Value<String?> setag,
       required String channelId,
       Value<int> rowid,
     });
@@ -11052,6 +11151,7 @@ typedef $$VideosTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<String> id,
       Value<String?> etag,
+      Value<String?> setag,
       Value<String> channelId,
       Value<int> rowid,
     });
@@ -11264,6 +11364,11 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
 
   ColumnFilters<String> get etag => $composableBuilder(
     column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get setag => $composableBuilder(
+    column: $table.setag,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11519,6 +11624,11 @@ class $$VideosTableOrderingComposer extends Composer<_$Database, $VideosTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get setag => $composableBuilder(
+    column: $table.setag,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ChannelsTableOrderingComposer get channelId {
     final $$ChannelsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -11563,6 +11673,9 @@ class $$VideosTableAnnotationComposer
 
   GeneratedColumn<String> get etag =>
       $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<String> get setag =>
+      $composableBuilder(column: $table.setag, builder: (column) => column);
 
   $$ChannelsTableAnnotationComposer get channelId {
     final $$ChannelsTableAnnotationComposer composer = $composerBuilder(
@@ -11832,6 +11945,7 @@ class $$VideosTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String?> etag = const Value.absent(),
+                Value<String?> setag = const Value.absent(),
                 Value<String> channelId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideosCompanion(
@@ -11839,6 +11953,7 @@ class $$VideosTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 etag: etag,
+                setag: setag,
                 channelId: channelId,
                 rowid: rowid,
               ),
@@ -11848,6 +11963,7 @@ class $$VideosTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 Value<String?> etag = const Value.absent(),
+                Value<String?> setag = const Value.absent(),
                 required String channelId,
                 Value<int> rowid = const Value.absent(),
               }) => VideosCompanion.insert(
@@ -11855,6 +11971,7 @@ class $$VideosTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 etag: etag,
+                setag: setag,
                 channelId: channelId,
                 rowid: rowid,
               ),
@@ -15274,12 +15391,14 @@ typedef $$VideoSearchVsVideosTableCreateCompanionBuilder =
     VideoSearchVsVideosCompanion Function({
       required int searchId,
       required String videoId,
+      required int priority,
       Value<int> rowid,
     });
 typedef $$VideoSearchVsVideosTableUpdateCompanionBuilder =
     VideoSearchVsVideosCompanion Function({
       Value<int> searchId,
       Value<String> videoId,
+      Value<int> priority,
       Value<int> rowid,
     });
 
@@ -15346,6 +15465,11 @@ class $$VideoSearchVsVideosTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$VideoSearchesTableFilterComposer get searchId {
     final $$VideoSearchesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -15402,6 +15526,11 @@ class $$VideoSearchVsVideosTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$VideoSearchesTableOrderingComposer get searchId {
     final $$VideoSearchesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -15458,6 +15587,9 @@ class $$VideoSearchVsVideosTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
   $$VideoSearchesTableAnnotationComposer get searchId {
     final $$VideoSearchesTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -15543,20 +15675,24 @@ class $$VideoSearchVsVideosTableTableManager
               ({
                 Value<int> searchId = const Value.absent(),
                 Value<String> videoId = const Value.absent(),
+                Value<int> priority = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoSearchVsVideosCompanion(
                 searchId: searchId,
                 videoId: videoId,
+                priority: priority,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required int searchId,
                 required String videoId,
+                required int priority,
                 Value<int> rowid = const Value.absent(),
               }) => VideoSearchVsVideosCompanion.insert(
                 searchId: searchId,
                 videoId: videoId,
+                priority: priority,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
