@@ -5,12 +5,7 @@ import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/search.g.dart';
 
-@DriftAccessor(
-  tables: [
-    ChannelSearches,
-    ChannelSearchVsChannels,
-  ],
-)
+@DriftAccessor(tables: [ChannelSearches, ChannelSearchVsChannels])
 class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
   SearchDao(super.attachedDatabase);
 
@@ -32,16 +27,29 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
         ),
         mode: .insertOrReplace,
       );
+
+      //delete previous mappings since new results might give different set of channels
+      final deleteQuery = delete(channelSearchVsChannels);
+      deleteQuery.where(
+        (q) => channelSearchVsChannels.searchId.equals(searchId),
+      );
+      await deleteQuery.go();
+
       for (final channelId in channelIds) {
         await into(channelSearchVsChannels).insert(
           ChannelSearchVsChannelsCompanion(
             searchId: Value(searchId),
             channelId: Value(channelId),
           ),
-          mode: .insertOrReplace,
         );
       }
     });
+  }
+
+  Future<ChannelSearche> getChannelSearch(String searchValue) async {
+    final query = select(channelSearches)
+      ..where((q) => channelSearches.query.equals(searchValue));
+    return query.getSingle();
   }
 
   Future<List<ChannelModel>?> getChannelModels(String searchValue) async {

@@ -46,13 +46,21 @@ class YoutubeApi {
     final database = Database();
     final searchDao = SearchDao(database);
     final channelSearchSize = PageSizeConstants.channelEntriesInSearchPage;
+    final nowTime = DateTime.now();
 
     final searchResults = await searchDao.getChannelModels(query);
     if (searchResults != null) {
-      _logger.info(
-        'found ${searchResults.length} results in db for query: $query. expecting size: $channelSearchSize',
+      final channelSearch = await searchDao.getChannelSearch(query);
+      final expiresAt = channelSearch.updatedAt.add(
+        CacheConstants.syncChannelSearchResultAfter,
       );
-      if (searchResults.length >= channelSearchSize) {
+      _logger.info(
+        'found ${searchResults.length} results in db for query: $query'
+        ' with updatedAt: ${channelSearch.updatedAt} and expiresAt : $expiresAt',
+      );
+      if (expiresAt.isBefore(nowTime)) {
+        _logger.info('cache expired');
+      } else if (searchResults.length >= channelSearchSize) {
         return Success(searchResults);
       }
     }
@@ -89,7 +97,7 @@ class YoutubeApi {
       channelsInDb.map((c) => MapEntry(c.id, c)),
     );
     _logger.info('channels in db found: ${channelsInDbMap.length}');
-    final cacheResetTime = DateTime.now().subtract(Duration(hours: 1));
+    final cacheResetTime = nowTime.subtract(CacheConstants.syncChannelAfter);
     final channelsNeedUpdate = {...channelIdVsSEtag}
       ..removeWhere((id, setag) {
         if (!channelsInDbMap.containsKey(id)) {
