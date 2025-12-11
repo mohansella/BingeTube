@@ -107,26 +107,28 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
   }
 
   void processRequest(String? query) async {
-    if (query != null) {
-      setState(() {
-        _isValidQuery = true;
-      });
+    if (query == null) {
+      return;
+    }
 
+    setState(() {
+      _isValidQuery = true;
+    });
+
+    SearchChannelWidget._logger.info(
+      'Initiating channel search for query: $query',
+    );
+    final channelsResult = await YoutubeApi.searchChannels(ref, query);
+    if (query == widget.query) {
+      final channels = channelsResult.fold((l) => l, (e) => null);
+      setState(() {
+        _channels = channels;
+        _isLoaded = true;
+      });
+    } else {
       SearchChannelWidget._logger.info(
-        'Initiating channel search for query: $query',
+        'Ignored search results due to user moved to next query:${widget.query} from:$query',
       );
-      final channelsResult = await YoutubeApi.searchChannels(ref, query);
-      if (query == widget.query) {
-        final channels = channelsResult.fold((l) => l, (e) => null);
-        setState(() {
-          _channels = channels;
-          _isLoaded = true;
-        });
-      } else {
-        SearchChannelWidget._logger.info(
-          'Ignored search results due to user moved to next query:${widget.query} from:$query',
-        );
-      }
     }
   }
 }
