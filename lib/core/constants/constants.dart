@@ -1,5 +1,6 @@
 sealed class PageSizeConstants {
   static final channelEntriesInSearchPage = 50;
+  static final videoEntriesInSearchPage = 50;
 }
 
 sealed class CacheConstants {

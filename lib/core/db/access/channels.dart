@@ -35,11 +35,11 @@ class ChannelModel {
 class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
   ChannelsDao(super.db);
 
-  Future<void> insertChannel(ChannelsCompanion channel) async {
-    await into(channels).insert(channel, mode: InsertMode.insertOrReplace);
+  Future<void> upsertChannel(ChannelsCompanion channel) async {
+    await into(channels).insert(channel, mode: .insertOrReplace);
   }
 
-  Future<void> insertChannelModel(
+  Future<void> upsertChannelModel(
     ChannelsCompanion channel,
     ChannelSnippetsCompanion snippet,
     ChannelThumbnailsCompanion thumbnails,
@@ -48,22 +48,14 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     ChannelStatusesCompanion status,
   ) async {
     await transaction(() async {
-      await into(channels).insert(channel, mode: InsertMode.insertOrReplace);
-      await into(
-        channelSnippets,
-      ).insert(snippet, mode: InsertMode.insertOrReplace);
-      await into(
-        channelThumbnails,
-      ).insert(thumbnails, mode: InsertMode.insertOrReplace);
+      await into(channels).insert(channel, mode: .insertOrReplace);
+      await into(channelSnippets).insert(snippet, mode: .insertOrReplace);
+      await into(channelThumbnails).insert(thumbnails, mode: .insertOrReplace);
       await into(
         channelContentDetails,
-      ).insert(contentDetails, mode: InsertMode.insertOrReplace);
-      await into(
-        channelStatistics,
-      ).insert(statistics, mode: InsertMode.insertOrReplace);
-      await into(
-        channelStatuses,
-      ).insert(status, mode: InsertMode.insertOrReplace);
+      ).insert(contentDetails, mode: .insertOrReplace);
+      await into(channelStatistics).insert(statistics, mode: .insertOrReplace);
+      await into(channelStatuses).insert(status, mode: .insertOrReplace);
     });
   }
 
@@ -105,6 +97,80 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
   Future<List<Channel>> getChannelsById(List<String> channelIds) async {
     final query = select(channels);
     query.where((id) => channels.id.isIn(channelIds));
-    return await query.get();
+    return query.get();
+  }
+
+  Future<void> upsertChannelJsonData(item, {String? setag}) async {
+    final updatedAt = Value(DateTime.now());
+    final id = Value(item['id'] as String);
+
+    //order: (channel, snippet, thumbnails, contentDetails, statistics, status)
+    final channelComp = ChannelsCompanion(
+      id: id,
+      etag: Value(item['etag']),
+      setag: setag == null ? Value.absent() : Value(setag),
+      updatedAt: updatedAt,
+    );
+
+    final snippet = item['snippet'];
+    final snippetComp = ChannelSnippetsCompanion(
+      id: id,
+      title: Value(snippet['title']),
+      description: Value(snippet['description']),
+      updatedAt: updatedAt,
+    );
+
+    final thumbnails = snippet['thumbnails'];
+    final thumbnailsComp = ChannelThumbnailsCompanion(
+      id: id,
+      defaultUrl: Value(thumbnails['default']['url']),
+      mediumUrl: Value(thumbnails['medium']['url']),
+      highUrl: Value(thumbnails['high']['url']),
+      updatedAt: updatedAt,
+    );
+
+    final playlists = item['contentDetails']['relatedPlaylists'];
+    final likePlaylist = playlists['likes'];
+    final uploadPlaylist = playlists['uploads'];
+    final contentComp = ChannelContentDetailsCompanion(
+      id: id,
+      likesPlaylist: likePlaylist == null
+          ? Value.absent()
+          : Value(likePlaylist),
+      uploadPlaylist: uploadPlaylist == null
+          ? Value.absent()
+          : Value(uploadPlaylist),
+      updatedAt: const Value.absent(),
+    );
+
+    final statistics = item['statistics'];
+    final statisticsComp = ChannelStatisticsCompanion(
+      updatedAt: updatedAt,
+      id: id,
+      viewCount: Value(int.parse(statistics['viewCount'])),
+      subscriberCount: Value(int.parse(statistics['subscriberCount'])),
+      hiddenSubscriberCount: Value(statistics['hiddenSubscriberCount']),
+      videoCount: Value(int.parse(statistics['videoCount'])),
+    );
+
+    final status = item['status'];
+    final madeForKids = status['madeForKids'];
+    final statusComp = ChannelStatusesCompanion(
+      updatedAt: updatedAt,
+      id: id,
+      privacyStatus: Value(status['privacyStatus']),
+      isLinked: Value(status['isLinked']),
+      longUploadsStatus: Value(status['longUploadsStatus']),
+      madeForKids: madeForKids == null ? Value.absent() : Value(madeForKids),
+    );
+
+    await upsertChannelModel(
+      channelComp,
+      snippetComp,
+      thumbnailsComp,
+      contentComp,
+      statisticsComp,
+      statusComp,
+    );
   }
 }

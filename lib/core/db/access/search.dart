@@ -1,4 +1,5 @@
 import 'package:bingetube/core/db/access/channels.dart';
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/tables/search.dart';
 import 'package:drift/drift.dart';
@@ -36,10 +37,8 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
       );
 
       //delete previous mappings since new results might give different set of channels
-      final deleteQuery = delete(channelSearchVsChannels);
-      deleteQuery.where(
-        (q) => channelSearchVsChannels.searchId.equals(searchId),
-      );
+      final deleteQuery = delete(channelSearchVsChannels)
+        ..where((q) => channelSearchVsChannels.searchId.equals(searchId));
       await deleteQuery.go();
 
       var priority = 1;
@@ -61,6 +60,12 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
     return query.getSingle();
   }
 
+  Future<VideoSearche> getVideoSearch(String searchValue) async {
+    final query = select(videoSearches)
+      ..where((q) => videoSearches.query.equals(searchValue));
+    return query.getSingle();
+  }
+
   Future<List<ChannelModel>?> getChannelModels(String searchValue) async {
     final query = select(channelSearches).join([
       innerJoin(
@@ -78,7 +83,63 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
     final channelIds = results
         .map((row) => row.readTable(channelSearchVsChannels).channelId)
         .toList();
-
     return ChannelsDao(attachedDatabase).getChannelModelByIds(channelIds);
+  }
+
+  Future<List<VideoModel>?> getVideoModels(String searchValue) async {
+    final query = select(videoSearches).join([
+      innerJoin(
+        videoSearchVsVideos,
+        videoSearchVsVideos.searchId.equalsExp(videoSearches.id),
+      ),
+    ]);
+    query.where(videoSearches.query.equals(searchValue));
+    query.orderBy([OrderingTerm.asc(videoSearchVsVideos.priority)]);
+    final results = await query.get();
+    if (results.isEmpty) {
+      return null;
+    }
+
+    final videoIds = results
+        .map((row) => row.readTable(videoSearchVsVideos).videoId)
+        .toList();
+    return VideosDao(attachedDatabase).getVideoModelByIds(videoIds);
+  }
+
+  Future<void> insertVideoSearch(
+    String searchValue,
+    List<String> videoIds,
+  ) async {
+    await transaction(() async {
+      final prevEntryQuery = select(videoSearches)
+        ..where((q) => videoSearches.query.equals(searchValue));
+      final prevEntry = await prevEntryQuery.getSingleOrNull();
+
+      final nowTime = Value(DateTime.now());
+      final searchId = await into(videoSearches).insert(
+        VideoSearchesCompanion(
+          id: prevEntry == null ? Value.absent() : Value(prevEntry.id),
+          query: Value(searchValue),
+          updatedAt: nowTime,
+        ),
+        mode: .insertOrReplace,
+      );
+
+      //delete previous mappings since new results might give different set of videos
+      final deleteQuery = delete(videoSearchVsVideos)
+        ..where((q) => videoSearchVsVideos.searchId.equals(searchId));
+      await deleteQuery.go();
+
+      var priority = 1;
+      for (final videoId in videoIds) {
+        await into(videoSearchVsVideos).insert(
+          VideoSearchVsVideosCompanion(
+            searchId: Value(searchId),
+            videoId: Value(videoId),
+            priority: Value(priority++),
+          ),
+        );
+      }
+    });
   }
 }
