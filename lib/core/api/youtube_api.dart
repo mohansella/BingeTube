@@ -137,35 +137,6 @@ class YoutubeApi {
     return Success(channelModels);
   }
 
-  static Future<Result<void>> forceSyncChannelsWithSETag(
-    WidgetRef ref,
-    Map<String, String> channelsVsSETag,
-  ) async {
-    final jsonResult = await _getJsonResponse(
-      ref,
-      'SyncChannels',
-      '$_channelsBaseUrl?key=API_KEY&part=contentDetails,snippet,statistics,status&id=${channelsVsSETag.keys.join(",")}',
-    );
-
-    if (jsonResult.isError()) {
-      return Failure(jsonResult.exceptionOrNull()!);
-    }
-
-    final jsonData = jsonResult.getOrThrow();
-    final items = jsonData['items'] as List;
-
-    final database = Database();
-    final channelsDao = ChannelsDao(database);
-
-    for (final item in items) {
-      String setag = channelsVsSETag[item['id'] as String]!;
-      await channelsDao.upsertChannelJsonData(item, setag: setag);
-    }
-
-    _logger.info('synchronized ${channelsVsSETag.length} channels to db');
-    return Success(Unit);
-  }
-
   static Future<Result<List<VideoModel>>> searchVideos(
     WidgetRef ref,
     String query,
@@ -286,6 +257,64 @@ class YoutubeApi {
     return Success(videoModels);
   }
 
+  static Future<Result<void>> forceSyncChannelsWithSETag(
+    WidgetRef ref,
+    Map<String, String> channelsVsSETag,
+  ) async {
+    final jsonResult = await _getJsonResponse(
+      ref,
+      'SyncChannels',
+      '$_channelsBaseUrl?key=API_KEY&part=contentDetails,snippet,statistics,status&id=${channelsVsSETag.keys.join(",")}',
+    );
+
+    if (jsonResult.isError()) {
+      return Failure(jsonResult.exceptionOrNull()!);
+    }
+
+    final jsonData = jsonResult.getOrThrow();
+    final items = jsonData['items'] as List;
+
+    final database = Database();
+    final channelsDao = ChannelsDao(database);
+
+    for (final item in items) {
+      String setag = channelsVsSETag[item['id'] as String]!;
+      await channelsDao.upsertChannelJsonData(item, setag: setag);
+    }
+
+    _logger.info('synchronized ${channelsVsSETag.length} channels to db');
+    return Success(Unit);
+  }
+
+  static Future<Result<void>> forceSyncVideosWithSETag(
+    WidgetRef ref,
+    Map<String, String> videosVsSETag,
+  ) async {
+    final jsonResult = await _getJsonResponse(
+      ref,
+      'SyncVideos',
+      '$_videosBaseUrl?key=API_KEY&part=contentDetails,snippet,statistics,status&id=${videosVsSETag.keys.join(",")}',
+    );
+
+    if (jsonResult.isError()) {
+      return Failure(jsonResult.exceptionOrNull()!);
+    }
+
+    final jsonData = jsonResult.getOrThrow();
+    final items = jsonData['items'] as List;
+
+    final database = Database();
+    final videosDao = VideosDao(database);
+
+    for (final item in items) {
+      String setag = videosVsSETag[item['id'] as String]!;
+      await videosDao.upsertVideoJsonData(item, setag: setag);
+    }
+
+    _logger.info('synchronized ${videosVsSETag.length}');
+    return Success(Unit);
+  }
+
   static Future<Result<void>> forceSyncChannels(
     WidgetRef ref,
     Set<String> channelIds,
@@ -372,34 +401,5 @@ class YoutubeApi {
       _logger.info('changing key status from:${meta.status} to keyInvalid');
       return CoreUtils.writeApiKeyMeta(ref, meta.copyWith(status: .keyInvalid));
     }
-  }
-
-  static Future<Result<void>> forceSyncVideosWithSETag(
-    WidgetRef ref,
-    Map<String, String> videosVsSETag,
-  ) async {
-    final jsonResult = await _getJsonResponse(
-      ref,
-      'SyncVideos',
-      '$_videosBaseUrl?key=API_KEY&part=contentDetails,snippet,statistics,status&id=${videosVsSETag.keys.join(",")}',
-    );
-
-    if (jsonResult.isError()) {
-      return Failure(jsonResult.exceptionOrNull()!);
-    }
-
-    final jsonData = jsonResult.getOrThrow();
-    final items = jsonData['items'] as List;
-
-    final database = Database();
-    final videosDao = VideosDao(database);
-
-    for (final item in items) {
-      String setag = videosVsSETag[item['id'] as String]!;
-      await videosDao.upsertVideoJsonData(item, setag: setag);
-    }
-
-    _logger.info('synchronized ${videosVsSETag.length}');
-    return Success(Unit);
   }
 }
