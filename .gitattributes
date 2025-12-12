@@ -1,0 +1,2 @@
+web/sqlite3.wasm filter=lfs diff=lfs merge=lfs -text
+web/drift_worker.js filter=lfs diff=lfs merge=lfs -text
