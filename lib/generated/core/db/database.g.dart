@@ -3963,6 +3963,20 @@ class $VideoContentDetailsTable extends VideoContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _licensedContentMeta = const VerificationMeta(
+    'licensedContent',
+  );
+  @override
+  late final GeneratedColumn<bool> licensedContent = GeneratedColumn<bool>(
+    'licensed_content',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("licensed_content" IN (0, 1))',
+    ),
+  );
   static const VerificationMeta _projectionMeta = const VerificationMeta(
     'projection',
   );
@@ -3983,6 +3997,7 @@ class $VideoContentDetailsTable extends VideoContentDetails
     dimension,
     definition,
     caption,
+    licensedContent,
     projection,
   ];
   @override
@@ -4046,6 +4061,17 @@ class $VideoContentDetailsTable extends VideoContentDetails
     } else if (isInserting) {
       context.missing(_captionMeta);
     }
+    if (data.containsKey('licensed_content')) {
+      context.handle(
+        _licensedContentMeta,
+        licensedContent.isAcceptableOrUnknown(
+          data['licensed_content']!,
+          _licensedContentMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_licensedContentMeta);
+    }
     if (data.containsKey('projection')) {
       context.handle(
         _projectionMeta,
@@ -4091,6 +4117,10 @@ class $VideoContentDetailsTable extends VideoContentDetails
         DriftSqlType.string,
         data['${effectivePrefix}caption'],
       )!,
+      licensedContent: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}licensed_content'],
+      )!,
       projection: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}projection'],
@@ -4113,6 +4143,7 @@ class VideoContentDetail extends DataClass
   final String dimension;
   final String definition;
   final String caption;
+  final bool licensedContent;
   final String projection;
   const VideoContentDetail({
     required this.createdAt,
@@ -4122,6 +4153,7 @@ class VideoContentDetail extends DataClass
     required this.dimension,
     required this.definition,
     required this.caption,
+    required this.licensedContent,
     required this.projection,
   });
   @override
@@ -4134,6 +4166,7 @@ class VideoContentDetail extends DataClass
     map['dimension'] = Variable<String>(dimension);
     map['definition'] = Variable<String>(definition);
     map['caption'] = Variable<String>(caption);
+    map['licensed_content'] = Variable<bool>(licensedContent);
     map['projection'] = Variable<String>(projection);
     return map;
   }
@@ -4147,6 +4180,7 @@ class VideoContentDetail extends DataClass
       dimension: Value(dimension),
       definition: Value(definition),
       caption: Value(caption),
+      licensedContent: Value(licensedContent),
       projection: Value(projection),
     );
   }
@@ -4164,6 +4198,7 @@ class VideoContentDetail extends DataClass
       dimension: serializer.fromJson<String>(json['dimension']),
       definition: serializer.fromJson<String>(json['definition']),
       caption: serializer.fromJson<String>(json['caption']),
+      licensedContent: serializer.fromJson<bool>(json['licensedContent']),
       projection: serializer.fromJson<String>(json['projection']),
     );
   }
@@ -4178,6 +4213,7 @@ class VideoContentDetail extends DataClass
       'dimension': serializer.toJson<String>(dimension),
       'definition': serializer.toJson<String>(definition),
       'caption': serializer.toJson<String>(caption),
+      'licensedContent': serializer.toJson<bool>(licensedContent),
       'projection': serializer.toJson<String>(projection),
     };
   }
@@ -4190,6 +4226,7 @@ class VideoContentDetail extends DataClass
     String? dimension,
     String? definition,
     String? caption,
+    bool? licensedContent,
     String? projection,
   }) => VideoContentDetail(
     createdAt: createdAt ?? this.createdAt,
@@ -4199,6 +4236,7 @@ class VideoContentDetail extends DataClass
     dimension: dimension ?? this.dimension,
     definition: definition ?? this.definition,
     caption: caption ?? this.caption,
+    licensedContent: licensedContent ?? this.licensedContent,
     projection: projection ?? this.projection,
   );
   VideoContentDetail copyWithCompanion(VideoContentDetailsCompanion data) {
@@ -4212,6 +4250,9 @@ class VideoContentDetail extends DataClass
           ? data.definition.value
           : this.definition,
       caption: data.caption.present ? data.caption.value : this.caption,
+      licensedContent: data.licensedContent.present
+          ? data.licensedContent.value
+          : this.licensedContent,
       projection: data.projection.present
           ? data.projection.value
           : this.projection,
@@ -4228,6 +4269,7 @@ class VideoContentDetail extends DataClass
           ..write('dimension: $dimension, ')
           ..write('definition: $definition, ')
           ..write('caption: $caption, ')
+          ..write('licensedContent: $licensedContent, ')
           ..write('projection: $projection')
           ..write(')'))
         .toString();
@@ -4242,6 +4284,7 @@ class VideoContentDetail extends DataClass
     dimension,
     definition,
     caption,
+    licensedContent,
     projection,
   );
   @override
@@ -4255,6 +4298,7 @@ class VideoContentDetail extends DataClass
           other.dimension == this.dimension &&
           other.definition == this.definition &&
           other.caption == this.caption &&
+          other.licensedContent == this.licensedContent &&
           other.projection == this.projection);
 }
 
@@ -4266,6 +4310,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
   final Value<String> dimension;
   final Value<String> definition;
   final Value<String> caption;
+  final Value<bool> licensedContent;
   final Value<String> projection;
   final Value<int> rowid;
   const VideoContentDetailsCompanion({
@@ -4276,6 +4321,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     this.dimension = const Value.absent(),
     this.definition = const Value.absent(),
     this.caption = const Value.absent(),
+    this.licensedContent = const Value.absent(),
     this.projection = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -4287,6 +4333,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     required String dimension,
     required String definition,
     required String caption,
+    required bool licensedContent,
     required String projection,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -4294,6 +4341,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
        dimension = Value(dimension),
        definition = Value(definition),
        caption = Value(caption),
+       licensedContent = Value(licensedContent),
        projection = Value(projection);
   static Insertable<VideoContentDetail> custom({
     Expression<DateTime>? createdAt,
@@ -4303,6 +4351,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     Expression<String>? dimension,
     Expression<String>? definition,
     Expression<String>? caption,
+    Expression<bool>? licensedContent,
     Expression<String>? projection,
     Expression<int>? rowid,
   }) {
@@ -4314,6 +4363,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
       if (dimension != null) 'dimension': dimension,
       if (definition != null) 'definition': definition,
       if (caption != null) 'caption': caption,
+      if (licensedContent != null) 'licensed_content': licensedContent,
       if (projection != null) 'projection': projection,
       if (rowid != null) 'rowid': rowid,
     });
@@ -4327,6 +4377,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     Value<String>? dimension,
     Value<String>? definition,
     Value<String>? caption,
+    Value<bool>? licensedContent,
     Value<String>? projection,
     Value<int>? rowid,
   }) {
@@ -4338,6 +4389,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
       dimension: dimension ?? this.dimension,
       definition: definition ?? this.definition,
       caption: caption ?? this.caption,
+      licensedContent: licensedContent ?? this.licensedContent,
       projection: projection ?? this.projection,
       rowid: rowid ?? this.rowid,
     );
@@ -4367,6 +4419,9 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     if (caption.present) {
       map['caption'] = Variable<String>(caption.value);
     }
+    if (licensedContent.present) {
+      map['licensed_content'] = Variable<bool>(licensedContent.value);
+    }
     if (projection.present) {
       map['projection'] = Variable<String>(projection.value);
     }
@@ -4386,6 +4441,7 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
           ..write('dimension: $dimension, ')
           ..write('definition: $definition, ')
           ..write('caption: $caption, ')
+          ..write('licensedContent: $licensedContent, ')
           ..write('projection: $projection, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -4435,6 +4491,39 @@ class $VideoStatusesTable extends VideoStatuses
       'REFERENCES videos (id)',
     ),
   );
+  static const VerificationMeta _uploadStatusMeta = const VerificationMeta(
+    'uploadStatus',
+  );
+  @override
+  late final GeneratedColumn<String> uploadStatus = GeneratedColumn<String>(
+    'upload_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _privacyStatusMeta = const VerificationMeta(
+    'privacyStatus',
+  );
+  @override
+  late final GeneratedColumn<String> privacyStatus = GeneratedColumn<String>(
+    'privacy_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _licenseMeta = const VerificationMeta(
+    'license',
+  );
+  @override
+  late final GeneratedColumn<String> license = GeneratedColumn<String>(
+    'license',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _embeddableMeta = const VerificationMeta(
     'embeddable',
   );
@@ -4449,8 +4538,45 @@ class $VideoStatusesTable extends VideoStatuses
       'CHECK ("embeddable" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _publicStatsViewableMeta =
+      const VerificationMeta('publicStatsViewable');
   @override
-  List<GeneratedColumn> get $columns => [createdAt, updatedAt, id, embeddable];
+  late final GeneratedColumn<bool> publicStatsViewable = GeneratedColumn<bool>(
+    'public_stats_viewable',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("public_stats_viewable" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _madeForKidsMeta = const VerificationMeta(
+    'madeForKids',
+  );
+  @override
+  late final GeneratedColumn<bool> madeForKids = GeneratedColumn<bool>(
+    'made_for_kids',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("made_for_kids" IN (0, 1))',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    uploadStatus,
+    privacyStatus,
+    license,
+    embeddable,
+    publicStatsViewable,
+    madeForKids,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -4480,6 +4606,36 @@ class $VideoStatusesTable extends VideoStatuses
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('upload_status')) {
+      context.handle(
+        _uploadStatusMeta,
+        uploadStatus.isAcceptableOrUnknown(
+          data['upload_status']!,
+          _uploadStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_uploadStatusMeta);
+    }
+    if (data.containsKey('privacy_status')) {
+      context.handle(
+        _privacyStatusMeta,
+        privacyStatus.isAcceptableOrUnknown(
+          data['privacy_status']!,
+          _privacyStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_privacyStatusMeta);
+    }
+    if (data.containsKey('license')) {
+      context.handle(
+        _licenseMeta,
+        license.isAcceptableOrUnknown(data['license']!, _licenseMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_licenseMeta);
+    }
     if (data.containsKey('embeddable')) {
       context.handle(
         _embeddableMeta,
@@ -4487,6 +4643,28 @@ class $VideoStatusesTable extends VideoStatuses
       );
     } else if (isInserting) {
       context.missing(_embeddableMeta);
+    }
+    if (data.containsKey('public_stats_viewable')) {
+      context.handle(
+        _publicStatsViewableMeta,
+        publicStatsViewable.isAcceptableOrUnknown(
+          data['public_stats_viewable']!,
+          _publicStatsViewableMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_publicStatsViewableMeta);
+    }
+    if (data.containsKey('made_for_kids')) {
+      context.handle(
+        _madeForKidsMeta,
+        madeForKids.isAcceptableOrUnknown(
+          data['made_for_kids']!,
+          _madeForKidsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_madeForKidsMeta);
     }
     return context;
   }
@@ -4509,9 +4687,29 @@ class $VideoStatusesTable extends VideoStatuses
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      uploadStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}upload_status'],
+      )!,
+      privacyStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}privacy_status'],
+      )!,
+      license: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}license'],
+      )!,
       embeddable: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}embeddable'],
+      )!,
+      publicStatsViewable: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}public_stats_viewable'],
+      )!,
+      madeForKids: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}made_for_kids'],
       )!,
     );
   }
@@ -4526,12 +4724,22 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String id;
+  final String uploadStatus;
+  final String privacyStatus;
+  final String license;
   final bool embeddable;
+  final bool publicStatsViewable;
+  final bool madeForKids;
   const VideoStatuse({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
+    required this.uploadStatus,
+    required this.privacyStatus,
+    required this.license,
     required this.embeddable,
+    required this.publicStatsViewable,
+    required this.madeForKids,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4539,7 +4747,12 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
+    map['upload_status'] = Variable<String>(uploadStatus);
+    map['privacy_status'] = Variable<String>(privacyStatus);
+    map['license'] = Variable<String>(license);
     map['embeddable'] = Variable<bool>(embeddable);
+    map['public_stats_viewable'] = Variable<bool>(publicStatsViewable);
+    map['made_for_kids'] = Variable<bool>(madeForKids);
     return map;
   }
 
@@ -4548,7 +4761,12 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       id: Value(id),
+      uploadStatus: Value(uploadStatus),
+      privacyStatus: Value(privacyStatus),
+      license: Value(license),
       embeddable: Value(embeddable),
+      publicStatsViewable: Value(publicStatsViewable),
+      madeForKids: Value(madeForKids),
     );
   }
 
@@ -4561,7 +4779,14 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
+      uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
+      privacyStatus: serializer.fromJson<String>(json['privacyStatus']),
+      license: serializer.fromJson<String>(json['license']),
       embeddable: serializer.fromJson<bool>(json['embeddable']),
+      publicStatsViewable: serializer.fromJson<bool>(
+        json['publicStatsViewable'],
+      ),
+      madeForKids: serializer.fromJson<bool>(json['madeForKids']),
     );
   }
   @override
@@ -4571,7 +4796,12 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
+      'uploadStatus': serializer.toJson<String>(uploadStatus),
+      'privacyStatus': serializer.toJson<String>(privacyStatus),
+      'license': serializer.toJson<String>(license),
       'embeddable': serializer.toJson<bool>(embeddable),
+      'publicStatsViewable': serializer.toJson<bool>(publicStatsViewable),
+      'madeForKids': serializer.toJson<bool>(madeForKids),
     };
   }
 
@@ -4579,21 +4809,44 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? id,
+    String? uploadStatus,
+    String? privacyStatus,
+    String? license,
     bool? embeddable,
+    bool? publicStatsViewable,
+    bool? madeForKids,
   }) => VideoStatuse(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
+    uploadStatus: uploadStatus ?? this.uploadStatus,
+    privacyStatus: privacyStatus ?? this.privacyStatus,
+    license: license ?? this.license,
     embeddable: embeddable ?? this.embeddable,
+    publicStatsViewable: publicStatsViewable ?? this.publicStatsViewable,
+    madeForKids: madeForKids ?? this.madeForKids,
   );
   VideoStatuse copyWithCompanion(VideoStatusesCompanion data) {
     return VideoStatuse(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
+      uploadStatus: data.uploadStatus.present
+          ? data.uploadStatus.value
+          : this.uploadStatus,
+      privacyStatus: data.privacyStatus.present
+          ? data.privacyStatus.value
+          : this.privacyStatus,
+      license: data.license.present ? data.license.value : this.license,
       embeddable: data.embeddable.present
           ? data.embeddable.value
           : this.embeddable,
+      publicStatsViewable: data.publicStatsViewable.present
+          ? data.publicStatsViewable.value
+          : this.publicStatsViewable,
+      madeForKids: data.madeForKids.present
+          ? data.madeForKids.value
+          : this.madeForKids,
     );
   }
 
@@ -4603,13 +4856,28 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
-          ..write('embeddable: $embeddable')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('privacyStatus: $privacyStatus, ')
+          ..write('license: $license, ')
+          ..write('embeddable: $embeddable, ')
+          ..write('publicStatsViewable: $publicStatsViewable, ')
+          ..write('madeForKids: $madeForKids')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, embeddable);
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    uploadStatus,
+    privacyStatus,
+    license,
+    embeddable,
+    publicStatsViewable,
+    madeForKids,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4617,42 +4885,78 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
-          other.embeddable == this.embeddable);
+          other.uploadStatus == this.uploadStatus &&
+          other.privacyStatus == this.privacyStatus &&
+          other.license == this.license &&
+          other.embeddable == this.embeddable &&
+          other.publicStatsViewable == this.publicStatsViewable &&
+          other.madeForKids == this.madeForKids);
 }
 
 class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<String> id;
+  final Value<String> uploadStatus;
+  final Value<String> privacyStatus;
+  final Value<String> license;
   final Value<bool> embeddable;
+  final Value<bool> publicStatsViewable;
+  final Value<bool> madeForKids;
   final Value<int> rowid;
   const VideoStatusesCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
+    this.privacyStatus = const Value.absent(),
+    this.license = const Value.absent(),
     this.embeddable = const Value.absent(),
+    this.publicStatsViewable = const Value.absent(),
+    this.madeForKids = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   VideoStatusesCompanion.insert({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     required String id,
+    required String uploadStatus,
+    required String privacyStatus,
+    required String license,
     required bool embeddable,
+    required bool publicStatsViewable,
+    required bool madeForKids,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       embeddable = Value(embeddable);
+       uploadStatus = Value(uploadStatus),
+       privacyStatus = Value(privacyStatus),
+       license = Value(license),
+       embeddable = Value(embeddable),
+       publicStatsViewable = Value(publicStatsViewable),
+       madeForKids = Value(madeForKids);
   static Insertable<VideoStatuse> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<String>? id,
+    Expression<String>? uploadStatus,
+    Expression<String>? privacyStatus,
+    Expression<String>? license,
     Expression<bool>? embeddable,
+    Expression<bool>? publicStatsViewable,
+    Expression<bool>? madeForKids,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
+      if (uploadStatus != null) 'upload_status': uploadStatus,
+      if (privacyStatus != null) 'privacy_status': privacyStatus,
+      if (license != null) 'license': license,
       if (embeddable != null) 'embeddable': embeddable,
+      if (publicStatsViewable != null)
+        'public_stats_viewable': publicStatsViewable,
+      if (madeForKids != null) 'made_for_kids': madeForKids,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4661,14 +4965,24 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<String>? id,
+    Value<String>? uploadStatus,
+    Value<String>? privacyStatus,
+    Value<String>? license,
     Value<bool>? embeddable,
+    Value<bool>? publicStatsViewable,
+    Value<bool>? madeForKids,
     Value<int>? rowid,
   }) {
     return VideoStatusesCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
+      privacyStatus: privacyStatus ?? this.privacyStatus,
+      license: license ?? this.license,
       embeddable: embeddable ?? this.embeddable,
+      publicStatsViewable: publicStatsViewable ?? this.publicStatsViewable,
+      madeForKids: madeForKids ?? this.madeForKids,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4685,8 +4999,23 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (uploadStatus.present) {
+      map['upload_status'] = Variable<String>(uploadStatus.value);
+    }
+    if (privacyStatus.present) {
+      map['privacy_status'] = Variable<String>(privacyStatus.value);
+    }
+    if (license.present) {
+      map['license'] = Variable<String>(license.value);
+    }
     if (embeddable.present) {
       map['embeddable'] = Variable<bool>(embeddable.value);
+    }
+    if (publicStatsViewable.present) {
+      map['public_stats_viewable'] = Variable<bool>(publicStatsViewable.value);
+    }
+    if (madeForKids.present) {
+      map['made_for_kids'] = Variable<bool>(madeForKids.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -4700,7 +5029,12 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('privacyStatus: $privacyStatus, ')
+          ..write('license: $license, ')
           ..write('embeddable: $embeddable, ')
+          ..write('publicStatsViewable: $publicStatsViewable, ')
+          ..write('madeForKids: $madeForKids, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4767,9 +5101,9 @@ class $VideoStatisticsTable extends VideoStatistics
   late final GeneratedColumn<int> likeCount = GeneratedColumn<int>(
     'like_count',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _dislikeCountMeta = const VerificationMeta(
     'dislikeCount',
@@ -4778,9 +5112,9 @@ class $VideoStatisticsTable extends VideoStatistics
   late final GeneratedColumn<int> dislikeCount = GeneratedColumn<int>(
     'dislike_count',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _favoriteCountMeta = const VerificationMeta(
     'favoriteCount',
@@ -4857,8 +5191,6 @@ class $VideoStatisticsTable extends VideoStatistics
         _likeCountMeta,
         likeCount.isAcceptableOrUnknown(data['like_count']!, _likeCountMeta),
       );
-    } else if (isInserting) {
-      context.missing(_likeCountMeta);
     }
     if (data.containsKey('dislike_count')) {
       context.handle(
@@ -4868,8 +5200,6 @@ class $VideoStatisticsTable extends VideoStatistics
           _dislikeCountMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_dislikeCountMeta);
     }
     if (data.containsKey('favorite_count')) {
       context.handle(
@@ -4921,11 +5251,11 @@ class $VideoStatisticsTable extends VideoStatistics
       likeCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}like_count'],
-      )!,
+      ),
       dislikeCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}dislike_count'],
-      )!,
+      ),
       favoriteCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}favorite_count'],
@@ -4948,8 +5278,8 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   final DateTime updatedAt;
   final String id;
   final int viewCount;
-  final int likeCount;
-  final int dislikeCount;
+  final int? likeCount;
+  final int? dislikeCount;
   final int favoriteCount;
   final int commentCount;
   const VideoStatistic({
@@ -4957,8 +5287,8 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     required this.updatedAt,
     required this.id,
     required this.viewCount,
-    required this.likeCount,
-    required this.dislikeCount,
+    this.likeCount,
+    this.dislikeCount,
     required this.favoriteCount,
     required this.commentCount,
   });
@@ -4969,8 +5299,12 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['view_count'] = Variable<int>(viewCount);
-    map['like_count'] = Variable<int>(likeCount);
-    map['dislike_count'] = Variable<int>(dislikeCount);
+    if (!nullToAbsent || likeCount != null) {
+      map['like_count'] = Variable<int>(likeCount);
+    }
+    if (!nullToAbsent || dislikeCount != null) {
+      map['dislike_count'] = Variable<int>(dislikeCount);
+    }
     map['favorite_count'] = Variable<int>(favoriteCount);
     map['comment_count'] = Variable<int>(commentCount);
     return map;
@@ -4982,8 +5316,12 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       viewCount: Value(viewCount),
-      likeCount: Value(likeCount),
-      dislikeCount: Value(dislikeCount),
+      likeCount: likeCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(likeCount),
+      dislikeCount: dislikeCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dislikeCount),
       favoriteCount: Value(favoriteCount),
       commentCount: Value(commentCount),
     );
@@ -4999,8 +5337,8 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       viewCount: serializer.fromJson<int>(json['viewCount']),
-      likeCount: serializer.fromJson<int>(json['likeCount']),
-      dislikeCount: serializer.fromJson<int>(json['dislikeCount']),
+      likeCount: serializer.fromJson<int?>(json['likeCount']),
+      dislikeCount: serializer.fromJson<int?>(json['dislikeCount']),
       favoriteCount: serializer.fromJson<int>(json['favoriteCount']),
       commentCount: serializer.fromJson<int>(json['commentCount']),
     );
@@ -5013,8 +5351,8 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'viewCount': serializer.toJson<int>(viewCount),
-      'likeCount': serializer.toJson<int>(likeCount),
-      'dislikeCount': serializer.toJson<int>(dislikeCount),
+      'likeCount': serializer.toJson<int?>(likeCount),
+      'dislikeCount': serializer.toJson<int?>(dislikeCount),
       'favoriteCount': serializer.toJson<int>(favoriteCount),
       'commentCount': serializer.toJson<int>(commentCount),
     };
@@ -5025,8 +5363,8 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     DateTime? updatedAt,
     String? id,
     int? viewCount,
-    int? likeCount,
-    int? dislikeCount,
+    Value<int?> likeCount = const Value.absent(),
+    Value<int?> dislikeCount = const Value.absent(),
     int? favoriteCount,
     int? commentCount,
   }) => VideoStatistic(
@@ -5034,8 +5372,8 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     viewCount: viewCount ?? this.viewCount,
-    likeCount: likeCount ?? this.likeCount,
-    dislikeCount: dislikeCount ?? this.dislikeCount,
+    likeCount: likeCount.present ? likeCount.value : this.likeCount,
+    dislikeCount: dislikeCount.present ? dislikeCount.value : this.dislikeCount,
     favoriteCount: favoriteCount ?? this.favoriteCount,
     commentCount: commentCount ?? this.commentCount,
   );
@@ -5103,8 +5441,8 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<int> viewCount;
-  final Value<int> likeCount;
-  final Value<int> dislikeCount;
+  final Value<int?> likeCount;
+  final Value<int?> dislikeCount;
   final Value<int> favoriteCount;
   final Value<int> commentCount;
   final Value<int> rowid;
@@ -5124,15 +5462,13 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     this.updatedAt = const Value.absent(),
     required String id,
     required int viewCount,
-    required int likeCount,
-    required int dislikeCount,
+    this.likeCount = const Value.absent(),
+    this.dislikeCount = const Value.absent(),
     required int favoriteCount,
     required int commentCount,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        viewCount = Value(viewCount),
-       likeCount = Value(likeCount),
-       dislikeCount = Value(dislikeCount),
        favoriteCount = Value(favoriteCount),
        commentCount = Value(commentCount);
   static Insertable<VideoStatistic> custom({
@@ -5164,8 +5500,8 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<int>? viewCount,
-    Value<int>? likeCount,
-    Value<int>? dislikeCount,
+    Value<int?>? likeCount,
+    Value<int?>? dislikeCount,
     Value<int>? favoriteCount,
     Value<int>? commentCount,
     Value<int>? rowid,
@@ -12994,6 +13330,7 @@ typedef $$VideoContentDetailsTableCreateCompanionBuilder =
       required String dimension,
       required String definition,
       required String caption,
+      required bool licensedContent,
       required String projection,
       Value<int> rowid,
     });
@@ -13006,6 +13343,7 @@ typedef $$VideoContentDetailsTableUpdateCompanionBuilder =
       Value<String> dimension,
       Value<String> definition,
       Value<String> caption,
+      Value<bool> licensedContent,
       Value<String> projection,
       Value<int> rowid,
     });
@@ -13081,6 +13419,11 @@ class $$VideoContentDetailsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<bool> get licensedContent => $composableBuilder(
+    column: $table.licensedContent,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get projection => $composableBuilder(
     column: $table.projection,
     builder: (column) => ColumnFilters(column),
@@ -13149,6 +13492,11 @@ class $$VideoContentDetailsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get licensedContent => $composableBuilder(
+    column: $table.licensedContent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get projection => $composableBuilder(
     column: $table.projection,
     builder: (column) => ColumnOrderings(column),
@@ -13206,6 +13554,11 @@ class $$VideoContentDetailsTableAnnotationComposer
 
   GeneratedColumn<String> get caption =>
       $composableBuilder(column: $table.caption, builder: (column) => column);
+
+  GeneratedColumn<bool> get licensedContent => $composableBuilder(
+    column: $table.licensedContent,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get projection => $composableBuilder(
     column: $table.projection,
@@ -13279,6 +13632,7 @@ class $$VideoContentDetailsTableTableManager
                 Value<String> dimension = const Value.absent(),
                 Value<String> definition = const Value.absent(),
                 Value<String> caption = const Value.absent(),
+                Value<bool> licensedContent = const Value.absent(),
                 Value<String> projection = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoContentDetailsCompanion(
@@ -13289,6 +13643,7 @@ class $$VideoContentDetailsTableTableManager
                 dimension: dimension,
                 definition: definition,
                 caption: caption,
+                licensedContent: licensedContent,
                 projection: projection,
                 rowid: rowid,
               ),
@@ -13301,6 +13656,7 @@ class $$VideoContentDetailsTableTableManager
                 required String dimension,
                 required String definition,
                 required String caption,
+                required bool licensedContent,
                 required String projection,
                 Value<int> rowid = const Value.absent(),
               }) => VideoContentDetailsCompanion.insert(
@@ -13311,6 +13667,7 @@ class $$VideoContentDetailsTableTableManager
                 dimension: dimension,
                 definition: definition,
                 caption: caption,
+                licensedContent: licensedContent,
                 projection: projection,
                 rowid: rowid,
               ),
@@ -13388,7 +13745,12 @@ typedef $$VideoStatusesTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       required String id,
+      required String uploadStatus,
+      required String privacyStatus,
+      required String license,
       required bool embeddable,
+      required bool publicStatsViewable,
+      required bool madeForKids,
       Value<int> rowid,
     });
 typedef $$VideoStatusesTableUpdateCompanionBuilder =
@@ -13396,7 +13758,12 @@ typedef $$VideoStatusesTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<String> id,
+      Value<String> uploadStatus,
+      Value<String> privacyStatus,
+      Value<String> license,
       Value<bool> embeddable,
+      Value<bool> publicStatsViewable,
+      Value<bool> madeForKids,
       Value<int> rowid,
     });
 
@@ -13446,8 +13813,33 @@ class $$VideoStatusesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get privacyStatus => $composableBuilder(
+    column: $table.privacyStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get license => $composableBuilder(
+    column: $table.license,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get embeddable => $composableBuilder(
     column: $table.embeddable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get publicStatsViewable => $composableBuilder(
+    column: $table.publicStatsViewable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get madeForKids => $composableBuilder(
+    column: $table.madeForKids,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13494,8 +13886,33 @@ class $$VideoStatusesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get privacyStatus => $composableBuilder(
+    column: $table.privacyStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get license => $composableBuilder(
+    column: $table.license,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get embeddable => $composableBuilder(
     column: $table.embeddable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get publicStatsViewable => $composableBuilder(
+    column: $table.publicStatsViewable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get madeForKids => $composableBuilder(
+    column: $table.madeForKids,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -13538,8 +13955,31 @@ class $$VideoStatusesTableAnnotationComposer
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
+  GeneratedColumn<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get privacyStatus => $composableBuilder(
+    column: $table.privacyStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get license =>
+      $composableBuilder(column: $table.license, builder: (column) => column);
+
   GeneratedColumn<bool> get embeddable => $composableBuilder(
     column: $table.embeddable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get publicStatsViewable => $composableBuilder(
+    column: $table.publicStatsViewable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get madeForKids => $composableBuilder(
+    column: $table.madeForKids,
     builder: (column) => column,
   );
 
@@ -13598,13 +14038,23 @@ class $$VideoStatusesTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
+                Value<String> uploadStatus = const Value.absent(),
+                Value<String> privacyStatus = const Value.absent(),
+                Value<String> license = const Value.absent(),
                 Value<bool> embeddable = const Value.absent(),
+                Value<bool> publicStatsViewable = const Value.absent(),
+                Value<bool> madeForKids = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatusesCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
+                uploadStatus: uploadStatus,
+                privacyStatus: privacyStatus,
+                license: license,
                 embeddable: embeddable,
+                publicStatsViewable: publicStatsViewable,
+                madeForKids: madeForKids,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -13612,13 +14062,23 @@ class $$VideoStatusesTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
+                required String uploadStatus,
+                required String privacyStatus,
+                required String license,
                 required bool embeddable,
+                required bool publicStatsViewable,
+                required bool madeForKids,
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatusesCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
+                uploadStatus: uploadStatus,
+                privacyStatus: privacyStatus,
+                license: license,
                 embeddable: embeddable,
+                publicStatsViewable: publicStatsViewable,
+                madeForKids: madeForKids,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -13694,8 +14154,8 @@ typedef $$VideoStatisticsTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       required String id,
       required int viewCount,
-      required int likeCount,
-      required int dislikeCount,
+      Value<int?> likeCount,
+      Value<int?> dislikeCount,
       required int favoriteCount,
       required int commentCount,
       Value<int> rowid,
@@ -13706,8 +14166,8 @@ typedef $$VideoStatisticsTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<String> id,
       Value<int> viewCount,
-      Value<int> likeCount,
-      Value<int> dislikeCount,
+      Value<int?> likeCount,
+      Value<int?> dislikeCount,
       Value<int> favoriteCount,
       Value<int> commentCount,
       Value<int> rowid,
@@ -13968,8 +14428,8 @@ class $$VideoStatisticsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<int> viewCount = const Value.absent(),
-                Value<int> likeCount = const Value.absent(),
-                Value<int> dislikeCount = const Value.absent(),
+                Value<int?> likeCount = const Value.absent(),
+                Value<int?> dislikeCount = const Value.absent(),
                 Value<int> favoriteCount = const Value.absent(),
                 Value<int> commentCount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -13990,8 +14450,8 @@ class $$VideoStatisticsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required int viewCount,
-                required int likeCount,
-                required int dislikeCount,
+                Value<int?> likeCount = const Value.absent(),
+                Value<int?> dislikeCount = const Value.absent(),
                 required int favoriteCount,
                 required int commentCount,
                 Value<int> rowid = const Value.absent(),

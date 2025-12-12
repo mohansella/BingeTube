@@ -1,10 +1,10 @@
-import 'package:bingetube/core/api/youtube_data.dart';
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:flutter/material.dart';
 
 class YoutubePlayerController {
-  final YouTubeVideo data;
+  final VideoModel model;
 
-  YoutubePlayerController({required this.data});
+  YoutubePlayerController({required this.model});
 }
 
 class YoutubePlayerWidget extends StatelessWidget {

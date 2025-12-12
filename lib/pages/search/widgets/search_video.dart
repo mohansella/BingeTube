@@ -1,6 +1,5 @@
 import 'package:bingetube/core/api/youtube_api.dart';
-import 'package:bingetube/core/api/youtube_data.dart';
-import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,7 +19,7 @@ class SearchVideoWidget extends ConsumerStatefulWidget {
 class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
   bool _isValidQuery = false;
   bool _isLoaded = false;
-  List<YouTubeVideo>? _videos;
+  List<VideoModel>? _videos;
 
   _SearchVideoState();
 
@@ -69,7 +68,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
                       child: Row(
                         children: [
                           Image.network(
-                            video.thumbnailUrl,
+                            video.thumbnails.defaultUrl,
                             width: 160,
                             height: 90,
                             fit: .cover,
@@ -81,19 +80,19 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
                               crossAxisAlignment: .start,
                               children: [
                                 Text(
-                                  video.title,
+                                  video.snippet.title,
                                   maxLines: 2,
                                   overflow: .ellipsis,
                                   style: TextStyle(fontWeight: .w500),
                                 ),
                                 Text(
-                                  video.channelTitle,
+                                  video.snippet.channelTitle,
                                   maxLines: 1,
                                   overflow: .ellipsis,
                                   style: TextStyle(fontWeight: .w200),
                                 ),
                                 Text(
-                                  video.description,
+                                  video.snippet.description,
                                   maxLines: 1,
                                   overflow: .ellipsis,
                                   style: TextStyle(fontWeight: .w300),
@@ -145,14 +144,10 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
     });
 
     SearchVideoWidget._logger.info('Initiating video search for query: $query');
-    final apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
-    final videos = await YoutubeApi.searchVideos(ref, apiKey, query);
-    SearchVideoWidget._logger.info(
-      'Found: ${videos?.length ?? -1} videos for query: $query',
-    );
+    final videosResult = await YoutubeApi.searchVideos(ref, query);
     if (query == widget.query) {
       setState(() {
-        _videos = videos;
+        _videos = videosResult.fold((v) => v, (e) => null);
         _isLoaded = true;
       });
     } else {

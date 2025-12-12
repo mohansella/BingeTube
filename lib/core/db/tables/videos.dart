@@ -42,6 +42,7 @@ class VideoContentDetails extends Table with TableTimedMixin {
   late final dimension = text()();
   late final definition = text()();
   late final caption = text()();
+  late final licensedContent = boolean()();
   late final projection = text()();
 
   @override
@@ -50,7 +51,12 @@ class VideoContentDetails extends Table with TableTimedMixin {
 
 class VideoStatuses extends Table with TableTimedMixin {
   late final id = text().references(Videos, #id)();
+  late final uploadStatus = text()();
+  late final privacyStatus = text()();
+  late final license = text()();
   late final embeddable = boolean()();
+  late final publicStatsViewable = boolean()();
+  late final madeForKids = boolean()();
 
   @override
   get primaryKey => {id};
@@ -59,8 +65,8 @@ class VideoStatuses extends Table with TableTimedMixin {
 class VideoStatistics extends Table with TableTimedMixin {
   late final id = text().references(Videos, #id)();
   late final viewCount = integer()();
-  late final likeCount = integer()();
-  late final dislikeCount = integer()();
+  late final likeCount = integer().nullable()();
+  late final dislikeCount = integer().nullable()();
   late final favoriteCount = integer()();
   late final commentCount = integer()();
 
