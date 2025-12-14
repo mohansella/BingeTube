@@ -1,7 +1,9 @@
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -26,7 +28,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
   @override
   void initState() {
     super.initState();
-    processRequest(widget.query);
+    _processRequest(widget.query);
   }
 
   @override
@@ -39,7 +41,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
         _isLoaded = false;
         _videos = null;
       });
-      processRequest(widget.query);
+      _processRequest(widget.query);
     }
   }
 
@@ -59,54 +61,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
           child: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Column(
-              children: [
-                ...videos.map((video) {
-                  return Card(
-                    clipBehavior: .hardEdge,
-                    child: InkWell(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          Image.network(
-                            video.thumbnails.defaultUrl,
-                            width: 160,
-                            height: 90,
-                            fit: .cover,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: .start,
-                              crossAxisAlignment: .start,
-                              children: [
-                                Text(
-                                  video.snippet.title,
-                                  maxLines: 2,
-                                  overflow: .ellipsis,
-                                  style: TextStyle(fontWeight: .w500),
-                                ),
-                                Text(
-                                  video.snippet.channelTitle,
-                                  maxLines: 1,
-                                  overflow: .ellipsis,
-                                  style: TextStyle(fontWeight: .w200),
-                                ),
-                                Text(
-                                  video.snippet.description,
-                                  maxLines: 1,
-                                  overflow: .ellipsis,
-                                  style: TextStyle(fontWeight: .w300),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ],
+              children: [...videos.map((video) => _buildVideoCard(video))],
             ),
           ),
         );
@@ -135,7 +90,56 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
     }
   }
 
-  void processRequest(String? query) async {
+  Card _buildVideoCard(VideoModel video) {
+    return Card(
+      clipBehavior: .hardEdge,
+      child: InkWell(
+        onTap: () {
+          context.push(BingePage.buildPath(.singleVideo, video.video.id));
+        },
+        child: Row(
+          children: [
+            Image.network(
+              video.thumbnails.defaultUrl,
+              width: 160,
+              height: 90,
+              fit: .cover,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: .start,
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    video.snippet.title,
+                    maxLines: 2,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w500),
+                  ),
+                  Text(
+                    video.snippet.channelTitle,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w200),
+                  ),
+                  Text(
+                    video.snippet.description,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w300),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _processRequest(String? query) async {
     if (query == null) {
       return;
     }
