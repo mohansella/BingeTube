@@ -1,4 +1,4 @@
-import 'package:bingetube/pages/binge_results/binge_results_page.dart';
+import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
@@ -51,8 +51,8 @@ final GoRouter _routes = GoRouter(
       customBuilder: (context, state) => const SearchPage(),
     ),
     CustomGoRoute(
-      path: Pages.bingeResults.path,
-      customBuilder: (context, state) => const BingeResultsPage(),
+      path: Pages.binge.path,
+      customBuilder: (context, state) => BingePage(state.uri.queryParameters),
     ),
   ],
 );
