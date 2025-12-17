@@ -1,3 +1,4 @@
+import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/pages.dart';
@@ -33,6 +34,6 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text(_controller.pageTitle)));
+    return Scaffold(body: PlayerWidget(_controller.activeVideoId));
   }
 }

@@ -63,6 +63,11 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     });
   }
 
+  Future<VideoModel> getVideoModelById(String videoId) async {
+    final result = await getVideoModelByIds([videoId]);
+    return result[0];
+  }
+
   Future<List<VideoModel>> getVideoModelByIds(List<String> videoIds) async {
     final v = videos;
     final s = videoSnippets;
@@ -191,7 +196,9 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
           ? Value.absent()
           : Value(int.parse(statistics['dislikeCount'])),
       favoriteCount: Value(int.parse(statistics['favoriteCount'])),
-      commentCount: Value(int.parse(statistics['commentCount'])),
+      commentCount: statistics['commentCount'] == null
+          ? Value.absent()
+          : Value(int.parse(statistics['commentCount'])),
       updatedAt: updatedAt,
     );
 

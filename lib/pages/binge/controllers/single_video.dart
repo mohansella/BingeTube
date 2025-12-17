@@ -8,4 +8,7 @@ class SingleVideoBingeController implements BaseBingeController {
   @override
   String get pageTitle => 'Binge Video';
 
+  @override
+  String get activeVideoId => videoId;
+
 }

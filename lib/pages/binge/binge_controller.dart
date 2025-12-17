@@ -26,5 +26,7 @@ abstract class BingeController {
         throw StateError('unimpelemented');
     }
   }
+
+  String get activeVideoId;
 }
 
