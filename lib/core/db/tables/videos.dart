@@ -68,7 +68,7 @@ class VideoStatistics extends Table with TableTimedMixin {
   late final likeCount = integer().nullable()();
   late final dislikeCount = integer().nullable()();
   late final favoriteCount = integer()();
-  late final commentCount = integer()();
+  late final commentCount = integer().nullable()();
 
   @override
   get primaryKey => {id};
