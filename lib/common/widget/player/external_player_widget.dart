@@ -32,27 +32,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
 
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
-  VideoModel get model => _model!;
   BingeController get controller => widget.controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller
-        .getActiveVideoModel()
-        .then((value) {
-          setState(() {
-            _model = value;
-            _loading = false;
-          });
-        })
-        .catchError((e) {
-          setState(() {
-            _error = e;
-            _loading = false;
-          });
-        });
-  }
+  VideoModel get model => _model!;
 
   @override
   Widget build(BuildContext context) {
@@ -77,16 +58,43 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           _width = constrains.maxWidth;
           _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
         }
-        return SizedBox(
-          width: _width,
-          height: _height,
-          child: _buildStack(context),
-        );
+        return _buildStack(context);
       },
     );
   }
 
-  _buildControls(BuildContext context) {
+  @override
+  void initState() {
+    super.initState();
+    controller
+        .getActiveVideoModel()
+        .then((value) {
+          setState(() {
+            _model = value;
+            _loading = false;
+          });
+        })
+        .catchError((e) {
+          setState(() {
+            _error = e;
+            _loading = false;
+          });
+        });
+  }
+
+  Widget _buildChild() {
+    ExternalPlayerWidget._logger.info('width:$_width height:$_height');
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: _height),
+          widget.child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControls(BuildContext context) {
     final appFontSize = ref.read(ConfigProviders.appFontSize);
     final theme = Themes.dark(appFontSize);
     return Theme(
@@ -168,6 +176,26 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
   }
 
+  Widget _buildPlayerStack() {
+    final imageUrl =
+        model.thumbnails.maxresUrl ??
+        model.thumbnails.standardUrl ??
+        model.thumbnails.highUrl;
+    return SizedBox(
+      height: _height,
+      width: double.infinity,
+      child: Stack(
+        fit: .expand,
+        children: [
+          ColoredBox(color: Colors.black),
+          Image.network(imageUrl, fit: .contain),
+          _buildTopGradient(),
+          _buildControls(context),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSkipNext() {
     final isEnabled = controller.isPrevVideoExists;
     if (_isExternallyOpened) {
@@ -201,27 +229,19 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Stack _buildStack(BuildContext context) {
-    final imageUrl =
-        model.thumbnails.maxresUrl ??
-        model.thumbnails.standardUrl ??
-        model.thumbnails.highUrl;
-    return Stack(
-      fit: .expand,
-      children: [
-        ColoredBox(color: Colors.black),
-        Image.network(imageUrl),
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: const [0.0, 0.25],
-              colors: [Colors.black.withAlpha(200), Colors.transparent],
-            ),
-          ),
+    return Stack(children: [_buildPlayerStack(), _buildChild()]);
+  }
+
+  Container _buildTopGradient() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: const [0.0, 0.25],
+          colors: [Colors.black.withAlpha(200), Colors.transparent],
         ),
-        _buildControls(context),
-      ],
+      ),
     );
   }
 
