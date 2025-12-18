@@ -34,6 +34,6 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: PlayerWidget(_controller.activeVideoId));
+    return Scaffold(body: PlayerWidget(_controller));
   }
 }
