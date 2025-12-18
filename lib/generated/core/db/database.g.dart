@@ -5134,9 +5134,9 @@ class $VideoStatisticsTable extends VideoStatistics
   late final GeneratedColumn<int> commentCount = GeneratedColumn<int>(
     'comment_count',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -5220,8 +5220,6 @@ class $VideoStatisticsTable extends VideoStatistics
           _commentCountMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_commentCountMeta);
     }
     return context;
   }
@@ -5263,7 +5261,7 @@ class $VideoStatisticsTable extends VideoStatistics
       commentCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}comment_count'],
-      )!,
+      ),
     );
   }
 
@@ -5281,7 +5279,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   final int? likeCount;
   final int? dislikeCount;
   final int favoriteCount;
-  final int commentCount;
+  final int? commentCount;
   const VideoStatistic({
     required this.createdAt,
     required this.updatedAt,
@@ -5290,7 +5288,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     this.likeCount,
     this.dislikeCount,
     required this.favoriteCount,
-    required this.commentCount,
+    this.commentCount,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5306,7 +5304,9 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
       map['dislike_count'] = Variable<int>(dislikeCount);
     }
     map['favorite_count'] = Variable<int>(favoriteCount);
-    map['comment_count'] = Variable<int>(commentCount);
+    if (!nullToAbsent || commentCount != null) {
+      map['comment_count'] = Variable<int>(commentCount);
+    }
     return map;
   }
 
@@ -5323,7 +5323,9 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
           ? const Value.absent()
           : Value(dislikeCount),
       favoriteCount: Value(favoriteCount),
-      commentCount: Value(commentCount),
+      commentCount: commentCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(commentCount),
     );
   }
 
@@ -5340,7 +5342,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
       likeCount: serializer.fromJson<int?>(json['likeCount']),
       dislikeCount: serializer.fromJson<int?>(json['dislikeCount']),
       favoriteCount: serializer.fromJson<int>(json['favoriteCount']),
-      commentCount: serializer.fromJson<int>(json['commentCount']),
+      commentCount: serializer.fromJson<int?>(json['commentCount']),
     );
   }
   @override
@@ -5354,7 +5356,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
       'likeCount': serializer.toJson<int?>(likeCount),
       'dislikeCount': serializer.toJson<int?>(dislikeCount),
       'favoriteCount': serializer.toJson<int>(favoriteCount),
-      'commentCount': serializer.toJson<int>(commentCount),
+      'commentCount': serializer.toJson<int?>(commentCount),
     };
   }
 
@@ -5366,7 +5368,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     Value<int?> likeCount = const Value.absent(),
     Value<int?> dislikeCount = const Value.absent(),
     int? favoriteCount,
-    int? commentCount,
+    Value<int?> commentCount = const Value.absent(),
   }) => VideoStatistic(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -5375,7 +5377,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     likeCount: likeCount.present ? likeCount.value : this.likeCount,
     dislikeCount: dislikeCount.present ? dislikeCount.value : this.dislikeCount,
     favoriteCount: favoriteCount ?? this.favoriteCount,
-    commentCount: commentCount ?? this.commentCount,
+    commentCount: commentCount.present ? commentCount.value : this.commentCount,
   );
   VideoStatistic copyWithCompanion(VideoStatisticsCompanion data) {
     return VideoStatistic(
@@ -5444,7 +5446,7 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   final Value<int?> likeCount;
   final Value<int?> dislikeCount;
   final Value<int> favoriteCount;
-  final Value<int> commentCount;
+  final Value<int?> commentCount;
   final Value<int> rowid;
   const VideoStatisticsCompanion({
     this.createdAt = const Value.absent(),
@@ -5465,12 +5467,11 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     this.likeCount = const Value.absent(),
     this.dislikeCount = const Value.absent(),
     required int favoriteCount,
-    required int commentCount,
+    this.commentCount = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        viewCount = Value(viewCount),
-       favoriteCount = Value(favoriteCount),
-       commentCount = Value(commentCount);
+       favoriteCount = Value(favoriteCount);
   static Insertable<VideoStatistic> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -5503,7 +5504,7 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     Value<int?>? likeCount,
     Value<int?>? dislikeCount,
     Value<int>? favoriteCount,
-    Value<int>? commentCount,
+    Value<int?>? commentCount,
     Value<int>? rowid,
   }) {
     return VideoStatisticsCompanion(
@@ -14157,7 +14158,7 @@ typedef $$VideoStatisticsTableCreateCompanionBuilder =
       Value<int?> likeCount,
       Value<int?> dislikeCount,
       required int favoriteCount,
-      required int commentCount,
+      Value<int?> commentCount,
       Value<int> rowid,
     });
 typedef $$VideoStatisticsTableUpdateCompanionBuilder =
@@ -14169,7 +14170,7 @@ typedef $$VideoStatisticsTableUpdateCompanionBuilder =
       Value<int?> likeCount,
       Value<int?> dislikeCount,
       Value<int> favoriteCount,
-      Value<int> commentCount,
+      Value<int?> commentCount,
       Value<int> rowid,
     });
 
@@ -14431,7 +14432,7 @@ class $$VideoStatisticsTableTableManager
                 Value<int?> likeCount = const Value.absent(),
                 Value<int?> dislikeCount = const Value.absent(),
                 Value<int> favoriteCount = const Value.absent(),
-                Value<int> commentCount = const Value.absent(),
+                Value<int?> commentCount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatisticsCompanion(
                 createdAt: createdAt,
@@ -14453,7 +14454,7 @@ class $$VideoStatisticsTableTableManager
                 Value<int?> likeCount = const Value.absent(),
                 Value<int?> dislikeCount = const Value.absent(),
                 required int favoriteCount,
-                required int commentCount,
+                Value<int?> commentCount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatisticsCompanion.insert(
                 createdAt: createdAt,

@@ -35,7 +35,11 @@ class _BingePageState extends ConsumerState<BingePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PlayerWidget(_controller, () => Navigator.pop(context)),
+      body: PlayerWidget(
+        controller: _controller,
+        onBack: () => Navigator.pop(context),
+        child: Text('Hi'),
+      ),
     );
   }
 }

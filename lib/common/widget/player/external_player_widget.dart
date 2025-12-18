@@ -11,83 +11,105 @@ import 'package:url_launcher/url_launcher.dart';
 class ExternalPlayerWidget extends PlayerWidget {
   static final _logger = LogManager.getLogger('ExternalPlayerWidget');
 
-  const ExternalPlayerWidget(super.controller, super.onBack, {super.key})
-    : super.internal();
+  const ExternalPlayerWidget({
+    super.key,
+    required super.controller,
+    required super.onBack,
+    required super.child,
+  }) : super.internal();
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ExternalPlayerState();
 }
 
 class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
-  double _currWidth = 0;
+  VideoModel? _model;
+  bool _loading = false;
+  Object? _error;
+
+  double _width = 0;
+  double _height = 0;
 
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
+  VideoModel get model => _model!;
   BingeController get controller => widget.controller;
 
   @override
+  void initState() {
+    super.initState();
+    controller
+        .getActiveVideoModel()
+        .then((value) {
+          setState(() {
+            _model = value;
+            _loading = false;
+          });
+        })
+        .catchError((e) {
+          setState(() {
+            _error = e;
+            _loading = false;
+          });
+        });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<VideoModel>(
-      future: controller.getActiveVideoModel(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == .waiting) {
-          return const CircularProgressIndicator();
+    if (_loading) {
+      return CircularProgressIndicator();
+    }
+
+    if (_error != null) {
+      return Text('Error: $_error');
+    }
+    return LayoutBuilder(
+      builder: (context, constrains) {
+        final aspectWidth = constrains.maxHeight * 16.0 / 0.9;
+        final aspectHeight = constrains.maxWidth * 9.0 / 16.0;
+        final maxWidth = constrains.maxWidth;
+        final maxHeight = constrains.maxHeight;
+        if (aspectWidth < maxWidth) {
+          _width = aspectWidth;
+          _height = constrains.maxHeight;
+        } else {
+          _width = constrains.maxWidth;
+          _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
         }
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
-        final model = snapshot.data!;
-        return LayoutBuilder(
-          builder: (context, constrains) {
-            final aspectWidth = constrains.maxHeight * 16.0 / 0.9;
-            final aspectHeight = constrains.maxWidth * 9.0 / 16.0;
-            double width, height;
-            final maxWidth = constrains.maxWidth;
-            final maxHeight = constrains.maxHeight;
-            if (aspectWidth < maxWidth) {
-              width = aspectWidth;
-              height = constrains.maxHeight;
-            } else {
-              width = constrains.maxWidth;
-              height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
-            }
-            _currWidth = width;
-            return SizedBox(
-              width: width,
-              height: height,
-              child: _buildStack(model, context),
-            );
-          },
+        return SizedBox(
+          width: _width,
+          height: _height,
+          child: _buildStack(context),
         );
       },
     );
   }
 
-  _buildControls(VideoModel model, BuildContext context) {
+  _buildControls(BuildContext context) {
     final appFontSize = ref.read(ConfigProviders.appFontSize);
     final theme = Themes.dark(appFontSize);
     return Theme(
       data: theme,
       child: Padding(
-        padding: EdgeInsets.all(_currWidth / 40),
+        padding: EdgeInsets.all(_width / 40),
         child: Stack(
           children: [
             InkWell(
               onTap: widget.onBack,
               child: Tooltip(
                 message: 'back',
-                child: Icon(Icons.arrow_back, size: _currWidth / 20),
+                child: Icon(Icons.arrow_back, size: _width / 20),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: _currWidth / 14),
+              padding: EdgeInsets.only(left: _width / 14),
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
                   Text(
                     model.snippet.title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: _currWidth / 30,
+                      fontSize: _width / 30,
                     ),
                     maxLines: 1,
                     overflow: .ellipsis,
@@ -95,7 +117,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                   Text(
                     model.snippet.channelTitle,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      fontSize: _currWidth / 40,
+                      fontSize: _width / 40,
                     ),
                   ),
                 ],
@@ -107,8 +129,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                 children: [
                   _buildSkipPrevious(),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: _currWidth / 14),
-                    child: _buildPlayAndOthers(model, theme),
+                    padding: EdgeInsets.symmetric(horizontal: _width / 14),
+                    child: _buildPlayAndOthers(theme),
                   ),
                   _buildSkipNext(),
                 ],
@@ -137,11 +159,11 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
   }
 
-  Widget _buildPlayAndOthers(VideoModel model, ThemeData theme) {
+  Widget _buildPlayAndOthers(ThemeData theme) {
     return _buildIconControl(
-      () => _openExternally(model),
+      () => _openExternally(),
       _isExternallyOpened ? Icons.replay : Icons.play_arrow,
-      _currWidth / 10,
+      _width / 10,
     );
   }
 
@@ -158,13 +180,13 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                 controller.markVideoWatched();
               },
         Icons.check_outlined,
-        _currWidth / 14,
+        _width / 14,
       );
     }
     return _buildIconControl(
       isEnabled ? () {} : null,
       Icons.skip_next,
-      _currWidth / 14,
+      _width / 14,
     );
   }
 
@@ -173,11 +195,11 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     return _buildIconControl(
       isEnabled ? () {} : null,
       Icons.skip_previous,
-      _currWidth / 14,
+      _width / 14,
     );
   }
 
-  Stack _buildStack(VideoModel model, BuildContext context) {
+  Stack _buildStack(BuildContext context) {
     final imageUrl =
         model.thumbnails.maxresUrl ??
         model.thumbnails.standardUrl ??
@@ -197,12 +219,12 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
             ),
           ),
         ),
-        _buildControls(model, context),
+        _buildControls(context),
       ],
     );
   }
 
-  Future<void> _openExternally(VideoModel model) async {
+  Future<void> _openExternally() async {
     setState(() {
       _isExternallyOpened = true;
     });
