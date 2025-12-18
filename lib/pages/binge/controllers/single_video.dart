@@ -1,6 +1,6 @@
 import 'package:bingetube/pages/binge/controllers/base_controller.dart';
 
-class SingleVideoBingeController implements BaseBingeController {
+class SingleVideoBingeController extends BaseBingeController {
   final String videoId;
 
   SingleVideoBingeController(this.videoId);
@@ -11,4 +11,9 @@ class SingleVideoBingeController implements BaseBingeController {
   @override
   String get activeVideoId => videoId;
 
+  @override
+  bool get isNextVideoExists => false;
+
+  @override
+  bool get isPrevVideoExists => false;
 }

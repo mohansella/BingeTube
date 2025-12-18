@@ -1,3 +1,4 @@
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/pages/binge/controllers/single_video.dart';
 
 enum BingeControllerType {
@@ -12,7 +13,6 @@ enum BingeControllerType {
 enum BingeControllerParam { id, type }
 
 abstract class BingeController {
-
   String get pageTitle;
 
   factory BingeController(Map<String, String> params) {
@@ -27,6 +27,11 @@ abstract class BingeController {
     }
   }
 
+  Future<VideoModel> getActiveVideoModel();
   String get activeVideoId;
-}
+  bool get isPrevVideoExists;
+  bool get isNextVideoExists;
 
+  void markVideoStarted();
+  void markVideoWatched();
+}

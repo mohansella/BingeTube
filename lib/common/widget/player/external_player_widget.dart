@@ -2,8 +2,8 @@ import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/access/videos.dart';
-import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,20 +11,23 @@ import 'package:url_launcher/url_launcher.dart';
 class ExternalPlayerWidget extends PlayerWidget {
   static final _logger = LogManager.getLogger('ExternalPlayerWidget');
 
-  const ExternalPlayerWidget(super.videoId, {super.key}) : super.internal();
+  const ExternalPlayerWidget(super.controller, {super.key}) : super.internal();
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ExternalPlayerState();
 }
 
 class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
-  final videoDao = VideosDao(Database());
   double _currWidth = 0;
+
+  bool _isExternallyOpened = false;
+  bool _isMarkWatched = false;
+  BingeController get controller => widget.controller;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<VideoModel>(
-      future: videoDao.getVideoModelById(widget.videoId),
+      future: controller.getActiveVideoModel(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == .waiting) {
           return const CircularProgressIndicator();
@@ -59,33 +62,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
   }
 
-  Stack _buildStack(VideoModel model, BuildContext context) {
-    final imageUrl =
-        model.thumbnails.maxresUrl ??
-        model.thumbnails.standardUrl ??
-        model.thumbnails.highUrl;
-    return Stack(
-      fit: .expand,
-      children: [
-        ColoredBox(color: Colors.black),
-        Image.network(imageUrl),
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: const [0.0, 0.25],
-              colors: [Colors.black.withAlpha(200), Colors.transparent],
-            ),
-          ),
-        ),
-        _buildControls(model, context),
-      ],
-    );
-  }
-
   _buildControls(VideoModel model, BuildContext context) {
-    final appFontSize = ref.watch(ConfigProviders.appFontSize);
+    final appFontSize = ref.read(ConfigProviders.appFontSize);
     final theme = Themes.dark(appFontSize);
     return Theme(
       data: theme,
@@ -94,7 +72,12 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         child: Stack(
           children: [
             InkWell(
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                ExternalPlayerWidget._logger.info(
+                  'going back since back button clicked',
+                );
+                Navigator.pop(context);
+              },
               child: Tooltip(
                 message: 'back',
                 child: Icon(Icons.arrow_back, size: _currWidth / 20),
@@ -126,41 +109,12 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
               child: Row(
                 mainAxisAlignment: .center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(140),
-                      shape: .circle,
-                    ),
-                    child: Icon(Icons.skip_previous, size: _currWidth / 14),
-                  ),
+                  _buildSkipPrevious(),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: _currWidth / 14),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(140),
-                        shape: .circle,
-                      ),
-                      child: InkWell(
-                        onTap: () {
-                          ExternalPlayerWidget._logger.info(
-                            'opening externally id:${model.video.id} title: ${model.snippet.title}',
-                          );
-                          final url = Uri.parse(
-                            'https://www.youtube.com/watch?v=${model.video.id}',
-                          );
-                          launchUrl(url);
-                        },
-                        child: Icon(Icons.play_arrow, size: _currWidth / 10),
-                      ),
-                    ),
+                    child: _buildPlayAndOthers(model, theme),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(140),
-                      shape: .circle,
-                    ),
-                    child: Icon(Icons.skip_next, size: _currWidth / 14),
-                  ),
+                  _buildSkipNext(),
                 ],
               ),
             ),
@@ -168,5 +122,99 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         ),
       ),
     );
+  }
+
+  Widget _buildIconControl(void Function()? onTap, IconData icon, double size) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withAlpha(140),
+          shape: .circle,
+        ),
+        child: Icon(
+          icon,
+          size: size,
+          color: onTap == null ? Colors.white30 : Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlayAndOthers(VideoModel model, ThemeData theme) {
+    return _buildIconControl(
+      () => _openExternally(model),
+      _isExternallyOpened ? Icons.replay : Icons.play_arrow,
+      _currWidth / 10,
+    );
+  }
+
+  Widget _buildSkipNext() {
+    final isEnabled = controller.isPrevVideoExists;
+    if (_isExternallyOpened) {
+      return _buildIconControl(
+        _isMarkWatched
+            ? null
+            : () {
+                setState(() {
+                  _isMarkWatched = true;
+                });
+                controller.markVideoWatched();
+              },
+        Icons.check_outlined,
+        _currWidth / 14,
+      );
+    }
+    return _buildIconControl(
+      isEnabled ? () {} : null,
+      Icons.skip_next,
+      _currWidth / 14,
+    );
+  }
+
+  Widget _buildSkipPrevious() {
+    final isEnabled = controller.isNextVideoExists;
+    return _buildIconControl(
+      isEnabled ? () {} : null,
+      Icons.skip_previous,
+      _currWidth / 14,
+    );
+  }
+
+  Stack _buildStack(VideoModel model, BuildContext context) {
+    final imageUrl =
+        model.thumbnails.maxresUrl ??
+        model.thumbnails.standardUrl ??
+        model.thumbnails.highUrl;
+    return Stack(
+      fit: .expand,
+      children: [
+        ColoredBox(color: Colors.black),
+        Image.network(imageUrl),
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const [0.0, 0.25],
+              colors: [Colors.black.withAlpha(200), Colors.transparent],
+            ),
+          ),
+        ),
+        _buildControls(model, context),
+      ],
+    );
+  }
+
+  Future<void> _openExternally(VideoModel model) async {
+    setState(() {
+      _isExternallyOpened = true;
+    });
+    ExternalPlayerWidget._logger.info(
+      'opening externally id:${model.video.id} title: ${model.snippet.title}',
+    );
+    final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
+    controller.markVideoStarted();
+    await launchUrl(url);
   }
 }
