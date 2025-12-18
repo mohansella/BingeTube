@@ -11,7 +11,8 @@ import 'package:url_launcher/url_launcher.dart';
 class ExternalPlayerWidget extends PlayerWidget {
   static final _logger = LogManager.getLogger('ExternalPlayerWidget');
 
-  const ExternalPlayerWidget(super.controller, {super.key}) : super.internal();
+  const ExternalPlayerWidget(super.controller, super.onBack, {super.key})
+    : super.internal();
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ExternalPlayerState();
@@ -72,12 +73,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         child: Stack(
           children: [
             InkWell(
-              onTap: () {
-                ExternalPlayerWidget._logger.info(
-                  'going back since back button clicked',
-                );
-                Navigator.pop(context);
-              },
+              onTap: widget.onBack,
               child: Tooltip(
                 message: 'back',
                 child: Icon(Icons.arrow_back, size: _currWidth / 20),
