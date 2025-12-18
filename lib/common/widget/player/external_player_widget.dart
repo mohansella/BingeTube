@@ -24,7 +24,7 @@ class ExternalPlayerWidget extends PlayerWidget {
 
 class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   VideoModel? _model;
-  bool _loading = false;
+  bool _loading = true;
   Object? _error;
 
   double _width = 0;
@@ -63,6 +63,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     if (_error != null) {
       return Text('Error: $_error');
     }
+
     return LayoutBuilder(
       builder: (context, constrains) {
         final aspectWidth = constrains.maxHeight * 16.0 / 0.9;

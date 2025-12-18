@@ -100,7 +100,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
         child: Row(
           children: [
             Image.network(
-              video.thumbnails.defaultUrl,
+              video.thumbnails.mediumUrl,
               width: 160,
               height: 90,
               fit: .cover,
