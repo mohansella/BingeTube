@@ -16,7 +16,8 @@ class SearchChannelWidget extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _SearchChannelState();
 }
 
-class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
+class _SearchChannelState extends ConsumerState<SearchChannelWidget>
+    with AutomaticKeepAliveClientMixin {
   bool _isValidQuery = false;
   bool _isLoaded = false;
   List<ChannelModel>? _channels;
@@ -45,6 +46,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var text = '';
     if (!_isValidQuery) {
       text = 'Search channels to add to your collection';
@@ -131,4 +133,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget> {
       );
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
