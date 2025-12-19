@@ -18,7 +18,8 @@ class SearchVideoWidget extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _SearchVideoState();
 }
 
-class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
+class _SearchVideoState extends ConsumerState<SearchVideoWidget>
+    with AutomaticKeepAliveClientMixin {
   bool _isValidQuery = false;
   bool _isLoaded = false;
   List<VideoModel>? _videos;
@@ -47,6 +48,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var text = '';
     if (!_isValidQuery) {
       text = 'Search Videos to add to your collection';
@@ -160,4 +162,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget> {
       );
     }
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
