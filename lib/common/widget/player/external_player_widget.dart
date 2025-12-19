@@ -32,6 +32,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
 
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
+
+  final _scrollController = ScrollController();
   BingeController get controller => widget.controller;
   VideoModel get model => _model!;
 
@@ -58,7 +60,39 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           _width = constrains.maxWidth;
           _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
         }
-        return _buildStack(context);
+        return NotificationListener<ScrollEndNotification>(
+          onNotification: _scrollEndListener,
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverAppBar(
+                automaticallyImplyLeading: false,
+                expandedHeight: _height,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: _buildPlayerStack(),
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _PlaylistTitleDelegate(
+                  minHeight: 60.0,
+                  maxHeight: 60.0,
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    color: Colors.grey,
+                    child: Text('Title'),
+                  ),
+                ),
+              ),
+              SliverList.list(
+                children: List.generate(
+                  100,
+                  (i) => Text('$i', textAlign: .center),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -80,18 +114,6 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
             _loading = false;
           });
         });
-  }
-
-  Widget _buildChild() {
-    ExternalPlayerWidget._logger.info('width:$_width height:$_height');
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SizedBox(height: _height),
-          widget.child,
-        ],
-      ),
-    );
   }
 
   Widget _buildControls(BuildContext context) {
@@ -228,10 +250,6 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
   }
 
-  Stack _buildStack(BuildContext context) {
-    return Stack(children: [_buildPlayerStack(), _buildChild()]);
-  }
-
   Container _buildTopGradient() {
     return Container(
       decoration: BoxDecoration(
@@ -255,5 +273,64 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
     controller.markVideoStarted();
     await launchUrl(url);
+  }
+
+  bool _scrollEndListener(notification) {
+    if (notification.depth == 0) {
+      final offset = _scrollController.offset;
+      Future.microtask(() {
+        if (offset > 0 && offset < _height) {
+          if (offset > _height / 2) {
+            _scrollController.animateTo(
+              _height,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+            );
+          } else {
+            _scrollController.animateTo(
+              0.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+            );
+          }
+        }
+      });
+    }
+    return false;
+  }
+}
+
+// Reuse the same delegate from before
+class _PlaylistTitleDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _PlaylistTitleDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_PlaylistTitleDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }
