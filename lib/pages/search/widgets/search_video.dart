@@ -11,8 +11,9 @@ class SearchVideoWidget extends ConsumerStatefulWidget {
   static final Logger _logger = LogManager.getLogger('SearchVideoWidget');
 
   final String? query;
+  final void Function(ScrollController) scrollListener;
 
-  const SearchVideoWidget(this.query, {super.key});
+  const SearchVideoWidget(this.query, this.scrollListener, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SearchVideoState();
@@ -20,6 +21,7 @@ class SearchVideoWidget extends ConsumerStatefulWidget {
 
 class _SearchVideoState extends ConsumerState<SearchVideoWidget>
     with AutomaticKeepAliveClientMixin {
+  final _scrollController = ScrollController();
   bool _isValidQuery = false;
   bool _isLoaded = false;
   List<VideoModel>? _videos;
@@ -27,24 +29,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
   _SearchVideoState();
 
   @override
-  void initState() {
-    super.initState();
-    _processRequest(widget.query);
-  }
-
-  @override
-  void didUpdateWidget(covariant SearchVideoWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.query != oldWidget.query) {
-      setState(() {
-        _isValidQuery = false;
-        _isLoaded = false;
-        _videos = null;
-      });
-      _processRequest(widget.query);
-    }
-  }
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +45,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
         text = 'No results found';
       } else {
         return SingleChildScrollView(
+          controller: _scrollController,
           child: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Column(
@@ -90,6 +76,35 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
         child: Text(text, textAlign: .center),
       );
     }
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchVideoWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.query != oldWidget.query) {
+      setState(() {
+        _isValidQuery = false;
+        _isLoaded = false;
+        _videos = null;
+      });
+      _processRequest(widget.query);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(
+      () => widget.scrollListener(_scrollController),
+    );
+    _processRequest(widget.query);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Card _buildVideoCard(VideoModel video) {
@@ -162,7 +177,4 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
       );
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

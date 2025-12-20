@@ -18,6 +18,7 @@ class SearchPageState extends ConsumerState<SearchPage>
   late String apiKey;
 
   String? _searchQuery;
+  bool _showAppBar = true;
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class SearchPageState extends ConsumerState<SearchPage>
 
   @override
   void dispose() {
+    _textController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -41,7 +43,40 @@ class SearchPageState extends ConsumerState<SearchPage>
   Widget build(BuildContext context) {
     apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
     return Scaffold(
-      appBar: AppBar(
+      body: Column(
+        children: [
+          _buildAppBar(context),
+          if (apiKey.isNotEmpty) ...[
+            _buildTabBar(),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  SearchChannelWidget(_searchQuery, _tabScrollListener),
+                  SearchVideoWidget(_searchQuery, _tabScrollListener),
+                ],
+              ),
+            ),
+          ] else ...[
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: const Text(
+                  'Add your YouTube API key to start searching',
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200),
+      height: _showAppBar ? kToolbarHeight : 0,
+      child: AppBar(
         title: SizedBox(
           height: 40,
           child: TextField(
@@ -64,55 +99,43 @@ class SearchPageState extends ConsumerState<SearchPage>
           ),
         ),
       ),
-      body: Column(
-        children: [
-          if (apiKey.isNotEmpty) ...[
-            TabBar(
-              controller: _tabController,
-              tabs: [
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.person),
-                      SizedBox(width: 8),
-                      Text('Channels'),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.ondemand_video),
-                      SizedBox(width: 8),
-                      Text('Videos'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  SearchChannelWidget(_searchQuery),
-                  SearchVideoWidget(_searchQuery),
-                ],
-              ),
-            ),
-          ] else ...[
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: const Text(
-                  'Add your YouTube API key to start searching',
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
     );
+  }
+
+  TabBar _buildTabBar() {
+    return TabBar(
+      controller: _tabController,
+      tabs: [
+        Tab(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.person),
+              SizedBox(width: 8),
+              Text('Channels'),
+            ],
+          ),
+        ),
+        Tab(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.ondemand_video),
+              SizedBox(width: 8),
+              Text('Videos'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _tabScrollListener(ScrollController controller) {
+    final newState = controller.offset <= 0;
+    if (newState != _showAppBar) {
+      setState(() {
+        _showAppBar = newState;
+      });
+    }
   }
 }
