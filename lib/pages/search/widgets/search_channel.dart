@@ -9,8 +9,9 @@ class SearchChannelWidget extends ConsumerStatefulWidget {
   static final Logger _logger = LogManager.getLogger('SearchChannelWidget');
 
   final String? query;
+  final void Function(ScrollController) scrollListener;
 
-  const SearchChannelWidget(this.query, {super.key});
+  const SearchChannelWidget(this.query, this.scrollListener, {super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SearchChannelState();
@@ -18,6 +19,7 @@ class SearchChannelWidget extends ConsumerStatefulWidget {
 
 class _SearchChannelState extends ConsumerState<SearchChannelWidget>
     with AutomaticKeepAliveClientMixin {
+  final _scrollController = ScrollController();
   bool _isValidQuery = false;
   bool _isLoaded = false;
   List<ChannelModel>? _channels;
@@ -25,24 +27,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
   _SearchChannelState();
 
   @override
-  void initState() {
-    super.initState();
-    processRequest(widget.query);
-  }
-
-  @override
-  void didUpdateWidget(covariant SearchChannelWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.query != oldWidget.query) {
-      setState(() {
-        _isValidQuery = false;
-        _isLoaded = false;
-        _channels = null;
-      });
-      processRequest(widget.query);
-    }
-  }
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +43,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
         text = 'No results found';
       } else {
         return ListView.builder(
+          controller: _scrollController,
           itemCount: channels.length,
           itemBuilder: (context, index) {
             final channel = channels[index];
@@ -108,6 +94,35 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
     }
   }
 
+  @override
+  void didUpdateWidget(covariant SearchChannelWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.query != oldWidget.query) {
+      setState(() {
+        _isValidQuery = false;
+        _isLoaded = false;
+        _channels = null;
+      });
+      processRequest(widget.query);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(
+      () => widget.scrollListener(_scrollController),
+    );
+    processRequest(widget.query);
+  }
+
   void processRequest(String? query) async {
     if (query == null) {
       return;
@@ -133,7 +148,4 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
       );
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
