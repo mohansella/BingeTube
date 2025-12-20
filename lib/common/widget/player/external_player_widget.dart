@@ -39,17 +39,9 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return CircularProgressIndicator();
-    }
-
-    if (_error != null) {
-      return Text('Error: $_error');
-    }
-
     return LayoutBuilder(
       builder: (context, constrains) {
-        final aspectWidth = constrains.maxHeight * 16.0 / 0.9;
+        final aspectWidth = constrains.maxHeight * 16.0 / 9.0;
         final aspectHeight = constrains.maxWidth * 9.0 / 16.0;
         final maxWidth = constrains.maxWidth;
         final maxHeight = constrains.maxHeight;
@@ -200,9 +192,9 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
 
   Widget _buildPlayerStack() {
     final imageUrl =
-        model.thumbnails.maxresUrl ??
-        model.thumbnails.standardUrl ??
-        model.thumbnails.highUrl;
+        _model?.thumbnails.maxresUrl ??
+        _model?.thumbnails.standardUrl ??
+        _model?.thumbnails.highUrl;
     return SizedBox(
       height: _height,
       width: double.infinity,
@@ -210,9 +202,13 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         fit: .expand,
         children: [
           ColoredBox(color: Colors.black),
-          Image.network(imageUrl, fit: .contain),
           _buildTopGradient(),
-          _buildControls(context),
+          if (_model == null) ...[
+            Center(child: CircularProgressIndicator()),
+          ] else ...[
+            Image.network(imageUrl!, fit: .contain),
+            _buildControls(context),
+          ],
         ],
       ),
     );
