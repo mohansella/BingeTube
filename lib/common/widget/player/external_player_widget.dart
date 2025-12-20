@@ -191,10 +191,6 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildPlayerStack() {
-    final imageUrl =
-        _model?.thumbnails.maxresUrl ??
-        _model?.thumbnails.standardUrl ??
-        _model?.thumbnails.highUrl;
     return SizedBox(
       height: _height,
       width: double.infinity,
@@ -202,16 +198,26 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         fit: .expand,
         children: [
           ColoredBox(color: Colors.black),
-          _buildTopGradient(),
-          if (_model == null) ...[
+          if (_loading) ...[
             Center(child: CircularProgressIndicator()),
+          ] else if (_error != null) ...[
+            Center(child: Text('error: $_error')),
           ] else ...[
-            Image.network(imageUrl!, fit: .contain),
+            _buildImage(),
+            _buildTopGradient(),
             _buildControls(context),
           ],
         ],
       ),
     );
+  }
+
+  Widget _buildImage() {
+    final imageUrl =
+        model.thumbnails.maxresUrl ??
+        model.thumbnails.standardUrl ??
+        model.thumbnails.highUrl;
+    return Image.network(imageUrl, fit: .contain);
   }
 
   Widget _buildSkipNext() {
