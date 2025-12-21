@@ -6,6 +6,12 @@ import 'package:bingetube/pages/binge/binge_controller.dart';
 abstract class BaseBingeController implements BingeController {
   static final _logger = LogManager.getLogger('BaseBingeController');
 
+  final String initialHeroId;
+  final String initialHeroImg;
+
+  BaseBingeController({required this.initialHeroId, required this.initialHeroImg});
+
+
   final videoDao = VideosDao(Database());
 
   @override

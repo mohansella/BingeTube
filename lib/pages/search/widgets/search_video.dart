@@ -1,7 +1,7 @@
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/pages/binge/binge_page.dart';
+import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -108,18 +108,26 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
   }
 
   Card _buildVideoCard(VideoModel video) {
+    final thumbnailUrl = video.thumbnails.mediumUrl;
     return Card(
       clipBehavior: .hardEdge,
       child: InkWell(
         onTap: () {
-          context.push(BingePage.buildPath(.singleVideo, video.video.id));
+          context.push(
+            BingeController.buildPath(
+              type: .singleVideo,
+              id: video.video.id,
+              heroId: video.video.id,
+              heroImg: thumbnailUrl,
+            ),
+          );
         },
         child: Row(
           children: [
             Hero(
               tag: video.video.id,
               child: Image.network(
-                video.thumbnails.mediumUrl,
+                thumbnailUrl,
                 width: 160,
                 height: 90,
                 fit: .cover,

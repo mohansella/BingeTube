@@ -1,5 +1,7 @@
 import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/controllers/single_video.dart';
+import 'package:bingetube/pages/pages.dart';
 
 enum BingeControllerType {
   singleVideo,
@@ -10,18 +12,27 @@ enum BingeControllerType {
   systemSeries,
 }
 
-enum BingeControllerParam { id, type }
+enum BingeControllerParam { type, id, heroId, heroImg }
 
 abstract class BingeController {
-  String get pageTitle;
+  static final _logger = LogManager.getLogger('BingeController');
+
+  String get heroId;
+  String get heroImg;
 
   factory BingeController(Map<String, String> params) {
-    final id = params[BingeControllerParam.id.name]!;
     final typeValue = params[BingeControllerParam.type.name]!;
+    final id = params[BingeControllerParam.id.name]!;
+    final heroId = params[BingeControllerParam.heroId.name]!;
+    final heroImg = params[BingeControllerParam.heroImg.name]!;
     final controllerType = BingeControllerType.values.byName(typeValue);
     switch (controllerType) {
       case .singleVideo:
-        return SingleVideoBingeController(id);
+        return SingleVideoBingeController(
+          id,
+          initialHeroId: heroId,
+          initialHeroImg: heroImg,
+        );
       default:
         throw StateError('unimpelemented');
     }
@@ -34,4 +45,20 @@ abstract class BingeController {
 
   void markVideoStarted();
   void markVideoWatched();
+
+  static String buildPath({
+    required BingeControllerType type,
+    required String id,
+    required String heroId,
+    required String heroImg,
+  }) {
+    final buffer = StringBuffer(Pages.binge.path)
+      ..write('?type=${type.name}')
+      ..write('&id=$id')
+      ..write('&heroId=$heroId')
+      ..write('&heroImg=$heroImg');
+    final toReturn = buffer.toString();
+    _logger.info('built path: $toReturn');
+    return toReturn;
+  }
 }
