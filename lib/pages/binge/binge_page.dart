@@ -1,13 +1,11 @@
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/db/access/videos.dart';
-import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class BingePage extends ConsumerStatefulWidget {
-  static final _logger = LogManager.getLogger('BingePage');
   final Map<String, String> params;
 
   const BingePage(this.params, {super.key});
@@ -18,20 +16,13 @@ class BingePage extends ConsumerStatefulWidget {
 
 class _BingePageState extends ConsumerState<BingePage> {
   late BingeController _controller;
-  List<VideoModel>? _videoModels;
+  late Stream<List<VideoModel>> _videoModelsStream;
 
   @override
   void initState() {
     super.initState();
     _controller = BingeController(widget.params);
-    _controller
-        .getAllVideoModels()
-        .then(
-          (val) => setState(() {
-            _videoModels = val;
-          }),
-        )
-        .onError((e, s) => BingePage._logger.shout("error:$e. stack:$s"));
+    _videoModelsStream = _controller.streamAllVideoModels();
   }
 
   @override
@@ -46,47 +37,57 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildPlaylist() {
-    if (_videoModels == null) {
-      return SliverToBoxAdapter(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      );
-    }
-
-    final models = _videoModels!;
-    return SliverList.builder(
-      itemCount: models.length,
-      itemBuilder: (context, pos) => _buildVideoCard(context, models[pos]),
+    return StreamBuilder(
+      stream: _videoModelsStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final models = snapshot.data!;
+          return SliverList.builder(
+            itemCount: models.length,
+            itemBuilder: (context, pos) =>
+                _buildVideoCard(context, models[pos]),
+          );
+        }
+        return SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        );
+      },
     );
   }
 
-  SliverPersistentHeader _buildPlaylistHeader(BuildContext context) {
-    return SliverPersistentHeader(
-      pinned: true,
-      delegate: _BingeTitleDelegate(
-        minHeight: 50,
-        maxHeight: 60,
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16, top: 8),
-            child: Column(
-              crossAxisAlignment: .center,
-              children: [
-                Text(
-                  _controller.title,
-                  style: Theme.of(context).textTheme.titleMedium,
+  Widget _buildPlaylistHeader(BuildContext context) {
+    return StreamBuilder(
+      stream: _videoModelsStream,
+      builder: (context, snapshot) {
+        return SliverPersistentHeader(
+          pinned: true,
+          delegate: _BingeTitleDelegate(
+            minHeight: 50,
+            maxHeight: 60,
+            child: Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, top: 8),
+                child: Column(
+                  crossAxisAlignment: .center,
+                  children: [
+                    Text(
+                      _controller.title,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    if (snapshot.hasData) ...[
+                      Text('${snapshot.data!.length} videos'),
+                    ],
+                  ],
                 ),
-                if (_videoModels != null) ...[
-                  Text('${_videoModels!.length} videos'),
-                ],
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
