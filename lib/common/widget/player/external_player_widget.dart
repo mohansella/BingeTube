@@ -287,26 +287,31 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   bool _scrollEndListener(notification) {
-    if (notification.depth == 0) {
-      final offset = _scrollController.offset;
-      Future.microtask(() {
-        if (offset > 0 && offset < _height) {
-          if (offset > _height / 2) {
-            _scrollController.animateTo(
-              _height,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-            );
-          } else {
-            _scrollController.animateTo(
-              0.0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut,
-            );
-          }
-        }
-      });
+    bool toReturn = false;
+    if (notification.depth != 0) {
+      return toReturn;
     }
-    return false;
+    final offset = _scrollController.offset;
+    if (_scrollController.position.atEdge && offset != 0) {
+      return toReturn;
+    }
+    Future.microtask(() {
+      if (offset > 0 && offset < _height) {
+        if (offset > _height / 2) {
+          _scrollController.animateTo(
+            _height,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        } else {
+          _scrollController.animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
+      }
+    });
+    return toReturn;
   }
 }
