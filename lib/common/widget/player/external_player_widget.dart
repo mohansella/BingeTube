@@ -191,36 +191,59 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildPlayerStack() {
-    return Hero(
-      tag: widget.controller.activeVideoId,
-      child: SizedBox(
-        height: _height,
-        width: double.infinity,
-        child: Stack(
-          fit: .expand,
-          children: [
-            ColoredBox(color: Colors.black),
-            if (_loading) ...[
-              Center(child: CircularProgressIndicator()),
-            ] else if (_error != null) ...[
-              Center(child: Text('error: $_error')),
-            ] else ...[
-              _buildImage(),
-              _buildTopGradient(),
-              _buildControls(context),
-            ],
+    return SizedBox(
+      height: _height,
+      width: double.infinity,
+      child: Stack(
+        fit: .expand,
+        children: [
+          ColoredBox(color: Colors.black),
+          _buildImage(),
+          if (_loading) ...[
+            Center(child: CircularProgressIndicator()),
+          ] else if (_error != null) ...[
+            Center(child: Text('error: $_error')),
+          ] else ...[
+            _buildTopGradient(),
+            _buildControls(context),
           ],
-        ),
+        ],
       ),
     );
   }
 
   Widget _buildImage() {
     final imageUrl =
-        model.thumbnails.maxresUrl ??
-        model.thumbnails.standardUrl ??
-        model.thumbnails.highUrl;
-    return Image.network(imageUrl, fit: .contain);
+        _model?.thumbnails.maxresUrl ??
+        _model?.thumbnails.standardUrl ??
+        _model?.thumbnails.highUrl ??
+        widget.controller.heroImg;
+    return Hero(
+      tag: widget.controller.heroId,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Low-res image (always present)
+          Image.network(widget.controller.heroImg, fit: BoxFit.contain),
+
+          // High-res image fades in ON TOP
+          Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
+            frameBuilder: (context, child, frame, wasSyncLoaded) {
+              if (wasSyncLoaded) return child;
+
+              return AnimatedOpacity(
+                opacity: frame == null ? 0 : 1,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                child: child,
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSkipNext() {
