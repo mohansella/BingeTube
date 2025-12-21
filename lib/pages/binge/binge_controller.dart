@@ -18,9 +18,19 @@ abstract class BingeController {
   static final _logger = LogManager.getLogger('BingeController');
 
   String get title;
+  String get activeVideoId;
 
   String get heroId;
   String get heroImg;
+
+  bool get isPrevVideoExists;
+  bool get isNextVideoExists;
+
+  Future<VideoModel> getActiveVideoModel();
+  Stream<List<VideoModel>> streamAllVideoModels();
+
+  void markVideoStarted();
+  void markVideoWatched();
 
   factory BingeController(Map<String, String> params) {
     final typeValue = params[BingeControllerParam.type.name]!;
@@ -39,15 +49,6 @@ abstract class BingeController {
         throw StateError('unimpelemented');
     }
   }
-
-  Future<VideoModel> getActiveVideoModel();
-  Future<List<VideoModel>> getAllVideoModels();
-  String get activeVideoId;
-  bool get isPrevVideoExists;
-  bool get isNextVideoExists;
-
-  void markVideoStarted();
-  void markVideoWatched();
 
   static String buildPath({
     required BingeControllerType type,

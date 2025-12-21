@@ -28,15 +28,9 @@ class SingleVideoBingeController extends BaseBingeController {
   @override
   String get title => 'Playing Single Video: $activeVideoId';
 
-  Future<List<VideoModel>>? _videoModelFuture;
   @override
-  Future<List<VideoModel>> getAllVideoModels() async {
-    if (_videoModelFuture != null) {
-      return _videoModelFuture!;
-    }
-    final videoModel = await videoDao.getVideoModelById(videoId);
-    final videoModels = [videoModel];
-    _videoModelFuture = Future.value(videoModels);
-    return videoModels;
+  Stream<List<VideoModel>> streamAllVideoModels() {
+    final videoModel = videoDao.getVideoModelById(videoId);
+    return Stream.fromFuture(videoModel).map((m) => [m]).asBroadcastStream();
   }
 }
