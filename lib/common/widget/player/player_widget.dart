@@ -5,22 +5,22 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 abstract class PlayerWidget extends ConsumerStatefulWidget {
   final BingeController controller;
-  final Widget child;
+  final List<Widget> slivers;
   final Function() onBack;
 
   factory PlayerWidget({
     Key? key,
     required BingeController controller,
     required Function() onBack,
-    required Widget child,
+    required List<Widget> slivers,
   }) {
-    return ExternalPlayerWidget(controller: controller, onBack: onBack, child: child);
+    return ExternalPlayerWidget(controller: controller, onBack: onBack, slivers: slivers);
   }
 
   const PlayerWidget.internal({
     super.key,
     required this.controller,
     required this.onBack,
-    required this.child,
+    required this.slivers,
   });
 }

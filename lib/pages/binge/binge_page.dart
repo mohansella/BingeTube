@@ -27,8 +27,59 @@ class _BingePageState extends ConsumerState<BingePage> {
       body: PlayerWidget(
         controller: _controller,
         onBack: () => Navigator.pop(context),
-        child: Text('Hi'),
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _PlaylistTitleDelegate(
+              minHeight: 60.0,
+              maxHeight: 200.0,
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                color: Colors.grey,
+                child: Text('Title'),
+              ),
+            ),
+          ),
+          SliverList.list(
+            children: List.generate(100, (i) => Text('$i', textAlign: .center)),
+          ),
+        ],
       ),
     );
+  }
+}
+
+// Reuse the same delegate from before
+class _PlaylistTitleDelegate extends SliverPersistentHeaderDelegate {
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  _PlaylistTitleDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_PlaylistTitleDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }
