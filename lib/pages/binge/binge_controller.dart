@@ -1,6 +1,6 @@
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/pages/binge/controllers/single_video.dart';
+import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
 import 'package:bingetube/pages/pages.dart';
 
 enum BingeControllerType {
