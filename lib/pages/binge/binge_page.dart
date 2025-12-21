@@ -1,9 +1,13 @@
 import 'package:bingetube/common/widget/player/player_widget.dart';
+import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class BingePage extends ConsumerStatefulWidget {
+  static final _logger = LogManager.getLogger('BingePage');
   final Map<String, String> params;
 
   const BingePage(this.params, {super.key});
@@ -14,11 +18,20 @@ class BingePage extends ConsumerStatefulWidget {
 
 class _BingePageState extends ConsumerState<BingePage> {
   late BingeController _controller;
+  List<VideoModel>? _videoModels;
 
   @override
   void initState() {
     super.initState();
     _controller = BingeController(widget.params);
+    _controller
+        .getAllVideoModels()
+        .then(
+          (val) => setState(() {
+            _videoModels = val;
+          }),
+        )
+        .onError((e, s) => BingePage._logger.shout("error:$e. stack:$s"));
   }
 
   @override
@@ -27,35 +40,115 @@ class _BingePageState extends ConsumerState<BingePage> {
       body: PlayerWidget(
         controller: _controller,
         onBack: () => Navigator.pop(context),
-        slivers: [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _PlaylistTitleDelegate(
-              minHeight: 60.0,
-              maxHeight: 200.0,
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                color: Colors.grey,
-                child: Text('Title'),
-              ),
+        slivers: [_buildPlaylistHeader(context), _buildPlaylist()],
+      ),
+    );
+  }
+
+  Widget _buildPlaylist() {
+    if (_videoModels == null) {
+      return SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    final models = _videoModels!;
+    return SliverList.builder(
+      itemCount: models.length,
+      itemBuilder: (context, pos) => _buildVideoCard(context, models[pos]),
+    );
+  }
+
+  SliverPersistentHeader _buildPlaylistHeader(BuildContext context) {
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _BingeTitleDelegate(
+        minHeight: 50,
+        maxHeight: 60,
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16, top: 8),
+            child: Column(
+              crossAxisAlignment: .center,
+              children: [
+                Text(
+                  _controller.title,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                if (_videoModels != null) ...[
+                  Text('${_videoModels!.length} videos'),
+                ],
+              ],
             ),
           ),
-          SliverList.list(
-            children: List.generate(100, (i) => Text('$i', textAlign: .center)),
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Card _buildVideoCard(BuildContext context, VideoModel video) {
+    final thumbnailUrl = video.thumbnails.mediumUrl;
+    return Card(
+      child: InkWell(
+        onTap: () {
+          context.replace(
+            BingeController.buildPath(
+              type: .singleVideo,
+              id: video.video.id,
+              heroId: video.video.id,
+              heroImg: thumbnailUrl,
+            ),
+          );
+        },
+        child: Row(
+          children: [
+            Image.network(thumbnailUrl, width: 160, height: 90, fit: .cover),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: .start,
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    video.snippet.title,
+                    maxLines: 2,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w500),
+                  ),
+                  Text(
+                    video.snippet.channelTitle,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w200),
+                  ),
+                  Text(
+                    video.snippet.description,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w300),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }
 }
 
 // Reuse the same delegate from before
-class _PlaylistTitleDelegate extends SliverPersistentHeaderDelegate {
+class _BingeTitleDelegate extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;
   final Widget child;
 
-  _PlaylistTitleDelegate({
+  _BingeTitleDelegate({
     required this.minHeight,
     required this.maxHeight,
     required this.child,
@@ -77,7 +170,7 @@ class _PlaylistTitleDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(_PlaylistTitleDelegate oldDelegate) {
+  bool shouldRebuild(_BingeTitleDelegate oldDelegate) {
     return maxHeight != oldDelegate.maxHeight ||
         minHeight != oldDelegate.minHeight ||
         child != oldDelegate.child;
