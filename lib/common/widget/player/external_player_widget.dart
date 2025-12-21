@@ -191,23 +191,26 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildPlayerStack() {
-    return SizedBox(
-      height: _height,
-      width: double.infinity,
-      child: Stack(
-        fit: .expand,
-        children: [
-          ColoredBox(color: Colors.black),
-          if (_loading) ...[
-            Center(child: CircularProgressIndicator()),
-          ] else if (_error != null) ...[
-            Center(child: Text('error: $_error')),
-          ] else ...[
-            _buildImage(),
-            _buildTopGradient(),
-            _buildControls(context),
+    return Hero(
+      tag: widget.controller.activeVideoId,
+      child: SizedBox(
+        height: _height,
+        width: double.infinity,
+        child: Stack(
+          fit: .expand,
+          children: [
+            ColoredBox(color: Colors.black),
+            if (_loading) ...[
+              Center(child: CircularProgressIndicator()),
+            ] else if (_error != null) ...[
+              Center(child: Text('error: $_error')),
+            ] else ...[
+              _buildImage(),
+              _buildTopGradient(),
+              _buildControls(context),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
