@@ -17,6 +17,8 @@ enum BingeControllerParam { type, id, heroId, heroImg }
 abstract class BingeController {
   static final _logger = LogManager.getLogger('BingeController');
 
+  String get title;
+
   String get heroId;
   String get heroImg;
 
@@ -39,6 +41,7 @@ abstract class BingeController {
   }
 
   Future<VideoModel> getActiveVideoModel();
+  Future<List<VideoModel>> getAllVideoModels();
   String get activeVideoId;
   bool get isPrevVideoExists;
   bool get isNextVideoExists;

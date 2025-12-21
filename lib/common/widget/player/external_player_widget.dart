@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/config/configuration.dart';
@@ -92,30 +94,31 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildControls(BuildContext context) {
+    final w = min(max(400, _width), 600);
     final appFontSize = ref.read(ConfigProviders.appFontSize);
     final theme = Themes.dark(appFontSize);
     return Theme(
       data: theme,
       child: Padding(
-        padding: EdgeInsets.all(_width / 40),
+        padding: EdgeInsets.all(w / 40),
         child: Stack(
           children: [
             InkWell(
               onTap: widget.onBack,
               child: Tooltip(
                 message: 'back',
-                child: Icon(Icons.arrow_back, size: _width / 20),
+                child: Icon(Icons.arrow_back, size: w / 20),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: _width / 14),
+              padding: EdgeInsets.only(left: w / 14),
               child: Column(
                 crossAxisAlignment: .start,
                 children: [
                   Text(
                     model.snippet.title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: _width / 30,
+                      fontSize: w / 30,
                     ),
                     maxLines: 1,
                     overflow: .ellipsis,
@@ -123,7 +126,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                   Text(
                     model.snippet.channelTitle,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      fontSize: _width / 40,
+                      fontSize: w / 40,
                     ),
                   ),
                 ],
@@ -135,7 +138,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                 children: [
                   _buildSkipPrevious(),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: _width / 14),
+                    padding: EdgeInsets.symmetric(horizontal: w / 14),
                     child: _buildPlayAndOthers(theme),
                   ),
                   _buildSkipNext(),
