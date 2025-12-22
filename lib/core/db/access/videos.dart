@@ -39,7 +39,10 @@ class VideoModel {
   ],
 )
 class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
-  VideosDao(super.attachedDatabase);
+  late ChannelsDao _channelsDao;
+  VideosDao(super.attachedDatabase) {
+    _channelsDao = ChannelsDao(attachedDatabase);
+  }
 
   Future<void> upsertVideoModel(
     VideosCompanion video,
@@ -63,12 +66,10 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     });
   }
 
-  Future<VideoModel> getVideoModelById(String videoId) async {
-    final result = await getVideoModelByIds([videoId]);
-    return result[0];
-  }
-
-  Future<List<VideoModel>> getVideoModelByIds(List<String> videoIds) async {
+  JoinedSelectStatement<HasResultSet, dynamic> joinVideoAndChannelTables({
+    JoinedSelectStatement<HasResultSet, dynamic>? selectStatement,
+  }) {
+    final c = channels;
     final v = videos;
     final s = videoSnippets;
     final t = videoThumbnails;
@@ -77,50 +78,43 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     final si = videoStatistics;
     final p = videoProgress;
 
-    final query = select(v).join([
+    final sel = selectStatement ?? select(v).join([]);
+    final query = sel.join([
+      innerJoin(c, c.id.equalsExp(v.channelId)),
       innerJoin(s, s.id.equalsExp(v.id)),
       innerJoin(t, t.id.equalsExp(v.id)),
       innerJoin(cd, cd.id.equalsExp(v.id)),
       innerJoin(su, su.id.equalsExp(v.id)),
       innerJoin(si, si.id.equalsExp(v.id)),
       innerJoin(p, p.id.equalsExp(v.id)),
-    ])..where(v.id.isIn(videoIds));
+    ]);
 
-    final results = await query.get();
+    return _channelsDao.joinChannelTables(selectStatement: query);
+  }
 
-    //get channel models map to build video models
-    final channelIds = results.map((r) => r.readTable(v).channelId).toList();
-    final channelModels = await ChannelsDao(
-      attachedDatabase,
-    ).getChannelModelByIds(channelIds);
-    final channelIdVsModels = Map.fromEntries(
-      channelModels.map((m) => MapEntry(m.channel.id, m)),
+  VideoModel mapRowToModel(TypedResult result) {
+    return VideoModel(
+      video: result.readTable(videos),
+      snippet: result.readTable(videoSnippets),
+      thumbnails: result.readTable(videoThumbnails),
+      contentDetails: result.readTable(videoContentDetails),
+      status: result.readTable(videoStatuses),
+      statistics: result.readTable(videoStatistics),
+      progress: result.readTable(videoProgress),
+      channel: _channelsDao.mapRowToModel(result),
     );
-
-    final videoModels = results.map((result) {
-      final video = result.readTable(v);
-      return VideoModel(
-        video: video,
-        snippet: result.readTable(s),
-        thumbnails: result.readTable(t),
-        contentDetails: result.readTable(cd),
-        status: result.readTable(su),
-        statistics: result.readTable(si),
-        progress: result.readTable(p),
-        channel: channelIdVsModels[video.channelId]!,
-      );
-    }).toList();
-
-    final idVsModel = Map.fromEntries(
-      videoModels.map((m) => MapEntry(m.video.id, m)),
-    );
-    return videoIds.map((id) => idVsModel[id]!).toList();
   }
 
   Future<List<Video>> getVideosById(List<String> videoIds) async {
     final query = select(videos);
     query.where((id) => videos.id.isIn(videoIds));
     return query.get();
+  }
+
+  Future<VideoModel> getVideoModelById(String videoId) async {
+    final query = joinVideoAndChannelTables()..where(videos.id.equals(videoId));
+    final result = await query.getSingle();
+    return mapRowToModel(result);
   }
 
   Future<void> upsertVideoJsonData(item, {String? setag}) async {

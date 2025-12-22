@@ -38,7 +38,7 @@ class YoutubeApi {
     }, (err) => Failure(err));
   }
 
-  static Future<Result<List<ChannelModel>>> searchChannels(
+  static Future<Result<ChannelSearchModel>> searchChannels(
     WidgetRef ref,
     String query,
   ) async {
@@ -47,20 +47,20 @@ class YoutubeApi {
     final channelSearchSize = PageSizeConstants.channelEntriesInSearchPage;
     final nowTime = DateTime.now();
 
-    final searchResults = await searchDao.getChannelModels(query);
-    if (searchResults != null) {
-      final channelSearch = await searchDao.getChannelSearch(query);
-      final expiresAt = channelSearch.updatedAt.add(
+    final searchModel = await searchDao.getChannelSearchModel(query);
+    if (searchModel != null) {
+      final searchMeta = searchModel.meta;
+      final expiresAt = searchMeta.updatedAt.add(
         CacheConstants.syncChannelSearchResultAfter,
       );
       _logger.info(
-        'found ${searchResults.length} results in db for query: $query'
-        ' with updatedAt: ${channelSearch.updatedAt} and expiresAt : $expiresAt',
+        'found ${searchModel.channels.length} results in db for query: $query'
+        ' with updatedAt: ${searchMeta.updatedAt} and expiresAt : $expiresAt',
       );
       if (expiresAt.isBefore(nowTime)) {
         _logger.info('cache expired');
       } else {
-        return Success(searchResults);
+        return Success(searchModel);
       }
     }
 
@@ -132,12 +132,12 @@ class YoutubeApi {
     }
     searchDao.insertChannelSearch(query, channelIds);
 
-    final channelModels = await channelsDao.getChannelModelByIds(channelIds);
-    _logger.info('returning ${channelModels.length} models');
-    return Success(channelModels);
+    final model = await searchDao.getChannelSearchModel(query);
+    _logger.info('returning ${model?.channels.length} models');
+    return Success(model!);
   }
 
-  static Future<Result<List<VideoModel>>> searchVideos(
+  static Future<Result<VideoSearchModel>> searchVideos(
     WidgetRef ref,
     String query,
   ) async {
@@ -146,20 +146,20 @@ class YoutubeApi {
     final videoSearchSize = PageSizeConstants.videoEntriesInSearchPage;
     final nowTime = DateTime.now();
 
-    final searchResults = await searchDao.getVideoModels(query);
-    if (searchResults != null) {
-      final videoSearch = await searchDao.getVideoSearch(query);
+    final searchModel = await searchDao.getVideoSearchModel(query);
+    if (searchModel != null) {
+      final videoSearch = searchModel.meta;
       final expiresAt = videoSearch.updatedAt.add(
         CacheConstants.syncVideosSearchResultAfter,
       );
       _logger.info(
-        'found ${searchResults.length} results in db for query: $query'
+        'found ${searchModel.videos.length} results in db for query: $query'
         ' with updatedAt: ${videoSearch.updatedAt} and expiresAt : $expiresAt',
       );
       if (expiresAt.isBefore(nowTime)) {
         _logger.info('cache expired');
       } else {
-        return Success(searchResults);
+        return Success(searchModel);
       }
     }
 
@@ -252,9 +252,9 @@ class YoutubeApi {
     }
     searchDao.insertVideoSearch(query, videoIds);
 
-    final videoModels = await videosDao.getVideoModelByIds(videoIds);
-    _logger.info('returning ${videoModels.length} models');
-    return Success(videoModels);
+    final model = await searchDao.getVideoSearchModel(query);
+    _logger.info('returning ${model?.videos.length} models');
+    return Success(model!);
   }
 
   static Future<Result<void>> forceSyncChannelsWithSETag(
