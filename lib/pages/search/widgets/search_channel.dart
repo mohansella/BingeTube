@@ -1,5 +1,5 @@
 import 'package:bingetube/core/api/youtube_api.dart';
-import 'package:bingetube/core/db/access/channels.dart';
+import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -22,7 +22,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
   final _scrollController = ScrollController();
   bool _isValidQuery = false;
   bool _isLoaded = false;
-  List<ChannelModel>? _channels;
+  ChannelSearchModel? _model;
 
   _SearchChannelState();
 
@@ -36,12 +36,12 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
     if (!_isValidQuery) {
       text = 'Search channels to add to your collection';
     } else if (_isLoaded) {
-      final channels = _channels;
-      if (channels == null) {
+      if (_model == null) {
         text = 'Some error occured';
-      } else if (channels.isEmpty) {
+      } else if (_model!.channels.isEmpty) {
         text = 'No results found';
       } else {
+        final channels = _model!.channels;
         return ListView.builder(
           controller: _scrollController,
           itemCount: channels.length,
@@ -102,7 +102,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
       setState(() {
         _isValidQuery = false;
         _isLoaded = false;
-        _channels = null;
+        _model = null;
       });
       processRequest(widget.query);
     }
@@ -139,7 +139,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
     if (query == widget.query) {
       final channels = channelsResult.fold((l) => l, (e) => null);
       setState(() {
-        _channels = channels;
+        _model = channels;
         _isLoaded = true;
       });
     } else {

@@ -59,35 +59,43 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     });
   }
 
+  JoinedSelectStatement<HasResultSet, dynamic> joinChannelTables({
+    JoinedSelectStatement<HasResultSet, dynamic>? selectStatement,
+  }) {
+    final sel = selectStatement ?? select(channels).join([]);
+    final query = sel.join([
+      innerJoin(channelSnippets, channelSnippets.id.equalsExp(channels.id)),
+      innerJoin(channelThumbnails, channelThumbnails.id.equalsExp(channels.id)),
+      innerJoin(
+        channelContentDetails,
+        channelContentDetails.id.equalsExp(channels.id),
+      ),
+      innerJoin(channelStatistics, channelStatistics.id.equalsExp(channels.id)),
+      innerJoin(channelStatuses, channelStatuses.id.equalsExp(channels.id)),
+    ]);
+
+    return query;
+  }
+
+  ChannelModel mapRowToModel(TypedResult result) {
+    return ChannelModel(
+      channel: result.readTable(channels),
+      snippet: result.readTable(channelSnippets),
+      thumbnails: result.readTable(channelThumbnails),
+      contentDetails: result.readTable(channelContentDetails),
+      statistics: result.readTable(channelStatistics),
+      status: result.readTable(channelStatuses),
+    );
+  }
+
   Future<List<ChannelModel>> getChannelModelByIds(
     List<String> channelIds,
   ) async {
-    final c = channels;
-    final s = channelSnippets;
-    final t = channelThumbnails;
-    final cd = channelContentDetails;
-    final st = channelStatistics;
-    final cs = channelStatuses;
-
-    final query = select(c).join([
-      innerJoin(s, s.id.equalsExp(c.id)),
-      innerJoin(t, t.id.equalsExp(c.id)),
-      innerJoin(cd, cd.id.equalsExp(c.id)),
-      innerJoin(st, st.id.equalsExp(c.id)),
-      innerJoin(cs, cs.id.equalsExp(c.id)),
-    ])..where(c.id.isIn(channelIds));
+    final query = joinChannelTables(selectStatement: select(channels).join([]))
+      ..where(channels.id.isIn(channelIds));
 
     final results = await query.get();
-    final channelModels = results.map((result) {
-      return ChannelModel(
-        channel: result.readTable(c),
-        snippet: result.readTable(s),
-        thumbnails: result.readTable(t),
-        contentDetails: result.readTable(cd),
-        statistics: result.readTable(st),
-        status: result.readTable(cs),
-      );
-    }).toList();
+    final channelModels = results.map(mapRowToModel).toList();
     final idVsModel = Map.fromEntries(
       channelModels.map((m) => MapEntry(m.channel.id, m)),
     );

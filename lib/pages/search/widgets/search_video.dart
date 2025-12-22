@@ -1,4 +1,5 @@
 import 'package:bingetube/core/api/youtube_api.dart';
+import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
@@ -24,7 +25,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
   final _scrollController = ScrollController();
   bool _isValidQuery = false;
   bool _isLoaded = false;
-  List<VideoModel>? _videos;
+  VideoSearchModel? _model;
 
   _SearchVideoState();
 
@@ -38,12 +39,12 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
     if (!_isValidQuery) {
       text = 'Search Videos to add to your collection';
     } else if (_isLoaded) {
-      final videos = _videos;
-      if (videos == null) {
+      if (_model == null) {
         text = 'Some error occured';
-      } else if (videos.isEmpty) {
+      } else if (_model!.videos.isEmpty) {
         text = 'No results found';
       } else {
+        final videos = _model!.videos;
         return SingleChildScrollView(
           controller: _scrollController,
           child: Padding(
@@ -86,7 +87,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
       setState(() {
         _isValidQuery = false;
         _isLoaded = false;
-        _videos = null;
+        _model = null;
       });
       _processRequest(widget.query);
     }
@@ -177,9 +178,10 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
 
     SearchVideoWidget._logger.info('Initiating video search for query: $query');
     final videosResult = await YoutubeApi.searchVideos(ref, query);
+    final model = videosResult.fold((v) => v, (e) => null);
     if (query == widget.query) {
       setState(() {
-        _videos = videosResult.fold((v) => v, (e) => null);
+        _model = model;
         _isLoaded = true;
       });
     } else {
