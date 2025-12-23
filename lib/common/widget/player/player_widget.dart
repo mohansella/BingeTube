@@ -3,24 +3,31 @@ import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+enum PlayerEventType { onBack, onPrev, onNext, onPause, onPlay }
+
 abstract class PlayerWidget extends ConsumerStatefulWidget {
   final BingeController controller;
   final List<Widget> slivers;
-  final Function() onBack;
+  final Function(PlayerEventType) onEvent;
 
   factory PlayerWidget({
     Key? key,
     required BingeController controller,
-    required Function() onBack,
+    required Function(PlayerEventType) onEvent,
     required List<Widget> slivers,
   }) {
-    return ExternalPlayerWidget(controller: controller, onBack: onBack, slivers: slivers);
+    return ExternalPlayerWidget(
+      key: key,
+      controller: controller,
+      onEvent: onEvent,
+      slivers: slivers,
+    );
   }
 
   const PlayerWidget.internal({
     super.key,
     required this.controller,
-    required this.onBack,
+    required this.onEvent,
     required this.slivers,
   });
 }

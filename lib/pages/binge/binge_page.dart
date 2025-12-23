@@ -1,11 +1,14 @@
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class BingePage extends ConsumerStatefulWidget {
+  static final _logger = LogManager.getLogger('BingePage');
+
   final Map<String, String> params;
 
   const BingePage(this.params, {super.key});
@@ -28,7 +31,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     return Scaffold(
       body: PlayerWidget(
         controller: _controller,
-        onBack: () => Navigator.pop(context),
+        onEvent: (event) => onPlayerEvent(context, event),
         slivers: [_buildPlaylistHeader(context), _buildPlaylist()],
       ),
     );
@@ -146,6 +149,16 @@ class _BingePageState extends ConsumerState<BingePage> {
         heroImg: video.thumbnails.mediumUrl,
       ),
     );
+  }
+
+  void onPlayerEvent(BuildContext context, PlayerEventType eventType) {
+    switch (eventType) {
+      case .onBack:
+        Navigator.pop(context);
+        break;
+      default:
+        BingePage._logger.warning('unhandled eventType:$eventType');
+    }
   }
 }
 
