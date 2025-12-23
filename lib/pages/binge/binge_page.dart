@@ -97,11 +97,18 @@ class _BingePageState extends ConsumerState<BingePage> {
         onTap: isActive ? null : () => _onVideoCardTap(context, video),
         child: Row(
           children: [
-            Image.network(
-              video.thumbnails.mediumUrl,
+            SizedBox(
               width: 160,
               height: 90,
-              fit: .cover,
+              child: Stack(
+                alignment: .bottomCenter,
+                children: [
+                  Image.network(video.thumbnails.mediumUrl, fit: .cover),
+                  if (video.progress.isFinished) ...[
+                    LinearProgressIndicator(value: 1),
+                  ],
+                ],
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

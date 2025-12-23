@@ -66,6 +66,10 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     });
   }
 
+  void upsertVideoProgress(VideoProgressCompanion progress) async {
+    await into(videoProgress).insert(progress, mode: .insertOrReplace);
+  }
+
   JoinedSelectStatement<HasResultSet, dynamic> joinVideoAndChannelTables({
     JoinedSelectStatement<HasResultSet, dynamic>? selectStatement,
   }) {
