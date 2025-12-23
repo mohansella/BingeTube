@@ -116,8 +116,9 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
         onTap: () {
           context.push(
             BingeController.buildPath(
-              type: .singleVideo,
-              id: video.video.id,
+              type: .searchVideos,
+              id: _model!.meta.id.toString(),
+              selectedVideoId: video.video.id,
               heroId: video.video.id,
               heroImg: thumbnailUrl,
             ),

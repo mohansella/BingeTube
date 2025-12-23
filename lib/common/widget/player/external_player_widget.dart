@@ -85,7 +85,12 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
             _loading = false;
           });
         })
-        .catchError((e) {
+        .onError((e, stack) {
+          ExternalPlayerWidget._logger.shout(
+            'getActiveVideoModel causes error:',
+            e,
+            stack,
+          );
           setState(() {
             _error = e;
             _loading = false;

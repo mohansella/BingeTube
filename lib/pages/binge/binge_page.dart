@@ -16,13 +16,11 @@ class BingePage extends ConsumerStatefulWidget {
 
 class _BingePageState extends ConsumerState<BingePage> {
   late BingeController _controller;
-  late Stream<List<VideoModel>> _videoModelsStream;
 
   @override
   void initState() {
     super.initState();
     _controller = BingeController(widget.params);
-    _videoModelsStream = _controller.streamAllVideoModels();
   }
 
   @override
@@ -38,14 +36,14 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   Widget _buildPlaylist() {
     return StreamBuilder(
-      stream: _videoModelsStream,
+      stream: _controller.streamBingeModel(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final models = snapshot.data!;
+          final videos = snapshot.data!.videos;
           return SliverList.builder(
-            itemCount: models.length,
+            itemCount: videos.length,
             itemBuilder: (context, pos) =>
-                _buildVideoCard(context, models[pos]),
+                _buildVideoCard(context, videos[pos]),
           );
         }
         return SliverToBoxAdapter(
@@ -60,29 +58,25 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   Widget _buildPlaylistHeader(BuildContext context) {
     return StreamBuilder(
-      stream: _videoModelsStream,
+      stream: _controller.streamBingeModel(),
       builder: (context, snapshot) {
         return SliverPersistentHeader(
           pinned: true,
           delegate: _BingeTitleDelegate(
-            minHeight: 50,
-            maxHeight: 60,
+            minHeight: 58,
+            maxHeight: 70,
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, top: 8),
-                child: Column(
-                  crossAxisAlignment: .center,
-                  children: [
-                    Text(
-                      _controller.title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    if (snapshot.hasData) ...[
-                      Text('${snapshot.data!.length} videos'),
-                    ],
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: .center,
+                mainAxisAlignment: .center,
+                children: [
+                  Text(
+                    snapshot.data?.title ?? '',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text('${snapshot.data?.videos.length ?? 0} videos'),
+                ],
               ),
             ),
           ),

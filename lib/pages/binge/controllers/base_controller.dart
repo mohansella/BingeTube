@@ -9,10 +9,24 @@ abstract class BaseBingeController implements BingeController {
   final String initialHeroId;
   final String initialHeroImg;
 
-  BaseBingeController({required this.initialHeroId, required this.initialHeroImg});
-
-
   final videoDao = VideosDao(Database());
+
+  BaseBingeController({
+    required this.initialHeroId,
+    required this.initialHeroImg,
+  });
+
+  @override
+  bool get isNextVideoExists => false;
+
+  @override
+  bool get isPrevVideoExists => false;
+
+  @override
+  String get heroId => initialHeroId;
+
+  @override
+  String get heroImg => initialHeroImg;
 
   @override
   void markVideoStarted() {
