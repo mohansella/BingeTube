@@ -156,6 +156,15 @@ class _BingePageState extends ConsumerState<BingePage> {
       case .onBack:
         Navigator.pop(context);
         break;
+      case .onPrev:
+        setState(() {
+          _controller.setPrevVideo();
+        });
+        break;
+      case .onNext:
+        setState(() {
+          _controller.setNextVideo();
+        });
       default:
         BingePage._logger.warning('unhandled eventType:$eventType');
     }
