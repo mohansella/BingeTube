@@ -57,8 +57,9 @@ class SearchVideoBingeController extends BaseBingeController {
     return false;
   }
 
-  void onStreamData(VideoSearchModel event) {
-    model = event;
+  @override
+  void setActiveVideoId(String videoId) {
+    this.videoId = videoId;
   }
 
   @override

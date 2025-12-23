@@ -14,6 +14,15 @@ class SingleVideoBingeController extends BaseBingeController {
   String get activeVideoId => videoId;
 
   @override
+  void setActiveVideoId(String videoId) {
+    if (this.videoId != videoId) {
+      throw StateError(
+        'SingelVideoBingeController.setActiveVideoId received $videoId instead of singleton ${this.videoId}',
+      );
+    }
+  }
+
+  @override
   Stream<BingeModel> streamBingeModel() {
     final videoModel = videoDao.getVideoModelById(videoId);
     return Stream.fromFuture(videoModel).map((m) {

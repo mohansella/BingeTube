@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
@@ -77,29 +77,57 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   @override
   void initState() {
     super.initState();
-    controller
-        .getActiveVideoModel()
-        .then((value) {
-          setState(() {
-            _model = value;
-            _loading = false;
-          });
-        })
-        .onError((e, stack) {
-          ExternalPlayerWidget._logger.shout(
-            'getActiveVideoModel causes error:',
-            e,
-            stack,
-          );
-          setState(() {
-            _error = e;
-            _loading = false;
-          });
+    restartState();
+  }
+
+  int _restartId = 0;
+  void restartState() async {
+    _loading = true;
+    _model = null;
+    _error = null;
+    _isExternallyOpened = false;
+    _isMarkWatched = false;
+    final restartId = ++_restartId;
+    try {
+      final value = await controller.getActiveVideoModel();
+      if (restartId == _restartId) {
+        setState(() {
+          _model = value;
+          _loading = false;
         });
+        _scrollController.animateTo(
+          0,
+          duration: Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
+      } else {
+        ExternalPlayerWidget._logger.shout(
+          'restartState skipped since user navigated to another:$_restartId from:$restartId',
+        );
+      }
+    } catch (e) {
+      ExternalPlayerWidget._logger.shout(
+        'getActiveVideoModel causes error:',
+        e,
+      );
+      if (restartId == _restartId) {
+        setState(() {
+          _error = e;
+          _loading = false;
+        });
+      }
+      rethrow;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant ExternalPlayerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    restartState();
   }
 
   Widget _buildControls(BuildContext context) {
-    final w = min(max(400, _width), 600);
+    final w = math.min(math.max(400, _width), 600);
     final appFontSize = ref.read(ConfigProviders.appFontSize);
     final theme = Themes.dark(appFontSize);
     return Theme(
