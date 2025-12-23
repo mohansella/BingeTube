@@ -12,11 +12,13 @@ sealed class LogManager {
   static void _init() {
     if (_isInitialized) return;
 
-    Logger.root.level = Level.ALL;
+    Logger.root.level = Level.FINE;
 
     Logger.root.onRecord.listen((record) {
       final error = record.error != null ? ' | ERROR: ${record.error}' : '';
-      final stack = record.stackTrace != null ? '\nSTACKTRACE:\n${record.stackTrace}' : '';
+      final stack = record.stackTrace != null
+          ? '\nSTACKTRACE:\n${record.stackTrace}'
+          : '';
 
       debugPrint(
         '[${record.level.name}] '

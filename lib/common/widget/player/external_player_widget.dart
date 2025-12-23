@@ -35,7 +35,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
 
-  final _scrollController = ScrollController();
+  final _parentScrollController = ScrollController();
+  final _childScrollController = ScrollController();
   BingeController get controller => widget.controller;
   VideoModel get model => _model!;
 
@@ -56,18 +57,27 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         }
         return NotificationListener<ScrollEndNotification>(
           onNotification: _scrollEndListener,
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverAppBar(
-                automaticallyImplyLeading: false,
-                expandedHeight: _height,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: _buildPlayerStack(),
-                ),
+          child: NestedScrollView(
+            controller: _parentScrollController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      automaticallyImplyLeading: false,
+                      expandedHeight: _height,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: _buildPlayerStack(),
+                      ),
+                    ),
+                  ];
+                },
+            body: NotificationListener<ScrollNotification>(
+              onNotification: _onChildScroll,
+              child: CustomScrollView(
+                controller: _childScrollController,
+                slivers: widget.slivers, //SliverList
               ),
-              ...widget.slivers,
-            ],
+            ),
           ),
         );
       },
@@ -95,9 +105,9 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           _model = value;
           _loading = false;
         });
-        _scrollController.animateTo(
+        _parentScrollController.animateTo(
           0,
-          duration: Duration(milliseconds: 250),
+          duration: Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
       } else {
@@ -254,7 +264,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
 
               return AnimatedOpacity(
                 opacity: frame == null ? 0 : 1,
-                duration: const Duration(milliseconds: 250),
+                duration: const Duration(milliseconds: 200),
                 curve: Curves.easeOut,
                 child: child,
               );
@@ -321,24 +331,27 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   bool _scrollEndListener(notification) {
+    ExternalPlayerWidget._logger.finer(
+      'depth:${notification.depth} parent:${_parentScrollController.offset} child:${_childScrollController.offset}',
+    );
     bool toReturn = false;
     if (notification.depth != 0) {
       return toReturn;
     }
-    final offset = _scrollController.offset;
-    if (_scrollController.position.atEdge && offset != 0) {
+    final offset = _parentScrollController.offset;
+    if (_parentScrollController.position.atEdge && offset != 0) {
       return toReturn;
     }
     Future.microtask(() {
       if (offset > 0 && offset < _height) {
         if (offset > _height / 2) {
-          _scrollController.animateTo(
+          _parentScrollController.animateTo(
             _height,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
           );
         } else {
-          _scrollController.animateTo(
+          _parentScrollController.animateTo(
             0.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
@@ -347,5 +360,24 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
       }
     });
     return toReturn;
+  }
+
+  bool _onChildScroll(ScrollNotification notification) {
+    final offset = _childScrollController.offset;
+    if (offset < 0 && _parentScrollController.offset > 0) {
+      Future.microtask(() {
+        _parentScrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+        _childScrollController.animateTo(
+          0,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+    return false;
   }
 }
