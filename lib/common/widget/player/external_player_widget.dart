@@ -16,7 +16,7 @@ class ExternalPlayerWidget extends PlayerWidget {
   const ExternalPlayerWidget({
     super.key,
     required super.controller,
-    required super.onBack,
+    required super.onEvent,
     required super.slivers,
   }) : super.internal();
 
@@ -137,7 +137,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         child: Stack(
           children: [
             InkWell(
-              onTap: widget.onBack,
+              onTap: () => widget.onEvent(.onBack),
               child: Tooltip(
                 message: 'back',
                 child: Icon(Icons.arrow_back, size: w / 20),
