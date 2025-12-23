@@ -169,14 +169,27 @@ class _BingePageState extends ConsumerState<BingePage> {
         setState(() {
           _controller.setPrevVideo();
         });
+        _scrollToActiveVideo();
         break;
       case .onNext:
         setState(() {
           _controller.setNextVideo();
         });
+        _scrollToActiveVideo();
       default:
         BingePage._logger.warning('unhandled eventType:$eventType');
     }
+  }
+
+  void _scrollToActiveVideo() {
+    const headerHeight = 0;
+    const itemHeight = 98.0;
+    final currPos = _controller.activeVideoPos!;
+    _scrollController.animateTo(
+      headerHeight + (currPos * itemHeight),
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
   }
 }
 

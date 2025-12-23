@@ -369,12 +369,12 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     if (offset < 0 && _parentScrollController.offset > 0) {
       Future.microtask(() {
         _parentScrollController.animateTo(
-          0,
+          0.0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
         _childScrollController.animateTo(
-          0,
+          0.0,
           duration: Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
