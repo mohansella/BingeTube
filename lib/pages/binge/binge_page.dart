@@ -66,8 +66,8 @@ class _BingePageState extends ConsumerState<BingePage> {
         return SliverPersistentHeader(
           pinned: true,
           delegate: _BingeTitleDelegate(
-            minHeight: 58,
-            maxHeight: 70,
+            minHeight: 64,
+            maxHeight: 64,
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
               child: Column(
