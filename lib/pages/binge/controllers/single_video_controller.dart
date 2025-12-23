@@ -1,4 +1,4 @@
-import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/binge/controllers/base_controller.dart';
 
 class SingleVideoBingeController extends BaseBingeController {
@@ -14,23 +14,14 @@ class SingleVideoBingeController extends BaseBingeController {
   String get activeVideoId => videoId;
 
   @override
-  bool get isNextVideoExists => false;
-
-  @override
-  bool get isPrevVideoExists => false;
-
-  @override
-  String get heroId => initialHeroId;
-
-  @override
-  String get heroImg => initialHeroImg;
-
-  @override
-  String get title => 'Playing Single Video: $activeVideoId';
-
-  @override
-  Stream<List<VideoModel>> streamAllVideoModels() {
+  Stream<BingeModel> streamBingeModel() {
     final videoModel = videoDao.getVideoModelById(videoId);
-    return Stream.fromFuture(videoModel).map((m) => [m]).asBroadcastStream();
+    return Stream.fromFuture(videoModel).map((m) {
+      return BingeModel(
+        title: m.snippet.title,
+        description: m.snippet.description,
+        videos: [m],
+      );
+    }).asBroadcastStream();
   }
 }
