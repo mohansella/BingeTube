@@ -266,23 +266,21 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildSkipNext() {
-    final isEnabled = controller.isNextVideoExists;
-    if (_isExternallyOpened) {
+    if (_isExternallyOpened && !_isMarkWatched) {
       return _buildIconControl(
-        _isMarkWatched
-            ? null
-            : () {
-                setState(() {
-                  _isMarkWatched = true;
-                });
-                controller.markVideoWatched();
-              },
+        () {
+          setState(() {
+            _isMarkWatched = true;
+          });
+          controller.markVideoWatched();
+        },
         Icons.check_outlined,
         _width / 14,
       );
     }
+    final isEnabled = controller.isNextVideoExists;
     return _buildIconControl(
-      isEnabled ? () {} : null,
+      isEnabled ? () => widget.onEvent(.onNext) : null,
       Icons.skip_next,
       _width / 14,
     );
@@ -291,7 +289,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   Widget _buildSkipPrevious() {
     final isEnabled = controller.isPrevVideoExists;
     return _buildIconControl(
-      isEnabled ? () {} : null,
+      isEnabled ? () => widget.onEvent(.onPrev) : null,
       Icons.skip_previous,
       _width / 14,
     );

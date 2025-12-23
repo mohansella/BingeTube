@@ -8,6 +8,9 @@ abstract class BaseBingeController implements BingeController {
 
   final String initialHeroId;
   final String initialHeroImg;
+  late String videoId;
+
+  BingeModel? bingeModel;
 
   final videoDao = VideosDao(Database());
 
@@ -23,10 +26,28 @@ abstract class BaseBingeController implements BingeController {
   bool get isPrevVideoExists => false;
 
   @override
-  String get heroId => initialHeroId;
+  String get heroId => activeVideoId;
 
   @override
   String get heroImg => initialHeroImg;
+
+  @override
+  String get activeVideoId => videoId;
+
+  @override
+  void setPrevVideo() {
+    // TODO: implement setPrevVideo
+  }
+
+  @override
+  void setNextVideo() {
+    // TODO: implement setNextVideo
+  }
+
+  @override
+  void setActiveVideoId(String videoId) {
+    this.videoId = videoId;
+  }
 
   @override
   void markVideoStarted() {

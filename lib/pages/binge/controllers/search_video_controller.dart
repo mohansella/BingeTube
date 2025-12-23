@@ -10,22 +10,21 @@ class SearchVideoBingeController extends BaseBingeController {
   static final _logger = LogManager.getLogger('SearchVideoBingeController');
 
   final int searchId;
-  late String videoId;
   late Stream<VideoSearchModel> streamModel;
-  VideoSearchModel? model;
 
   SearchVideoBingeController(
     this.searchId,
-    this.videoId, {
+    String videoId, {
     required super.initialHeroId,
     required super.initialHeroImg,
   }) {
+    super.videoId = videoId;
     streamModel = SearchDao(Database()).streamVideoSearchModel(searchId);
   }
 
   int? get activeVideoPos {
-    if (model != null) {
-      final videos = model!.videos;
+    if (bingeModel != null) {
+      final videos = bingeModel!.videos;
       for (int i = 0; i < videos.length; i++) {
         final video = videos[i];
         if (video.video.id == videoId) {
@@ -37,15 +36,9 @@ class SearchVideoBingeController extends BaseBingeController {
   }
 
   @override
-  String get activeVideoId => videoId;
-
-  @override
-  String get heroId => activeVideoId;
-
-  @override
   String get heroImg {
     final activeId = activeVideoId;
-    for (var video in model?.videos ?? []) {
+    for (var video in bingeModel?.videos ?? []) {
       if (video.video.id == activeId) {
         return video.thumbnails.mediumUrl;
       }
@@ -57,7 +50,7 @@ class SearchVideoBingeController extends BaseBingeController {
   bool get isNextVideoExists {
     final currPos = activeVideoPos;
     if (currPos != null) {
-      return currPos != model!.videos.length - 1;
+      return currPos != bingeModel!.videos.length - 1;
     }
     return false;
   }
@@ -72,20 +65,15 @@ class SearchVideoBingeController extends BaseBingeController {
   }
 
   @override
-  void setActiveVideoId(String videoId) {
-    this.videoId = videoId;
-  }
-
-  @override
   Stream<BingeModel> streamBingeModel() {
     return streamModel.map((m) {
       _logger.info('mapping SearchVideoModel to BingeModel');
-      model = m;
-      return BingeModel(
+      bingeModel = BingeModel(
         title: m.meta.query,
         description: "Videos from the search results of '${m.meta.query}",
         videos: m.videos,
       );
+      return bingeModel!;
     });
   }
 }

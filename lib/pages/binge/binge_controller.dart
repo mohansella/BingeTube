@@ -39,6 +39,8 @@ abstract class BingeController {
   bool get isNextVideoExists;
 
   void setActiveVideoId(String videoId);
+  void setPrevVideo();
+  void setNextVideo();
 
   Future<VideoModel> getActiveVideoModel();
   Stream<BingeModel> streamBingeModel();
