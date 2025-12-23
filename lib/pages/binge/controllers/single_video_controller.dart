@@ -2,16 +2,13 @@ import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/binge/controllers/base_controller.dart';
 
 class SingleVideoBingeController extends BaseBingeController {
-  final String videoId;
-
   SingleVideoBingeController(
-    this.videoId, {
+    String videoId, {
     required super.initialHeroId,
     required super.initialHeroImg,
-  });
-
-  @override
-  String get activeVideoId => videoId;
+  }) {
+    super.videoId = videoId;
+  }
 
   @override
   void setActiveVideoId(String videoId) {
@@ -20,6 +17,7 @@ class SingleVideoBingeController extends BaseBingeController {
         'SingelVideoBingeController.setActiveVideoId received $videoId instead of singleton ${this.videoId}',
       );
     }
+    super.setActiveVideoId(videoId);
   }
 
   @override
