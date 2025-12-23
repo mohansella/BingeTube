@@ -86,22 +86,20 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Card _buildVideoCard(BuildContext context, VideoModel video) {
-    final thumbnailUrl = video.thumbnails.mediumUrl;
+    final isActive = video.video.id == _controller.activeVideoId;
     return Card(
+      color: isActive ? Theme.of(context).colorScheme.primaryContainer : null,
+      shape: RoundedRectangleBorder(),
       child: InkWell(
-        onTap: () {
-          context.replace(
-            BingeController.buildPath(
-              type: .singleVideo,
-              id: video.video.id,
-              heroId: video.video.id,
-              heroImg: thumbnailUrl,
-            ),
-          );
-        },
+        onTap: isActive ? null : () => _onVideoCardTap(context, video),
         child: Row(
           children: [
-            Image.network(thumbnailUrl, width: 160, height: 90, fit: .cover),
+            Image.network(
+              video.thumbnails.mediumUrl,
+              width: 160,
+              height: 90,
+              fit: .cover,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -132,6 +130,20 @@ class _BingePageState extends ConsumerState<BingePage> {
             const SizedBox(width: 12),
           ],
         ),
+      ),
+    );
+  }
+
+  void _onVideoCardTap(BuildContext context, VideoModel video) {
+    setState(() {
+      _controller.setActiveVideoId(video.video.id);
+    });
+    context.replace(
+      BingeController.buildPath(
+        type: .searchVideos,
+        id: video.video.id,
+        heroId: video.video.id,
+        heroImg: video.thumbnails.mediumUrl,
       ),
     );
   }
