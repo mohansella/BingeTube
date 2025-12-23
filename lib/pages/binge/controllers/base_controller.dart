@@ -35,6 +35,7 @@ abstract class BaseBingeController implements BingeController {
   @override
   String get activeVideoId => videoId;
 
+  @override
   int? get activeVideoPos {
     if (bingeModel != null) {
       final videos = bingeModel!.videos;
