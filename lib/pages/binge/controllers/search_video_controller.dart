@@ -40,6 +40,20 @@ class SearchVideoBingeController extends BaseBingeController {
   String get activeVideoId => videoId;
 
   @override
+  String get heroId => activeVideoId;
+
+  @override
+  String get heroImg {
+    final activeId = activeVideoId;
+    for (var video in model?.videos ?? []) {
+      if (video.video.id == activeId) {
+        return video.thumbnails.mediumUrl;
+      }
+    }
+    return super.initialHeroImg;
+  }
+
+  @override
   bool get isNextVideoExists {
     final currPos = activeVideoPos;
     if (currPos != null) {
@@ -66,6 +80,7 @@ class SearchVideoBingeController extends BaseBingeController {
   Stream<BingeModel> streamBingeModel() {
     return streamModel.map((m) {
       _logger.info('mapping SearchVideoModel to BingeModel');
+      model = m;
       return BingeModel(
         title: m.meta.query,
         description: "Videos from the search results of '${m.meta.query}",

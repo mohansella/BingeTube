@@ -266,7 +266,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildSkipNext() {
-    final isEnabled = controller.isPrevVideoExists;
+    final isEnabled = controller.isNextVideoExists;
     if (_isExternallyOpened) {
       return _buildIconControl(
         _isMarkWatched
@@ -289,7 +289,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildSkipPrevious() {
-    final isEnabled = controller.isNextVideoExists;
+    final isEnabled = controller.isPrevVideoExists;
     return _buildIconControl(
       isEnabled ? () {} : null,
       Icons.skip_previous,
