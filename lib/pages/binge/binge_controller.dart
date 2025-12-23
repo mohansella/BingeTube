@@ -38,6 +38,8 @@ abstract class BingeController {
   bool get isPrevVideoExists;
   bool get isNextVideoExists;
 
+  int? get activeVideoPos;
+
   void setActiveVideoId(String videoId);
   void setPrevVideo();
   void setNextVideo();

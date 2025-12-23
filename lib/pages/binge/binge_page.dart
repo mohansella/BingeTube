@@ -18,6 +18,7 @@ class BingePage extends ConsumerStatefulWidget {
 }
 
 class _BingePageState extends ConsumerState<BingePage> {
+  final _scrollController = ScrollController();
   late BingeController _controller;
 
   @override
@@ -31,6 +32,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     return Scaffold(
       body: PlayerWidget(
         controller: _controller,
+        scrollController: _scrollController,
         onEvent: (event) => onPlayerEvent(context, event),
         slivers: [_buildPlaylistHeader(context), _buildPlaylist()],
       ),

@@ -16,6 +16,7 @@ class ExternalPlayerWidget extends PlayerWidget {
   const ExternalPlayerWidget({
     super.key,
     required super.controller,
+    required super.scrollController,
     required super.onEvent,
     required super.slivers,
   }) : super.internal();
@@ -36,7 +37,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   bool _isMarkWatched = false;
 
   final _parentScrollController = ScrollController();
-  final _childScrollController = ScrollController();
+  get _childScrollController => widget.scrollController;
+
   BingeController get controller => widget.controller;
   VideoModel get model => _model!;
 
