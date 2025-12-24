@@ -220,7 +220,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   Widget _buildPlayAndOthers(ThemeData theme) {
     return _buildIconControl(
       () => _openExternally(),
-      _isExternallyOpened ? Icons.replay : Icons.play_arrow,
+      Icons.open_in_new_outlined,
       _width / 10,
     );
   }
