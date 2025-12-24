@@ -7,7 +7,8 @@ enum PlayerEventType { onBack, onPrev, onNext, onPause, onPlay }
 
 abstract class PlayerWidget extends ConsumerStatefulWidget {
   final BingeController controller;
-  final ScrollController scrollController;
+  final ScrollController parentScroll;
+  final ScrollController childScroll;
   final List<Widget> slivers;
   final Function(PlayerEventType) onEvent;
 
@@ -16,12 +17,14 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
     required BingeController controller,
     required Function(PlayerEventType) onEvent,
     required List<Widget> slivers,
-    required ScrollController scrollController,
+    required ScrollController parentScroll,
+    required ScrollController childScroll,
   }) {
     return ExternalPlayerWidget(
       key: key,
       controller: controller,
-      scrollController: scrollController,
+      parentScroll: parentScroll,
+      childScroll: childScroll,
       onEvent: onEvent,
       slivers: slivers,
     );
@@ -30,7 +33,8 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
   const PlayerWidget.internal({
     super.key,
     required this.controller,
-    required this.scrollController,
+    required this.parentScroll,
+    required this.childScroll,
     required this.onEvent,
     required this.slivers,
   });
