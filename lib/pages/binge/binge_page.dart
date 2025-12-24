@@ -83,20 +83,23 @@ class _BingePageState extends ConsumerState<BingePage> {
             maxHeight: 64,
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
-              child: Row(
+              child: Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: IconButton(
-                      onPressed: _onCollapsePressed,
-                      icon: AnimatedRotation(
-                        turns: _isCollapsed ? 0 : 0.5,
-                        duration: Duration(milliseconds: 200),
-                        child: Icon(Icons.expand_less),
+                  Align(
+                    alignment: .centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: IconButton(
+                        onPressed: _onCollapsePressed,
+                        icon: AnimatedRotation(
+                          turns: _isCollapsed ? 0 : 0.5,
+                          duration: Duration(milliseconds: 200),
+                          child: Icon(Icons.expand_less),
+                        ),
                       ),
                     ),
                   ),
-                  Expanded(
+                  Positioned.fill(
                     child: Column(
                       mainAxisAlignment: .center,
                       children: [
