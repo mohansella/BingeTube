@@ -40,7 +40,6 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   get _childScrollController => widget.scrollController;
 
   BingeController get controller => widget.controller;
-  VideoModel get model => _model!;
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +160,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                 crossAxisAlignment: .start,
                 children: [
                   Text(
-                    model.snippet.title,
+                    _model?.snippet.title ?? '',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontSize: w / 30,
                     ),
@@ -169,7 +168,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                     overflow: .ellipsis,
                   ),
                   Text(
-                    model.snippet.channelTitle,
+                    _model?.snippet.channelTitle ?? '',
                     style: theme.textTheme.labelSmall?.copyWith(
                       fontSize: w / 40,
                     ),
@@ -234,10 +233,9 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
             Center(child: CircularProgressIndicator()),
           ] else if (_error != null) ...[
             Center(child: Text('error: $_error')),
-          ] else ...[
-            _buildTopGradient(),
-            _buildControls(context),
           ],
+          _buildTopGradient(),
+          _buildControls(context),
         ],
       ),
     );
@@ -324,6 +322,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     setState(() {
       _isExternallyOpened = true;
     });
+    final model = _model!;
     ExternalPlayerWidget._logger.info(
       'opening externally id:${model.video.id} title: ${model.snippet.title}',
     );
