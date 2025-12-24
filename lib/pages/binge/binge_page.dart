@@ -22,6 +22,9 @@ class _BingePageState extends ConsumerState<BingePage> {
   final _childScroll = ScrollController();
   late BingeController _controller;
 
+  double _playerHeight = 0;
+  bool _isCollapsed = false;
+
   @override
   void initState() {
     super.initState();
@@ -29,13 +32,19 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   @override
+  void didUpdateWidget(covariant BingePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PlayerWidget(
+        videoId: _controller.activeVideoId,
         controller: _controller,
         parentScroll: _parentScroll,
         childScroll: _childScroll,
-        onEvent: (event) => onPlayerEvent(context, event),
+        onEvent: (event, {data}) => _onPlayerEvent(context, event, data: data),
         slivers: [_buildPlaylistHeader(context), _buildPlaylist()],
       ),
     );
@@ -74,15 +83,31 @@ class _BingePageState extends ConsumerState<BingePage> {
             maxHeight: 64,
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
-              child: Column(
-                crossAxisAlignment: .center,
-                mainAxisAlignment: .center,
+              child: Row(
                 children: [
-                  Text(
-                    snapshot.data?.title ?? '',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: IconButton(
+                      onPressed: _onCollapsePressed,
+                      icon: AnimatedRotation(
+                        turns: _isCollapsed ? 0 : 0.5,
+                        duration: Duration(milliseconds: 200),
+                        child: Icon(Icons.expand_less),
+                      ),
+                    ),
                   ),
-                  Text('${snapshot.data?.videos.length ?? 0} videos'),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Text(
+                          snapshot.data?.title ?? '',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text('${snapshot.data?.videos.length ?? 0} videos'),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -162,7 +187,11 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  void onPlayerEvent(BuildContext context, PlayerEventType eventType) {
+  void _onPlayerEvent(
+    BuildContext context,
+    PlayerEventType eventType, {
+    Object? data,
+  }) {
     switch (eventType) {
       case .onBack:
         Navigator.pop(context);
@@ -178,6 +207,12 @@ class _BingePageState extends ConsumerState<BingePage> {
           _controller.setNextVideo();
         });
         _scrollToActiveVideo();
+      case .onHeight:
+        _playerHeight = data as double;
+        break;
+      case .onScrollEnd:
+        _updateCollapseState();
+        break;
       default:
         BingePage._logger.warning('unhandled eventType:$eventType');
     }
@@ -192,6 +227,23 @@ class _BingePageState extends ConsumerState<BingePage> {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
     );
+  }
+
+  void _onCollapsePressed() {
+    _parentScroll.animateTo(
+      _isCollapsed ? _playerHeight : 0,
+      duration: Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+    setState(() {
+      _isCollapsed = !_isCollapsed;
+    });
+  }
+
+  void _updateCollapseState() {
+    setState(() {
+      _isCollapsed = _parentScroll.offset == 0;
+    });
   }
 }
 

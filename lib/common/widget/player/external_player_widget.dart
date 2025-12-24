@@ -15,6 +15,7 @@ class ExternalPlayerWidget extends PlayerWidget {
 
   const ExternalPlayerWidget({
     super.key,
+    required super.videoId,
     required super.controller,
     required super.parentScroll,
     required super.childScroll,
@@ -57,6 +58,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           _width = constrains.maxWidth;
           _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
         }
+        widget.onEvent(.onHeight, data: _height);
         return NotificationListener<ScrollEndNotification>(
           onNotification: _scrollEndListener,
           child: NestedScrollView(
@@ -108,7 +110,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           _loading = false;
         });
         _parentScroll.animateTo(
-          0,
+          0.0,
           duration: Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
@@ -135,7 +137,9 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   @override
   void didUpdateWidget(covariant ExternalPlayerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    restartState();
+    if (oldWidget.videoId != widget.videoId) {
+      restartState();
+    }
   }
 
   Widget _buildControls(BuildContext context) {
@@ -336,6 +340,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     ExternalPlayerWidget._logger.finer(
       'depth:${notification.depth} parent:${_parentScroll.offset} child:${_childScroll.offset}',
     );
+    widget.onEvent(.onScrollEnd);
     bool toReturn = false;
     if (notification.depth != 0) {
       return toReturn;
