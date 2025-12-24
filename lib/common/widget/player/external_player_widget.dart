@@ -16,7 +16,8 @@ class ExternalPlayerWidget extends PlayerWidget {
   const ExternalPlayerWidget({
     super.key,
     required super.controller,
-    required super.scrollController,
+    required super.parentScroll,
+    required super.childScroll,
     required super.onEvent,
     required super.slivers,
   }) : super.internal();
@@ -36,8 +37,8 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
 
-  final _parentScrollController = ScrollController();
-  get _childScrollController => widget.scrollController;
+  get _parentScroll => widget.parentScroll;
+  get _childScroll => widget.childScroll;
 
   BingeController get controller => widget.controller;
 
@@ -59,7 +60,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         return NotificationListener<ScrollEndNotification>(
           onNotification: _scrollEndListener,
           child: NestedScrollView(
-            controller: _parentScrollController,
+            controller: _parentScroll,
             headerSliverBuilder:
                 (BuildContext context, bool innerBoxIsScrolled) {
                   return [
@@ -75,7 +76,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
             body: NotificationListener<ScrollNotification>(
               onNotification: _onChildScroll,
               child: CustomScrollView(
-                controller: _childScrollController,
+                controller: _childScroll,
                 slivers: widget.slivers, //SliverList
               ),
             ),
@@ -106,7 +107,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           _model = value;
           _loading = false;
         });
-        _parentScrollController.animateTo(
+        _parentScroll.animateTo(
           0,
           duration: Duration(milliseconds: 200),
           curve: Curves.easeOut,
@@ -333,26 +334,26 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
 
   bool _scrollEndListener(notification) {
     ExternalPlayerWidget._logger.finer(
-      'depth:${notification.depth} parent:${_parentScrollController.offset} child:${_childScrollController.offset}',
+      'depth:${notification.depth} parent:${_parentScroll.offset} child:${_childScroll.offset}',
     );
     bool toReturn = false;
     if (notification.depth != 0) {
       return toReturn;
     }
-    final offset = _parentScrollController.offset;
-    if (_parentScrollController.position.atEdge && offset != 0) {
+    final offset = _parentScroll.offset;
+    if (_parentScroll.position.atEdge && offset != 0) {
       return toReturn;
     }
     Future.microtask(() {
       if (offset > 0 && offset < _height) {
         if (offset > _height / 2) {
-          _parentScrollController.animateTo(
+          _parentScroll.animateTo(
             _height,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
           );
         } else {
-          _parentScrollController.animateTo(
+          _parentScroll.animateTo(
             0.0,
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeOut,
@@ -364,15 +365,15 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   bool _onChildScroll(ScrollNotification notification) {
-    final offset = _childScrollController.offset;
-    if (offset < 0 && _parentScrollController.offset > 0) {
+    final offset = _childScroll.offset;
+    if (offset < 0 && _parentScroll.offset > 0) {
       Future.microtask(() {
-        _parentScrollController.animateTo(
+        _parentScroll.animateTo(
           0.0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
-        _childScrollController.animateTo(
+        _childScroll.animateTo(
           0.0,
           duration: Duration(milliseconds: 200),
           curve: Curves.easeOut,
