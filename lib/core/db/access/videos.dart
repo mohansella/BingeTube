@@ -62,7 +62,7 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       ).insert(contentDetails, mode: .insertOrReplace);
       await into(videoStatuses).insert(status, mode: .insertOrReplace);
       await into(videoStatistics).insert(statistics, mode: .insertOrReplace);
-      await into(videoProgress).insert(progress, mode: .insertOrReplace);
+      await into(videoProgress).insert(progress, mode: .insertOrIgnore);
     });
   }
 
