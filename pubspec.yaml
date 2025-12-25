@@ -49,6 +49,7 @@ dependencies:
   drift_flutter: ^0.2.8
   path_provider: ^2.1.5
   result_dart: ^2.1.1
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +58,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   build_runner: ^2.10.4
   drift_dev: ^2.30.0
+  freezed: ^3.2.3
 
 flutter_launcher_icons:
   android: true
