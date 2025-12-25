@@ -2,6 +2,7 @@ import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,8 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   double _playerHeight = 0;
   bool _isCollapsed = false;
+
+  BingeFilter? _filter;
 
   @override
   void initState() {
@@ -76,18 +79,31 @@ class _BingePageState extends ConsumerState<BingePage> {
     return StreamBuilder(
       stream: _controller.streamBingeModel(),
       builder: (context, snapshot) {
+        final baseHeight = 56.0;
+        final headerHeight = _filter == null ? baseHeight : 92.0;
         return SliverPersistentHeader(
           pinned: true,
           delegate: _BingeTitleDelegate(
-            minHeight: 64,
-            maxHeight: 64,
+            minHeight: headerHeight,
+            maxHeight: headerHeight,
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
-              child: Row(
+              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+              child: Column(
                 children: [
-                  _buildCollapseIcon(),
-                  _buildTitleColumn(snapshot),
-                  _buildFilterAndModify(),
+                  Row(
+                    children: [
+                      _buildCollapseIcon(),
+                      _buildTitleColumn(snapshot),
+                      _buildFilterAndModify(),
+                    ],
+                  ),
+                  if (_filter != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+                      child: BingeFilterWidget(filter: _filter!, onUpdate: (_) {}),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -122,29 +138,23 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildCollapseIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
-      child: IconButton(
-        onPressed: _onCollapsePressed,
-        icon: AnimatedRotation(
-          turns: _isCollapsed ? 0 : 0.5,
-          duration: Duration(milliseconds: 200),
-          child: Icon(Icons.expand_less),
-        ),
+    return IconButton(
+      onPressed: _onCollapsePressed,
+      icon: AnimatedRotation(
+        turns: _isCollapsed ? 0 : 0.5,
+        duration: Duration(milliseconds: 200),
+        child: Icon(Icons.expand_less),
       ),
     );
   }
 
   Widget _buildFilterAndModify() {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: Row(
-        mainAxisAlignment: .end,
-        children: [
-          IconButton(onPressed: _onFilterPressed, icon: Icon(Icons.tune)),
-          IconButton(onPressed: _onAddPressed, icon: Icon(Icons.add)),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: .end,
+      children: [
+        IconButton(onPressed: _onFilterPressed, icon: Icon(Icons.tune)),
+        IconButton(onPressed: _onAddPressed, icon: Icon(Icons.add)),
+      ],
     );
   }
 
@@ -277,7 +287,19 @@ class _BingePageState extends ConsumerState<BingePage> {
     });
   }
 
-  void _onFilterPressed() {}
+  void _onFilterPressed() {
+    final filter = _filter != null
+        ? null
+        : BingeFilter(
+            watchType: .all,
+            sortOder: .asc,
+            sortType: .system,
+            searchValue: null,
+          );
+    setState(() {
+      _filter = filter;
+    });
+  }
 
   void _onAddPressed() {}
 }
