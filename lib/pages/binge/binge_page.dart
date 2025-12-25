@@ -83,34 +83,11 @@ class _BingePageState extends ConsumerState<BingePage> {
             maxHeight: 64,
             child: Container(
               color: Theme.of(context).scaffoldBackgroundColor,
-              child: Stack(
+              child: Row(
                 children: [
-                  Align(
-                    alignment: .centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 4.0),
-                      child: IconButton(
-                        onPressed: _onCollapsePressed,
-                        icon: AnimatedRotation(
-                          turns: _isCollapsed ? 0 : 0.5,
-                          duration: Duration(milliseconds: 200),
-                          child: Icon(Icons.expand_less),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      children: [
-                        Text(
-                          snapshot.data?.title ?? '',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text('${snapshot.data?.videos.length ?? 0} videos'),
-                      ],
-                    ),
-                  ),
+                  _buildCollapseIcon(),
+                  _buildTitleColumn(snapshot),
+                  _buildFilterAndModify(),
                 ],
               ),
             ),
@@ -120,7 +97,58 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Card _buildVideoCard(BuildContext context, VideoModel video) {
+  Widget _buildTitleColumn(AsyncSnapshot<BingeModel> snapshot) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Column(
+          mainAxisAlignment: .center,
+          children: [
+            Text(
+              snapshot.data?.title ?? '',
+              style: Theme.of(context).textTheme.titleMedium,
+              maxLines: 1,
+              overflow: .ellipsis,
+            ),
+            Text(
+              '${snapshot.data?.videos.length ?? 0} videos',
+              maxLines: 1,
+              overflow: .ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCollapseIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: IconButton(
+        onPressed: _onCollapsePressed,
+        icon: AnimatedRotation(
+          turns: _isCollapsed ? 0 : 0.5,
+          duration: Duration(milliseconds: 200),
+          child: Icon(Icons.expand_less),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterAndModify() {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: Row(
+        mainAxisAlignment: .end,
+        children: [
+          IconButton(onPressed: _onFilterPressed, icon: Icon(Icons.tune)),
+          IconButton(onPressed: _onAddPressed, icon: Icon(Icons.add)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVideoCard(BuildContext context, VideoModel video) {
     final isActive = video.video.id == _controller.activeVideoId;
     return Card(
       color: isActive ? Theme.of(context).colorScheme.primaryContainer : null,
@@ -248,6 +276,10 @@ class _BingePageState extends ConsumerState<BingePage> {
       _isCollapsed = _parentScroll.offset == 0;
     });
   }
+
+  void _onFilterPressed() {}
+
+  void _onAddPressed() {}
 }
 
 // Reuse the same delegate from before
