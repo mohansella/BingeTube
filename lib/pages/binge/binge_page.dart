@@ -99,9 +99,12 @@ class _BingePageState extends ConsumerState<BingePage> {
                     ],
                   ),
                   if (_filter != null) ...[
-                    Padding(
+                    Container(
                       padding: const EdgeInsets.only(left: 8.0, top: 4.0),
-                      child: BingeFilterWidget(filter: _filter!, onUpdate: (_) {}),
+                      child: BingeFilterWidget(
+                        filter: _filter!,
+                        onUpdate: (f) => _onFilterModified(f),
+                      ),
                     ),
                   ],
                 ],
@@ -292,10 +295,16 @@ class _BingePageState extends ConsumerState<BingePage> {
         ? null
         : BingeFilter(
             watchType: .all,
-            sortOder: .asc,
+            sortOrder: .asc,
             sortType: .system,
             searchValue: null,
           );
+    setState(() {
+      _filter = filter;
+    });
+  }
+
+  void _onFilterModified(BingeFilter filter) {
     setState(() {
       _filter = filter;
     });
