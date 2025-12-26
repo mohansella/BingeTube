@@ -43,31 +43,33 @@ class SearchPageState extends ConsumerState<SearchPage>
   Widget build(BuildContext context) {
     apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
     return Scaffold(
-      body: Column(
-        children: [
-          _buildAppBar(context),
-          if (apiKey.isNotEmpty) ...[
-            _buildTabBar(),
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  SearchChannelWidget(_searchQuery, _tabScrollListener),
-                  SearchVideoWidget(_searchQuery, _tabScrollListener),
-                ],
-              ),
-            ),
-          ] else ...[
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: const Text(
-                  'Add your YouTube API key to start searching',
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildAppBar(context),
+            if (apiKey.isNotEmpty) ...[
+              _buildTabBar(),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    SearchChannelWidget(_searchQuery, _tabScrollListener),
+                    SearchVideoWidget(_searchQuery, _tabScrollListener),
+                  ],
                 ),
               ),
-            ),
+            ] else ...[
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: const Text(
+                    'Add your YouTube API key to start searching',
+                  ),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
