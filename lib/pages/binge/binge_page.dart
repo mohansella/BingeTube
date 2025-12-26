@@ -77,17 +77,10 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildPlaylistHeader(BuildContext context) {
-    final fontSize = ref.read(ConfigProviders.appFontSize);
     return StreamBuilder(
       stream: _controller.streamBingeModel(),
       builder: (context, snapshot) {
-        final baseHeight = 56.0;
-        var headerHeight = _filter == null ? baseHeight : 96.0;
-        if (fontSize == .large) {
-          headerHeight += 7.0;
-        } else if(fontSize == .small) {
-          headerHeight -= 4.0;
-        }
+        double headerHeight = _calcHeaderHeight();
         return SliverPersistentHeader(
           pinned: true,
           delegate: _BingeTitleDelegate(
@@ -121,6 +114,18 @@ class _BingePageState extends ConsumerState<BingePage> {
         );
       },
     );
+  }
+
+  double _calcHeaderHeight() {
+    final fontSize = ref.read(ConfigProviders.appFontSize);
+    final baseHeight = 56.0;
+    var headerHeight = _filter == null ? baseHeight : 96.0;
+    if (fontSize == .large) {
+      headerHeight += 7.0;
+    } else if (fontSize == .small) {
+      headerHeight -= 4.0;
+    }
+    return headerHeight;
   }
 
   Widget _buildTitleColumn(AsyncSnapshot<BingeModel> snapshot) {
