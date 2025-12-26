@@ -21,7 +21,7 @@ class SingleVideoBingeController extends BaseBingeController {
   }
 
   @override
-  Stream<BingeModel> streamBingeModel() {
+  Stream<BingeModel> get dbStream {
     final videoModel = videoDao.getVideoModelById(videoId);
     return Stream.fromFuture(videoModel).map((m) {
       return BingeModel(

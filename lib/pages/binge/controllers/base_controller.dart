@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:drift/drift.dart';
 
 abstract class BaseBingeController implements BingeController {
@@ -12,6 +15,10 @@ abstract class BaseBingeController implements BingeController {
   late String videoId;
 
   BingeModel? bingeModel;
+  BingeFilter bingeFilter = BingeFilter.defaultValue;
+
+  StreamSubscription? bingeModelSubscriber;
+  var streamController = StreamController<BingeModel>();
 
   final videoDao = VideosDao(Database());
 
@@ -21,19 +28,62 @@ abstract class BaseBingeController implements BingeController {
   });
 
   @override
-  bool get isNextVideoExists => false;
+  void dispose() {
+    bingeModelSubscriber?.cancel();
+    streamController.close();
+  }
 
   @override
-  bool get isPrevVideoExists => false;
+  Stream<BingeModel> get stream {
+    bingeModelSubscriber ??= dbStream.listen(onModel);
+    return streamController.stream;
+  }
+
+  Stream<BingeModel> get dbStream;
 
   @override
-  String get heroId => activeVideoId;
+  BingeFilter get filter => bingeFilter;
 
   @override
-  String get heroImg => initialHeroImg;
+  void setFilter(BingeFilter filter) {
+    bingeFilter = filter;
+    emit();
+  }
 
   @override
   String get activeVideoId => videoId;
+
+  @override
+  String get heroImg {
+    final activeId = activeVideoId;
+    for (var video in bingeModel?.videos ?? []) {
+      if (video.video.id == activeId) {
+        return video.thumbnails.mediumUrl;
+      }
+    }
+    return initialHeroImg;
+  }
+
+  @override
+  String get heroId => initialHeroImg;
+
+  @override
+  bool get isNextVideoExists {
+    final currPos = activeVideoPos;
+    if (currPos != null) {
+      return currPos != bingeModel!.videos.length - 1;
+    }
+    return false;
+  }
+
+  @override
+  bool get isPrevVideoExists {
+    final currPos = activeVideoPos;
+    if (currPos != null) {
+      return currPos != 0;
+    }
+    return false;
+  }
 
   @override
   int? get activeVideoPos {
@@ -88,5 +138,17 @@ abstract class BaseBingeController implements BingeController {
   @override
   Future<VideoModel> getActiveVideoModel() async {
     return videoDao.getVideoModelById(activeVideoId);
+  }
+
+  void onModel(BingeModel event) {
+    bingeModel = event;
+    emit();
+  }
+
+  void emit() {
+    //apply filter
+    if (bingeModel != null) {
+      streamController.add(bingeModel!);
+    }
   }
 }

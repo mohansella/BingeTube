@@ -1,5 +1,6 @@
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:bingetube/pages/binge/controllers/search_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
 import 'package:bingetube/pages/pages.dart';
@@ -30,7 +31,13 @@ class BingeModel {
 abstract class BingeController {
   static final _logger = LogManager.getLogger('BingeController');
 
+  void dispose();
+
   String get activeVideoId;
+  Stream<BingeModel> get stream;
+
+  BingeFilter get filter;
+  void setFilter(BingeFilter filter);
 
   String get heroId;
   String get heroImg;
@@ -45,8 +52,6 @@ abstract class BingeController {
   void setNextVideo();
 
   Future<VideoModel> getActiveVideoModel();
-  Stream<BingeModel> streamBingeModel();
-
   void markVideoStarted();
   void markVideoWatched();
 
