@@ -4,6 +4,7 @@ import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/binge/binge_filter.dart';
+import 'package:bingetube/pages/binge/widgets/filter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -303,14 +304,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onFilterPressed() {
-    final filter = _filter != null
-        ? null
-        : BingeFilter(
-            watchType: .all,
-            sortOrder: .asc,
-            sortType: .system,
-            searchValue: null,
-          );
+    final filter = _filter != null ? null : BingeFilter.defaultValue;
     setState(() {
       _filter = filter;
     });
