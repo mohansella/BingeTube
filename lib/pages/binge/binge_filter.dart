@@ -1,3 +1,4 @@
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '../../generated/pages/binge/binge_filter.freezed.dart';
@@ -34,6 +35,8 @@ enum BingeFilterSortType {
 
 @freezed
 abstract class BingeFilter with _$BingeFilter {
+  const BingeFilter._();
+
   const factory BingeFilter({
     required BingeFilterWatchType watchType,
     required BingeFilterSortOrder sortOrder,
@@ -51,4 +54,31 @@ abstract class BingeFilter with _$BingeFilter {
     toRange: null,
     searchValue: null,
   );
+
+  bool matches(VideoModel model) {
+    if (watchType == .watched && !model.progress.isFinished) {
+      return false;
+    } else if (watchType == .unwatched && model.progress.isFinished) {
+      return false;
+    }
+    return true;
+  }
+
+  int compareModels(VideoModel left, VideoModel right) {
+    int result;
+    switch (sortType) {
+      case .name:
+        result = left.snippet.title.compareTo(right.snippet.title);
+        break;
+      case .date:
+        result = left.snippet.publishedAt.compareTo(right.snippet.publishedAt);
+        break;
+      case .viewCount:
+        result = left.statistics.viewCount - left.statistics.viewCount;
+        break;
+      default:
+        result = 0;
+    }
+    return sortOrder == .asc ? result : -result;
+  }
 }

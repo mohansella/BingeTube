@@ -146,9 +146,16 @@ abstract class BaseBingeController implements BingeController {
   }
 
   void emit() {
-    //apply filter
     if (bingeModel != null) {
-      streamController.add(bingeModel!);
+      final model = bingeModel!;
+      final filter = bingeFilter;
+      final filteredModel = BingeModel(
+        title: model.title,
+        description: model.description,
+        videos: model.videos.where((v) => filter.matches(v)).toList()
+          ..sort((l, r) => filter.compareModels(l, r)),
+      );
+      streamController.add(filteredModel);
     }
   }
 }

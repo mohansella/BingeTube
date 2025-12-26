@@ -210,8 +210,8 @@ return $default(_that.watchType,_that.sortOrder,_that.sortType,_that.fromRange,_
 /// @nodoc
 
 
-class _BingeFilter implements BingeFilter {
-  const _BingeFilter({required this.watchType, required this.sortOrder, required this.sortType, required this.fromRange, required this.toRange, required this.searchValue});
+class _BingeFilter extends BingeFilter {
+  const _BingeFilter({required this.watchType, required this.sortOrder, required this.sortType, required this.fromRange, required this.toRange, required this.searchValue}): super._();
   
 
 @override final  BingeFilterWatchType watchType;
