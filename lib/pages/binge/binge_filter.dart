@@ -58,7 +58,7 @@ class BingeFilterWidget extends StatelessWidget {
     return SizedBox(
       height: 32.0,
       child: Align(
-        alignment: .center,
+        alignment: .bottomCenter,
         child: SingleChildScrollView(
           scrollDirection: .horizontal,
           child: Row(
