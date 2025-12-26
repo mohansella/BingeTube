@@ -14,7 +14,8 @@ abstract class BaseBingeController implements BingeController {
   final String initialHeroImg;
   late String videoId;
 
-  BingeModel? bingeModel;
+  BingeModel? unfilteredModel;
+  BingeModel? filteredModel;
   BingeFilter bingeFilter = BingeFilter.defaultValue;
 
   StreamSubscription? bingeModelSubscriber;
@@ -56,7 +57,7 @@ abstract class BaseBingeController implements BingeController {
   @override
   String get heroImg {
     final activeId = activeVideoId;
-    for (var video in bingeModel?.videos ?? []) {
+    for (var video in unfilteredModel?.videos ?? []) {
       if (video.video.id == activeId) {
         return video.thumbnails.mediumUrl;
       }
@@ -71,7 +72,7 @@ abstract class BaseBingeController implements BingeController {
   bool get isNextVideoExists {
     final currPos = activeVideoPos;
     if (currPos != null) {
-      return currPos != bingeModel!.videos.length - 1;
+      return currPos != filteredModel!.videos.length - 1;
     }
     return false;
   }
@@ -87,8 +88,8 @@ abstract class BaseBingeController implements BingeController {
 
   @override
   int? get activeVideoPos {
-    if (bingeModel != null) {
-      final videos = bingeModel!.videos;
+    if (filteredModel != null) {
+      final videos = filteredModel!.videos;
       for (int i = 0; i < videos.length; i++) {
         final video = videos[i];
         if (video.video.id == videoId) {
@@ -102,13 +103,13 @@ abstract class BaseBingeController implements BingeController {
   @override
   void setPrevVideo() {
     final currPos = activeVideoPos!;
-    setActiveVideoId(bingeModel!.videos[currPos - 1].video.id);
+    setActiveVideoId(filteredModel!.videos[currPos - 1].video.id);
   }
 
   @override
   void setNextVideo() {
     final currPos = activeVideoPos!;
-    setActiveVideoId(bingeModel!.videos[currPos + 1].video.id);
+    setActiveVideoId(filteredModel!.videos[currPos + 1].video.id);
   }
 
   @override
@@ -141,21 +142,28 @@ abstract class BaseBingeController implements BingeController {
   }
 
   void onModel(BingeModel event) {
-    bingeModel = event;
+    unfilteredModel = event;
     emit();
   }
 
   void emit() {
-    if (bingeModel != null) {
-      final model = bingeModel!;
+    if (unfilteredModel != null) {
+      final model = unfilteredModel!;
       final filter = bingeFilter;
-      final filteredModel = BingeModel(
+      var filtered = model.videos.where((v) => filter.matches(v)).toList();
+      if (filter.sortType == .system) {
+        if (filter.sortOrder != .asc) {
+          filtered = filtered.reversed.toList();
+        }
+      } else {
+        filtered.sort((l, r) => filter.compareModels(l, r));
+      }
+      filteredModel = BingeModel(
         title: model.title,
         description: model.description,
-        videos: model.videos.where((v) => filter.matches(v)).toList()
-          ..sort((l, r) => filter.compareModels(l, r)),
+        videos: filtered,
       );
-      streamController.add(filteredModel);
+      streamController.add(filteredModel!);
     }
   }
 }
