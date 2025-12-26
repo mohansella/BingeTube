@@ -52,18 +52,20 @@ class _BingePageState extends ConsumerState<BingePage> {
     return StreamBuilder(
       stream: _controller.stream,
       builder: (context, snapshot) {
-        return Scaffold(
-          body: PlayerWidget(
-            videoId: _controller.activeVideoId,
-            controller: _controller,
-            parentScroll: _parentScroll,
-            childScroll: _childScroll,
-            onEvent: (event, {data}) =>
-                _onPlayerEvent(context, event, data: data),
-            slivers: [
-              _buildPlaylistHeader(context, snapshot),
-              _buildPlaylist(context, snapshot),
-            ],
+        return SafeArea(
+          child: Scaffold(
+            body: PlayerWidget(
+              videoId: _controller.activeVideoId,
+              controller: _controller,
+              parentScroll: _parentScroll,
+              childScroll: _childScroll,
+              onEvent: (event, {data}) =>
+                  _onPlayerEvent(context, event, data: data),
+              slivers: [
+                _buildPlaylistHeader(context, snapshot),
+                _buildPlaylist(context, snapshot),
+              ],
+            ),
           ),
         );
       },
@@ -129,8 +131,8 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   double _calcHeaderHeight() {
     final fontSize = ref.read(ConfigProviders.appFontSize);
-    final baseHeight = 56.0;
-    var headerHeight = _showFilter ? 96.0 : baseHeight;
+    final baseHeight = 60.0;
+    var headerHeight = _showFilter ? 100.0 : baseHeight;
     if (fontSize == .large) {
       headerHeight += 7.0;
     } else if (fontSize == .small) {
