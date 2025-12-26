@@ -3,17 +3,41 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '../../generated/pages/binge/binge_filter.freezed.dart';
 
-enum BingeFilterWatchType { all, watched, unwatched }
+enum BingeFilterWatchType {
+  all('All'),
+  watched('Watched'),
+  unwatched('Unwatched');
 
-enum BingeFilterSortOrder { asc, desc }
+  final String lable;
 
-enum BingeFilterSortType { system, name, date, viewCount }
+  const BingeFilterWatchType(this.lable);
+}
+
+enum BingeFilterSortOrder {
+  asc('Ascending'),
+  desc('Descendeing');
+
+  final String lable;
+
+  const BingeFilterSortOrder(this.lable);
+}
+
+enum BingeFilterSortType {
+  system('Default'),
+  name('Name'),
+  date('Date'),
+  viewCount('ViewCount');
+
+  final String lable;
+
+  const BingeFilterSortType(this.lable);
+}
 
 @freezed
 abstract class BingeFilter with _$BingeFilter {
   const factory BingeFilter({
     required BingeFilterWatchType watchType,
-    required BingeFilterSortOrder sortOder,
+    required BingeFilterSortOrder sortOrder,
     required BingeFilterSortType sortType,
     required String? searchValue,
   }) = _BingeFilter;
@@ -34,7 +58,7 @@ class BingeFilterWidget extends StatelessWidget {
     return SizedBox(
       height: 32.0,
       child: Align(
-        alignment: .centerLeft,
+        alignment: .center,
         child: SingleChildScrollView(
           scrollDirection: .horizontal,
           child: Row(
@@ -56,17 +80,36 @@ class BingeFilterWidget extends StatelessWidget {
     IconData icon,
     String text,
     Function(bool) onSelected,
+    bool isDefault,
   ) {
+    final theme = Theme.of(context);
+    final isModified = !isDefault;
+
     return FilterChip(
-      padding: EdgeInsets.only(right: 2.0),
+      padding: const EdgeInsets.only(right: 2.0),
+      selected: isModified,
+      selectedColor: theme.colorScheme.primaryContainer,
+      backgroundColor: theme.colorScheme.surfaceContainer,
+      showCheckmark: false,
       label: Row(
         spacing: 4,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2.0),
-            child: Icon(icon, size: 16),
+          Icon(
+            icon,
+            size: 16,
+            color: isModified
+                ? theme.colorScheme.primary
+                : theme.iconTheme.color,
           ),
-          Text(text, style: Theme.of(context).textTheme.labelMedium),
+          Text(
+            text,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: isModified ? FontWeight.w600 : FontWeight.normal,
+              color: isModified
+                  ? theme.colorScheme.primary
+                  : theme.textTheme.labelMedium?.color,
+            ),
+          ),
         ],
       ),
       onSelected: onSelected,
@@ -74,18 +117,138 @@ class BingeFilterWidget extends StatelessWidget {
   }
 
   Widget _buildSort(BuildContext context) {
-    return _buildChip(context, Icons.arrow_downward, 'Default', (_) {});
+    return _buildChip(
+      context,
+      filter.sortOrder == .asc ? Icons.arrow_downward : Icons.arrow_upward,
+      filter.sortType.lable,
+      (_) => _showModalForSort(context),
+      filter.sortOrder == .asc && filter.sortType == .system,
+    );
   }
 
   Widget _buildVisibility(BuildContext context) {
-    return _buildChip(context, Icons.visibility, 'All', (_) {});
+    return _buildChip(
+      context,
+      Icons.visibility,
+      filter.watchType.lable,
+      (_) => _showModalForVisibility(context),
+      filter.watchType == .all,
+    );
   }
 
   _buildDateRange(BuildContext context) {
-    return _buildChip(context, Icons.date_range, 'All Time', (_) {});
+    return _buildChip(context, Icons.date_range, 'All Time', (_) {}, true);
   }
 
   _buildSearch(BuildContext context) {
-    return _buildChip(context, Icons.search, 'Search', (_) {});
+    return _buildChip(context, Icons.search, 'Search', (_) {}, true);
+  }
+
+  void _showModalForSort(BuildContext context) {
+    _showModal(context, _buildModalForSort);
+  }
+
+  void _showModalForVisibility(BuildContext context) {
+    _showModal(context, _buildModalForVisibility);
+  }
+
+  void _showModal(
+    BuildContext context,
+    List<Widget> Function(BingeFilter, void Function(BingeFilter))
+    widgetsBuilder,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        var filter = this.filter;
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            setFilter(BingeFilter newFilter) {
+              setModalState(() {
+                filter = newFilter;
+                onUpdate(filter);
+              });
+            }
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: widgetsBuilder(filter, setFilter),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildModalForSort(
+    BingeFilter filter,
+    void Function(BingeFilter) setFilter,
+  ) {
+    return [
+      const Text('Sort by', style: TextStyle(fontWeight: FontWeight.w600)),
+
+      RadioGroup<BingeFilterSortType>(
+        groupValue: filter.sortType,
+        onChanged: (sortType) =>
+            setFilter(filter.copyWith(sortType: sortType!)),
+        child: Column(
+          children: BingeFilterSortType.values.map((sortType) {
+            return RadioListTile(
+              value: sortType,
+              title: Center(child: Text(sortType.lable)),
+            );
+          }).toList(),
+        ),
+      ),
+
+      const SizedBox(height: 8),
+      const Divider(),
+      const SizedBox(height: 8),
+
+      const Text('Order', style: TextStyle(fontWeight: FontWeight.w600)),
+      RadioGroup<BingeFilterSortOrder>(
+        groupValue: filter.sortOrder,
+        onChanged: (sortOrder) =>
+            setFilter(filter.copyWith(sortOrder: sortOrder!)),
+        child: Column(
+          children: BingeFilterSortOrder.values.map((sortOrder) {
+            return RadioListTile(
+              value: sortOrder,
+              title: Center(child: Text(sortOrder.lable)),
+            );
+          }).toList(),
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildModalForVisibility(
+    BingeFilter filter,
+    void Function(BingeFilter) setFilter,
+  ) {
+    return [
+      const Text('Visibility', style: TextStyle(fontWeight: FontWeight.w600)),
+
+      RadioGroup<BingeFilterWatchType>(
+        groupValue: filter.watchType,
+        onChanged: (watchType) =>
+            setFilter(filter.copyWith(watchType: watchType!)),
+        child: Column(
+          children: BingeFilterWatchType.values.map((watchType) {
+            return RadioListTile(
+              value: watchType,
+              title: Center(child: Text(watchType.lable)),
+            );
+          }).toList(),
+        ),
+      ),
+    ];
   }
 }
