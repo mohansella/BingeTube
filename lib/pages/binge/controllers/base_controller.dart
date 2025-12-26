@@ -66,7 +66,7 @@ abstract class BaseBingeController implements BingeController {
   }
 
   @override
-  String get heroId => initialHeroImg;
+  String get heroId => initialHeroId;
 
   @override
   bool get isNextVideoExists {
