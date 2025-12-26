@@ -1,4 +1,5 @@
 import 'package:bingetube/common/widget/player/player_widget.dart';
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
@@ -76,11 +77,17 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildPlaylistHeader(BuildContext context) {
+    final fontSize = ref.read(ConfigProviders.appFontSize);
     return StreamBuilder(
       stream: _controller.streamBingeModel(),
       builder: (context, snapshot) {
         final baseHeight = 56.0;
-        final headerHeight = _filter == null ? baseHeight : 92.0;
+        var headerHeight = _filter == null ? baseHeight : 96.0;
+        if (fontSize == .large) {
+          headerHeight += 7.0;
+        } else if(fontSize == .small) {
+          headerHeight -= 4.0;
+        }
         return SliverPersistentHeader(
           pinned: true,
           delegate: _BingeTitleDelegate(
@@ -100,7 +107,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                   ),
                   if (_filter != null) ...[
                     Container(
-                      padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+                      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                       child: BingeFilterWidget(
                         filter: _filter!,
                         onUpdate: (f) => _onFilterModified(f),
