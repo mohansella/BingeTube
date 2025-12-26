@@ -42,78 +42,88 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PlayerWidget(
-        videoId: _controller.activeVideoId,
-        controller: _controller,
-        parentScroll: _parentScroll,
-        childScroll: _childScroll,
-        onEvent: (event, {data}) => _onPlayerEvent(context, event, data: data),
-        slivers: [_buildPlaylistHeader(context), _buildPlaylist()],
+    return StreamBuilder(
+      stream: _controller.stream,
+      builder: (context, snapshot) {
+        return Scaffold(
+          body: PlayerWidget(
+            videoId: _controller.activeVideoId,
+            controller: _controller,
+            parentScroll: _parentScroll,
+            childScroll: _childScroll,
+            onEvent: (event, {data}) =>
+                _onPlayerEvent(context, event, data: data),
+            slivers: [
+              _buildPlaylistHeader(context, snapshot),
+              _buildPlaylist(context, snapshot),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPlaylist(
+    BuildContext context,
+    AsyncSnapshot<BingeModel> snapshot,
+  ) {
+    if (snapshot.hasData) {
+      final videos = snapshot.data!.videos;
+      return SliverList.builder(
+        itemCount: videos.length,
+        itemBuilder: (context, pos) => _buildVideoCard(context, videos[pos]),
+      );
+    }
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Center(child: CircularProgressIndicator()),
       ),
     );
   }
 
-  Widget _buildPlaylist() {
-    return StreamBuilder(
-      stream: _controller.streamBingeModel(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final videos = snapshot.data!.videos;
-          return SliverList.builder(
-            itemCount: videos.length,
-            itemBuilder: (context, pos) =>
-                _buildVideoCard(context, videos[pos]),
-          );
-        }
-        return SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPlaylistHeader(BuildContext context) {
-    return StreamBuilder(
-      stream: _controller.streamBingeModel(),
-      builder: (context, snapshot) {
-        double headerHeight = _calcHeaderHeight();
-        return SliverPersistentHeader(
-          pinned: true,
-          delegate: _BingeTitleDelegate(
-            minHeight: headerHeight,
-            maxHeight: headerHeight,
-            child: Container(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-              child: Column(
+  Widget _buildPlaylistHeader(
+    BuildContext context,
+    AsyncSnapshot<BingeModel> snapshot,
+  ) {
+    double headerHeight = _calcHeaderHeight();
+    return SliverPersistentHeader(
+      pinned: true,
+      delegate: _BingeTitleDelegate(
+        minHeight: headerHeight,
+        maxHeight: headerHeight,
+        child: Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+          child: Column(
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      _buildCollapseIcon(),
-                      _buildTitleColumn(snapshot),
-                      _buildFilterAndModify(),
-                    ],
-                  ),
-                  if (_filter != null) ...[
-                    Container(
-                      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                      child: BingeFilterWidget(
-                        filter: _filter!,
-                        onUpdate: (f) => _onFilterModified(f),
-                      ),
-                    ),
-                  ],
+                  _buildCollapseIcon(),
+                  _buildTitleColumn(snapshot),
+                  _buildFilterAndModify(),
                 ],
               ),
-            ),
+              if (_filter != null) ...[
+                Container(
+                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                  child: BingeFilterWidget(
+                    filter: _filter!,
+                    onUpdate: (f) => _onFilterModified(f),
+                  ),
+                ),
+              ],
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
