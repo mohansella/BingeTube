@@ -28,7 +28,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   double _playerHeight = 0;
   bool _isCollapsed = false;
 
-  BingeFilter? _filter;
+  bool _showFilter = false;
 
   @override
   void initState() {
@@ -111,11 +111,11 @@ class _BingePageState extends ConsumerState<BingePage> {
                   _buildFilterAndModify(),
                 ],
               ),
-              if (_filter != null) ...[
+              if (_showFilter) ...[
                 Container(
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                   child: BingeFilterWidget(
-                    filter: _filter!,
+                    filter: _controller.filter,
                     onUpdate: (f) => _onFilterModified(f),
                   ),
                 ),
@@ -130,7 +130,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   double _calcHeaderHeight() {
     final fontSize = ref.read(ConfigProviders.appFontSize);
     final baseHeight = 56.0;
-    var headerHeight = _filter == null ? baseHeight : 96.0;
+    var headerHeight = _showFilter ? 96.0 : baseHeight;
     if (fontSize == .large) {
       headerHeight += 7.0;
     } else if (fontSize == .small) {
@@ -314,15 +314,17 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onFilterPressed() {
-    final filter = _filter != null ? null : BingeFilter.defaultValue;
     setState(() {
-      _filter = filter;
+      if (_showFilter) {
+        _controller.setFilter(BingeFilter.defaultValue);
+      }
+      _showFilter = !_showFilter;
     });
   }
 
   void _onFilterModified(BingeFilter filter) {
     setState(() {
-      _filter = filter;
+      _controller.setFilter(filter);
     });
   }
 
