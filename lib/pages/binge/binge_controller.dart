@@ -55,8 +55,10 @@ abstract class BingeController {
   void setNextVideo();
 
   Future<VideoModel> getActiveVideoModel();
-  void markVideoStarted();
-  void markVideoWatched();
+  void markActiveVideoStarted();
+  void markActiveVideoWatched();
+
+  void setVideoWatched(VideoModel model, bool isFinished);
 
   factory BingeController(Map<String, String> params) {
     final typeValue = params[BingeParams.type.name]!;

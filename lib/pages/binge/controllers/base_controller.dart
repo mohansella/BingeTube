@@ -142,13 +142,13 @@ abstract class BaseBingeController implements BingeController {
   }
 
   @override
-  void markVideoStarted() {
+  void markActiveVideoStarted() {
     final videoId = activeVideoId;
-    _logger.info('videoId:$videoId marked as started');
+    _logger.info('active videoId:$videoId will be marked as started');
   }
 
   @override
-  void markVideoWatched() {
+  void markActiveVideoWatched() {
     final videoId = activeVideoId;
     videoDao.upsertVideoProgress(
       VideoProgressCompanion(
@@ -157,12 +157,25 @@ abstract class BaseBingeController implements BingeController {
         isFinished: Value(true),
       ),
     );
-    _logger.info('videoId:$videoId marked as watched');
+    _logger.info('active videoId:$videoId marked as watched');
   }
 
   @override
   Future<VideoModel> getActiveVideoModel() async {
     return videoDao.getVideoModelById(activeVideoId);
+  }
+
+  @override
+  void setVideoWatched(VideoModel model, bool isFinished) {
+    final videoId = model.video.id;
+    videoDao.upsertVideoProgress(
+      VideoProgressCompanion(
+        id: Value(videoId),
+        updatedAt: Value(DateTime.now()),
+        isFinished: Value(isFinished),
+      ),
+    );
+    _logger.info('videoId:$videoId marked as watched:$isFinished');
   }
 
   void onModel(BingeModel event) {
