@@ -74,7 +74,9 @@ abstract class BingeFilter with _$BingeFilter {
     }
 
     if (searchValue != null && searchValue!.trim().isNotEmpty) {
-      if (!model.snippet.title.contains(searchValue!)) {
+      if (!model.snippet.title.toLowerCase().contains(
+        searchValue!.toLowerCase(),
+      )) {
         return false;
       }
     }
