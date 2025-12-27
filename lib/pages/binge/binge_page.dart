@@ -29,6 +29,9 @@ class _BingePageState extends ConsumerState<BingePage> {
   bool _isCollapsed = false;
 
   bool _showFilter = false;
+  bool _isShowSearchInput = false;
+
+  final _searchTextController = TextEditingController();
 
   @override
   void initState() {
@@ -44,6 +47,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   @override
   void dispose() {
     _controller.dispose();
+    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -113,7 +117,9 @@ class _BingePageState extends ConsumerState<BingePage> {
                   _buildFilterAndModify(),
                 ],
               ),
-              if (_showFilter) ...[
+              if (_isShowSearchInput) ...[
+                _buildSearchInput(),
+              ] else if (_showFilter) ...[
                 Container(
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                   child: BingeFilterWidget(
@@ -121,11 +127,48 @@ class _BingePageState extends ConsumerState<BingePage> {
                     minDateTime: _controller.minDateTime,
                     maxDateTime: _controller.maxDateTime,
                     onUpdate: (f) => _onFilterModified(f),
+                    onOpen: (t) => _onFilterOpened(t),
                   ),
                 ),
               ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchInput() {
+    return SizedBox(
+      height: 36,
+      child: TextField(
+        textAlign: .center,
+        controller: _searchTextController,
+        autofocus: true,
+        onTapOutside: (_) {
+          _searchTextController.text = _controller.filter.searchValue ?? '';
+          setState(() {
+            _isShowSearchInput = false;
+          });
+        },
+        onChanged: (value) {
+          final searchValue = value.trim().isNotEmpty ? value.trim() : null;
+          _onFilterModified(
+            _controller.filter.copyWith(searchValue: searchValue),
+          );
+        },
+        onSubmitted: (value) {
+          final searchValue = value.trim().isNotEmpty ? value.trim() : null;
+          _onFilterModified(
+            _controller.filter.copyWith(searchValue: searchValue),
+          );
+          _searchTextController.text = searchValue ?? '';
+          setState(() {
+            _isShowSearchInput = false;
+          });
+        },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.only(bottom: 10.0),
         ),
       ),
     );
@@ -330,6 +373,17 @@ class _BingePageState extends ConsumerState<BingePage> {
     setState(() {
       _controller.setFilter(filter);
     });
+  }
+
+  void _onFilterOpened(Type type) {
+    if (_isCollapsed) {
+      _onCollapsePressed();
+    }
+    if (type == String) {
+      setState(() {
+        _isShowSearchInput = true;
+      });
+    }
   }
 
   void _onAddPressed() {}

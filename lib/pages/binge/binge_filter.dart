@@ -72,6 +72,12 @@ abstract class BingeFilter with _$BingeFilter {
         return false;
       }
     }
+
+    if (searchValue != null && searchValue!.trim().isNotEmpty) {
+      if (!model.snippet.title.contains(searchValue!)) {
+        return false;
+      }
+    }
     return true;
   }
 
