@@ -161,6 +161,7 @@ class BingeFilterWidget extends StatelessWidget {
     List<Widget> Function(BingeFilter, void Function(BingeFilter))
     widgetsBuilder,
   ) {
+    var localFilter = filter;
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -168,7 +169,8 @@ class BingeFilterWidget extends StatelessWidget {
           builder: (context, setModalState) {
             setFilter(BingeFilter newFilter) {
               setModalState(() {
-                onUpdate(filter);
+                localFilter = newFilter;
+                onUpdate(newFilter);
               });
             }
 
@@ -178,7 +180,7 @@ class BingeFilterWidget extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widgetsBuilder(filter, setFilter),
+                    children: widgetsBuilder(localFilter, setFilter),
                   ),
                 ),
               ),
