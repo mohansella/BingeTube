@@ -189,7 +189,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   Widget _buildTitleColumn(AsyncSnapshot<BingeModel> snapshot) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(left: 8.0),
+        padding: const EdgeInsets.only(left: 40.0),
         child: Column(
           mainAxisAlignment: .center,
           children: [
