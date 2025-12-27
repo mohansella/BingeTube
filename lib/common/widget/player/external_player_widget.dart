@@ -287,7 +287,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           setState(() {
             _isMarkWatched = true;
           });
-          controller.markVideoWatched();
+          controller.markActiveVideoWatched();
         },
         Icons.check_outlined,
         _width / 14,
@@ -332,7 +332,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
       'opening externally id:${model.video.id} title: ${model.snippet.title}',
     );
     final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
-    controller.markVideoStarted();
+    controller.markActiveVideoStarted();
     await launchUrl(url);
   }
 

@@ -280,6 +280,17 @@ class _BingePageState extends ConsumerState<BingePage> {
                 ],
               ),
             ),
+            IconButton(
+              icon: Icon(
+                video.progress.isFinished
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+              ),
+              onPressed: () => _controller.setVideoWatched(
+                video,
+                !video.progress.isFinished,
+              ),
+            ),
             const SizedBox(width: 12),
           ],
         ),
