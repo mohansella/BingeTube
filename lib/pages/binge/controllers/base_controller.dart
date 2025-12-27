@@ -101,6 +101,30 @@ abstract class BaseBingeController implements BingeController {
   }
 
   @override
+  DateTime get minDateTime {
+    var model = unfilteredModel!;
+    var toReturn = model.videos[0].snippet.publishedAt;
+    for (var video in model.videos) {
+      if (toReturn.isAfter(video.snippet.publishedAt)) {
+        toReturn = video.snippet.publishedAt;
+      }
+    }
+    return toReturn;
+  }
+
+  @override
+  DateTime get maxDateTime {
+    var model = unfilteredModel!;
+    var toReturn = model.videos[0].snippet.publishedAt;
+    for (var video in model.videos) {
+      if (toReturn.isBefore(video.snippet.publishedAt)) {
+        toReturn = video.snippet.publishedAt;
+      }
+    }
+    return toReturn;
+  }
+
+  @override
   void setPrevVideo() {
     final currPos = activeVideoPos!;
     setActiveVideoId(filteredModel!.videos[currPos - 1].video.id);

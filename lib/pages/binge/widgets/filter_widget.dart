@@ -4,11 +4,15 @@ import 'package:flutter/material.dart';
 class BingeFilterWidget extends StatelessWidget {
   final BingeFilter filter;
   final Function(BingeFilter) onUpdate;
+  final DateTime minDateTime;
+  final DateTime maxDateTime;
 
   const BingeFilterWidget({
     super.key,
     required this.filter,
     required this.onUpdate,
+    required this.minDateTime,
+    required this.maxDateTime,
   });
 
   @override
@@ -95,7 +99,13 @@ class BingeFilterWidget extends StatelessWidget {
   }
 
   _buildDateRange(BuildContext context) {
-    return _buildChip(context, Icons.date_range, 'All Time', (_) {}, true);
+    return _buildChip(
+      context,
+      Icons.date_range,
+      'All Time',
+      (_) => _showModalForDateRange(context),
+      filter.fromRange == null && filter.toRange == null,
+    );
   }
 
   _buildSearch(BuildContext context) {
@@ -108,6 +118,22 @@ class BingeFilterWidget extends StatelessWidget {
 
   void _showModalForVisibility(BuildContext context) {
     _showModal(context, _buildModalForVisibility);
+  }
+
+  void _showModalForDateRange(BuildContext context) async {
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: minDateTime,
+      lastDate: maxDateTime,
+      initialEntryMode: .calendar,
+    );
+    final fromDateTime = range?.start;
+    var endDateTime = range?.end;
+    if (endDateTime != null) {
+      final date = endDateTime;
+      endDateTime = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+    }
+    onUpdate(filter.copyWith(fromRange: fromDateTime, toRange: endDateTime));
   }
 
   void _showModal(
