@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class BingeFilterWidget extends StatelessWidget {
   final BingeFilter filter;
   final Function(BingeFilter) onUpdate;
+  final Function(Type) onOpen;
   final DateTime minDateTime;
   final DateTime maxDateTime;
 
@@ -11,6 +12,7 @@ class BingeFilterWidget extends StatelessWidget {
     super.key,
     required this.filter,
     required this.onUpdate,
+    required this.onOpen,
     required this.minDateTime,
     required this.maxDateTime,
   });
@@ -18,9 +20,9 @@ class BingeFilterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 32.0,
+      height: 36.0,
       child: Align(
-        alignment: .bottomCenter,
+        alignment: .center,
         child: SingleChildScrollView(
           scrollDirection: .horizontal,
           child: Row(
@@ -98,29 +100,43 @@ class BingeFilterWidget extends StatelessWidget {
     );
   }
 
-  _buildDateRange(BuildContext context) {
+  Widget _buildDateRange(BuildContext context) {
+    final isDefault = filter.fromRange == null && filter.toRange == null;
     return _buildChip(
       context,
       Icons.date_range,
-      'All Time',
+      isDefault
+          ? 'All Time'
+          : '${filter.fromRange?.toString().substring(0, 10) ?? ""}'
+                '- ${filter.toRange?.toString().substring(0, 10) ?? ""}',
       (_) => _showModalForDateRange(context),
-      filter.fromRange == null && filter.toRange == null,
+      isDefault,
     );
   }
 
-  _buildSearch(BuildContext context) {
-    return _buildChip(context, Icons.search, 'Search', (_) {}, true);
+  Widget _buildSearch(BuildContext context) {
+    final isDefault = filter.searchValue == null;
+    return _buildChip(
+      context,
+      Icons.search,
+      isDefault ? 'Search' : '${filter.searchValue}',
+      (_) => _showSearchInput(),
+      isDefault,
+    );
   }
 
   void _showModalForSort(BuildContext context) {
+    onOpen(BingeFilterSortType);
     _showModal(context, _buildModalForSort);
   }
 
   void _showModalForVisibility(BuildContext context) {
+    onOpen(BingeFilterWatchType);
     _showModal(context, _buildModalForVisibility);
   }
 
   void _showModalForDateRange(BuildContext context) async {
+    onOpen(DateTime);
     final range = await showDateRangePicker(
       context: context,
       firstDate: minDateTime,
@@ -136,6 +152,10 @@ class BingeFilterWidget extends StatelessWidget {
     onUpdate(filter.copyWith(fromRange: fromDateTime, toRange: endDateTime));
   }
 
+  void _showSearchInput() {
+    onOpen(String);
+  }
+
   void _showModal(
     BuildContext context,
     List<Widget> Function(BingeFilter, void Function(BingeFilter))
@@ -144,12 +164,10 @@ class BingeFilterWidget extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        var filter = this.filter;
         return StatefulBuilder(
           builder: (context, setModalState) {
             setFilter(BingeFilter newFilter) {
               setModalState(() {
-                filter = newFilter;
                 onUpdate(filter);
               });
             }
