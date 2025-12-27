@@ -61,6 +61,17 @@ abstract class BingeFilter with _$BingeFilter {
     } else if (watchType == .unwatched && model.progress.isFinished) {
       return false;
     }
+
+    if (fromRange != null) {
+      if (fromRange!.isAfter(model.snippet.publishedAt)) {
+        return false;
+      }
+    }
+    if (toRange != null) {
+      if (toRange!.isBefore(model.snippet.publishedAt)) {
+        return false;
+      }
+    }
     return true;
   }
 

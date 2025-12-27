@@ -47,6 +47,9 @@ abstract class BingeController {
 
   int? get activeVideoPos;
 
+  DateTime get minDateTime;
+  DateTime get maxDateTime;
+
   void setActiveVideoId(String videoId);
   void setPrevVideo();
   void setNextVideo();

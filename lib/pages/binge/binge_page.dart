@@ -118,6 +118,8 @@ class _BingePageState extends ConsumerState<BingePage> {
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
                   child: BingeFilterWidget(
                     filter: _controller.filter,
+                    minDateTime: _controller.minDateTime,
+                    maxDateTime: _controller.maxDateTime,
                     onUpdate: (f) => _onFilterModified(f),
                   ),
                 ),
