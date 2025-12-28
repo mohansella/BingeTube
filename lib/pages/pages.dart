@@ -8,7 +8,8 @@ enum Pages {
   keyConfig('/keyconfig', 'Key Config'),
   search('/search', 'Search'),
 
-  binge('/binge', 'Binge');
+  binge('/binge', 'Binge'),
+  editBinge('/edit_binge', 'Edit Binge');
 
   final String path;
   final String text;

@@ -333,7 +333,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
     final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
     controller.markActiveVideoStarted();
-    await launchUrl(url);
+    await launchUrl(url, mode: .externalNonBrowserApplication);
   }
 
   bool _scrollEndListener(notification) {

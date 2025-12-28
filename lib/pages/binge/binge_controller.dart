@@ -14,7 +14,7 @@ enum BingeType {
   systemSeries,
 }
 
-enum BingeParams { type, id, heroId, heroImg, selectedVideoId }
+enum BingeParams { type, id, heroId, heroImg, videoId }
 
 class BingeModel {
   final String title;
@@ -63,21 +63,22 @@ abstract class BingeController {
   factory BingeController(Map<String, String> params) {
     final typeValue = params[BingeParams.type.name]!;
     final id = params[BingeParams.id.name]!;
+    final videoId = params[BingeParams.videoId.name]!;
     final heroId = params[BingeParams.heroId.name]!;
     final heroImg = params[BingeParams.heroImg.name]!;
-    final selectedVideoId = params[BingeParams.selectedVideoId.name];
     final controllerType = BingeType.values.byName(typeValue);
     switch (controllerType) {
       case .singleVideo:
         return SingleVideoBingeController(
           id,
+          videoId,
           initialHeroId: heroId,
           initialHeroImg: heroImg,
         );
       case .searchVideos:
         return SearchVideoBingeController(
           int.parse(id),
-          selectedVideoId!,
+          videoId,
           initialHeroId: heroId,
           initialHeroImg: heroImg,
         );
@@ -86,21 +87,19 @@ abstract class BingeController {
     }
   }
 
-  static String buildPath({
+  static String buildPath(Pages page, {
     required BingeType type,
     required String id,
+    required String videoId,
     required String heroId,
     required String heroImg,
-    String? selectedVideoId,
   }) {
-    final buffer = StringBuffer(Pages.binge.path)
+    final buffer = StringBuffer(page.path)
       ..write('?type=${type.name}')
       ..write('&id=$id')
+      ..write('&videoId=$videoId')
       ..write('&heroId=$heroId')
       ..write('&heroImg=$heroImg');
-    if (selectedVideoId != null) {
-      buffer.write('&selectedVideoId=$selectedVideoId');
-    }
     final toReturn = buffer.toString();
     _logger.info('built path: $toReturn');
     return toReturn;
