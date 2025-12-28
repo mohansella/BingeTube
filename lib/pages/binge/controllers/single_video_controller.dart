@@ -3,10 +3,16 @@ import 'package:bingetube/pages/binge/controllers/base_controller.dart';
 
 class SingleVideoBingeController extends BaseBingeController {
   SingleVideoBingeController(
+    String id,
     String videoId, {
     required super.initialHeroId,
     required super.initialHeroImg,
   }) {
+    if (id != videoId) {
+      throw StateError(
+        'SingelVideoBingeController expects id:$id and videoId:$videoId to be same',
+      );
+    }
     super.videoId = videoId;
   }
 

@@ -7,7 +7,6 @@ import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:bingetube/pages/binge/widgets/filter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class BingePage extends ConsumerStatefulWidget {
   static final _logger = LogManager.getLogger('BingePage');
@@ -302,14 +301,6 @@ class _BingePageState extends ConsumerState<BingePage> {
     setState(() {
       _controller.setActiveVideoId(video.video.id);
     });
-    context.replace(
-      BingeController.buildPath(
-        type: .searchVideos,
-        id: video.video.id,
-        heroId: video.video.id,
-        heroImg: video.thumbnails.mediumUrl,
-      ),
-    );
   }
 
   void _onPlayerEvent(
