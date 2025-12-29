@@ -87,7 +87,8 @@ abstract class BingeController {
     }
   }
 
-  static String buildPath(Pages page, {
+  static String buildPath(
+    Pages page, {
     required BingeType type,
     required String id,
     required String videoId,

@@ -7,5 +7,4 @@ class MyShowsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(child: Text('My Show Page'));
   }
-  
 }

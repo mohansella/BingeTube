@@ -51,9 +51,7 @@ class ConfigKeyHelpWidget extends StatelessWidget {
                   recognizer: TapGestureRecognizer()
                     ..onTap = () => _launchUrl(_googleCloudConsoleUrl),
                 ),
-                const TextSpan(
-                  text: ' to generate and secure your API key:',
-                ),
+                const TextSpan(text: ' to generate and secure your API key:'),
               ],
             ),
           ),
@@ -112,10 +110,7 @@ class ConfigKeyHelpWidget extends StatelessWidget {
               crossAxisAlignment: .center,
               mainAxisAlignment: .center,
               children: [
-                Icon(
-                  Icons.security_rounded,
-                  color: color.onErrorContainer,
-                ),
+                Icon(Icons.security_rounded, color: color.onErrorContainer),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text.rich(
@@ -177,16 +172,12 @@ class ConfigKeyHelpWidget extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: text.titleMedium!.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: text.titleMedium!.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 4),
               Text(
                 description,
-                style: text.bodyMedium!.copyWith(
-                  color: color.onSurfaceVariant,
-                ),
+                style: text.bodyMedium!.copyWith(color: color.onSurfaceVariant),
               ),
             ],
           ),
