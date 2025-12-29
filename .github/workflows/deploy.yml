@@ -47,7 +47,7 @@ jobs:
 
       # 🚀 Only runs if everything above is clean
       - name: Build web
-        run: flutter build web
+        run: flutter build web --release
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
