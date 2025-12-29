@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages
+name: Deploy Pages
 
 on:
   push:
@@ -16,15 +16,37 @@ jobs:
     name: Deploy
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.38.1'
           channel: stable
+
       - name: Install dependencies
         run: flutter pub get
+
+      # 🔒 Quality gates (FAILS CI if dirty)
+      - name: Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run dart format
+        run: dart format .
+
+      - name: Ensure no generated or formatting changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "❌ Generated or formatted files are not committed."
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: Analyze
+        run: flutter analyze
+
+      # 🚀 Only runs if everything above is clean
       - name: Build web
         run: flutter build web --release
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

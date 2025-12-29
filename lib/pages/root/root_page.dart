@@ -12,7 +12,6 @@ class RootPage extends StatefulWidget {
 }
 
 class RootPageState extends State<RootPage> {
-
   int _bottomNavBarIndex = 0;
 
   @override

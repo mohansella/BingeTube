@@ -9,14 +9,14 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-  final themeMode = ref.watch(ConfigProviders.theme);
-  final appFontSize = ref.watch(ConfigProviders.appFontSize);
-  return MaterialApp.router(
-    themeMode: themeMode,
-    theme: Themes.light(appFontSize),
-    darkTheme: Themes.dark(appFontSize),
-    routerConfig: Routes.getRouterConfig(),
-    debugShowCheckedModeBanner: true,
-  );
+    final themeMode = ref.watch(ConfigProviders.theme);
+    final appFontSize = ref.watch(ConfigProviders.appFontSize);
+    return MaterialApp.router(
+      themeMode: themeMode,
+      theme: Themes.light(appFontSize),
+      darkTheme: Themes.dark(appFontSize),
+      routerConfig: Routes.getRouterConfig(),
+      debugShowCheckedModeBanner: true,
+    );
   }
 }

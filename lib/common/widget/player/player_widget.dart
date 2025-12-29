@@ -3,7 +3,15 @@ import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-enum PlayerEventType { onBack, onPrev, onNext, onPause, onPlay, onHeight, onScrollEnd }
+enum PlayerEventType {
+  onBack,
+  onPrev,
+  onNext,
+  onPause,
+  onPlay,
+  onHeight,
+  onScrollEnd,
+}
 
 abstract class PlayerWidget extends ConsumerStatefulWidget {
   final String videoId;

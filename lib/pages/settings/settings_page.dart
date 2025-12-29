@@ -57,7 +57,10 @@ class SettingsPage extends ConsumerWidget {
           Icon(Icons.text_fields, size: 24),
           SizedBox(width: 8),
           Expanded(
-            child: Text('Font Size', style: Theme.of(context).textTheme.bodyLarge),
+            child: Text(
+              'Font Size',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
           SegmentedButton(
             segments: AppFontSize.values
