@@ -1,5 +1,5 @@
 import 'package:bingetube/core/constants/assets.dart';
-import 'package:bingetube/pages/Pages.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
