@@ -115,9 +115,9 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
       clipBehavior: .hardEdge,
       child: InkWell(
         onTap: () {
-          context.push(
-            BingeController.buildPath(
-              Pages.binge,
+          context.pushNamed(
+            Pages.binge.name,
+            queryParameters: BingeController.buildParams(
               type: .searchVideos,
               id: _model!.meta.id.toString(),
               videoId: video.video.id,

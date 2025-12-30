@@ -1,8 +1,7 @@
+import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/init.dart';
-import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashPage extends StatefulWidget {
@@ -27,9 +26,7 @@ class SplashPageState extends State<SplashPage> {
     if (delta > Duration.zero) {
       await Future.delayed(delta);
     }
-    if (mounted) {
-      context.go(Pages.home.path);
-    }
+    Routes.updateInitComplete();
   }
 
   @override
