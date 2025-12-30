@@ -1,16 +1,38 @@
-# bingetube
+# BingeTube 🎬
 
-A new Flutter project.
+**BingeTube** is a Flutter app that lets you watch YouTube channels like a TV series — from **oldest to newest**, without re-watching videos you’ve already seen. It turns chaotic YouTube browsing into a **structured binge-watching experience**.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Why BingeTube?
 
-A few resources to get you started if this is your first Flutter project:
+YouTube is great, but it lacks:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+* Watching a channel from **episode 1 → latest**
+* Skipping **already watched** videos
+* Feeling of **completion** like finishing a season
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+BingeTube solves this by organizing videos into curated collections and tracking watch progress.
+
+---
+
+## 🚀 Key Features
+
+* 📺 **Watch channels like a series** (oldest → newest)
+* ✅ **Mark videos as watched / unwatched**
+* ⏭️ **Automatically skip watched videos**
+* 🧠 **Watch history & progress tracking**
+* 📦 **Curated collections** (no API key required for featured collections)
+* 🔑 **Optional YouTube Data API support** (user-provided key)
+* 🌐 **Flutter Web–friendly routing** (refresh-safe URLs)
+
+---
+
+## 🛠️ Tech Stack
+
+* **Flutter** (Mobile + Web)
+* **GoRouter** – declarative navigation & deep linking
+* **YouTube Data API v3** (optional)
+* **Local persistence** for watch state
+
+---
