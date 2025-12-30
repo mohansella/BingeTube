@@ -6,7 +6,9 @@ import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:bingetube/pages/binge/widgets/filter_widget.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class BingePage extends ConsumerStatefulWidget {
@@ -316,14 +318,17 @@ class _BingePageState extends ConsumerState<BingePage> {
       case .onPrev:
         setState(() {
           _controller.setPrevVideo();
+          updateQueryParams(context);
         });
         _scrollToActiveVideo();
         break;
       case .onNext:
         setState(() {
           _controller.setNextVideo();
+          updateQueryParams(context);
         });
         _scrollToActiveVideo();
+        break;
       case .onHeight:
         _playerHeight = data as double;
         break;
@@ -333,6 +338,18 @@ class _BingePageState extends ConsumerState<BingePage> {
       default:
         BingePage._logger.warning('unhandled eventType:$eventType');
     }
+  }
+
+  void updateQueryParams(BuildContext context) {
+    context.goNamed(
+      Pages.binge.name,
+      queryParameters: BingeController.updateParams(
+        baseParams: widget.params,
+        videoId: _controller.activeVideoId,
+        heroId: _controller.heroId,
+        heroImg: _controller.heroImg,
+      ),
+    );
   }
 
   void _scrollToActiveVideo() {

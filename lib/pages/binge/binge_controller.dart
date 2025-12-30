@@ -94,13 +94,38 @@ abstract class BingeController {
     required String heroId,
     required String heroImg,
   }) {
-    Map<BingeParams, String> toReturn = {
-      .type: type.name,
+    return updateParams(
+      type: type,
+      id: id,
+      videoId: videoId,
+      heroId: heroId,
+      heroImg: heroImg,
+    );
+  }
+
+  static Map<String, String> updateParams({
+    Map<String, String> baseParams = const {},
+    BingeType? type,
+    String? id,
+    String? videoId,
+    String? heroId,
+    String? heroImg,
+  }) {
+    Map<BingeParams, String?> paramVsNullable = {
+      .type: type?.name,
       .id: id,
       .videoId: videoId,
       .heroId: heroId,
       .heroImg: heroImg,
     };
-    return toReturn.map((k, v) => MapEntry(k.name, v));
+    Map<BingeParams, String> paramVsValue = {};
+    paramVsNullable.forEach((k, v) {
+      if (v != null) {
+        paramVsValue[k] = v;
+      }
+    });
+    final toReturn = {...baseParams};
+    toReturn.addAll(paramVsValue.map((k, v) => MapEntry(k.name, v)));
+    return toReturn;
   }
 }
