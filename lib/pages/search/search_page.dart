@@ -1,7 +1,10 @@
+import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/search/widgets/search_channel.dart';
 import 'package:bingetube/pages/search/widgets/search_video.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -79,6 +82,10 @@ class SearchPageState extends ConsumerState<SearchPage>
       duration: Duration(milliseconds: 200),
       height: _showAppBar ? kToolbarHeight : 0,
       child: AppBar(
+        leading: IconButton(
+          onPressed: () => Routes.popOrHome(context),
+          icon: Icon(Icons.arrow_back),
+        ),
         title: SizedBox(
           height: 40,
           child: TextField(

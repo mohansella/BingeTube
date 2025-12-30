@@ -1,3 +1,4 @@
+import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/access/videos.dart';
@@ -310,7 +311,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   }) {
     switch (eventType) {
       case .onBack:
-        Navigator.pop(context);
+        Routes.popOrHome(context);
         break;
       case .onPrev:
         setState(() {

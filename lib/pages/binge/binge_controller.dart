@@ -87,22 +87,20 @@ abstract class BingeController {
     }
   }
 
-  static String buildPath(
-    Pages page, {
+  static Map<String, String> buildParams({
     required BingeType type,
     required String id,
     required String videoId,
     required String heroId,
     required String heroImg,
   }) {
-    final buffer = StringBuffer(page.path)
-      ..write('?type=${type.name}')
-      ..write('&id=$id')
-      ..write('&videoId=$videoId')
-      ..write('&heroId=$heroId')
-      ..write('&heroImg=$heroImg');
-    final toReturn = buffer.toString();
-    _logger.info('built path: $toReturn');
-    return toReturn;
+    Map<BingeParams, String> toReturn = {
+      .type: type.name,
+      .id: id,
+      .videoId: videoId,
+      .heroId: heroId,
+      .heroImg: heroImg,
+    };
+    return toReturn.map((k, v) => MapEntry(k.name, v));
   }
 }

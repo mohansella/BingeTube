@@ -14,44 +14,69 @@ import 'package:go_router/go_router.dart';
 
 sealed class Routes {
   static GoRouter getRouterConfig() {
+    GoRouter.optionURLReflectsImperativeAPIs = true;
     return _routes;
+  }
+
+  static void popOrHome(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.goNamed(Pages.home.name);
+    }
+  }
+
+  static void updateInitComplete() {
+    _initNotifier.value = true;
   }
 }
 
+final _initNotifier = ValueNotifier<bool>(false);
+
 final GoRouter _routes = GoRouter(
   initialLocation: Pages.splash.path,
+  refreshListenable: _initNotifier,
+  redirect: (context, routeState) {
+    if (!_initNotifier.value && routeState.uri.path != Pages.splash.path) {
+      return Pages.splash.path;
+    }
+    if (_initNotifier.value && routeState.uri.path == Pages.splash.path) {
+      return Pages.home.path;
+    }
+    return null;
+  },
   routes: [
     CustomGoRoute(
-      path: Pages.splash.path,
+      page: Pages.splash,
       customBuilder: (context, state) => const SplashPage(),
     ),
     ShellRoute(
       routes: [
         CustomGoRoute(
-          path: Pages.home.path,
+          page: Pages.home,
           customBuilder: (context, state) => const HomePage(),
         ),
         CustomGoRoute(
-          path: Pages.myShows.path,
+          page: Pages.myShows,
           customBuilder: (context, state) => const MyShowsPage(),
         ),
         CustomGoRoute(
-          path: Pages.settings.path,
+          page: Pages.settings,
           customBuilder: (context, state) => const SettingsPage(),
         ),
       ],
       builder: (context, state, child) => RootPage(body: child),
     ),
     CustomGoRoute(
-      path: Pages.keyConfig.path,
+      page: Pages.keyConfig,
       customBuilder: (context, state) => const ConfigKeyPage(),
     ),
     CustomGoRoute(
-      path: Pages.search.path,
+      page: Pages.search,
       customBuilder: (context, state) => const SearchPage(),
     ),
     CustomGoRoute(
-      path: Pages.binge.path,
+      page: Pages.binge,
       customBuilder: (context, state) => BingePage(state.uri.queryParameters),
     ),
   ],
@@ -59,9 +84,12 @@ final GoRouter _routes = GoRouter(
 
 class CustomGoRoute extends GoRoute {
   final GoRouterWidgetBuilder customBuilder;
+  final Pages page;
 
-  CustomGoRoute({required super.path, required this.customBuilder})
+  CustomGoRoute({required this.page, required this.customBuilder})
     : super(
+        name: page.name,
+        path: page.path,
         builder: customBuilder,
         pageBuilder: (context, state) => CustomTransitionPage(
           key: state.pageKey,

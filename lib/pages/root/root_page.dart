@@ -27,13 +27,13 @@ class RootPageState extends State<RootPage> {
         titleSpacing: 10,
         actions: [
           IconButton(
-            onPressed: () => context.push(Pages.keyConfig.path),
+            onPressed: () => context.pushNamed(Pages.keyConfig.name),
             icon: Icon(Icons.key),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: IconButton(
-              onPressed: () => context.push(Pages.search.path),
+              onPressed: () => context.pushNamed(Pages.search.name),
               icon: Icon(Icons.search),
             ),
           ),
@@ -58,7 +58,7 @@ class RootPageState extends State<RootPage> {
         ],
         onTap: (index) {
           List<Pages> navPages = [Pages.home, Pages.myShows, Pages.settings];
-          context.go(navPages[index].path);
+          context.goNamed(navPages[index].name);
           setState(() {
             _bottomNavBarIndex = index;
           });

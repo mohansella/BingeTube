@@ -1,3 +1,4 @@
+import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/config/apikey_meta.dart';
@@ -186,7 +187,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
     var currValidateId = ++_validateId;
     var result = await YoutubeApi.validateKey(ref, _textController.text);
     if (_validateId == currValidateId && context.mounted) {
-      Navigator.pop(context);
+      Routes.popOrHome(context);
       if (result.isSuccess()) {
         _saveApiKey();
       } else {
