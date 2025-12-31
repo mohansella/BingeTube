@@ -178,6 +178,9 @@ class _BingePageState extends ConsumerState<BingePage> {
               '${snapshot.data?.videos.length ?? 0} videos',
               maxLines: 1,
               overflow: .ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
             ),
           ],
         ),
