@@ -155,7 +155,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
             InkWell(
               onTap: () => widget.onEvent(.onBack),
               child: Tooltip(
-                message: 'back',
+                message: 'Back',
                 child: Icon(Icons.arrow_back, size: w / 20),
               ),
             ),
@@ -200,18 +200,27 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
   }
 
-  Widget _buildIconControl(void Function()? onTap, IconData icon, double size) {
+  Widget _buildIconControl(
+    void Function()? onTap,
+    IconData icon,
+    double size,
+    String tooltip,
+  ) {
     return InkWell(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.black.withAlpha(140),
-          shape: .circle,
-        ),
-        child: Icon(
-          icon,
-          size: size,
-          color: onTap == null ? Colors.white30 : Colors.white,
+      child: Tooltip(
+        margin: EdgeInsets.only(top: 8),
+        message: tooltip,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black.withAlpha(140),
+            shape: .circle,
+          ),
+          child: Icon(
+            icon,
+            size: size,
+            color: onTap == null ? Colors.white30 : Colors.white,
+          ),
         ),
       ),
     );
@@ -222,6 +231,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
       () => _openExternally(),
       Icons.open_in_new_outlined,
       _width / 10,
+      'Open Externally',
     );
   }
 
@@ -291,6 +301,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         },
         Icons.check_outlined,
         _width / 14,
+        'Mark Watched',
       );
     }
     final isEnabled = controller.isNextVideoExists;
@@ -298,6 +309,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
       isEnabled ? () => widget.onEvent(.onNext) : null,
       Icons.skip_next,
       _width / 14,
+      'Next',
     );
   }
 
@@ -307,6 +319,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
       isEnabled ? () => widget.onEvent(.onPrev) : null,
       Icons.skip_previous,
       _width / 14,
+      'Previous',
     );
   }
 

@@ -231,6 +231,7 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   Widget _buildCollapseIcon() {
     return IconButton(
+      tooltip: _isCollapsed ? 'Expand' : 'Collapse',
       onPressed: _onCollapsePressed,
       icon: AnimatedRotation(
         turns: _isCollapsed ? 0 : 0.5,
@@ -244,8 +245,13 @@ class _BingePageState extends ConsumerState<BingePage> {
     return Row(
       mainAxisAlignment: .end,
       children: [
-        IconButton(onPressed: _onFilterPressed, icon: Icon(Icons.tune)),
         IconButton(
+          tooltip: 'Filter & Sort',
+          onPressed: _onFilterPressed,
+          icon: Icon(Icons.tune),
+        ),
+        IconButton(
+          tooltip: 'Add',
           onPressed: () => _onAddPressed(context),
           icon: Icon(Icons.add),
         ),
@@ -303,6 +309,9 @@ class _BingePageState extends ConsumerState<BingePage> {
               ),
             ),
             IconButton(
+              tooltip: video.progress.isFinished
+                  ? 'Mark Unwatched'
+                  : 'Mark Watched',
               icon: Icon(
                 video.progress.isFinished
                     ? Icons.visibility_off
