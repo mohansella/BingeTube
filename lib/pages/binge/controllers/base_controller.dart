@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:bingetube/core/binge/binge_filter.dart';
+import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
-import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:drift/drift.dart';
 
 abstract class BaseBingeController implements BingeController {
@@ -17,6 +18,7 @@ abstract class BaseBingeController implements BingeController {
   BingeModel? unfilteredModel;
   BingeModel? filteredModel;
   BingeFilter bingeFilter = BingeFilter.defaultValue;
+  BingeSort bingeSort = BingeSort.defaultValue;
 
   StreamSubscription? bingeModelSubscriber;
   var streamController = StreamController<BingeModel>();
@@ -48,6 +50,15 @@ abstract class BaseBingeController implements BingeController {
   @override
   void setFilter(BingeFilter filter) {
     bingeFilter = filter;
+    emit();
+  }
+
+  @override
+  BingeSort get sort => bingeSort;
+
+  @override
+  void setSort(BingeSort sort) {
+    bingeSort = sort;
     emit();
   }
 
@@ -188,12 +199,12 @@ abstract class BaseBingeController implements BingeController {
       final model = unfilteredModel!;
       final filter = bingeFilter;
       var filtered = model.videos.where((v) => filter.matches(v)).toList();
-      if (filter.sortType == .system) {
-        if (filter.sortOrder != .asc) {
+      if (sort.sortType == .system) {
+        if (sort.sortOrder != .asc) {
           filtered = filtered.reversed.toList();
         }
       } else {
-        filtered.sort((l, r) => filter.compareModels(l, r));
+        filtered.sort((l, r) => sort.compareModels(l, r));
       }
       filteredModel = BingeModel(
         title: model.title,

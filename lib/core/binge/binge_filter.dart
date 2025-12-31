@@ -1,7 +1,7 @@
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part '../../generated/pages/binge/binge_filter.freezed.dart';
+part '../../generated/core/binge/binge_filter.freezed.dart';
 
 enum BingeFilterWatchType {
   all('All'),
@@ -13,34 +13,12 @@ enum BingeFilterWatchType {
   const BingeFilterWatchType(this.lable);
 }
 
-enum BingeFilterSortOrder {
-  asc('Ascending'),
-  desc('Descendeing');
-
-  final String lable;
-
-  const BingeFilterSortOrder(this.lable);
-}
-
-enum BingeFilterSortType {
-  system('Default'),
-  name('Name'),
-  date('Date'),
-  viewCount('ViewCount');
-
-  final String lable;
-
-  const BingeFilterSortType(this.lable);
-}
-
 @freezed
 abstract class BingeFilter with _$BingeFilter {
   const BingeFilter._();
 
   const factory BingeFilter({
     required BingeFilterWatchType watchType,
-    required BingeFilterSortOrder sortOrder,
-    required BingeFilterSortType sortType,
     required DateTime? fromRange,
     required DateTime? toRange,
     required String? searchValue,
@@ -48,8 +26,6 @@ abstract class BingeFilter with _$BingeFilter {
 
   static final defaultValue = BingeFilter(
     watchType: .all,
-    sortOrder: .asc,
-    sortType: .system,
     fromRange: null,
     toRange: null,
     searchValue: null,
@@ -81,23 +57,5 @@ abstract class BingeFilter with _$BingeFilter {
       }
     }
     return true;
-  }
-
-  int compareModels(VideoModel left, VideoModel right) {
-    int result;
-    switch (sortType) {
-      case .name:
-        result = left.snippet.title.compareTo(right.snippet.title);
-        break;
-      case .date:
-        result = left.snippet.publishedAt.compareTo(right.snippet.publishedAt);
-        break;
-      case .viewCount:
-        result = left.statistics.viewCount - left.statistics.viewCount;
-        break;
-      default:
-        result = 0;
-    }
-    return sortOrder == .asc ? result : -result;
   }
 }

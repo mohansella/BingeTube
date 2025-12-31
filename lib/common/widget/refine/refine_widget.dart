@@ -1,21 +1,46 @@
-import 'package:bingetube/pages/binge/binge_filter.dart';
+import 'package:bingetube/core/binge/binge_filter.dart';
+import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:flutter/material.dart';
 
-class BingeFilterWidget extends StatelessWidget {
+class BingeRefineWidget extends StatefulWidget {
   final BingeFilter filter;
-  final Function(BingeFilter) onUpdate;
-  final Function(Type) onOpen;
+  final BingeSort sort;
+  final Function(BingeFilter) onFilterUpdate;
+  final Function(BingeSort) onSortUpdate;
+  final Function() onShowModal;
   final DateTime minDateTime;
   final DateTime maxDateTime;
 
-  const BingeFilterWidget({
+  const BingeRefineWidget({
     super.key,
     required this.filter,
-    required this.onUpdate,
-    required this.onOpen,
+    required this.sort,
+    required this.onFilterUpdate,
+    required this.onSortUpdate,
+    required this.onShowModal,
     required this.minDateTime,
     required this.maxDateTime,
   });
+
+  @override
+  State<BingeRefineWidget> createState() => _BingeRefineWidgetState();
+}
+
+class _BingeRefineWidgetState extends State<BingeRefineWidget> {
+  final _textController = TextEditingController();
+
+  bool _isShowSearchInput = false;
+
+  @override
+  void didUpdateWidget(covariant BingeRefineWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,18 +48,20 @@ class BingeFilterWidget extends StatelessWidget {
       height: 36.0,
       child: Align(
         alignment: .center,
-        child: SingleChildScrollView(
-          scrollDirection: .horizontal,
-          child: Row(
-            spacing: 8.0,
-            children: [
-              _buildSort(context),
-              _buildVisibility(context),
-              _buildDateRange(context),
-              _buildSearch(context),
-            ],
-          ),
-        ),
+        child: _isShowSearchInput
+            ? _buildSearchInput()
+            : SingleChildScrollView(
+                scrollDirection: .horizontal,
+                child: Row(
+                  spacing: 8.0,
+                  children: [
+                    _buildSort(context),
+                    _buildVisibility(context),
+                    _buildDateRange(context),
+                    _buildSearch(context),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -83,10 +110,10 @@ class BingeFilterWidget extends StatelessWidget {
   Widget _buildSort(BuildContext context) {
     return _buildChip(
       context,
-      filter.sortOrder == .asc ? Icons.arrow_downward : Icons.arrow_upward,
-      filter.sortType.lable,
+      widget.sort.sortOrder == .asc ? Icons.arrow_downward : Icons.arrow_upward,
+      widget.sort.sortType.lable,
       (_) => _showModalForSort(context),
-      filter.sortOrder == .asc && filter.sortType == .system,
+      widget.sort.sortOrder == .asc && widget.sort.sortType == .system,
     );
   }
 
@@ -94,53 +121,93 @@ class BingeFilterWidget extends StatelessWidget {
     return _buildChip(
       context,
       Icons.visibility,
-      filter.watchType.lable,
+      widget.filter.watchType.lable,
       (_) => _showModalForVisibility(context),
-      filter.watchType == .all,
+      widget.filter.watchType == .all,
     );
   }
 
   Widget _buildDateRange(BuildContext context) {
-    final isDefault = filter.fromRange == null && filter.toRange == null;
+    final isDefault =
+        widget.filter.fromRange == null && widget.filter.toRange == null;
     return _buildChip(
       context,
       Icons.date_range,
       isDefault
           ? 'All Time'
-          : '${filter.fromRange?.toString().substring(0, 10) ?? ""}'
-                '- ${filter.toRange?.toString().substring(0, 10) ?? ""}',
+          : '${widget.filter.fromRange?.toString().substring(0, 10) ?? ""}'
+                '- ${widget.filter.toRange?.toString().substring(0, 10) ?? ""}',
       (_) => _showModalForDateRange(context),
       isDefault,
     );
   }
 
   Widget _buildSearch(BuildContext context) {
-    final isDefault = filter.searchValue == null;
+    final isDefault = widget.filter.searchValue == null;
     return _buildChip(
       context,
       Icons.search,
-      isDefault ? 'Search' : '${filter.searchValue}',
-      (_) => _showSearchInput(),
+      isDefault ? 'Search' : '${widget.filter.searchValue}',
+      (_) => setState(() {
+        widget.onShowModal();
+        _isShowSearchInput = true;
+      }),
       isDefault,
     );
   }
 
+  Widget _buildSearchInput() {
+    return SizedBox(
+      height: 36,
+      child: TextField(
+        textAlign: .center,
+        controller: _textController,
+        autofocus: true,
+        onTapOutside: (_) {
+          _textController.text = widget.filter.searchValue ?? '';
+          setState(() {
+            _isShowSearchInput = false;
+          });
+        },
+        onChanged: (value) {
+          final searchValue = value.trim().isNotEmpty ? value.trim() : null;
+          widget.onFilterUpdate(
+            widget.filter.copyWith(searchValue: searchValue),
+          );
+        },
+        onSubmitted: (value) {
+          final searchValue = value.trim().isNotEmpty ? value.trim() : null;
+          widget.onFilterUpdate(
+            widget.filter.copyWith(searchValue: searchValue),
+          );
+          _textController.text = searchValue ?? '';
+          setState(() {
+            _isShowSearchInput = false;
+          });
+        },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.only(bottom: 10.0),
+        ),
+      ),
+    );
+  }
+
   void _showModalForSort(BuildContext context) {
-    onOpen(BingeFilterSortType);
+    widget.onShowModal();
     _showModal(context, _buildModalForSort);
   }
 
   void _showModalForVisibility(BuildContext context) {
-    onOpen(BingeFilterWatchType);
+    widget.onShowModal();
     _showModal(context, _buildModalForVisibility);
   }
 
   void _showModalForDateRange(BuildContext context) async {
-    onOpen(DateTime);
+    widget.onShowModal();
     final range = await showDateRangePicker(
       context: context,
-      firstDate: minDateTime,
-      lastDate: maxDateTime,
+      firstDate: widget.minDateTime,
+      lastDate: widget.maxDateTime,
       initialEntryMode: .calendar,
     );
     final fromDateTime = range?.start;
@@ -149,28 +216,39 @@ class BingeFilterWidget extends StatelessWidget {
       final date = endDateTime;
       endDateTime = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
     }
-    onUpdate(filter.copyWith(fromRange: fromDateTime, toRange: endDateTime));
-  }
-
-  void _showSearchInput() {
-    onOpen(String);
+    widget.onFilterUpdate(
+      widget.filter.copyWith(fromRange: fromDateTime, toRange: endDateTime),
+    );
   }
 
   void _showModal(
     BuildContext context,
-    List<Widget> Function(BingeFilter, void Function(BingeFilter))
-    widgetsBuilder,
+    List<Widget> Function(
+      BingeFilter,
+      BingeSort,
+      Function(BingeFilter),
+      Function(BingeSort),
+    )
+    children,
   ) {
-    var localFilter = filter;
     showModalBottomSheet(
       context: context,
-      builder: (context) {
+      builder: (_) {
+        var filter = widget.filter;
+        var sort = widget.sort;
         return StatefulBuilder(
-          builder: (context, setModalState) {
-            setFilter(BingeFilter newFilter) {
+          builder: (_, setModalState) {
+            setFilter(BingeFilter value) {
+              widget.onFilterUpdate(value);
               setModalState(() {
-                localFilter = newFilter;
-                onUpdate(newFilter);
+                filter = value;
+              });
+            }
+
+            setOrder(BingeSort value) {
+              widget.onSortUpdate(value);
+              setModalState(() {
+                sort = value;
               });
             }
 
@@ -180,7 +258,7 @@ class BingeFilterWidget extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widgetsBuilder(localFilter, setFilter),
+                    children: children(filter, sort, setFilter, setOrder),
                   ),
                 ),
               ),
@@ -192,18 +270,19 @@ class BingeFilterWidget extends StatelessWidget {
   }
 
   List<Widget> _buildModalForSort(
-    BingeFilter filter,
-    void Function(BingeFilter) setFilter,
+    BingeFilter _,
+    BingeSort sort,
+    Function(BingeFilter) _,
+    Function(BingeSort) setSort,
   ) {
     return [
       const Text('Sort by', style: TextStyle(fontWeight: FontWeight.w600)),
 
-      RadioGroup<BingeFilterSortType>(
-        groupValue: filter.sortType,
-        onChanged: (sortType) =>
-            setFilter(filter.copyWith(sortType: sortType!)),
+      RadioGroup<BingeSortType>(
+        groupValue: sort.sortType,
+        onChanged: (sortType) => setSort(sort.copyWith(sortType: sortType!)),
         child: Column(
-          children: BingeFilterSortType.values.map((sortType) {
+          children: BingeSortType.values.map((sortType) {
             return RadioListTile(
               value: sortType,
               title: Center(child: Text(sortType.lable)),
@@ -217,12 +296,11 @@ class BingeFilterWidget extends StatelessWidget {
       const SizedBox(height: 8),
 
       const Text('Order', style: TextStyle(fontWeight: FontWeight.w600)),
-      RadioGroup<BingeFilterSortOrder>(
-        groupValue: filter.sortOrder,
-        onChanged: (sortOrder) =>
-            setFilter(filter.copyWith(sortOrder: sortOrder!)),
+      RadioGroup<BingeSortOrder>(
+        groupValue: sort.sortOrder,
+        onChanged: (sortOrder) => setSort(sort.copyWith(sortOrder: sortOrder!)),
         child: Column(
-          children: BingeFilterSortOrder.values.map((sortOrder) {
+          children: BingeSortOrder.values.map((sortOrder) {
             return RadioListTile(
               value: sortOrder,
               title: Center(child: Text(sortOrder.lable)),
@@ -235,7 +313,9 @@ class BingeFilterWidget extends StatelessWidget {
 
   List<Widget> _buildModalForVisibility(
     BingeFilter filter,
-    void Function(BingeFilter) setFilter,
+    BingeSort _,
+    Function(BingeFilter) setFilter,
+    Function(BingeSort) _,
   ) {
     return [
       const Text('Visibility', style: TextStyle(fontWeight: FontWeight.w600)),
