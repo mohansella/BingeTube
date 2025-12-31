@@ -9,6 +9,15 @@ class EditBingePage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _EditBingePageState();
+
+  static Map<String, String> buildParams(Map<String, String> params) {
+    return Map.fromEntries(
+      [
+        BingeParams.type,
+        BingeParams.id,
+      ].map((v) => MapEntry(v.name, params[v.name]!)),
+    );
+  }
 }
 
 class _EditBingePageState extends ConsumerState<EditBingePage> {

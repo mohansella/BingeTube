@@ -6,6 +6,7 @@ import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:bingetube/pages/binge/widgets/filter_widget.dart';
+import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +21,22 @@ class BingePage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState createState() => _BingePageState();
+
+  static Map<String, String> buildParams({
+    required BingeType type,
+    required String id,
+    required String videoId,
+    required String heroId,
+    required String heroImg,
+  }) {
+    return BingeController.updateParams(
+      type: type,
+      id: id,
+      videoId: videoId,
+      heroId: heroId,
+      heroImg: heroImg,
+    );
+  }
 }
 
 class _BingePageState extends ConsumerState<BingePage> {
@@ -116,7 +133,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 children: [
                   _buildCollapseIcon(),
                   _buildTitleColumn(snapshot),
-                  _buildFilterAndModify(),
+                  _buildFilterAndModify(context),
                 ],
               ),
               if (_isShowSearchInput) ...[
@@ -223,12 +240,15 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Widget _buildFilterAndModify() {
+  Widget _buildFilterAndModify(BuildContext context) {
     return Row(
       mainAxisAlignment: .end,
       children: [
         IconButton(onPressed: _onFilterPressed, icon: Icon(Icons.tune)),
-        IconButton(onPressed: _onAddPressed, icon: Icon(Icons.add)),
+        IconButton(
+          onPressed: () => _onAddPressed(context),
+          icon: Icon(Icons.add),
+        ),
       ],
     );
   }
@@ -406,7 +426,12 @@ class _BingePageState extends ConsumerState<BingePage> {
     }
   }
 
-  void _onAddPressed() {}
+  void _onAddPressed(BuildContext context) {
+    context.pushNamed(
+      Pages.editBinge.name,
+      queryParameters: EditBingePage.buildParams(widget.params),
+    );
+  }
 }
 
 // Reuse the same delegate from before
