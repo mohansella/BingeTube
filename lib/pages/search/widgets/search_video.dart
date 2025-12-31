@@ -2,7 +2,7 @@ import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -117,7 +117,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
         onTap: () {
           context.pushNamed(
             Pages.binge.name,
-            queryParameters: BingeController.buildParams(
+            queryParameters: BingePage.buildParams(
               type: .searchVideos,
               id: _model!.meta.id.toString(),
               videoId: video.video.id,

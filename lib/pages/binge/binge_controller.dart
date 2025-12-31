@@ -59,9 +59,9 @@ abstract class BingeController {
   factory BingeController(Map<String, String> params) {
     final typeValue = params[BingeParams.type.name]!;
     final id = params[BingeParams.id.name]!;
-    final videoId = params[BingeParams.videoId.name]!;
-    final heroId = params[BingeParams.heroId.name]!;
-    final heroImg = params[BingeParams.heroImg.name]!;
+    final videoId = params[BingeParams.videoId.name] ?? '';
+    final heroId = params[BingeParams.heroId.name] ?? '';
+    final heroImg = params[BingeParams.heroImg.name] ?? '';
     final controllerType = BingeType.values.byName(typeValue);
     switch (controllerType) {
       case .singleVideo:
@@ -81,22 +81,6 @@ abstract class BingeController {
       default:
         throw StateError('unimpelemented');
     }
-  }
-
-  static Map<String, String> buildParams({
-    required BingeType type,
-    required String id,
-    required String videoId,
-    required String heroId,
-    required String heroImg,
-  }) {
-    return updateParams(
-      type: type,
-      id: id,
-      videoId: videoId,
-      heroId: heroId,
-      heroImg: heroImg,
-    );
   }
 
   static Map<String, String> updateParams({
