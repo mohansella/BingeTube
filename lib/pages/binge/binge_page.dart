@@ -1,11 +1,12 @@
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
+import 'package:bingetube/common/widget/refine/refine_widget.dart';
+import 'package:bingetube/core/binge/binge_filter.dart';
+import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
-import 'package:bingetube/pages/binge/binge_filter.dart';
-import 'package:bingetube/pages/binge/widgets/filter_widget.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +48,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   double _playerHeight = 0;
   bool _isCollapsed = false;
 
-  bool _showFilter = false;
-  bool _isShowSearchInput = false;
-
-  final _searchTextController = TextEditingController();
+  bool _showRefine = false;
 
   @override
   void initState() {
@@ -59,14 +57,8 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   @override
-  void didUpdateWidget(covariant BingePage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   void dispose() {
     _controller.dispose();
-    _searchTextController.dispose();
     super.dispose();
   }
 
@@ -136,17 +128,17 @@ class _BingePageState extends ConsumerState<BingePage> {
                   _buildFilterAndModify(context),
                 ],
               ),
-              if (_isShowSearchInput) ...[
-                _buildSearchInput(),
-              ] else if (_showFilter) ...[
+              if (_showRefine) ...[
                 Container(
                   padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                  child: BingeFilterWidget(
+                  child: BingeRefineWidget(
                     filter: _controller.filter,
+                    sort: _controller.sort,
                     minDateTime: _controller.minDateTime,
                     maxDateTime: _controller.maxDateTime,
-                    onUpdate: (f) => _onFilterModified(f),
-                    onOpen: (t) => _onFilterOpened(t),
+                    onFilterUpdate: _onFilterModified,
+                    onSortUpdate: _onSortModified,
+                    onShowModal: _onRefineOpened,
                   ),
                 ),
               ],
@@ -157,46 +149,10 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Widget _buildSearchInput() {
-    return SizedBox(
-      height: 36,
-      child: TextField(
-        textAlign: .center,
-        controller: _searchTextController,
-        autofocus: true,
-        onTapOutside: (_) {
-          _searchTextController.text = _controller.filter.searchValue ?? '';
-          setState(() {
-            _isShowSearchInput = false;
-          });
-        },
-        onChanged: (value) {
-          final searchValue = value.trim().isNotEmpty ? value.trim() : null;
-          _onFilterModified(
-            _controller.filter.copyWith(searchValue: searchValue),
-          );
-        },
-        onSubmitted: (value) {
-          final searchValue = value.trim().isNotEmpty ? value.trim() : null;
-          _onFilterModified(
-            _controller.filter.copyWith(searchValue: searchValue),
-          );
-          _searchTextController.text = searchValue ?? '';
-          setState(() {
-            _isShowSearchInput = false;
-          });
-        },
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(bottom: 10.0),
-        ),
-      ),
-    );
-  }
-
   double _calcHeaderHeight() {
     final fontSize = ref.read(ConfigProviders.appFontSize);
     final baseHeight = 60.0;
-    var headerHeight = _showFilter ? 100.0 : baseHeight;
+    var headerHeight = _showRefine ? 100.0 : baseHeight;
     if (fontSize == .large) {
       headerHeight += 7.0;
     } else if (fontSize == .small) {
@@ -411,10 +367,11 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   void _onFilterPressed() {
     setState(() {
-      if (_showFilter) {
+      if (_showRefine) {
         _controller.setFilter(BingeFilter.defaultValue);
+        _controller.setSort(BingeSort.defaultValue);
       }
-      _showFilter = !_showFilter;
+      _showRefine = !_showRefine;
     });
   }
 
@@ -424,14 +381,15 @@ class _BingePageState extends ConsumerState<BingePage> {
     });
   }
 
-  void _onFilterOpened(Type type) {
+  void _onSortModified(BingeSort sort) {
+    setState(() {
+      _controller.setSort(sort);
+    });
+  }
+
+  void _onRefineOpened() {
     if (_isCollapsed) {
       _onCollapsePressed();
-    }
-    if (type == String) {
-      setState(() {
-        _isShowSearchInput = true;
-      });
     }
   }
 

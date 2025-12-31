@@ -1,5 +1,6 @@
+import 'package:bingetube/core/binge/binge_filter.dart';
+import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/db/access/videos.dart';
-import 'package:bingetube/pages/binge/binge_filter.dart';
 import 'package:bingetube/pages/binge/controllers/search_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
 
@@ -34,6 +35,9 @@ abstract class BingeController {
 
   BingeFilter get filter;
   void setFilter(BingeFilter filter);
+
+  BingeSort get sort;
+  void setSort(BingeSort sort);
 
   String get heroId;
   String get heroImg;
