@@ -97,12 +97,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         ),
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(_showTitle ? 120 : 44),
+        preferredSize: Size.fromHeight(_showTitle ? 124 : 50),
         child: Center(
           child: Column(
             children: [
               if (_showTitle) ...[_buildEditTitle(model)],
-              _buildAppBarBottom(),
+              _buildAppBarBottom(model),
             ],
           ),
         ),
@@ -177,14 +177,30 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
-  Widget _buildAppBarBottom() {
+  Widget _buildAppBarBottom(BingeModel model) {
+    final isAllSelected = model.videos.every(
+      (v) => _checkMarked.contains(v.video.id),
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 18.0, right: 18.0),
-            child: Icon(Icons.done_all),
+            padding: const EdgeInsets.only(left: 12.0, right: 18.0),
+            child: IconButton(
+              onPressed: () => setState(() {
+                final videoIds = model.videos.map((v) => v.video.id);
+                if (isAllSelected) {
+                  _checkMarked.removeAll(videoIds);
+                } else {
+                  _checkMarked.addAll(videoIds);
+                }
+              }),
+              icon: Icon(
+                isAllSelected ? Icons.check_box_outline_blank : Icons.done_all,
+              ),
+              tooltip: isAllSelected ? 'Deselect All' : 'Select All',
+            ),
           ),
           Expanded(
             child: BingeRefineWidget(
