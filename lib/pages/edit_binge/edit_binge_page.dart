@@ -59,16 +59,19 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         final videos = model.videos;
         return Scaffold(
           appBar: _buildAppBar(context, model),
-          body: SingleChildScrollView(
-            child: Column(children: _buildList(videos)),
-          ),
+          body: _buildList(videos),
         );
       },
     );
   }
 
-  List<Widget> _buildList(List<VideoModel> videos) {
-    return videos.map((v) => _buildVideoCard(v)).toList();
+  Widget _buildList(List<VideoModel> videos) {
+    return ReorderableListView.builder(
+      itemBuilder: (context, i) => _buildVideoCard(videos[i], i),
+      itemCount: videos.length,
+      onReorder: (o, n) {},
+      buildDefaultDragHandles: false,
+    );
   }
 
   AppBar _buildAppBar(BuildContext context, BingeModel model) {
@@ -218,7 +221,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
-  Widget _buildVideoCard(VideoModel video) {
+  Widget _buildVideoCard(VideoModel video, int index) {
     final isChecked = _checkMarked.contains(video.video.id);
     return Card(
       key: Key(video.video.id),
@@ -241,17 +244,31 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
               }),
             ),
           ),
-          SizedBox(
-            width: 160,
-            height: 90,
-            child: Stack(
-              alignment: .bottomCenter,
-              children: [
-                Image.network(video.thumbnails.mediumUrl, fit: .cover),
-                if (video.progress.isFinished) ...[
-                  LinearProgressIndicator(value: 1),
-                ],
-              ],
+          ReorderableDragStartListener(
+            index: index,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.grab,
+              child: SizedBox(
+                width: 160,
+                height: 90,
+                child: Stack(
+                  alignment: .bottomCenter,
+                  children: [
+                    Image.network(video.thumbnails.mediumUrl, fit: .cover),
+                    Container(color: Colors.black.withAlpha(50)),
+                    if (video.progress.isFinished) ...[
+                      LinearProgressIndicator(value: 1),
+                    ],
+                    Center(
+                      child: Icon(
+                        Icons.drag_handle_outlined,
+                        size: 100,
+                        color: Colors.white.withAlpha(120),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 12),
