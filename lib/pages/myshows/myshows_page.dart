@@ -5,6 +5,6 @@ class MyShowsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('My Show Page'));
+    return Center(child: Text('Work in progress'));
   }
 }
