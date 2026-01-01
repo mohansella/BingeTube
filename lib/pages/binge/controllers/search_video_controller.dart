@@ -27,7 +27,7 @@ class SearchVideoBingeController extends BaseBingeController {
   BingeModel mapSearchToBingeModel(VideoSearchModel event) {
     return BingeModel(
       title: event.meta.query,
-      description: event.meta.query,
+      description: 'Search results of ${event.meta.query}',
       videos: event.videos,
     );
   }

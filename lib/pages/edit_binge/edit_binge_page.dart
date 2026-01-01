@@ -27,7 +27,11 @@ class EditBingePage extends ConsumerStatefulWidget {
 
 class _EditBingePageState extends ConsumerState<EditBingePage> {
   late BingeController _controller;
-  Set<String> checkMarked = {};
+  final Set<String> _checkMarked = {};
+  bool _showTitle = false;
+
+  TextEditingController? _editTitleController;
+  TextEditingController? _editDescriptionController;
 
   @override
   void initState() {
@@ -38,6 +42,8 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   @override
   void dispose() {
     _controller.dispose();
+    _editTitleController?.dispose();
+    _editDescriptionController?.dispose();
     super.dispose();
   }
 
@@ -49,22 +55,23 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         if (!snashot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
-        var videos = snashot.data!.videos;
+        final model = snashot.data!;
+        final videos = model.videos;
         return Scaffold(
-          appBar: _buildAppBar(context, videos),
-          body: _buildList(videos),
+          appBar: _buildAppBar(context, model),
+          body: SingleChildScrollView(
+            child: Column(children: _buildList(videos)),
+          ),
         );
       },
     );
   }
 
-  SingleChildScrollView _buildList(List<VideoModel> videos) {
-    return SingleChildScrollView(
-      child: Column(children: [...videos.map((v) => _buildVideoCard(v))]),
-    );
+  List<Widget> _buildList(List<VideoModel> videos) {
+    return videos.map((v) => _buildVideoCard(v)).toList();
   }
 
-  AppBar _buildAppBar(BuildContext context, List<VideoModel> videos) {
+  AppBar _buildAppBar(BuildContext context, BingeModel model) {
     return AppBar(
       actionsPadding: EdgeInsets.only(right: 16.0),
       leading: IconButton(
@@ -72,8 +79,16 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         icon: Icon(Icons.arrow_back),
         tooltip: 'Back',
       ),
-      title: _buildTitle(context, videos),
+      title: _buildTitle(context, model),
       actions: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              _showTitle = !_showTitle;
+            });
+          },
+          icon: Icon(_showTitle ? Icons.expand_less : Icons.expand_more),
+        ),
         IconButton(
           color: Theme.of(context).colorScheme.primary,
           icon: const Icon(Icons.check),
@@ -81,54 +96,80 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           onPressed: () {},
         ),
       ],
-      bottom: _buildAppBarBottom(),
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(_showTitle ? 120 : 44),
+        child: Center(
+          child: Column(
+            children: [
+              if (_showTitle) ...[_buildEditTitle(model)],
+              _buildAppBarBottom(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  Column _buildTitle(BuildContext context, List<VideoModel> videos) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Edit Binge',
-          maxLines: 1,
-          overflow: .ellipsis,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        Text(
-          '${videos.length} videos',
-          maxLines: 1,
-          overflow: .ellipsis,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: Colors.white70),
-        ),
-      ],
+  Widget _buildEditTitle(BingeModel model) {
+    _editTitleController ??= TextEditingController(text: model.title);
+    _editDescriptionController ??= TextEditingController(
+      text: model.description,
     );
-  }
-
-  PreferredSize _buildAppBarBottom() {
-    return PreferredSize(
-      preferredSize: Size.fromHeight(44.0),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 18.0, right: 18.0),
-              child: Icon(Icons.done_all),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            maxLines: 1,
+            autofocus: true,
+            controller: _editTitleController,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            decoration: const InputDecoration.collapsed(
+              hintText: 'Binge title',
             ),
-            Expanded(
-              child: BingeRefineWidget(
-                filter: _controller.filter,
-                sort: _controller.sort,
-                minDateTime: _controller.minDateTime,
-                maxDateTime: _controller.maxDateTime,
-                onFilterUpdate: _onFilterModified,
-                onSortUpdate: _onSortModified,
-                onShowModal: () {},
-              ),
+          ),
+
+          const SizedBox(height: 6),
+
+          TextField(
+            maxLines: 1,
+            controller: _editDescriptionController,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+            decoration: const InputDecoration.collapsed(
+              hintText: 'Description',
+            ),
+          ),
+
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context, BingeModel model) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 32.0),
+        child: Column(
+          children: [
+            Text(
+              'Edit Binge',
+              maxLines: 1,
+              overflow: .ellipsis,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              '${model.videos.length} videos',
+              maxLines: 1,
+              overflow: .ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
             ),
           ],
         ),
@@ -136,8 +177,33 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
+  Widget _buildAppBarBottom() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 18.0, right: 18.0),
+            child: Icon(Icons.done_all),
+          ),
+          Expanded(
+            child: BingeRefineWidget(
+              filter: _controller.filter,
+              sort: _controller.sort,
+              minDateTime: _controller.minDateTime,
+              maxDateTime: _controller.maxDateTime,
+              onFilterUpdate: _onFilterModified,
+              onSortUpdate: _onSortModified,
+              onShowModal: () {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildVideoCard(VideoModel video) {
-    final isChecked = checkMarked.contains(video.video.id);
+    final isChecked = _checkMarked.contains(video.video.id);
     return Card(
       key: Key(video.video.id),
       shape: RoundedRectangleBorder(),
@@ -152,9 +218,9 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
               tooltip: isChecked ? 'Mark Unchecked' : 'Mark Checked',
               onPressed: () => setState(() {
                 if (isChecked) {
-                  checkMarked.remove(video.video.id);
+                  _checkMarked.remove(video.video.id);
                 } else {
-                  checkMarked.add(video.video.id);
+                  _checkMarked.add(video.video.id);
                 }
               }),
             ),
