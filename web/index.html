@@ -31,8 +31,36 @@
 
   <title>BingeTube</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #121212; /* match app background */
+  }
+
+  #native-splash {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #121212;
+    z-index: 0;
+  }
+
+  #native-splash img {
+    width: 32vw;          /* same as FractionallySizedBox */
+    max-width: 420px;     /* prevent oversized on desktop */
+    height: auto;
+  }
+</style>
 </head>
 <body>
+  <!-- Native splash -->
+  <div id="native-splash">
+    <img src="assets/assets/images/logo.png" alt="Loading" />
+  </div>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
