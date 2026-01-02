@@ -178,9 +178,7 @@ class _BingePageState extends ConsumerState<BingePage> {
               '${snapshot.data?.videos.length ?? 0} videos',
               maxLines: 1,
               overflow: .ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
@@ -390,10 +388,11 @@ class _BingePageState extends ConsumerState<BingePage> {
     });
   }
 
-  void _onRefineOpened() {
+  Future<bool> _onRefineOpened(Type type) async {
     if (_isCollapsed) {
       _onCollapsePressed();
     }
+    return true;
   }
 
   void _onAddPressed(BuildContext context) {

@@ -1,30 +1,42 @@
 import 'package:flutter/material.dart';
 
 class CustomDialog {
-  static Future<dynamic> show(
+  static Future<bool> show(
     BuildContext context,
     String title,
-    String buttonTxt,
-    Widget? content,
-  ) {
-    return showDialog(
+    String confirmText,
+    Widget? content, {
+    String? cancelText,
+    bool? barrierDismissible,
+  }) async {
+    var toReturn = false;
+    await showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: barrierDismissible ?? false,
       builder: (context) {
         return AlertDialog(
           title: Text(title),
           content: content,
-          actionsAlignment: MainAxisAlignment.center,
           actions: [
+            if (cancelText != null) ...[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(cancelText),
+              ),
+            ],
             TextButton(
               onPressed: () {
+                toReturn = true;
                 Navigator.pop(context);
               },
-              child: Text(buttonTxt),
+              child: Text(confirmText),
             ),
           ],
         );
       },
     );
+    return toReturn;
   }
 }

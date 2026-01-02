@@ -7,7 +7,7 @@ class BingeRefineWidget extends StatefulWidget {
   final BingeSort sort;
   final Function(BingeFilter) onFilterUpdate;
   final Function(BingeSort) onSortUpdate;
-  final Function() onShowModal;
+  final Future<bool> Function(Type) onShowModal;
   final DateTime minDateTime;
   final DateTime maxDateTime;
 
@@ -55,6 +55,10 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
                 child: Row(
                   spacing: 8.0,
                   children: [
+                    if (widget.sort != BingeSort.defaultValue ||
+                        widget.filter != BingeFilter.defaultValue) ...[
+                      _buildClear(context),
+                    ],
                     _buildSort(context),
                     _buildVisibility(context),
                     _buildDateRange(context),
@@ -148,10 +152,13 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
       context,
       Icons.search,
       isDefault ? 'Search' : '${widget.filter.searchValue}',
-      (_) => setState(() {
-        widget.onShowModal();
-        _isShowSearchInput = true;
-      }),
+      (_) async {
+        if (await widget.onShowModal(String)) {
+          setState(() {
+            _isShowSearchInput = true;
+          });
+        }
+      },
       isDefault,
     );
   }
@@ -192,33 +199,53 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
     );
   }
 
-  void _showModalForSort(BuildContext context) {
-    widget.onShowModal();
-    _showModal(context, _buildModalForSort);
+  Widget _buildClear(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Transform.translate(
+      offset: const Offset(0, -2),
+      child: IconButton(
+        tooltip: 'Clear filters',
+        onPressed: () {
+          widget.onFilterUpdate(BingeFilter.defaultValue);
+          widget.onSortUpdate(BingeSort.defaultValue);
+        },
+        icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
+      ),
+    );
   }
 
-  void _showModalForVisibility(BuildContext context) {
-    widget.onShowModal();
-    _showModal(context, _buildModalForVisibility);
+  void _showModalForSort(BuildContext context) async {
+    if (await widget.onShowModal(BingeSort) && context.mounted) {
+      _showModal(context, _buildModalForSort);
+    }
+  }
+
+  void _showModalForVisibility(BuildContext context) async {
+    if (await widget.onShowModal(BingeFilterWatchType) && context.mounted) {
+      _showModal(context, _buildModalForVisibility);
+    }
   }
 
   void _showModalForDateRange(BuildContext context) async {
-    widget.onShowModal();
-    final range = await showDateRangePicker(
-      context: context,
-      firstDate: widget.minDateTime,
-      lastDate: widget.maxDateTime,
-      initialEntryMode: .calendar,
-    );
-    final fromDateTime = range?.start;
-    var endDateTime = range?.end;
-    if (endDateTime != null) {
-      final date = endDateTime;
-      endDateTime = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+    if (await widget.onShowModal(DateTime) && context.mounted) {
+      final range = await showDateRangePicker(
+        context: context,
+        firstDate: widget.minDateTime,
+        lastDate: widget.maxDateTime,
+        initialEntryMode: .calendar,
+      );
+      final fromTime = range?.start;
+      var endTime = range?.end;
+      if (endTime != null) {
+        final date = endTime;
+        endTime = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+      }
+      widget.onFilterUpdate(
+        widget.filter.copyWith(fromRange: fromTime, toRange: endTime),
+      );
     }
-    widget.onFilterUpdate(
-      widget.filter.copyWith(fromRange: fromDateTime, toRange: endDateTime),
-    );
   }
 
   void _showModal(
