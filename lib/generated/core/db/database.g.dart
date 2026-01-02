@@ -7082,6 +7082,408 @@ class VideoSearchVsVideosCompanion extends UpdateCompanion<VideoSearchVsVideo> {
   }
 }
 
+class $CollectionsTable extends Collections
+    with TableInfo<$CollectionsTable, Collection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CollectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _isSystemMeta = const VerificationMeta(
+    'isSystem',
+  );
+  @override
+  late final GeneratedColumn<bool> isSystem = GeneratedColumn<bool>(
+    'is_system',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_system" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    createdAt,
+    updatedAt,
+    id,
+    isSystem,
+    name,
+    description,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'collections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Collection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('is_system')) {
+      context.handle(
+        _isSystemMeta,
+        isSystem.isAcceptableOrUnknown(data['is_system']!, _isSystemMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isSystemMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Collection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Collection(
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      isSystem: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_system'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+    );
+  }
+
+  @override
+  $CollectionsTable createAlias(String alias) {
+    return $CollectionsTable(attachedDatabase, alias);
+  }
+}
+
+class Collection extends DataClass implements Insertable<Collection> {
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int id;
+  final bool isSystem;
+  final String name;
+  final String description;
+  const Collection({
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.isSystem,
+    required this.name,
+    required this.description,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<int>(id);
+    map['is_system'] = Variable<bool>(isSystem);
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    return map;
+  }
+
+  CollectionsCompanion toCompanion(bool nullToAbsent) {
+    return CollectionsCompanion(
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      isSystem: Value(isSystem),
+      name: Value(name),
+      description: Value(description),
+    );
+  }
+
+  factory Collection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Collection(
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<int>(json['id']),
+      isSystem: serializer.fromJson<bool>(json['isSystem']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<int>(id),
+      'isSystem': serializer.toJson<bool>(isSystem),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+    };
+  }
+
+  Collection copyWith({
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? id,
+    bool? isSystem,
+    String? name,
+    String? description,
+  }) => Collection(
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    isSystem: isSystem ?? this.isSystem,
+    name: name ?? this.name,
+    description: description ?? this.description,
+  );
+  Collection copyWithCompanion(CollectionsCompanion data) {
+    return Collection(
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      isSystem: data.isSystem.present ? data.isSystem.value : this.isSystem,
+      name: data.name.present ? data.name.value : this.name,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Collection(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('isSystem: $isSystem, ')
+          ..write('name: $name, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(createdAt, updatedAt, id, isSystem, name, description);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Collection &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.isSystem == this.isSystem &&
+          other.name == this.name &&
+          other.description == this.description);
+}
+
+class CollectionsCompanion extends UpdateCompanion<Collection> {
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> id;
+  final Value<bool> isSystem;
+  final Value<String> name;
+  final Value<String> description;
+  const CollectionsCompanion({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.isSystem = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+  });
+  CollectionsCompanion.insert({
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    required bool isSystem,
+    required String name,
+    required String description,
+  }) : isSystem = Value(isSystem),
+       name = Value(name),
+       description = Value(description);
+  static Insertable<Collection> custom({
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? id,
+    Expression<bool>? isSystem,
+    Expression<String>? name,
+    Expression<String>? description,
+  }) {
+    return RawValuesInsertable({
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (isSystem != null) 'is_system': isSystem,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+    });
+  }
+
+  CollectionsCompanion copyWith({
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? id,
+    Value<bool>? isSystem,
+    Value<String>? name,
+    Value<String>? description,
+  }) {
+    return CollectionsCompanion(
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      isSystem: isSystem ?? this.isSystem,
+      name: name ?? this.name,
+      description: description ?? this.description,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (isSystem.present) {
+      map['is_system'] = Variable<bool>(isSystem.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CollectionsCompanion(')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('isSystem: $isSystem, ')
+          ..write('name: $name, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -7124,6 +7526,20 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _collectionIdMeta = const VerificationMeta(
+    'collectionId',
+  );
+  @override
+  late final GeneratedColumn<int> collectionId = GeneratedColumn<int>(
+    'collection_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES collections (id)',
+    ),
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -7144,13 +7560,26 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
+  @override
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
     id,
+    collectionId,
     name,
     description,
+    priority,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7179,6 +7608,17 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('collection_id')) {
+      context.handle(
+        _collectionIdMeta,
+        collectionId.isAcceptableOrUnknown(
+          data['collection_id']!,
+          _collectionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_collectionIdMeta);
+    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -7197,6 +7637,14 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
       );
     } else if (isInserting) {
       context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
     }
     return context;
   }
@@ -7219,6 +7667,10 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      collectionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}collection_id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -7226,6 +7678,10 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
+      )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
       )!,
     );
   }
@@ -7240,14 +7696,18 @@ class Sery extends DataClass implements Insertable<Sery> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final int id;
+  final int collectionId;
   final String name;
   final String description;
+  final int priority;
   const Sery({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
+    required this.collectionId,
     required this.name,
     required this.description,
+    required this.priority,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7255,8 +7715,10 @@ class Sery extends DataClass implements Insertable<Sery> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<int>(id);
+    map['collection_id'] = Variable<int>(collectionId);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
+    map['priority'] = Variable<int>(priority);
     return map;
   }
 
@@ -7265,8 +7727,10 @@ class Sery extends DataClass implements Insertable<Sery> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       id: Value(id),
+      collectionId: Value(collectionId),
       name: Value(name),
       description: Value(description),
+      priority: Value(priority),
     );
   }
 
@@ -7279,8 +7743,10 @@ class Sery extends DataClass implements Insertable<Sery> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<int>(json['id']),
+      collectionId: serializer.fromJson<int>(json['collectionId']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
+      priority: serializer.fromJson<int>(json['priority']),
     );
   }
   @override
@@ -7290,8 +7756,10 @@ class Sery extends DataClass implements Insertable<Sery> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<int>(id),
+      'collectionId': serializer.toJson<int>(collectionId),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
+      'priority': serializer.toJson<int>(priority),
     };
   }
 
@@ -7299,24 +7767,32 @@ class Sery extends DataClass implements Insertable<Sery> {
     DateTime? createdAt,
     DateTime? updatedAt,
     int? id,
+    int? collectionId,
     String? name,
     String? description,
+    int? priority,
   }) => Sery(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
+    collectionId: collectionId ?? this.collectionId,
     name: name ?? this.name,
     description: description ?? this.description,
+    priority: priority ?? this.priority,
   );
   Sery copyWithCompanion(SeriesCompanion data) {
     return Sery(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
+      collectionId: data.collectionId.present
+          ? data.collectionId.value
+          : this.collectionId,
       name: data.name.present ? data.name.value : this.name,
       description: data.description.present
           ? data.description.value
           : this.description,
+      priority: data.priority.present ? data.priority.value : this.priority,
     );
   }
 
@@ -7326,14 +7802,24 @@ class Sery extends DataClass implements Insertable<Sery> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
+          ..write('collectionId: $collectionId, ')
           ..write('name: $name, ')
-          ..write('description: $description')
+          ..write('description: $description, ')
+          ..write('priority: $priority')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, name, description);
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    collectionId,
+    name,
+    description,
+    priority,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7341,44 +7827,58 @@ class Sery extends DataClass implements Insertable<Sery> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
+          other.collectionId == this.collectionId &&
           other.name == this.name &&
-          other.description == this.description);
+          other.description == this.description &&
+          other.priority == this.priority);
 }
 
 class SeriesCompanion extends UpdateCompanion<Sery> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> id;
+  final Value<int> collectionId;
   final Value<String> name;
   final Value<String> description;
+  final Value<int> priority;
   const SeriesCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
+    this.collectionId = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
+    this.priority = const Value.absent(),
   });
   SeriesCompanion.insert({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
+    required int collectionId,
     required String name,
     required String description,
-  }) : name = Value(name),
-       description = Value(description);
+    required int priority,
+  }) : collectionId = Value(collectionId),
+       name = Value(name),
+       description = Value(description),
+       priority = Value(priority);
   static Insertable<Sery> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? id,
+    Expression<int>? collectionId,
     Expression<String>? name,
     Expression<String>? description,
+    Expression<int>? priority,
   }) {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
+      if (collectionId != null) 'collection_id': collectionId,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (priority != null) 'priority': priority,
     });
   }
 
@@ -7386,15 +7886,19 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? id,
+    Value<int>? collectionId,
     Value<String>? name,
     Value<String>? description,
+    Value<int>? priority,
   }) {
     return SeriesCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
+      collectionId: collectionId ?? this.collectionId,
       name: name ?? this.name,
       description: description ?? this.description,
+      priority: priority ?? this.priority,
     );
   }
 
@@ -7410,11 +7914,17 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (collectionId.present) {
+      map['collection_id'] = Variable<int>(collectionId.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
     }
     return map;
   }
@@ -7425,8 +7935,10 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
+          ..write('collectionId: $collectionId, ')
           ..write('name: $name, ')
-          ..write('description: $description')
+          ..write('description: $description, ')
+          ..write('priority: $priority')
           ..write(')'))
         .toString();
   }
@@ -7704,1012 +8216,6 @@ class SeriesVsVideosCompanion extends UpdateCompanion<SeriesVsVideo> {
   }
 }
 
-class $CollectionsTable extends Collections
-    with TableInfo<$CollectionsTable, Collection> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CollectionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
-    id,
-    name,
-    description,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'collections';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<Collection> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Collection map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Collection(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      )!,
-    );
-  }
-
-  @override
-  $CollectionsTable createAlias(String alias) {
-    return $CollectionsTable(attachedDatabase, alias);
-  }
-}
-
-class Collection extends DataClass implements Insertable<Collection> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int id;
-  final String name;
-  final String description;
-  const Collection({
-    required this.createdAt,
-    required this.updatedAt,
-    required this.id,
-    required this.name,
-    required this.description,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['description'] = Variable<String>(description);
-    return map;
-  }
-
-  CollectionsCompanion toCompanion(bool nullToAbsent) {
-    return CollectionsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
-      id: Value(id),
-      name: Value(name),
-      description: Value(description),
-    );
-  }
-
-  factory Collection.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Collection(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String>(json['description']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String>(description),
-    };
-  }
-
-  Collection copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    int? id,
-    String? name,
-    String? description,
-  }) => Collection(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-    id: id ?? this.id,
-    name: name ?? this.name,
-    description: description ?? this.description,
-  );
-  Collection copyWithCompanion(CollectionsCompanion data) {
-    return Collection(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Collection(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('description: $description')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, name, description);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Collection &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.description == this.description);
-}
-
-class CollectionsCompanion extends UpdateCompanion<Collection> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  final Value<int> id;
-  final Value<String> name;
-  final Value<String> description;
-  const CollectionsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.description = const Value.absent(),
-  });
-  CollectionsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.id = const Value.absent(),
-    required String name,
-    required String description,
-  }) : name = Value(name),
-       description = Value(description);
-  static Insertable<Collection> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<String>? description,
-  }) {
-    return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (description != null) 'description': description,
-    });
-  }
-
-  CollectionsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
-    Value<int>? id,
-    Value<String>? name,
-    Value<String>? description,
-  }) {
-    return CollectionsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CollectionsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('description: $description')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $CollectionVsSeriesTable extends CollectionVsSeries
-    with TableInfo<$CollectionVsSeriesTable, CollectionVsSery> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CollectionVsSeriesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _collectionIdMeta = const VerificationMeta(
-    'collectionId',
-  );
-  @override
-  late final GeneratedColumn<int> collectionId = GeneratedColumn<int>(
-    'collection_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES collections (id)',
-    ),
-  );
-  static const VerificationMeta _seriesIdMeta = const VerificationMeta(
-    'seriesId',
-  );
-  @override
-  late final GeneratedColumn<int> seriesId = GeneratedColumn<int>(
-    'series_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES series (id)',
-    ),
-  );
-  static const VerificationMeta _priorityMeta = const VerificationMeta(
-    'priority',
-  );
-  @override
-  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
-    'priority',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [collectionId, seriesId, priority];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'collection_vs_series';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<CollectionVsSery> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('collection_id')) {
-      context.handle(
-        _collectionIdMeta,
-        collectionId.isAcceptableOrUnknown(
-          data['collection_id']!,
-          _collectionIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_collectionIdMeta);
-    }
-    if (data.containsKey('series_id')) {
-      context.handle(
-        _seriesIdMeta,
-        seriesId.isAcceptableOrUnknown(data['series_id']!, _seriesIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_seriesIdMeta);
-    }
-    if (data.containsKey('priority')) {
-      context.handle(
-        _priorityMeta,
-        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_priorityMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {collectionId, seriesId};
-  @override
-  CollectionVsSery map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CollectionVsSery(
-      collectionId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}collection_id'],
-      )!,
-      seriesId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}series_id'],
-      )!,
-      priority: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}priority'],
-      )!,
-    );
-  }
-
-  @override
-  $CollectionVsSeriesTable createAlias(String alias) {
-    return $CollectionVsSeriesTable(attachedDatabase, alias);
-  }
-}
-
-class CollectionVsSery extends DataClass
-    implements Insertable<CollectionVsSery> {
-  final int collectionId;
-  final int seriesId;
-  final int priority;
-  const CollectionVsSery({
-    required this.collectionId,
-    required this.seriesId,
-    required this.priority,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['collection_id'] = Variable<int>(collectionId);
-    map['series_id'] = Variable<int>(seriesId);
-    map['priority'] = Variable<int>(priority);
-    return map;
-  }
-
-  CollectionVsSeriesCompanion toCompanion(bool nullToAbsent) {
-    return CollectionVsSeriesCompanion(
-      collectionId: Value(collectionId),
-      seriesId: Value(seriesId),
-      priority: Value(priority),
-    );
-  }
-
-  factory CollectionVsSery.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CollectionVsSery(
-      collectionId: serializer.fromJson<int>(json['collectionId']),
-      seriesId: serializer.fromJson<int>(json['seriesId']),
-      priority: serializer.fromJson<int>(json['priority']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'collectionId': serializer.toJson<int>(collectionId),
-      'seriesId': serializer.toJson<int>(seriesId),
-      'priority': serializer.toJson<int>(priority),
-    };
-  }
-
-  CollectionVsSery copyWith({
-    int? collectionId,
-    int? seriesId,
-    int? priority,
-  }) => CollectionVsSery(
-    collectionId: collectionId ?? this.collectionId,
-    seriesId: seriesId ?? this.seriesId,
-    priority: priority ?? this.priority,
-  );
-  CollectionVsSery copyWithCompanion(CollectionVsSeriesCompanion data) {
-    return CollectionVsSery(
-      collectionId: data.collectionId.present
-          ? data.collectionId.value
-          : this.collectionId,
-      seriesId: data.seriesId.present ? data.seriesId.value : this.seriesId,
-      priority: data.priority.present ? data.priority.value : this.priority,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CollectionVsSery(')
-          ..write('collectionId: $collectionId, ')
-          ..write('seriesId: $seriesId, ')
-          ..write('priority: $priority')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(collectionId, seriesId, priority);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CollectionVsSery &&
-          other.collectionId == this.collectionId &&
-          other.seriesId == this.seriesId &&
-          other.priority == this.priority);
-}
-
-class CollectionVsSeriesCompanion extends UpdateCompanion<CollectionVsSery> {
-  final Value<int> collectionId;
-  final Value<int> seriesId;
-  final Value<int> priority;
-  final Value<int> rowid;
-  const CollectionVsSeriesCompanion({
-    this.collectionId = const Value.absent(),
-    this.seriesId = const Value.absent(),
-    this.priority = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  CollectionVsSeriesCompanion.insert({
-    required int collectionId,
-    required int seriesId,
-    required int priority,
-    this.rowid = const Value.absent(),
-  }) : collectionId = Value(collectionId),
-       seriesId = Value(seriesId),
-       priority = Value(priority);
-  static Insertable<CollectionVsSery> custom({
-    Expression<int>? collectionId,
-    Expression<int>? seriesId,
-    Expression<int>? priority,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (collectionId != null) 'collection_id': collectionId,
-      if (seriesId != null) 'series_id': seriesId,
-      if (priority != null) 'priority': priority,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  CollectionVsSeriesCompanion copyWith({
-    Value<int>? collectionId,
-    Value<int>? seriesId,
-    Value<int>? priority,
-    Value<int>? rowid,
-  }) {
-    return CollectionVsSeriesCompanion(
-      collectionId: collectionId ?? this.collectionId,
-      seriesId: seriesId ?? this.seriesId,
-      priority: priority ?? this.priority,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (collectionId.present) {
-      map['collection_id'] = Variable<int>(collectionId.value);
-    }
-    if (seriesId.present) {
-      map['series_id'] = Variable<int>(seriesId.value);
-    }
-    if (priority.present) {
-      map['priority'] = Variable<int>(priority.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CollectionVsSeriesCompanion(')
-          ..write('collectionId: $collectionId, ')
-          ..write('seriesId: $seriesId, ')
-          ..write('priority: $priority, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $PersonalCollectionsTable extends PersonalCollections
-    with TableInfo<$PersonalCollectionsTable, PersonalCollection> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PersonalCollectionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _isSystemMeta = const VerificationMeta(
-    'isSystem',
-  );
-  @override
-  late final GeneratedColumn<bool> isSystem = GeneratedColumn<bool>(
-    'is_system',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_system" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _collectionIdMeta = const VerificationMeta(
-    'collectionId',
-  );
-  @override
-  late final GeneratedColumn<int> collectionId = GeneratedColumn<int>(
-    'collection_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES collections (id)',
-    ),
-  );
-  static const VerificationMeta _priorityMeta = const VerificationMeta(
-    'priority',
-  );
-  @override
-  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
-    'priority',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
-    isSystem,
-    collectionId,
-    priority,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'personal_collections';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<PersonalCollection> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
-    if (data.containsKey('is_system')) {
-      context.handle(
-        _isSystemMeta,
-        isSystem.isAcceptableOrUnknown(data['is_system']!, _isSystemMeta),
-      );
-    }
-    if (data.containsKey('collection_id')) {
-      context.handle(
-        _collectionIdMeta,
-        collectionId.isAcceptableOrUnknown(
-          data['collection_id']!,
-          _collectionIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_collectionIdMeta);
-    }
-    if (data.containsKey('priority')) {
-      context.handle(
-        _priorityMeta,
-        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_priorityMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {isSystem, collectionId};
-  @override
-  PersonalCollection map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PersonalCollection(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
-      isSystem: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_system'],
-      )!,
-      collectionId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}collection_id'],
-      )!,
-      priority: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}priority'],
-      )!,
-    );
-  }
-
-  @override
-  $PersonalCollectionsTable createAlias(String alias) {
-    return $PersonalCollectionsTable(attachedDatabase, alias);
-  }
-}
-
-class PersonalCollection extends DataClass
-    implements Insertable<PersonalCollection> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final bool isSystem;
-  final int collectionId;
-  final int priority;
-  const PersonalCollection({
-    required this.createdAt,
-    required this.updatedAt,
-    required this.isSystem,
-    required this.collectionId,
-    required this.priority,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    map['is_system'] = Variable<bool>(isSystem);
-    map['collection_id'] = Variable<int>(collectionId);
-    map['priority'] = Variable<int>(priority);
-    return map;
-  }
-
-  PersonalCollectionsCompanion toCompanion(bool nullToAbsent) {
-    return PersonalCollectionsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
-      isSystem: Value(isSystem),
-      collectionId: Value(collectionId),
-      priority: Value(priority),
-    );
-  }
-
-  factory PersonalCollection.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PersonalCollection(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-      isSystem: serializer.fromJson<bool>(json['isSystem']),
-      collectionId: serializer.fromJson<int>(json['collectionId']),
-      priority: serializer.fromJson<int>(json['priority']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-      'isSystem': serializer.toJson<bool>(isSystem),
-      'collectionId': serializer.toJson<int>(collectionId),
-      'priority': serializer.toJson<int>(priority),
-    };
-  }
-
-  PersonalCollection copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    bool? isSystem,
-    int? collectionId,
-    int? priority,
-  }) => PersonalCollection(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-    isSystem: isSystem ?? this.isSystem,
-    collectionId: collectionId ?? this.collectionId,
-    priority: priority ?? this.priority,
-  );
-  PersonalCollection copyWithCompanion(PersonalCollectionsCompanion data) {
-    return PersonalCollection(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-      isSystem: data.isSystem.present ? data.isSystem.value : this.isSystem,
-      collectionId: data.collectionId.present
-          ? data.collectionId.value
-          : this.collectionId,
-      priority: data.priority.present ? data.priority.value : this.priority,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PersonalCollection(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('isSystem: $isSystem, ')
-          ..write('collectionId: $collectionId, ')
-          ..write('priority: $priority')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, isSystem, collectionId, priority);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PersonalCollection &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
-          other.isSystem == this.isSystem &&
-          other.collectionId == this.collectionId &&
-          other.priority == this.priority);
-}
-
-class PersonalCollectionsCompanion extends UpdateCompanion<PersonalCollection> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  final Value<bool> isSystem;
-  final Value<int> collectionId;
-  final Value<int> priority;
-  final Value<int> rowid;
-  const PersonalCollectionsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.isSystem = const Value.absent(),
-    this.collectionId = const Value.absent(),
-    this.priority = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  PersonalCollectionsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.isSystem = const Value.absent(),
-    required int collectionId,
-    required int priority,
-    this.rowid = const Value.absent(),
-  }) : collectionId = Value(collectionId),
-       priority = Value(priority);
-  static Insertable<PersonalCollection> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-    Expression<bool>? isSystem,
-    Expression<int>? collectionId,
-    Expression<int>? priority,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (isSystem != null) 'is_system': isSystem,
-      if (collectionId != null) 'collection_id': collectionId,
-      if (priority != null) 'priority': priority,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  PersonalCollectionsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
-    Value<bool>? isSystem,
-    Value<int>? collectionId,
-    Value<int>? priority,
-    Value<int>? rowid,
-  }) {
-    return PersonalCollectionsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      isSystem: isSystem ?? this.isSystem,
-      collectionId: collectionId ?? this.collectionId,
-      priority: priority ?? this.priority,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    if (isSystem.present) {
-      map['is_system'] = Variable<bool>(isSystem.value);
-    }
-    if (collectionId.present) {
-      map['collection_id'] = Variable<int>(collectionId.value);
-    }
-    if (priority.present) {
-      map['priority'] = Variable<int>(priority.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PersonalCollectionsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('isSystem: $isSystem, ')
-          ..write('collectionId: $collectionId, ')
-          ..write('priority: $priority, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   $DatabaseManager get managers => $DatabaseManager(this);
@@ -8746,13 +8252,9 @@ abstract class _$Database extends GeneratedDatabase {
   late final $VideoSearchesTable videoSearches = $VideoSearchesTable(this);
   late final $VideoSearchVsVideosTable videoSearchVsVideos =
       $VideoSearchVsVideosTable(this);
+  late final $CollectionsTable collections = $CollectionsTable(this);
   late final $SeriesTable series = $SeriesTable(this);
   late final $SeriesVsVideosTable seriesVsVideos = $SeriesVsVideosTable(this);
-  late final $CollectionsTable collections = $CollectionsTable(this);
-  late final $CollectionVsSeriesTable collectionVsSeries =
-      $CollectionVsSeriesTable(this);
-  late final $PersonalCollectionsTable personalCollections =
-      $PersonalCollectionsTable(this);
   late final Index channelsIndexETag = Index(
     'ChannelsIndexETag',
     'CREATE INDEX ChannelsIndexETag ON channels (etag)',
@@ -8792,11 +8294,9 @@ abstract class _$Database extends GeneratedDatabase {
     channelSearchVsChannels,
     videoSearches,
     videoSearchVsVideos,
+    collections,
     series,
     seriesVsVideos,
-    collections,
-    collectionVsSeries,
-    personalCollections,
     channelsIndexETag,
     videosIndexETag,
     channelSearchesIndexQuery,
@@ -16240,26 +15740,368 @@ typedef $$VideoSearchVsVideosTableProcessedTableManager =
       VideoSearchVsVideo,
       PrefetchHooks Function({bool searchId, bool videoId})
     >;
+typedef $$CollectionsTableCreateCompanionBuilder =
+    CollectionsCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> id,
+      required bool isSystem,
+      required String name,
+      required String description,
+    });
+typedef $$CollectionsTableUpdateCompanionBuilder =
+    CollectionsCompanion Function({
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> id,
+      Value<bool> isSystem,
+      Value<String> name,
+      Value<String> description,
+    });
+
+final class $$CollectionsTableReferences
+    extends BaseReferences<_$Database, $CollectionsTable, Collection> {
+  $$CollectionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$SeriesTable, List<Sery>> _seriesRefsTable(
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.series,
+    aliasName: $_aliasNameGenerator(db.collections.id, db.series.collectionId),
+  );
+
+  $$SeriesTableProcessedTableManager get seriesRefs {
+    final manager = $$SeriesTableTableManager(
+      $_db,
+      $_db.series,
+    ).filter((f) => f.collectionId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_seriesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CollectionsTableFilterComposer
+    extends Composer<_$Database, $CollectionsTable> {
+  $$CollectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSystem => $composableBuilder(
+    column: $table.isSystem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> seriesRefs(
+    Expression<bool> Function($$SeriesTableFilterComposer f) f,
+  ) {
+    final $$SeriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.series,
+      getReferencedColumn: (t) => t.collectionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SeriesTableFilterComposer(
+            $db: $db,
+            $table: $db.series,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CollectionsTableOrderingComposer
+    extends Composer<_$Database, $CollectionsTable> {
+  $$CollectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSystem => $composableBuilder(
+    column: $table.isSystem,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CollectionsTableAnnotationComposer
+    extends Composer<_$Database, $CollectionsTable> {
+  $$CollectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSystem =>
+      $composableBuilder(column: $table.isSystem, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  Expression<T> seriesRefs<T extends Object>(
+    Expression<T> Function($$SeriesTableAnnotationComposer a) f,
+  ) {
+    final $$SeriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.series,
+      getReferencedColumn: (t) => t.collectionId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SeriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.series,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CollectionsTableTableManager
+    extends
+        RootTableManager<
+          _$Database,
+          $CollectionsTable,
+          Collection,
+          $$CollectionsTableFilterComposer,
+          $$CollectionsTableOrderingComposer,
+          $$CollectionsTableAnnotationComposer,
+          $$CollectionsTableCreateCompanionBuilder,
+          $$CollectionsTableUpdateCompanionBuilder,
+          (Collection, $$CollectionsTableReferences),
+          Collection,
+          PrefetchHooks Function({bool seriesRefs})
+        > {
+  $$CollectionsTableTableManager(_$Database db, $CollectionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CollectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CollectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CollectionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<bool> isSystem = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> description = const Value.absent(),
+              }) => CollectionsCompanion(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                isSystem: isSystem,
+                name: name,
+                description: description,
+              ),
+          createCompanionCallback:
+              ({
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required bool isSystem,
+                required String name,
+                required String description,
+              }) => CollectionsCompanion.insert(
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                isSystem: isSystem,
+                name: name,
+                description: description,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CollectionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({seriesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (seriesRefs) db.series],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (seriesRefs)
+                    await $_getPrefetchedData<
+                      Collection,
+                      $CollectionsTable,
+                      Sery
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CollectionsTableReferences
+                          ._seriesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CollectionsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).seriesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.collectionId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CollectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$Database,
+      $CollectionsTable,
+      Collection,
+      $$CollectionsTableFilterComposer,
+      $$CollectionsTableOrderingComposer,
+      $$CollectionsTableAnnotationComposer,
+      $$CollectionsTableCreateCompanionBuilder,
+      $$CollectionsTableUpdateCompanionBuilder,
+      (Collection, $$CollectionsTableReferences),
+      Collection,
+      PrefetchHooks Function({bool seriesRefs})
+    >;
 typedef $$SeriesTableCreateCompanionBuilder =
     SeriesCompanion Function({
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> id,
+      required int collectionId,
       required String name,
       required String description,
+      required int priority,
     });
 typedef $$SeriesTableUpdateCompanionBuilder =
     SeriesCompanion Function({
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> id,
+      Value<int> collectionId,
       Value<String> name,
       Value<String> description,
+      Value<int> priority,
     });
 
 final class $$SeriesTableReferences
     extends BaseReferences<_$Database, $SeriesTable, Sery> {
   $$SeriesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CollectionsTable _collectionIdTable(_$Database db) =>
+      db.collections.createAlias(
+        $_aliasNameGenerator(db.series.collectionId, db.collections.id),
+      );
+
+  $$CollectionsTableProcessedTableManager get collectionId {
+    final $_column = $_itemColumn<int>('collection_id')!;
+
+    final manager = $$CollectionsTableTableManager(
+      $_db,
+      $_db.collections,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_collectionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static MultiTypedResultKey<$SeriesVsVideosTable, List<SeriesVsVideo>>
   _seriesVsVideosRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
@@ -16274,29 +16116,6 @@ final class $$SeriesTableReferences
     ).filter((f) => f.seriesId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_seriesVsVideosRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$CollectionVsSeriesTable, List<CollectionVsSery>>
-  _collectionVsSeriesRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.collectionVsSeries,
-    aliasName: $_aliasNameGenerator(
-      db.series.id,
-      db.collectionVsSeries.seriesId,
-    ),
-  );
-
-  $$CollectionVsSeriesTableProcessedTableManager get collectionVsSeriesRefs {
-    final manager = $$CollectionVsSeriesTableTableManager(
-      $_db,
-      $_db.collectionVsSeries,
-    ).filter((f) => f.seriesId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _collectionVsSeriesRefsTable($_db),
-    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -16336,6 +16155,34 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CollectionsTableFilterComposer get collectionId {
+    final $$CollectionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.collectionId,
+      referencedTable: $db.collections,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CollectionsTableFilterComposer(
+            $db: $db,
+            $table: $db.collections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<bool> seriesVsVideosRefs(
     Expression<bool> Function($$SeriesVsVideosTableFilterComposer f) f,
   ) {
@@ -16352,31 +16199,6 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
           }) => $$SeriesVsVideosTableFilterComposer(
             $db: $db,
             $table: $db.seriesVsVideos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> collectionVsSeriesRefs(
-    Expression<bool> Function($$CollectionVsSeriesTableFilterComposer f) f,
-  ) {
-    final $$CollectionVsSeriesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.collectionVsSeries,
-      getReferencedColumn: (t) => t.seriesId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionVsSeriesTableFilterComposer(
-            $db: $db,
-            $table: $db.collectionVsSeries,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -16419,6 +16241,34 @@ class $$SeriesTableOrderingComposer extends Composer<_$Database, $SeriesTable> {
     column: $table.description,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CollectionsTableOrderingComposer get collectionId {
+    final $$CollectionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.collectionId,
+      referencedTable: $db.collections,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CollectionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.collections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$SeriesTableAnnotationComposer
@@ -16447,6 +16297,32 @@ class $$SeriesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  $$CollectionsTableAnnotationComposer get collectionId {
+    final $$CollectionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.collectionId,
+      referencedTable: $db.collections,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CollectionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.collections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> seriesVsVideosRefs<T extends Object>(
     Expression<T> Function($$SeriesVsVideosTableAnnotationComposer a) f,
   ) {
@@ -16471,32 +16347,6 @@ class $$SeriesTableAnnotationComposer
     );
     return f(composer);
   }
-
-  Expression<T> collectionVsSeriesRefs<T extends Object>(
-    Expression<T> Function($$CollectionVsSeriesTableAnnotationComposer a) f,
-  ) {
-    final $$CollectionVsSeriesTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.collectionVsSeries,
-          getReferencedColumn: (t) => t.seriesId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CollectionVsSeriesTableAnnotationComposer(
-                $db: $db,
-                $table: $db.collectionVsSeries,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
 }
 
 class $$SeriesTableTableManager
@@ -16512,10 +16362,7 @@ class $$SeriesTableTableManager
           $$SeriesTableUpdateCompanionBuilder,
           (Sery, $$SeriesTableReferences),
           Sery,
-          PrefetchHooks Function({
-            bool seriesVsVideosRefs,
-            bool collectionVsSeriesRefs,
-          })
+          PrefetchHooks Function({bool collectionId, bool seriesVsVideosRefs})
         > {
   $$SeriesTableTableManager(_$Database db, $SeriesTable table)
     : super(
@@ -16533,28 +16380,36 @@ class $$SeriesTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> id = const Value.absent(),
+                Value<int> collectionId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> description = const Value.absent(),
+                Value<int> priority = const Value.absent(),
               }) => SeriesCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
+                collectionId: collectionId,
                 name: name,
                 description: description,
+                priority: priority,
               ),
           createCompanionCallback:
               ({
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> id = const Value.absent(),
+                required int collectionId,
                 required String name,
                 required String description,
+                required int priority,
               }) => SeriesCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
+                collectionId: collectionId,
                 name: name,
                 description: description,
+                priority: priority,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -16563,14 +16418,44 @@ class $$SeriesTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({seriesVsVideosRefs = false, collectionVsSeriesRefs = false}) {
+              ({collectionId = false, seriesVsVideosRefs = false}) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (seriesVsVideosRefs) db.seriesVsVideos,
-                    if (collectionVsSeriesRefs) db.collectionVsSeries,
                   ],
-                  addJoins: null,
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (collectionId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.collectionId,
+                                    referencedTable: $$SeriesTableReferences
+                                        ._collectionIdTable(db),
+                                    referencedColumn: $$SeriesTableReferences
+                                        ._collectionIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (seriesVsVideosRefs)
@@ -16588,27 +16473,6 @@ class $$SeriesTableTableManager
                                 table,
                                 p0,
                               ).seriesVsVideosRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.seriesId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (collectionVsSeriesRefs)
-                        await $_getPrefetchedData<
-                          Sery,
-                          $SeriesTable,
-                          CollectionVsSery
-                        >(
-                          currentTable: table,
-                          referencedTable: $$SeriesTableReferences
-                              ._collectionVsSeriesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$SeriesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).collectionVsSeriesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.seriesId == item.id,
@@ -16635,10 +16499,7 @@ typedef $$SeriesTableProcessedTableManager =
       $$SeriesTableUpdateCompanionBuilder,
       (Sery, $$SeriesTableReferences),
       Sery,
-      PrefetchHooks Function({
-        bool seriesVsVideosRefs,
-        bool collectionVsSeriesRefs,
-      })
+      PrefetchHooks Function({bool collectionId, bool seriesVsVideosRefs})
     >;
 typedef $$SeriesVsVideosTableCreateCompanionBuilder =
     SeriesVsVideosCompanion Function({
@@ -17013,1148 +16874,6 @@ typedef $$SeriesVsVideosTableProcessedTableManager =
       SeriesVsVideo,
       PrefetchHooks Function({bool seriesId, bool videoId})
     >;
-typedef $$CollectionsTableCreateCompanionBuilder =
-    CollectionsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
-      Value<int> id,
-      required String name,
-      required String description,
-    });
-typedef $$CollectionsTableUpdateCompanionBuilder =
-    CollectionsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
-      Value<int> id,
-      Value<String> name,
-      Value<String> description,
-    });
-
-final class $$CollectionsTableReferences
-    extends BaseReferences<_$Database, $CollectionsTable, Collection> {
-  $$CollectionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$CollectionVsSeriesTable, List<CollectionVsSery>>
-  _collectionVsSeriesRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.collectionVsSeries,
-    aliasName: $_aliasNameGenerator(
-      db.collections.id,
-      db.collectionVsSeries.collectionId,
-    ),
-  );
-
-  $$CollectionVsSeriesTableProcessedTableManager get collectionVsSeriesRefs {
-    final manager = $$CollectionVsSeriesTableTableManager(
-      $_db,
-      $_db.collectionVsSeries,
-    ).filter((f) => f.collectionId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _collectionVsSeriesRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $PersonalCollectionsTable,
-    List<PersonalCollection>
-  >
-  _personalCollectionsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.personalCollections,
-    aliasName: $_aliasNameGenerator(
-      db.collections.id,
-      db.personalCollections.collectionId,
-    ),
-  );
-
-  $$PersonalCollectionsTableProcessedTableManager get personalCollectionsRefs {
-    final manager = $$PersonalCollectionsTableTableManager(
-      $_db,
-      $_db.personalCollections,
-    ).filter((f) => f.collectionId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _personalCollectionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$CollectionsTableFilterComposer
-    extends Composer<_$Database, $CollectionsTable> {
-  $$CollectionsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> collectionVsSeriesRefs(
-    Expression<bool> Function($$CollectionVsSeriesTableFilterComposer f) f,
-  ) {
-    final $$CollectionVsSeriesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.collectionVsSeries,
-      getReferencedColumn: (t) => t.collectionId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionVsSeriesTableFilterComposer(
-            $db: $db,
-            $table: $db.collectionVsSeries,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> personalCollectionsRefs(
-    Expression<bool> Function($$PersonalCollectionsTableFilterComposer f) f,
-  ) {
-    final $$PersonalCollectionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.personalCollections,
-      getReferencedColumn: (t) => t.collectionId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$PersonalCollectionsTableFilterComposer(
-            $db: $db,
-            $table: $db.personalCollections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$CollectionsTableOrderingComposer
-    extends Composer<_$Database, $CollectionsTable> {
-  $$CollectionsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$CollectionsTableAnnotationComposer
-    extends Composer<_$Database, $CollectionsTable> {
-  $$CollectionsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => column,
-  );
-
-  Expression<T> collectionVsSeriesRefs<T extends Object>(
-    Expression<T> Function($$CollectionVsSeriesTableAnnotationComposer a) f,
-  ) {
-    final $$CollectionVsSeriesTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.collectionVsSeries,
-          getReferencedColumn: (t) => t.collectionId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CollectionVsSeriesTableAnnotationComposer(
-                $db: $db,
-                $table: $db.collectionVsSeries,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> personalCollectionsRefs<T extends Object>(
-    Expression<T> Function($$PersonalCollectionsTableAnnotationComposer a) f,
-  ) {
-    final $$PersonalCollectionsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.personalCollections,
-          getReferencedColumn: (t) => t.collectionId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$PersonalCollectionsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.personalCollections,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$CollectionsTableTableManager
-    extends
-        RootTableManager<
-          _$Database,
-          $CollectionsTable,
-          Collection,
-          $$CollectionsTableFilterComposer,
-          $$CollectionsTableOrderingComposer,
-          $$CollectionsTableAnnotationComposer,
-          $$CollectionsTableCreateCompanionBuilder,
-          $$CollectionsTableUpdateCompanionBuilder,
-          (Collection, $$CollectionsTableReferences),
-          Collection,
-          PrefetchHooks Function({
-            bool collectionVsSeriesRefs,
-            bool personalCollectionsRefs,
-          })
-        > {
-  $$CollectionsTableTableManager(_$Database db, $CollectionsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$CollectionsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$CollectionsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$CollectionsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> id = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> description = const Value.absent(),
-              }) => CollectionsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
-                id: id,
-                name: name,
-                description: description,
-              ),
-          createCompanionCallback:
-              ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> id = const Value.absent(),
-                required String name,
-                required String description,
-              }) => CollectionsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
-                id: id,
-                name: name,
-                description: description,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CollectionsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                collectionVsSeriesRefs = false,
-                personalCollectionsRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (collectionVsSeriesRefs) db.collectionVsSeries,
-                    if (personalCollectionsRefs) db.personalCollections,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (collectionVsSeriesRefs)
-                        await $_getPrefetchedData<
-                          Collection,
-                          $CollectionsTable,
-                          CollectionVsSery
-                        >(
-                          currentTable: table,
-                          referencedTable: $$CollectionsTableReferences
-                              ._collectionVsSeriesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CollectionsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).collectionVsSeriesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.collectionId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (personalCollectionsRefs)
-                        await $_getPrefetchedData<
-                          Collection,
-                          $CollectionsTable,
-                          PersonalCollection
-                        >(
-                          currentTable: table,
-                          referencedTable: $$CollectionsTableReferences
-                              ._personalCollectionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CollectionsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).personalCollectionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.collectionId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$CollectionsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$Database,
-      $CollectionsTable,
-      Collection,
-      $$CollectionsTableFilterComposer,
-      $$CollectionsTableOrderingComposer,
-      $$CollectionsTableAnnotationComposer,
-      $$CollectionsTableCreateCompanionBuilder,
-      $$CollectionsTableUpdateCompanionBuilder,
-      (Collection, $$CollectionsTableReferences),
-      Collection,
-      PrefetchHooks Function({
-        bool collectionVsSeriesRefs,
-        bool personalCollectionsRefs,
-      })
-    >;
-typedef $$CollectionVsSeriesTableCreateCompanionBuilder =
-    CollectionVsSeriesCompanion Function({
-      required int collectionId,
-      required int seriesId,
-      required int priority,
-      Value<int> rowid,
-    });
-typedef $$CollectionVsSeriesTableUpdateCompanionBuilder =
-    CollectionVsSeriesCompanion Function({
-      Value<int> collectionId,
-      Value<int> seriesId,
-      Value<int> priority,
-      Value<int> rowid,
-    });
-
-final class $$CollectionVsSeriesTableReferences
-    extends
-        BaseReferences<_$Database, $CollectionVsSeriesTable, CollectionVsSery> {
-  $$CollectionVsSeriesTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $CollectionsTable _collectionIdTable(_$Database db) =>
-      db.collections.createAlias(
-        $_aliasNameGenerator(
-          db.collectionVsSeries.collectionId,
-          db.collections.id,
-        ),
-      );
-
-  $$CollectionsTableProcessedTableManager get collectionId {
-    final $_column = $_itemColumn<int>('collection_id')!;
-
-    final manager = $$CollectionsTableTableManager(
-      $_db,
-      $_db.collections,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_collectionIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static $SeriesTable _seriesIdTable(_$Database db) => db.series.createAlias(
-    $_aliasNameGenerator(db.collectionVsSeries.seriesId, db.series.id),
-  );
-
-  $$SeriesTableProcessedTableManager get seriesId {
-    final $_column = $_itemColumn<int>('series_id')!;
-
-    final manager = $$SeriesTableTableManager(
-      $_db,
-      $_db.series,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_seriesIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$CollectionVsSeriesTableFilterComposer
-    extends Composer<_$Database, $CollectionVsSeriesTable> {
-  $$CollectionVsSeriesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get priority => $composableBuilder(
-    column: $table.priority,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$CollectionsTableFilterComposer get collectionId {
-    final $$CollectionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.collectionId,
-      referencedTable: $db.collections,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionsTableFilterComposer(
-            $db: $db,
-            $table: $db.collections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$SeriesTableFilterComposer get seriesId {
-    final $$SeriesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.seriesId,
-      referencedTable: $db.series,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SeriesTableFilterComposer(
-            $db: $db,
-            $table: $db.series,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$CollectionVsSeriesTableOrderingComposer
-    extends Composer<_$Database, $CollectionVsSeriesTable> {
-  $$CollectionVsSeriesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get priority => $composableBuilder(
-    column: $table.priority,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$CollectionsTableOrderingComposer get collectionId {
-    final $$CollectionsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.collectionId,
-      referencedTable: $db.collections,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionsTableOrderingComposer(
-            $db: $db,
-            $table: $db.collections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$SeriesTableOrderingComposer get seriesId {
-    final $$SeriesTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.seriesId,
-      referencedTable: $db.series,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SeriesTableOrderingComposer(
-            $db: $db,
-            $table: $db.series,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$CollectionVsSeriesTableAnnotationComposer
-    extends Composer<_$Database, $CollectionVsSeriesTable> {
-  $$CollectionVsSeriesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get priority =>
-      $composableBuilder(column: $table.priority, builder: (column) => column);
-
-  $$CollectionsTableAnnotationComposer get collectionId {
-    final $$CollectionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.collectionId,
-      referencedTable: $db.collections,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.collections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$SeriesTableAnnotationComposer get seriesId {
-    final $$SeriesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.seriesId,
-      referencedTable: $db.series,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SeriesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.series,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$CollectionVsSeriesTableTableManager
-    extends
-        RootTableManager<
-          _$Database,
-          $CollectionVsSeriesTable,
-          CollectionVsSery,
-          $$CollectionVsSeriesTableFilterComposer,
-          $$CollectionVsSeriesTableOrderingComposer,
-          $$CollectionVsSeriesTableAnnotationComposer,
-          $$CollectionVsSeriesTableCreateCompanionBuilder,
-          $$CollectionVsSeriesTableUpdateCompanionBuilder,
-          (CollectionVsSery, $$CollectionVsSeriesTableReferences),
-          CollectionVsSery,
-          PrefetchHooks Function({bool collectionId, bool seriesId})
-        > {
-  $$CollectionVsSeriesTableTableManager(
-    _$Database db,
-    $CollectionVsSeriesTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$CollectionVsSeriesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$CollectionVsSeriesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$CollectionVsSeriesTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<int> collectionId = const Value.absent(),
-                Value<int> seriesId = const Value.absent(),
-                Value<int> priority = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => CollectionVsSeriesCompanion(
-                collectionId: collectionId,
-                seriesId: seriesId,
-                priority: priority,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required int collectionId,
-                required int seriesId,
-                required int priority,
-                Value<int> rowid = const Value.absent(),
-              }) => CollectionVsSeriesCompanion.insert(
-                collectionId: collectionId,
-                seriesId: seriesId,
-                priority: priority,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CollectionVsSeriesTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({collectionId = false, seriesId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (collectionId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.collectionId,
-                                referencedTable:
-                                    $$CollectionVsSeriesTableReferences
-                                        ._collectionIdTable(db),
-                                referencedColumn:
-                                    $$CollectionVsSeriesTableReferences
-                                        ._collectionIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-                    if (seriesId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.seriesId,
-                                referencedTable:
-                                    $$CollectionVsSeriesTableReferences
-                                        ._seriesIdTable(db),
-                                referencedColumn:
-                                    $$CollectionVsSeriesTableReferences
-                                        ._seriesIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$CollectionVsSeriesTableProcessedTableManager =
-    ProcessedTableManager<
-      _$Database,
-      $CollectionVsSeriesTable,
-      CollectionVsSery,
-      $$CollectionVsSeriesTableFilterComposer,
-      $$CollectionVsSeriesTableOrderingComposer,
-      $$CollectionVsSeriesTableAnnotationComposer,
-      $$CollectionVsSeriesTableCreateCompanionBuilder,
-      $$CollectionVsSeriesTableUpdateCompanionBuilder,
-      (CollectionVsSery, $$CollectionVsSeriesTableReferences),
-      CollectionVsSery,
-      PrefetchHooks Function({bool collectionId, bool seriesId})
-    >;
-typedef $$PersonalCollectionsTableCreateCompanionBuilder =
-    PersonalCollectionsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
-      Value<bool> isSystem,
-      required int collectionId,
-      required int priority,
-      Value<int> rowid,
-    });
-typedef $$PersonalCollectionsTableUpdateCompanionBuilder =
-    PersonalCollectionsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
-      Value<bool> isSystem,
-      Value<int> collectionId,
-      Value<int> priority,
-      Value<int> rowid,
-    });
-
-final class $$PersonalCollectionsTableReferences
-    extends
-        BaseReferences<
-          _$Database,
-          $PersonalCollectionsTable,
-          PersonalCollection
-        > {
-  $$PersonalCollectionsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $CollectionsTable _collectionIdTable(_$Database db) =>
-      db.collections.createAlias(
-        $_aliasNameGenerator(
-          db.personalCollections.collectionId,
-          db.collections.id,
-        ),
-      );
-
-  $$CollectionsTableProcessedTableManager get collectionId {
-    final $_column = $_itemColumn<int>('collection_id')!;
-
-    final manager = $$CollectionsTableTableManager(
-      $_db,
-      $_db.collections,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_collectionIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$PersonalCollectionsTableFilterComposer
-    extends Composer<_$Database, $PersonalCollectionsTable> {
-  $$PersonalCollectionsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isSystem => $composableBuilder(
-    column: $table.isSystem,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get priority => $composableBuilder(
-    column: $table.priority,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$CollectionsTableFilterComposer get collectionId {
-    final $$CollectionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.collectionId,
-      referencedTable: $db.collections,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionsTableFilterComposer(
-            $db: $db,
-            $table: $db.collections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$PersonalCollectionsTableOrderingComposer
-    extends Composer<_$Database, $PersonalCollectionsTable> {
-  $$PersonalCollectionsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isSystem => $composableBuilder(
-    column: $table.isSystem,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get priority => $composableBuilder(
-    column: $table.priority,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$CollectionsTableOrderingComposer get collectionId {
-    final $$CollectionsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.collectionId,
-      referencedTable: $db.collections,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionsTableOrderingComposer(
-            $db: $db,
-            $table: $db.collections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$PersonalCollectionsTableAnnotationComposer
-    extends Composer<_$Database, $PersonalCollectionsTable> {
-  $$PersonalCollectionsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<bool> get isSystem =>
-      $composableBuilder(column: $table.isSystem, builder: (column) => column);
-
-  GeneratedColumn<int> get priority =>
-      $composableBuilder(column: $table.priority, builder: (column) => column);
-
-  $$CollectionsTableAnnotationComposer get collectionId {
-    final $$CollectionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.collectionId,
-      referencedTable: $db.collections,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CollectionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.collections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$PersonalCollectionsTableTableManager
-    extends
-        RootTableManager<
-          _$Database,
-          $PersonalCollectionsTable,
-          PersonalCollection,
-          $$PersonalCollectionsTableFilterComposer,
-          $$PersonalCollectionsTableOrderingComposer,
-          $$PersonalCollectionsTableAnnotationComposer,
-          $$PersonalCollectionsTableCreateCompanionBuilder,
-          $$PersonalCollectionsTableUpdateCompanionBuilder,
-          (PersonalCollection, $$PersonalCollectionsTableReferences),
-          PersonalCollection,
-          PrefetchHooks Function({bool collectionId})
-        > {
-  $$PersonalCollectionsTableTableManager(
-    _$Database db,
-    $PersonalCollectionsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$PersonalCollectionsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PersonalCollectionsTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$PersonalCollectionsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<bool> isSystem = const Value.absent(),
-                Value<int> collectionId = const Value.absent(),
-                Value<int> priority = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PersonalCollectionsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
-                isSystem: isSystem,
-                collectionId: collectionId,
-                priority: priority,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<bool> isSystem = const Value.absent(),
-                required int collectionId,
-                required int priority,
-                Value<int> rowid = const Value.absent(),
-              }) => PersonalCollectionsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
-                isSystem: isSystem,
-                collectionId: collectionId,
-                priority: priority,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$PersonalCollectionsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({collectionId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (collectionId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.collectionId,
-                                referencedTable:
-                                    $$PersonalCollectionsTableReferences
-                                        ._collectionIdTable(db),
-                                referencedColumn:
-                                    $$PersonalCollectionsTableReferences
-                                        ._collectionIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$PersonalCollectionsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$Database,
-      $PersonalCollectionsTable,
-      PersonalCollection,
-      $$PersonalCollectionsTableFilterComposer,
-      $$PersonalCollectionsTableOrderingComposer,
-      $$PersonalCollectionsTableAnnotationComposer,
-      $$PersonalCollectionsTableCreateCompanionBuilder,
-      $$PersonalCollectionsTableUpdateCompanionBuilder,
-      (PersonalCollection, $$PersonalCollectionsTableReferences),
-      PersonalCollection,
-      PrefetchHooks Function({bool collectionId})
-    >;
 
 class $DatabaseManager {
   final _$Database _db;
@@ -18196,14 +16915,10 @@ class $DatabaseManager {
       $$VideoSearchesTableTableManager(_db, _db.videoSearches);
   $$VideoSearchVsVideosTableTableManager get videoSearchVsVideos =>
       $$VideoSearchVsVideosTableTableManager(_db, _db.videoSearchVsVideos);
+  $$CollectionsTableTableManager get collections =>
+      $$CollectionsTableTableManager(_db, _db.collections);
   $$SeriesTableTableManager get series =>
       $$SeriesTableTableManager(_db, _db.series);
   $$SeriesVsVideosTableTableManager get seriesVsVideos =>
       $$SeriesVsVideosTableTableManager(_db, _db.seriesVsVideos);
-  $$CollectionsTableTableManager get collections =>
-      $$CollectionsTableTableManager(_db, _db.collections);
-  $$CollectionVsSeriesTableTableManager get collectionVsSeries =>
-      $$CollectionVsSeriesTableTableManager(_db, _db.collectionVsSeries);
-  $$PersonalCollectionsTableTableManager get personalCollections =>
-      $$PersonalCollectionsTableTableManager(_db, _db.personalCollections);
 }
