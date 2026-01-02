@@ -118,7 +118,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         ),
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(_showTitle ? 124 : 50),
+        preferredSize: Size.fromHeight(_showTitle ? 162 : 50),
         child: Center(
           child: Column(
             children: [
@@ -142,26 +142,75 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            maxLines: 1,
-            autofocus: true,
-            controller: _editTitleController,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-            decoration: const InputDecoration.collapsed(
-              hintText: 'Binge title',
+          Tooltip(
+            message: 'Choose Collection',
+            child: InkWell(
+              onTap: () {},
+              child: Row(
+                mainAxisSize: .min,
+                children: [
+                  Icon(Icons.folder),
+                  SizedBox(width: 8),
+                  Text(
+                    'Default Collection',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Icon(Icons.chevron_right),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Tooltip(
+            message: 'Edit Binge Title',
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Icon(Icons.title),
+                ),
+                Expanded(
+                  child: TextField(
+                    maxLines: 1,
+                    autofocus: true,
+                    controller: _editTitleController,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    decoration: const InputDecoration.collapsed(
+                      hintText: 'Binge title',
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
           const SizedBox(height: 6),
 
-          TextField(
-            maxLines: 1,
-            controller: _editDescriptionController,
-            style: Theme.of(context).textTheme.bodySmall,
-            decoration: const InputDecoration.collapsed(
-              hintText: 'Description',
+          Tooltip(
+            message: 'Edit Binge Description',
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Icon(Icons.subject),
+                ),
+                Expanded(
+                  child: TextField(
+                    maxLines: 1,
+                    controller: _editDescriptionController,
+                    style: Theme.of(context).textTheme.bodySmall,
+                    decoration: const InputDecoration.collapsed(
+                      hintText: 'Description',
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
