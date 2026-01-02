@@ -26,12 +26,19 @@ class EditBingePage extends ConsumerStatefulWidget {
 }
 
 class _EditBingePageState extends ConsumerState<EditBingePage> {
-  late BingeController _controller;
   final Set<String> _checkMarked = {};
-  bool _showTitle = false;
+  final List<String> _sortOrder = [];
 
+  bool _showTitle = false;
+  BingeModel? unfilteredModel;
+
+  late BingeController _controller;
   TextEditingController? _editTitleController;
   TextEditingController? _editDescriptionController;
+
+  get _isDrag =>
+      _controller.filter == BingeFilter.defaultValue &&
+      _controller.sort == BingeSort.defaultValue;
 
   @override
   void initState() {
@@ -56,10 +63,21 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           return Center(child: CircularProgressIndicator());
         }
         final model = snashot.data!;
-        final videos = model.videos;
+        if (unfilteredModel == null) {
+          unfilteredModel = model;
+          _resetOrder();
+        }
+
+        var filteredVideos = model.videos;
+        if (_isDrag) {
+          final idVsVideos = Map.fromEntries(
+            filteredVideos.map((v) => MapEntry(v.video.id, v)),
+          );
+          filteredVideos = _sortOrder.map((id) => idVsVideos[id]!).toList();
+        }
         return Scaffold(
-          appBar: _buildAppBar(context, model),
-          body: _buildList(videos),
+          appBar: _buildAppBar(context, filteredVideos),
+          body: _buildList(filteredVideos),
         );
       },
     );
@@ -69,12 +87,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     return ReorderableListView.builder(
       itemBuilder: (context, i) => _buildVideoCard(videos[i], i),
       itemCount: videos.length,
-      onReorder: (o, n) {},
+      onReorder: _onReorder,
       buildDefaultDragHandles: false,
     );
   }
 
-  AppBar _buildAppBar(BuildContext context, BingeModel model) {
+  AppBar _buildAppBar(BuildContext context, List<VideoModel> filteredVideos) {
     return AppBar(
       actionsPadding: EdgeInsets.only(right: 16.0),
       leading: IconButton(
@@ -82,7 +100,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         icon: Icon(Icons.arrow_back),
         tooltip: 'Back',
       ),
-      title: _buildTitle(context, model),
+      title: _buildTitle(context, filteredVideos),
       actions: [
         IconButton(
           onPressed: () {
@@ -104,8 +122,8 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         child: Center(
           child: Column(
             children: [
-              if (_showTitle) ...[_buildEditTitle(model)],
-              _buildAppBarBottom(model),
+              if (_showTitle) ...[_buildEditTitle()],
+              _buildAppBarBottom(filteredVideos),
             ],
           ),
         ),
@@ -113,7 +131,8 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
-  Widget _buildEditTitle(BingeModel model) {
+  Widget _buildEditTitle() {
+    final model = unfilteredModel!;
     _editTitleController ??= TextEditingController(text: model.title);
     _editDescriptionController ??= TextEditingController(
       text: model.description,
@@ -140,9 +159,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           TextField(
             maxLines: 1,
             controller: _editDescriptionController,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+            style: Theme.of(context).textTheme.bodySmall,
             decoration: const InputDecoration.collapsed(
               hintText: 'Description',
             ),
@@ -154,7 +171,21 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
-  Widget _buildTitle(BuildContext context, BingeModel model) {
+  Widget _buildTitle(BuildContext context, List<VideoModel> filteredVideos) {
+    final model = unfilteredModel!;
+    String subtitle;
+    String prefix;
+    if (_controller.filter == BingeFilter.defaultValue) {
+      subtitle = '${model.videos.length} videos';
+    } else {
+      subtitle =
+          'showing ${filteredVideos.length} of ${model.videos.length} videos';
+    }
+    if (_checkMarked.isEmpty) {
+      prefix = '';
+    } else {
+      prefix = '${_checkMarked.length} checked · ';
+    }
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(left: 32.0),
@@ -167,7 +198,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
-              '${model.videos.length} videos',
+              '$prefix$subtitle',
               maxLines: 1,
               overflow: .ellipsis,
               style: Theme.of(
@@ -180,8 +211,8 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
-  Widget _buildAppBarBottom(BingeModel model) {
-    final isAllSelected = model.videos.every(
+  Widget _buildAppBarBottom(List<VideoModel> filteredVideos) {
+    final isAllSelected = filteredVideos.every(
       (v) => _checkMarked.contains(v.video.id),
     );
     return Padding(
@@ -192,7 +223,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
             padding: const EdgeInsets.only(left: 12.0, right: 18.0),
             child: IconButton(
               onPressed: () => setState(() {
-                final videoIds = model.videos.map((v) => v.video.id);
+                final videoIds = filteredVideos.map((v) => v.video.id);
                 if (isAllSelected) {
                   _checkMarked.removeAll(videoIds);
                 } else {
@@ -213,7 +244,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
               maxDateTime: _controller.maxDateTime,
               onFilterUpdate: _onFilterModified,
               onSortUpdate: _onSortModified,
-              onShowModal: () {},
+              onShowModal: _onShowModal,
             ),
           ),
         ],
@@ -246,8 +277,9 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           ),
           ReorderableDragStartListener(
             index: index,
+            enabled: _isDrag,
             child: MouseRegion(
-              cursor: SystemMouseCursors.grab,
+              cursor: _isDrag ? SystemMouseCursors.grab : MouseCursor.defer,
               child: SizedBox(
                 width: 160,
                 height: 90,
@@ -259,13 +291,15 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                     if (video.progress.isFinished) ...[
                       LinearProgressIndicator(value: 1),
                     ],
-                    Center(
-                      child: Icon(
-                        Icons.drag_handle_outlined,
-                        size: 100,
-                        color: Colors.white.withAlpha(120),
+                    if (_isDrag) ...[
+                      Center(
+                        child: Icon(
+                          Icons.drag_handle_outlined,
+                          size: 100,
+                          color: Colors.white.withAlpha(120),
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -313,6 +347,30 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   void _onSortModified(BingeSort sort) {
     setState(() {
       _controller.setSort(sort);
+    });
+  }
+
+  Future<bool> _onShowModal(Type type) async {
+    return true;
+  }
+
+  void _resetOrder() {
+    final originalOrder = unfilteredModel!.videos
+        .map((v) => v.video.id)
+        .toList();
+    _sortOrder
+      ..clear()
+      ..addAll(originalOrder);
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+
+      final item = _sortOrder.removeAt(oldIndex);
+      _sortOrder.insert(newIndex, item);
     });
   }
 }
