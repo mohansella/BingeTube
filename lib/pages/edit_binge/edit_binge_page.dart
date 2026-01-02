@@ -1,4 +1,5 @@
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/refine/refine_widget.dart';
 import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
@@ -30,15 +31,14 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   final List<String> _sortOrder = [];
 
   bool _showTitle = false;
+  bool _isOrderModified = false;
   BingeModel? unfilteredModel;
 
   late BingeController _controller;
   TextEditingController? _editTitleController;
   TextEditingController? _editDescriptionController;
 
-  get _isDrag =>
-      _controller.filter == BingeFilter.defaultValue &&
-      _controller.sort == BingeSort.defaultValue;
+  get _isDrag => _controller.filter == BingeFilter.defaultValue;
 
   @override
   void initState() {
@@ -240,6 +240,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
             child: BingeRefineWidget(
               filter: _controller.filter,
               sort: _controller.sort,
+              isCustomSort: _isOrderModified,
               minDateTime: _controller.minDateTime,
               maxDateTime: _controller.maxDateTime,
               onFilterUpdate: _onFilterModified,
@@ -254,86 +255,97 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
 
   Widget _buildVideoCard(VideoModel video, int index) {
     final isChecked = _checkMarked.contains(video.video.id);
+    final theme = Theme.of(context);
     return Card(
       key: Key(video.video.id),
+      color: isChecked ? theme.colorScheme.primaryContainer : null,
       shape: RoundedRectangleBorder(),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: Icon(
-                isChecked ? Icons.check_box : Icons.check_box_outline_blank,
-              ),
-              tooltip: isChecked ? 'Mark Unchecked' : 'Mark Checked',
-              onPressed: () => setState(() {
-                if (isChecked) {
-                  _checkMarked.remove(video.video.id);
-                } else {
-                  _checkMarked.add(video.video.id);
-                }
-              }),
-            ),
-          ),
-          ReorderableDragStartListener(
-            index: index,
-            enabled: _isDrag,
-            child: MouseRegion(
-              cursor: _isDrag ? SystemMouseCursors.grab : MouseCursor.defer,
-              child: SizedBox(
-                width: 160,
-                height: 90,
-                child: Stack(
-                  alignment: .bottomCenter,
-                  children: [
-                    Image.network(video.thumbnails.mediumUrl, fit: .cover),
-                    Container(color: Colors.black.withAlpha(50)),
-                    if (video.progress.isFinished) ...[
-                      LinearProgressIndicator(value: 1),
-                    ],
-                    if (_isDrag) ...[
-                      Center(
-                        child: Icon(
-                          Icons.drag_handle_outlined,
-                          size: 100,
-                          color: Colors.white.withAlpha(120),
+      child: InkWell(
+        onTap: () => setState(() {
+          if (isChecked) {
+            _checkMarked.remove(video.video.id);
+          } else {
+            _checkMarked.add(video.video.id);
+          }
+        }),
+        child: Row(
+          children: [
+            ReorderableDragStartListener(
+              index: index,
+              enabled: _isDrag,
+              child: MouseRegion(
+                cursor: _isDrag ? SystemMouseCursors.grab : MouseCursor.defer,
+                child: SizedBox(
+                  width: 160,
+                  height: 90,
+                  child: Stack(
+                    alignment: .bottomCenter,
+                    children: [
+                      Image.network(video.thumbnails.mediumUrl, fit: .cover),
+                      Container(color: Colors.black.withAlpha(50)),
+                      if (video.progress.isFinished) ...[
+                        LinearProgressIndicator(value: 1),
+                      ],
+                      if (_isDrag) ...[
+                        Center(
+                          child: Icon(
+                            Icons.drag_handle_outlined,
+                            size: 100,
+                            color: Colors.white.withAlpha(120),
+                          ),
+                        ),
+                      ],
+                      Positioned(
+                        left: -5.0,
+                        top: -4.0,
+                        child: IconButton(
+                          icon: Icon(
+                            isChecked
+                                ? Icons.check_box
+                                : Icons.check_box_outline_blank,
+                          ),
+                          tooltip: isChecked
+                              ? 'Mark Unchecked'
+                              : 'Mark Checked',
+                          color: isChecked ? theme.colorScheme.primary : null,
+                          onPressed: () {},
                         ),
                       ),
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: .start,
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  video.snippet.title,
-                  maxLines: 2,
-                  overflow: .ellipsis,
-                  style: TextStyle(fontWeight: .w500),
-                ),
-                Text(
-                  video.snippet.channelTitle,
-                  maxLines: 1,
-                  overflow: .ellipsis,
-                  style: TextStyle(fontWeight: .w200),
-                ),
-                Text(
-                  video.snippet.description,
-                  maxLines: 1,
-                  overflow: .ellipsis,
-                  style: TextStyle(fontWeight: .w300),
-                ),
-              ],
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: .start,
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    video.snippet.title,
+                    maxLines: 2,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w500),
+                  ),
+                  Text(
+                    video.snippet.channelTitle,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w200),
+                  ),
+                  Text(
+                    video.snippet.description,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w300),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-        ],
+            const SizedBox(width: 12),
+          ],
+        ),
       ),
     );
   }
@@ -347,24 +359,42 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   void _onSortModified(BingeSort sort) {
     setState(() {
       _controller.setSort(sort);
+      _resetOrder();
     });
   }
 
   Future<bool> _onShowModal(Type type) async {
-    return true;
+    if (type != BingeSort) {
+      return true;
+    }
+    if (!_isOrderModified) {
+      return true;
+    }
+    final toReturn = CustomDialog.show(
+      context,
+      'Change sort order?',
+      'Okay',
+      const Text(
+        'Switching to different will reset your custom ordering. Do you want to continue?',
+      ),
+      cancelText: 'Cancel',
+    );
+    return toReturn;
   }
 
   void _resetOrder() {
-    final originalOrder = unfilteredModel!.videos
-        .map((v) => v.video.id)
-        .toList();
+    _isOrderModified = false;
+    final sortedVideos = [...unfilteredModel!.videos]
+      ..sort(_controller.sort.compareModels);
+    final sortedVideoIds = sortedVideos.map((v) => v.video.id).toList();
     _sortOrder
       ..clear()
-      ..addAll(originalOrder);
+      ..addAll(sortedVideoIds);
   }
 
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
+      _isOrderModified = true;
       if (newIndex > oldIndex) {
         newIndex -= 1;
       }

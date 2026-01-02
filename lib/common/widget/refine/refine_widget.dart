@@ -10,6 +10,7 @@ class BingeRefineWidget extends StatefulWidget {
   final Future<bool> Function(Type) onShowModal;
   final DateTime minDateTime;
   final DateTime maxDateTime;
+  final bool isCustomSort;
 
   const BingeRefineWidget({
     super.key,
@@ -20,6 +21,7 @@ class BingeRefineWidget extends StatefulWidget {
     required this.onShowModal,
     required this.minDateTime,
     required this.maxDateTime,
+    this.isCustomSort = false,
   });
 
   @override
@@ -55,10 +57,6 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
                 child: Row(
                   spacing: 8.0,
                   children: [
-                    if (widget.sort != BingeSort.defaultValue ||
-                        widget.filter != BingeFilter.defaultValue) ...[
-                      _buildClear(context),
-                    ],
                     _buildSort(context),
                     _buildVisibility(context),
                     _buildDateRange(context),
@@ -112,12 +110,18 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
   }
 
   Widget _buildSort(BuildContext context) {
+    var iconData = Icons.arrow_downward;
+    if (!widget.isCustomSort && widget.sort.sortOrder == .asc) {
+      iconData = Icons.arrow_upward;
+    }
     return _buildChip(
       context,
-      widget.sort.sortOrder == .asc ? Icons.arrow_downward : Icons.arrow_upward,
-      widget.sort.sortType.lable,
+      iconData,
+      widget.isCustomSort ? 'Custom' : widget.sort.sortType.lable,
       (_) => _showModalForSort(context),
-      widget.sort.sortOrder == .asc && widget.sort.sortType == .system,
+      !widget.isCustomSort &&
+          widget.sort.sortOrder == .asc &&
+          widget.sort.sortType == .system,
     );
   }
 
@@ -195,23 +199,6 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
         decoration: InputDecoration(
           contentPadding: EdgeInsets.only(bottom: 10.0),
         ),
-      ),
-    );
-  }
-
-  Widget _buildClear(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Transform.translate(
-      offset: const Offset(0, -2),
-      child: IconButton(
-        tooltip: 'Clear filters',
-        onPressed: () {
-          widget.onFilterUpdate(BingeFilter.defaultValue);
-          widget.onSortUpdate(BingeSort.defaultValue);
-        },
-        icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
       ),
     );
   }
