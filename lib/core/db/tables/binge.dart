@@ -4,8 +4,12 @@ import 'package:drift/drift.dart';
 
 class Series extends Table with TableTimedMixin {
   late final id = integer().autoIncrement()();
+  late final collectionId = integer().references(Collections, #id)();
+
   late final name = text()();
   late final description = text()();
+
+  late final priority = integer()();
 }
 
 class SeriesVsVideos extends Table {
@@ -19,24 +23,8 @@ class SeriesVsVideos extends Table {
 
 class Collections extends Table with TableTimedMixin {
   late final id = integer().autoIncrement()();
+  late final isSystem = boolean()();
+
   late final name = text()();
   late final description = text()();
-}
-
-class CollectionVsSeries extends Table {
-  late final collectionId = integer().references(Collections, #id)();
-  late final seriesId = integer().references(Series, #id)();
-  late final priority = integer()();
-
-  @override
-  get primaryKey => {collectionId, seriesId};
-}
-
-class PersonalCollections extends Table with TableTimedMixin {
-  late final isSystem = boolean().withDefault(const Constant(false))();
-  late final collectionId = integer().references(Collections, #id)();
-  late final priority = integer()();
-
-  @override
-  get primaryKey => {isSystem, collectionId};
 }

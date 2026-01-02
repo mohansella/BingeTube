@@ -39,8 +39,6 @@ part '../../generated/core/db/database.g.dart';
     Series,
     SeriesVsVideos,
     Collections,
-    CollectionVsSeries,
-    PersonalCollections,
   ],
   daos: [ChannelsDao],
 )
