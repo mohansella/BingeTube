@@ -201,9 +201,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
               '$prefix$subtitle',
               maxLines: 1,
               overflow: .ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
