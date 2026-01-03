@@ -21,7 +21,7 @@ abstract class BaseBingeController implements BingeController {
   BingeSort bingeSort = BingeSort.defaultValue;
 
   StreamSubscription? bingeModelSubscriber;
-  var streamController = StreamController<BingeModel>();
+  var streamController = StreamController<BingeModel>.broadcast();
 
   final videoDao = VideosDao(Database());
 

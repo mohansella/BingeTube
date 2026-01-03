@@ -1,9 +1,12 @@
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/common/widget/binge/choose_collection.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/refine/refine_widget.dart';
 import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
+import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -30,9 +33,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   final Set<String> _checkMarked = {};
   final List<String> _sortOrder = [];
 
+  bool _isLoading = true;
   bool _showTitle = false;
   bool _isOrderModified = false;
-  BingeModel? unfilteredModel;
+  late BingeModel _unfilteredModel;
+  late BingeDao _bingeDao;
+  late Collection _collection;
 
   late BingeController _controller;
   TextEditingController? _editTitleController;
@@ -44,6 +50,21 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   void initState() {
     super.initState();
     _controller = BingeController(widget.params);
+    _bingeDao = BingeDao(Database());
+    initAsync();
+  }
+
+  void initAsync() async {
+    final (model, collection) = await (
+      _controller.stream.first,
+      _bingeDao.getDefaultCollection(),
+    ).wait;
+    setState(() {
+      _isLoading = false;
+      _unfilteredModel = model;
+      _collection = collection;
+      _resetOrder();
+    });
   }
 
   @override
@@ -59,15 +80,10 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     return StreamBuilder(
       stream: _controller.stream,
       builder: (context, snashot) {
-        if (!snashot.hasData) {
+        if (_isLoading || !snashot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
         final model = snashot.data!;
-        if (unfilteredModel == null) {
-          unfilteredModel = model;
-          _resetOrder();
-        }
-
         var filteredVideos = model.videos;
         if (_isDrag) {
           final idVsVideos = Map.fromEntries(
@@ -132,7 +148,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   Widget _buildEditTitle() {
-    final model = unfilteredModel!;
+    final model = _unfilteredModel;
     _editTitleController ??= TextEditingController(text: model.title);
     _editDescriptionController ??= TextEditingController(
       text: model.description,
@@ -145,14 +161,14 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           Tooltip(
             message: 'Choose Collection',
             child: InkWell(
-              onTap: () {},
+              onTap: _chooseCollection,
               child: Row(
                 mainAxisSize: .min,
                 children: [
                   Icon(Icons.folder),
                   SizedBox(width: 8),
                   Text(
-                    'Default Collection',
+                    _collection.name,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                     ),
@@ -221,7 +237,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   Widget _buildTitle(BuildContext context, List<VideoModel> filteredVideos) {
-    final model = unfilteredModel!;
+    final model = _unfilteredModel;
     String subtitle;
     String prefix;
     if (_controller.filter == BingeFilter.defaultValue) {
@@ -431,7 +447,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
 
   void _resetOrder() {
     _isOrderModified = false;
-    final sortedVideos = [...unfilteredModel!.videos]
+    final sortedVideos = [..._unfilteredModel.videos]
       ..sort(_controller.sort.compareModels);
     final sortedVideoIds = sortedVideos.map((v) => v.video.id).toList();
     _sortOrder
@@ -448,6 +464,18 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
 
       final item = _sortOrder.removeAt(oldIndex);
       _sortOrder.insert(newIndex, item);
+    });
+  }
+
+  void _chooseCollection() async {
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
+      context,
+    );
+    if (chosenCollection == null) {
+      return;
+    }
+    setState(() {
+      _collection = chosenCollection;
     });
   }
 }
