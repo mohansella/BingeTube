@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 class Series extends Table with TableTimedMixin {
   late final id = integer().autoIncrement()();
   late final collectionId = integer().references(Collections, #id)();
+  late final coverVideoId = text().references(Videos, #id)();
 
   late final name = text()();
   late final description = text()();

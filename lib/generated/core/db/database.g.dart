@@ -7594,6 +7594,20 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
       'REFERENCES collections (id)',
     ),
   );
+  static const VerificationMeta _coverVideoIdMeta = const VerificationMeta(
+    'coverVideoId',
+  );
+  @override
+  late final GeneratedColumn<String> coverVideoId = GeneratedColumn<String>(
+    'cover_video_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES videos (id)',
+    ),
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -7631,6 +7645,7 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     updatedAt,
     id,
     collectionId,
+    coverVideoId,
     name,
     description,
     priority,
@@ -7672,6 +7687,17 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
       );
     } else if (isInserting) {
       context.missing(_collectionIdMeta);
+    }
+    if (data.containsKey('cover_video_id')) {
+      context.handle(
+        _coverVideoIdMeta,
+        coverVideoId.isAcceptableOrUnknown(
+          data['cover_video_id']!,
+          _coverVideoIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_coverVideoIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -7725,6 +7751,10 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
         DriftSqlType.int,
         data['${effectivePrefix}collection_id'],
       )!,
+      coverVideoId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cover_video_id'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -7751,6 +7781,7 @@ class Sery extends DataClass implements Insertable<Sery> {
   final DateTime updatedAt;
   final int id;
   final int collectionId;
+  final String coverVideoId;
   final String name;
   final String description;
   final int priority;
@@ -7759,6 +7790,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     required this.updatedAt,
     required this.id,
     required this.collectionId,
+    required this.coverVideoId,
     required this.name,
     required this.description,
     required this.priority,
@@ -7770,6 +7802,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<int>(id);
     map['collection_id'] = Variable<int>(collectionId);
+    map['cover_video_id'] = Variable<String>(coverVideoId);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
     map['priority'] = Variable<int>(priority);
@@ -7782,6 +7815,7 @@ class Sery extends DataClass implements Insertable<Sery> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       collectionId: Value(collectionId),
+      coverVideoId: Value(coverVideoId),
       name: Value(name),
       description: Value(description),
       priority: Value(priority),
@@ -7798,6 +7832,7 @@ class Sery extends DataClass implements Insertable<Sery> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<int>(json['id']),
       collectionId: serializer.fromJson<int>(json['collectionId']),
+      coverVideoId: serializer.fromJson<String>(json['coverVideoId']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
       priority: serializer.fromJson<int>(json['priority']),
@@ -7811,6 +7846,7 @@ class Sery extends DataClass implements Insertable<Sery> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<int>(id),
       'collectionId': serializer.toJson<int>(collectionId),
+      'coverVideoId': serializer.toJson<String>(coverVideoId),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
       'priority': serializer.toJson<int>(priority),
@@ -7822,6 +7858,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     DateTime? updatedAt,
     int? id,
     int? collectionId,
+    String? coverVideoId,
     String? name,
     String? description,
     int? priority,
@@ -7830,6 +7867,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     collectionId: collectionId ?? this.collectionId,
+    coverVideoId: coverVideoId ?? this.coverVideoId,
     name: name ?? this.name,
     description: description ?? this.description,
     priority: priority ?? this.priority,
@@ -7842,6 +7880,9 @@ class Sery extends DataClass implements Insertable<Sery> {
       collectionId: data.collectionId.present
           ? data.collectionId.value
           : this.collectionId,
+      coverVideoId: data.coverVideoId.present
+          ? data.coverVideoId.value
+          : this.coverVideoId,
       name: data.name.present ? data.name.value : this.name,
       description: data.description.present
           ? data.description.value
@@ -7857,6 +7898,7 @@ class Sery extends DataClass implements Insertable<Sery> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('collectionId: $collectionId, ')
+          ..write('coverVideoId: $coverVideoId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('priority: $priority')
@@ -7870,6 +7912,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     updatedAt,
     id,
     collectionId,
+    coverVideoId,
     name,
     description,
     priority,
@@ -7882,6 +7925,7 @@ class Sery extends DataClass implements Insertable<Sery> {
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.collectionId == this.collectionId &&
+          other.coverVideoId == this.coverVideoId &&
           other.name == this.name &&
           other.description == this.description &&
           other.priority == this.priority);
@@ -7892,6 +7936,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
   final Value<DateTime> updatedAt;
   final Value<int> id;
   final Value<int> collectionId;
+  final Value<String> coverVideoId;
   final Value<String> name;
   final Value<String> description;
   final Value<int> priority;
@@ -7900,6 +7945,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.collectionId = const Value.absent(),
+    this.coverVideoId = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
     this.priority = const Value.absent(),
@@ -7909,10 +7955,12 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     required int collectionId,
+    required String coverVideoId,
     required String name,
     required String description,
     required int priority,
   }) : collectionId = Value(collectionId),
+       coverVideoId = Value(coverVideoId),
        name = Value(name),
        description = Value(description),
        priority = Value(priority);
@@ -7921,6 +7969,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     Expression<DateTime>? updatedAt,
     Expression<int>? id,
     Expression<int>? collectionId,
+    Expression<String>? coverVideoId,
     Expression<String>? name,
     Expression<String>? description,
     Expression<int>? priority,
@@ -7930,6 +7979,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (collectionId != null) 'collection_id': collectionId,
+      if (coverVideoId != null) 'cover_video_id': coverVideoId,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
       if (priority != null) 'priority': priority,
@@ -7941,6 +7991,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     Value<DateTime>? updatedAt,
     Value<int>? id,
     Value<int>? collectionId,
+    Value<String>? coverVideoId,
     Value<String>? name,
     Value<String>? description,
     Value<int>? priority,
@@ -7950,6 +8001,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       collectionId: collectionId ?? this.collectionId,
+      coverVideoId: coverVideoId ?? this.coverVideoId,
       name: name ?? this.name,
       description: description ?? this.description,
       priority: priority ?? this.priority,
@@ -7971,6 +8023,9 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     if (collectionId.present) {
       map['collection_id'] = Variable<int>(collectionId.value);
     }
+    if (coverVideoId.present) {
+      map['cover_video_id'] = Variable<String>(coverVideoId.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -7990,6 +8045,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('collectionId: $collectionId, ')
+          ..write('coverVideoId: $coverVideoId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
           ..write('priority: $priority')
@@ -11211,6 +11267,25 @@ final class $$VideosTableReferences
     );
   }
 
+  static MultiTypedResultKey<$SeriesTable, List<Sery>> _seriesRefsTable(
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.series,
+    aliasName: $_aliasNameGenerator(db.videos.id, db.series.coverVideoId),
+  );
+
+  $$SeriesTableProcessedTableManager get seriesRefs {
+    final manager = $$SeriesTableTableManager(
+      $_db,
+      $_db.series,
+    ).filter((f) => f.coverVideoId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_seriesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$SeriesVsVideosTable, List<SeriesVsVideo>>
   _seriesVsVideosRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.seriesVsVideos,
@@ -11452,6 +11527,31 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
           }) => $$VideoSearchVsVideosTableFilterComposer(
             $db: $db,
             $table: $db.videoSearchVsVideos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> seriesRefs(
+    Expression<bool> Function($$SeriesTableFilterComposer f) f,
+  ) {
+    final $$SeriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.series,
+      getReferencedColumn: (t) => t.coverVideoId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SeriesTableFilterComposer(
+            $db: $db,
+            $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -11768,6 +11868,31 @@ class $$VideosTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> seriesRefs<T extends Object>(
+    Expression<T> Function($$SeriesTableAnnotationComposer a) f,
+  ) {
+    final $$SeriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.series,
+      getReferencedColumn: (t) => t.coverVideoId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SeriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.series,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> seriesVsVideosRefs<T extends Object>(
     Expression<T> Function($$SeriesVsVideosTableAnnotationComposer a) f,
   ) {
@@ -11816,6 +11941,7 @@ class $$VideosTableTableManager
             bool videoStatisticsRefs,
             bool videoProgressRefs,
             bool videoSearchVsVideosRefs,
+            bool seriesRefs,
             bool seriesVsVideosRefs,
           })
         > {
@@ -11882,6 +12008,7 @@ class $$VideosTableTableManager
                 videoStatisticsRefs = false,
                 videoProgressRefs = false,
                 videoSearchVsVideosRefs = false,
+                seriesRefs = false,
                 seriesVsVideosRefs = false,
               }) {
                 return PrefetchHooks(
@@ -11894,6 +12021,7 @@ class $$VideosTableTableManager
                     if (videoStatisticsRefs) db.videoStatistics,
                     if (videoProgressRefs) db.videoProgress,
                     if (videoSearchVsVideosRefs) db.videoSearchVsVideos,
+                    if (seriesRefs) db.series,
                     if (seriesVsVideosRefs) db.seriesVsVideos,
                   ],
                   addJoins:
@@ -12071,6 +12199,19 @@ class $$VideosTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (seriesRefs)
+                        await $_getPrefetchedData<Video, $VideosTable, Sery>(
+                          currentTable: table,
+                          referencedTable: $$VideosTableReferences
+                              ._seriesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$VideosTableReferences(db, table, p0).seriesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.coverVideoId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (seriesVsVideosRefs)
                         await $_getPrefetchedData<
                           Video,
@@ -12121,6 +12262,7 @@ typedef $$VideosTableProcessedTableManager =
         bool videoStatisticsRefs,
         bool videoProgressRefs,
         bool videoSearchVsVideosRefs,
+        bool seriesRefs,
         bool seriesVsVideosRefs,
       })
     >;
@@ -16138,6 +16280,7 @@ typedef $$SeriesTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<int> id,
       required int collectionId,
+      required String coverVideoId,
       required String name,
       required String description,
       required int priority,
@@ -16148,6 +16291,7 @@ typedef $$SeriesTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<int> id,
       Value<int> collectionId,
+      Value<String> coverVideoId,
       Value<String> name,
       Value<String> description,
       Value<int> priority,
@@ -16170,6 +16314,23 @@ final class $$SeriesTableReferences
       $_db.collections,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_collectionIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $VideosTable _coverVideoIdTable(_$Database db) => db.videos
+      .createAlias($_aliasNameGenerator(db.series.coverVideoId, db.videos.id));
+
+  $$VideosTableProcessedTableManager get coverVideoId {
+    final $_column = $_itemColumn<String>('cover_video_id')!;
+
+    final manager = $$VideosTableTableManager(
+      $_db,
+      $_db.videos,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_coverVideoIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -16247,6 +16408,29 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
           }) => $$CollectionsTableFilterComposer(
             $db: $db,
             $table: $db.collections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VideosTableFilterComposer get coverVideoId {
+    final $$VideosTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.coverVideoId,
+      referencedTable: $db.videos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VideosTableFilterComposer(
+            $db: $db,
+            $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -16342,6 +16526,29 @@ class $$SeriesTableOrderingComposer extends Composer<_$Database, $SeriesTable> {
     );
     return composer;
   }
+
+  $$VideosTableOrderingComposer get coverVideoId {
+    final $$VideosTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.coverVideoId,
+      referencedTable: $db.videos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VideosTableOrderingComposer(
+            $db: $db,
+            $table: $db.videos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$SeriesTableAnnotationComposer
@@ -16396,6 +16603,29 @@ class $$SeriesTableAnnotationComposer
     return composer;
   }
 
+  $$VideosTableAnnotationComposer get coverVideoId {
+    final $$VideosTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.coverVideoId,
+      referencedTable: $db.videos,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VideosTableAnnotationComposer(
+            $db: $db,
+            $table: $db.videos,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> seriesVsVideosRefs<T extends Object>(
     Expression<T> Function($$SeriesVsVideosTableAnnotationComposer a) f,
   ) {
@@ -16435,7 +16665,11 @@ class $$SeriesTableTableManager
           $$SeriesTableUpdateCompanionBuilder,
           (Sery, $$SeriesTableReferences),
           Sery,
-          PrefetchHooks Function({bool collectionId, bool seriesVsVideosRefs})
+          PrefetchHooks Function({
+            bool collectionId,
+            bool coverVideoId,
+            bool seriesVsVideosRefs,
+          })
         > {
   $$SeriesTableTableManager(_$Database db, $SeriesTable table)
     : super(
@@ -16454,6 +16688,7 @@ class $$SeriesTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> id = const Value.absent(),
                 Value<int> collectionId = const Value.absent(),
+                Value<String> coverVideoId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> description = const Value.absent(),
                 Value<int> priority = const Value.absent(),
@@ -16462,6 +16697,7 @@ class $$SeriesTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 collectionId: collectionId,
+                coverVideoId: coverVideoId,
                 name: name,
                 description: description,
                 priority: priority,
@@ -16472,6 +16708,7 @@ class $$SeriesTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> id = const Value.absent(),
                 required int collectionId,
+                required String coverVideoId,
                 required String name,
                 required String description,
                 required int priority,
@@ -16480,6 +16717,7 @@ class $$SeriesTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 collectionId: collectionId,
+                coverVideoId: coverVideoId,
                 name: name,
                 description: description,
                 priority: priority,
@@ -16491,7 +16729,11 @@ class $$SeriesTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({collectionId = false, seriesVsVideosRefs = false}) {
+              ({
+                collectionId = false,
+                coverVideoId = false,
+                seriesVsVideosRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
@@ -16522,6 +16764,19 @@ class $$SeriesTableTableManager
                                         ._collectionIdTable(db),
                                     referencedColumn: $$SeriesTableReferences
                                         ._collectionIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (coverVideoId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.coverVideoId,
+                                    referencedTable: $$SeriesTableReferences
+                                        ._coverVideoIdTable(db),
+                                    referencedColumn: $$SeriesTableReferences
+                                        ._coverVideoIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -16572,7 +16827,11 @@ typedef $$SeriesTableProcessedTableManager =
       $$SeriesTableUpdateCompanionBuilder,
       (Sery, $$SeriesTableReferences),
       Sery,
-      PrefetchHooks Function({bool collectionId, bool seriesVsVideosRefs})
+      PrefetchHooks Function({
+        bool collectionId,
+        bool coverVideoId,
+        bool seriesVsVideosRefs,
+      })
     >;
 typedef $$SeriesVsVideosTableCreateCompanionBuilder =
     SeriesVsVideosCompanion Function({

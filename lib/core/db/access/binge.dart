@@ -1,5 +1,7 @@
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/tables/binge.dart';
+import 'package:bingetube/core/db/tables/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:drift/drift.dart';
@@ -8,24 +10,19 @@ part '../../../generated/core/db/access/binge.g.dart';
 
 class CollectionModel {
   final Collection collection;
-  final List<Sery> series;
+  final List<SeryModel> series;
 
   CollectionModel({required this.collection, required this.series});
 }
 
 class SeryModel {
   final Sery sery;
-  final String videoId;
-  final String videoImage;
+  final VideoThumbnail thumbnail;
 
-  SeryModel({
-    required this.sery,
-    required this.videoId,
-    required this.videoImage,
-  });
+  SeryModel({required this.sery, required this.thumbnail});
 }
 
-@DriftAccessor(tables: [Series, SeriesVsVideos, Collections])
+@DriftAccessor(tables: [Collections, Series, SeriesVsVideos, VideoThumbnails])
 class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   static final _logger = LogManager.getLogger('BingeDao');
 
@@ -78,15 +75,23 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }) {
     final query = select(collections).join([
       innerJoin(series, series.collectionId.equalsExp(collections.id)),
+      innerJoin(seriesVsVideos, seriesVsVideos.seriesId.equalsExp(series.id)),
+      innerJoin(
+        videoThumbnails,
+        videoThumbnails.id.equalsExp(seriesVsVideos.videoId),
+      ),
     ])..where(collections.isSystem.equals(isSystem));
     final toReturn = query.watch().map((result) {
       Map<int, Collection> idVsCollection = {};
-      Map<int, List<Sery>> idVsSeries = {};
+      Map<int, List<SeryModel>> idVsSeries = {};
       for (var row in result) {
         final collection = row.readTable(collections);
         final sery = row.readTable(series);
+        final thumbnail = row.readTable(videoThumbnails);
         idVsCollection[collection.id] = collection;
-        idVsSeries.putIfAbsent(collection.id, () => <Sery>[]).add(sery);
+        idVsSeries
+            .putIfAbsent(collection.id, () => <SeryModel>[])
+            .add(SeryModel(sery: sery, thumbnail: thumbnail));
       }
       final models = idVsCollection.values
           .map((c) => CollectionModel(collection: c, series: idVsSeries[c.id]!))
@@ -97,11 +102,16 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return toReturn;
   }
 
-  Future<Sery> saveBingeModel(Collection collection, BingeModel model) async {
+  Future<Sery> saveBingeModel(
+    Collection collection,
+    BingeModel model,
+    VideoModel video,
+  ) async {
     return await transaction(() async {
       final seriesId = await into(series).insert(
         SeriesCompanion.insert(
           collectionId: collection.id,
+          coverVideoId: video.video.id,
           name: model.title,
           description: model.description,
           priority: 0,
