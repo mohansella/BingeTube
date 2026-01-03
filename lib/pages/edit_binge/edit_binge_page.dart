@@ -7,11 +7,16 @@ import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class EditBingePage extends ConsumerStatefulWidget {
+  static final _logger = LogManager.getLogger('EditBingePage');
+
   final Map<String, String> params;
 
   const EditBingePage(this.params, {super.key});
@@ -130,7 +135,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           color: Theme.of(context).colorScheme.primary,
           icon: const Icon(Icons.check),
           tooltip: 'Save',
-          onPressed: () {},
+          onPressed: _onSavePressed,
         ),
       ],
       bottom: PreferredSize(
@@ -470,5 +475,59 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     setState(() {
       _collection = chosenCollection;
     });
+  }
+
+  void _onSavePressed() async {
+    if (_checkMarked.isEmpty) {
+      CustomDialog.show(
+        context,
+        'No videos selected',
+        'Okay',
+        const Text(
+          'You haven’t selected any videos to save. Select at least one video to continue.',
+        ),
+      );
+      return;
+    }
+
+    final title = _editTitleController?.text ?? _unfilteredModel.title;
+    final description =
+        _editDescriptionController?.text ?? _unfilteredModel.description;
+    final idVsVideoEntries = _unfilteredModel.videos.map(
+      (v) => MapEntry(v.video.id, v),
+    );
+    final idVsVideos = Map.fromEntries(idVsVideoEntries);
+    final videos = _sortOrder.map((id) => idVsVideos[id]!).toList();
+    videos.removeWhere((v) => !_checkMarked.contains(v.video.id));
+    final newModel = BingeModel(
+      title: title,
+      description: description,
+      videos: videos,
+    );
+
+    final canSave = await CustomDialog.show(
+      context,
+      'Save selected videos?',
+      'Save',
+      Text(
+        'You’ve selected ${newModel.videos.length} of ${_unfilteredModel.videos.length} videos. '
+        'Their order will be saved for this collection.',
+      ),
+      cancelText: 'Cancel',
+    );
+
+    if (!canSave) {
+      return;
+    }
+
+    final seryModel = await _bingeDao.saveBingeModel(_collection, newModel);
+    EditBingePage._logger.info('series saved $seryModel');
+    final localContext = context;
+    if (localContext.mounted) {
+      while (localContext.canPop()) {
+        localContext.pop();
+      }
+      localContext.goNamed(Pages.myShows.name);
+    }
   }
 }
