@@ -64,7 +64,6 @@ class _ChooseCollectionWidgetState extends State<ChooseCollectionWidget> {
       maxChildSize: 0.95,
       expand: false,
       builder: (context, scroll) {
-        final theme = Theme.of(context);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
