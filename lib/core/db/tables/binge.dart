@@ -24,6 +24,7 @@ class SeriesVsVideos extends Table {
 class Collections extends Table with TableTimedMixin {
   late final id = integer().autoIncrement()();
   late final isSystem = boolean()();
+  late final priority = integer()();
 
   late final name = text()();
   late final description = text()();
