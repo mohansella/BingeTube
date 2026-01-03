@@ -1,11 +1,8 @@
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
-import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 
 class ListScreenWidget extends StatefulWidget {
-  static final _logger = LogManager.getLogger('ListScreenWidget');
-
   final bool isSystem;
   const ListScreenWidget({super.key, required this.isSystem});
 
