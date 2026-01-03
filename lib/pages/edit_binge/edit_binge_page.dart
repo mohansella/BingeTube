@@ -283,7 +283,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       child: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 12.0, right: 18.0),
+            padding: const EdgeInsets.only(left: 2.0, right: 8.0),
             child: IconButton(
               onPressed: () => setState(() {
                 final videoIds = filteredVideos.map((v) => v.video.id);
@@ -359,19 +359,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                         ),
                       ],
                       Positioned(
-                        left: -5.0,
-                        top: -4.0,
-                        child: IconButton(
-                          icon: Icon(
-                            isChecked
-                                ? Icons.check_box
-                                : Icons.check_box_outline_blank,
-                          ),
-                          tooltip: isChecked
-                              ? 'Mark Unchecked'
-                              : 'Mark Checked',
-                          color: isChecked ? theme.colorScheme.primary : null,
-                          onPressed: () {},
+                        left: 4.0,
+                        top: 4.0,
+                        child: Icon(
+                          isChecked
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
                         ),
                       ),
                     ],
