@@ -6,6 +6,25 @@ import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/binge.g.dart';
 
+class CollectionModel {
+  final Collection collection;
+  final List<Sery> series;
+
+  CollectionModel({required this.collection, required this.series});
+}
+
+class SeryModel {
+  final Sery sery;
+  final String videoId;
+  final String videoImage;
+
+  SeryModel({
+    required this.sery,
+    required this.videoId,
+    required this.videoImage,
+  });
+}
+
 @DriftAccessor(tables: [Series, SeriesVsVideos, Collections])
 class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   static final _logger = LogManager.getLogger('BingeDao');
@@ -37,6 +56,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   ) async {
     final rowId = await into(collections).insert(
       CollectionsCompanion.insert(
+        priority: 0,
         name: name,
         description: description,
         isSystem: isSystem,
@@ -51,6 +71,30 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       ..where((c) => c.isSystem.equals(isSystem))
       ..orderBy([(c) => OrderingTerm.asc(c.createdAt)]);
     return query.get();
+  }
+
+  Stream<List<CollectionModel>> streamCollectionModels({
+    bool isSystem = false,
+  }) {
+    final query = select(collections).join([
+      innerJoin(series, series.collectionId.equalsExp(collections.id)),
+    ])..where(collections.isSystem.equals(isSystem));
+    final toReturn = query.watch().map((result) {
+      Map<int, Collection> idVsCollection = {};
+      Map<int, List<Sery>> idVsSeries = {};
+      for (var row in result) {
+        final collection = row.readTable(collections);
+        final sery = row.readTable(series);
+        idVsCollection[collection.id] = collection;
+        idVsSeries.putIfAbsent(collection.id, () => <Sery>[]).add(sery);
+      }
+      final models = idVsCollection.values
+          .map((c) => CollectionModel(collection: c, series: idVsSeries[c.id]!))
+          .toList();
+      models.sort((a, b) => a.collection.priority - b.collection.priority);
+      return models;
+    });
+    return toReturn;
   }
 
   Future<Sery> saveBingeModel(Collection collection, BingeModel model) async {

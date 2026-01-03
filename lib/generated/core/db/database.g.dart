@@ -7139,6 +7139,17 @@ class $CollectionsTable extends Collections
       'CHECK ("is_system" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
+  @override
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -7165,6 +7176,7 @@ class $CollectionsTable extends Collections
     updatedAt,
     id,
     isSystem,
+    priority,
     name,
     description,
   ];
@@ -7202,6 +7214,14 @@ class $CollectionsTable extends Collections
       );
     } else if (isInserting) {
       context.missing(_isSystemMeta);
+    }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -7247,6 +7267,10 @@ class $CollectionsTable extends Collections
         DriftSqlType.bool,
         data['${effectivePrefix}is_system'],
       )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -7269,6 +7293,7 @@ class Collection extends DataClass implements Insertable<Collection> {
   final DateTime updatedAt;
   final int id;
   final bool isSystem;
+  final int priority;
   final String name;
   final String description;
   const Collection({
@@ -7276,6 +7301,7 @@ class Collection extends DataClass implements Insertable<Collection> {
     required this.updatedAt,
     required this.id,
     required this.isSystem,
+    required this.priority,
     required this.name,
     required this.description,
   });
@@ -7286,6 +7312,7 @@ class Collection extends DataClass implements Insertable<Collection> {
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<int>(id);
     map['is_system'] = Variable<bool>(isSystem);
+    map['priority'] = Variable<int>(priority);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
     return map;
@@ -7297,6 +7324,7 @@ class Collection extends DataClass implements Insertable<Collection> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       isSystem: Value(isSystem),
+      priority: Value(priority),
       name: Value(name),
       description: Value(description),
     );
@@ -7312,6 +7340,7 @@ class Collection extends DataClass implements Insertable<Collection> {
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<int>(json['id']),
       isSystem: serializer.fromJson<bool>(json['isSystem']),
+      priority: serializer.fromJson<int>(json['priority']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
     );
@@ -7324,6 +7353,7 @@ class Collection extends DataClass implements Insertable<Collection> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<int>(id),
       'isSystem': serializer.toJson<bool>(isSystem),
+      'priority': serializer.toJson<int>(priority),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
     };
@@ -7334,6 +7364,7 @@ class Collection extends DataClass implements Insertable<Collection> {
     DateTime? updatedAt,
     int? id,
     bool? isSystem,
+    int? priority,
     String? name,
     String? description,
   }) => Collection(
@@ -7341,6 +7372,7 @@ class Collection extends DataClass implements Insertable<Collection> {
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     isSystem: isSystem ?? this.isSystem,
+    priority: priority ?? this.priority,
     name: name ?? this.name,
     description: description ?? this.description,
   );
@@ -7350,6 +7382,7 @@ class Collection extends DataClass implements Insertable<Collection> {
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       isSystem: data.isSystem.present ? data.isSystem.value : this.isSystem,
+      priority: data.priority.present ? data.priority.value : this.priority,
       name: data.name.present ? data.name.value : this.name,
       description: data.description.present
           ? data.description.value
@@ -7364,6 +7397,7 @@ class Collection extends DataClass implements Insertable<Collection> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('isSystem: $isSystem, ')
+          ..write('priority: $priority, ')
           ..write('name: $name, ')
           ..write('description: $description')
           ..write(')'))
@@ -7371,8 +7405,15 @@ class Collection extends DataClass implements Insertable<Collection> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, isSystem, name, description);
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    isSystem,
+    priority,
+    name,
+    description,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7381,6 +7422,7 @@ class Collection extends DataClass implements Insertable<Collection> {
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.isSystem == this.isSystem &&
+          other.priority == this.priority &&
           other.name == this.name &&
           other.description == this.description);
 }
@@ -7390,6 +7432,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
   final Value<DateTime> updatedAt;
   final Value<int> id;
   final Value<bool> isSystem;
+  final Value<int> priority;
   final Value<String> name;
   final Value<String> description;
   const CollectionsCompanion({
@@ -7397,6 +7440,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.isSystem = const Value.absent(),
+    this.priority = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
   });
@@ -7405,9 +7449,11 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     required bool isSystem,
+    required int priority,
     required String name,
     required String description,
   }) : isSystem = Value(isSystem),
+       priority = Value(priority),
        name = Value(name),
        description = Value(description);
   static Insertable<Collection> custom({
@@ -7415,6 +7461,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
     Expression<DateTime>? updatedAt,
     Expression<int>? id,
     Expression<bool>? isSystem,
+    Expression<int>? priority,
     Expression<String>? name,
     Expression<String>? description,
   }) {
@@ -7423,6 +7470,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (isSystem != null) 'is_system': isSystem,
+      if (priority != null) 'priority': priority,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
     });
@@ -7433,6 +7481,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
     Value<DateTime>? updatedAt,
     Value<int>? id,
     Value<bool>? isSystem,
+    Value<int>? priority,
     Value<String>? name,
     Value<String>? description,
   }) {
@@ -7441,6 +7490,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       isSystem: isSystem ?? this.isSystem,
+      priority: priority ?? this.priority,
       name: name ?? this.name,
       description: description ?? this.description,
     );
@@ -7461,6 +7511,9 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
     if (isSystem.present) {
       map['is_system'] = Variable<bool>(isSystem.value);
     }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
@@ -7477,6 +7530,7 @@ class CollectionsCompanion extends UpdateCompanion<Collection> {
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('isSystem: $isSystem, ')
+          ..write('priority: $priority, ')
           ..write('name: $name, ')
           ..write('description: $description')
           ..write(')'))
@@ -15746,6 +15800,7 @@ typedef $$CollectionsTableCreateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<int> id,
       required bool isSystem,
+      required int priority,
       required String name,
       required String description,
     });
@@ -15755,6 +15810,7 @@ typedef $$CollectionsTableUpdateCompanionBuilder =
       Value<DateTime> updatedAt,
       Value<int> id,
       Value<bool> isSystem,
+      Value<int> priority,
       Value<String> name,
       Value<String> description,
     });
@@ -15809,6 +15865,11 @@ class $$CollectionsTableFilterComposer
 
   ColumnFilters<bool> get isSystem => $composableBuilder(
     column: $table.isSystem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15877,6 +15938,11 @@ class $$CollectionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -15908,6 +15974,9 @@ class $$CollectionsTableAnnotationComposer
 
   GeneratedColumn<bool> get isSystem =>
       $composableBuilder(column: $table.isSystem, builder: (column) => column);
+
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -15975,6 +16044,7 @@ class $$CollectionsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> id = const Value.absent(),
                 Value<bool> isSystem = const Value.absent(),
+                Value<int> priority = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> description = const Value.absent(),
               }) => CollectionsCompanion(
@@ -15982,6 +16052,7 @@ class $$CollectionsTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 isSystem: isSystem,
+                priority: priority,
                 name: name,
                 description: description,
               ),
@@ -15991,6 +16062,7 @@ class $$CollectionsTableTableManager
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> id = const Value.absent(),
                 required bool isSystem,
+                required int priority,
                 required String name,
                 required String description,
               }) => CollectionsCompanion.insert(
@@ -15998,6 +16070,7 @@ class $$CollectionsTableTableManager
                 updatedAt: updatedAt,
                 id: id,
                 isSystem: isSystem,
+                priority: priority,
                 name: name,
                 description: description,
               ),

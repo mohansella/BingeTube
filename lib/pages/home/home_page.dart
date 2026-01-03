@@ -1,3 +1,4 @@
+import 'package:bingetube/common/widget/binge/list_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -5,6 +6,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Work in progress'));
+    return Center(child: ListScreenWidget(isSystem: true));
   }
 }
