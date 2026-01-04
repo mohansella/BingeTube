@@ -1,6 +1,7 @@
 import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/pages/binge/controllers/search_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/sery_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
@@ -8,6 +9,8 @@ import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
 enum BingeType { singleVideo, searchVideos, channelVideos, seryVideos }
 
 enum BingeParams { type, id, heroId, heroImg, videoId }
+
+enum BingeActions { add, edit, move, duplicate, delete }
 
 class BingeModel {
   final String title;
@@ -53,6 +56,14 @@ abstract class BingeController {
   void markActiveVideoWatched();
 
   void setVideoWatched(VideoModel model, bool isFinished);
+
+  List<BingeActions> supportActions();
+  Future<Sery> executeBingeAction(
+    BingeActions action,
+    Collection collection,
+    BingeModel model,
+    VideoModel coverVideo,
+  );
 
   factory BingeController(Map<String, String> params) {
     final typeValue = params[BingeParams.type.name]!;
