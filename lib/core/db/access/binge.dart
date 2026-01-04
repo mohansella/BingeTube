@@ -22,7 +22,9 @@ class SeryModel {
   SeryModel({required this.sery, required this.thumbnail});
 }
 
-@DriftAccessor(tables: [Collections, Series, SeriesVsVideos, VideoThumbnails])
+@DriftAccessor(
+  tables: [Collections, Series, SeriesVsVideos, VideoThumbnails, Videos],
+)
 class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   static final _logger = LogManager.getLogger('BingeDao');
 
@@ -75,10 +77,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }) {
     final query = select(collections).join([
       innerJoin(series, series.collectionId.equalsExp(collections.id)),
-      innerJoin(seriesVsVideos, seriesVsVideos.seriesId.equalsExp(series.id)),
       innerJoin(
         videoThumbnails,
-        videoThumbnails.id.equalsExp(seriesVsVideos.videoId),
+        videoThumbnails.id.equalsExp(series.coverVideoId),
       ),
     ])..where(collections.isSystem.equals(isSystem));
     final toReturn = query.watch().map((result) {
@@ -128,6 +129,26 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       }
       final query = select(series)..where((s) => s.id.equals(seriesId));
       return await query.getSingle();
+    });
+  }
+
+  Stream<BingeModel> streamBingeModel(int seryId) {
+    final baseQuery = select(series).join([
+      innerJoin(seriesVsVideos, seriesVsVideos.seriesId.equalsExp(series.id)),
+      innerJoin(videos, videos.id.equalsExp(seriesVsVideos.videoId)),
+    ])..where(series.id.equals(seryId));
+    final videosDao = VideosDao(attachedDatabase);
+    final fullQuery = videosDao.joinVideoAndChannelTables(
+      selectStatement: baseQuery,
+    );
+    return fullQuery.watch().map((result) {
+      final sery = result[0].readTable(series);
+      final videos = result.map(videosDao.mapRowToModel).toList();
+      return BingeModel(
+        title: sery.name,
+        description: sery.description,
+        videos: videos,
+      );
     });
   }
 }

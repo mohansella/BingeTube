@@ -2,16 +2,10 @@ import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/pages/binge/controllers/search_video_controller.dart';
+import 'package:bingetube/pages/binge/controllers/sery_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
 
-enum BingeType {
-  singleVideo,
-  searchVideos,
-  channelVideos,
-  playlistVideos,
-  myshowSeries,
-  systemSeries,
-}
+enum BingeType { singleVideo, searchVideos, channelVideos, seryVideos }
 
 enum BingeParams { type, id, heroId, heroImg, videoId }
 
@@ -80,6 +74,13 @@ abstract class BingeController {
           int.parse(id),
           videoId,
           initialHeroId: heroId,
+          initialHeroImg: heroImg,
+        );
+      case .seryVideos:
+        return SeryVideoBingeController(
+          int.parse(id),
+          videoId,
+          initialHeroId: videoId,
           initialHeroImg: heroImg,
         );
       default:
