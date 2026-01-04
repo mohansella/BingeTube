@@ -1,4 +1,5 @@
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/common/widget/binge/choose_collection.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/common/widget/refine/refine_widget.dart';
@@ -472,7 +473,19 @@ class _BingePageState extends ConsumerState<BingePage> {
     }
   }
 
-  void _onActionMoveTo() {}
+  void _onActionMoveTo() async {
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
+      context,
+    );
+    if (chosenCollection == null) {
+      return;
+    }
+    await _controller.executeBingeAction(.moveTo, collection: chosenCollection);
+    final localContext = context;
+    if (localContext.mounted) {
+      Routes.popOrHome(localContext);
+    }
+  }
 
   void _onActionDuplicate() {}
 
