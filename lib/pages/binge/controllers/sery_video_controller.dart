@@ -41,6 +41,10 @@ class SeryVideoBingeController extends BaseBingeController {
       await bingeDao.moveSery(seryId, collection!);
       return null;
     }
+    if(action == .duplicate) {
+      await bingeDao.duplicateSery(seryId, collection!);
+      return null;
+    }
     return super.executeBingeAction(
       action,
       collection: collection,

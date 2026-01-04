@@ -487,7 +487,22 @@ class _BingePageState extends ConsumerState<BingePage> {
     }
   }
 
-  void _onActionDuplicate() {}
+  void _onActionDuplicate() async {
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
+      context,
+    );
+    if (chosenCollection == null) {
+      return;
+    }
+    await _controller.executeBingeAction(
+      .duplicate,
+      collection: chosenCollection,
+    );
+    final localContext = context;
+    if (localContext.mounted) {
+      Routes.popOrHome(localContext);
+    }
+  }
 
   void _onActionDelete() async {
     final confirm = await CustomDialog.show(
