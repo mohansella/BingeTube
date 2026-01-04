@@ -172,4 +172,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       ),
     );
   }
+
+  Future<void> duplicateSery(int seryId, Collection collection) async {
+    final model = await streamBingeModel(seryId).first;
+    await saveBingeModel(collection, model, model.videos[0]);
+  }
 }
