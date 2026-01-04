@@ -1,4 +1,5 @@
 import 'package:bingetube/core/db/access/binge.dart';
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/binge/controllers/base_controller.dart';
@@ -19,4 +20,28 @@ class SeryVideoBingeController extends BaseBingeController {
 
   @override
   Stream<BingeModel> get dbStream => _bingeDao.streamBingeModel(seryId);
+
+  @override
+  List<BingeActions> supportedActions() {
+    return [.edit, .moveTo, .duplicate, .delete];
+  }
+
+  @override
+  Future<Sery?> executeBingeAction(
+    BingeActions action, {
+    Collection? collection,
+    BingeModel? model,
+    VideoModel? coverVideo,
+  }) async {
+    if (action == .delete) {
+      await bingeDao.deleteSery(seryId);
+      return null;
+    }
+    return super.executeBingeAction(
+      action,
+      collection: collection,
+      model: model,
+      coverVideo: coverVideo,
+    );
+  }
 }

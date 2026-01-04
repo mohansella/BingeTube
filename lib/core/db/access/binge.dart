@@ -151,4 +151,14 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       );
     });
   }
+
+  Future<void> deleteSery(int seryId) async {
+    await transaction(() async {
+      final deleteMap = delete(seriesVsVideos)
+        ..where((sv) => sv.seriesId.equals(seryId));
+      await deleteMap.go();
+      final deleteSery = delete(series)..where((s) => s.id.equals(seryId));
+      await deleteSery.go();
+    });
+  }
 }
