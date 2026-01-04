@@ -74,28 +74,30 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   Widget _buildSery(BuildContext context, SeryModel model) {
     return Hero(
       tag: model.thumbnail.id,
-      child: InkWell(
-        onTap: () => _onTapSery(context, model),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 160,
-              child: Stack(
-                fit: .expand,
-                children: [
-                  Image.network(model.thumbnail.highUrl, fit: BoxFit.cover),
-                ],
+      child: Material(
+        child: InkWell(
+          onTap: () => _onTapSery(context, model),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 160,
+                child: Stack(
+                  fit: .expand,
+                  children: [
+                    Image.network(model.thumbnail.highUrl, fit: BoxFit.cover),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   void _onTapSery(BuildContext context, SeryModel model) {
-    context.goNamed(
+    context.pushNamed(
       Pages.binge.name,
       queryParameters: BingePage.buildParams(
         type: .seryVideos,
