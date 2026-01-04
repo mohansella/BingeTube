@@ -10,7 +10,7 @@ enum BingeType { singleVideo, searchVideos, channelVideos, seryVideos }
 
 enum BingeParams { type, id, heroId, heroImg, videoId }
 
-enum BingeActions { add, edit, move, duplicate, delete }
+enum BingeActions { add, edit, moveTo, duplicate, delete }
 
 class BingeModel {
   final String title;
@@ -57,13 +57,13 @@ abstract class BingeController {
 
   void setVideoWatched(VideoModel model, bool isFinished);
 
-  List<BingeActions> supportActions();
-  Future<Sery> executeBingeAction(
-    BingeActions action,
-    Collection collection,
-    BingeModel model,
-    VideoModel coverVideo,
-  );
+  List<BingeActions> supportedActions();
+  Future<Sery?> executeBingeAction(
+    BingeActions action, {
+    Collection? collection,
+    BingeModel? model,
+    VideoModel? coverVideo,
+  });
 
   factory BingeController(Map<String, String> params) {
     final typeValue = params[BingeParams.type.name]!;

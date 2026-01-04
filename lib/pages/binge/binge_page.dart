@@ -1,4 +1,5 @@
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/common/widget/refine/refine_widget.dart';
 import 'package:bingetube/core/binge/binge_filter.dart';
@@ -199,6 +200,8 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildFilterAndModify(BuildContext context) {
+    final actions = _controller.supportedActions();
+
     return Row(
       mainAxisAlignment: .end,
       children: [
@@ -207,11 +210,19 @@ class _BingePageState extends ConsumerState<BingePage> {
           onPressed: _onFilterPressed,
           icon: Icon(Icons.tune),
         ),
-        IconButton(
-          tooltip: 'Add',
-          onPressed: () => _onAddPressed(context),
-          icon: Icon(Icons.add),
-        ),
+        if (actions.length == 1 && actions[0] == .add) ...[
+          IconButton(
+            tooltip: 'Add',
+            onPressed: () => _onActionAdd(),
+            icon: Icon(Icons.add),
+          ),
+        ] else ...[
+          PopupMenuButton(
+            tooltip: 'Actions',
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (c) => _buildMenuItems(c, actions),
+          ),
+        ],
       ],
     );
   }
@@ -284,6 +295,47 @@ class _BingePageState extends ConsumerState<BingePage> {
         ),
       ),
     );
+  }
+
+  List<PopupMenuItem<BingeActions>> _buildMenuItems(
+    BuildContext context,
+    List<BingeActions> actions,
+  ) {
+    IconData icon;
+    String lable;
+    final toReturn = <PopupMenuItem<BingeActions>>[];
+    for (final action in actions) {
+      switch (action) {
+        case .add:
+          icon = Icons.add;
+          lable = 'Icon';
+          break;
+        case .edit:
+          icon = Icons.edit;
+          lable = 'Edit';
+          break;
+        case .moveTo:
+          icon = Icons.drive_file_move_outline;
+          lable = 'Move to';
+          break;
+        case .duplicate:
+          icon = Icons.content_copy;
+          lable = 'Duplicate';
+          break;
+        case .delete:
+          icon = Icons.delete_outline;
+          lable = 'Delete';
+          break;
+      }
+      toReturn.add(
+        PopupMenuItem(
+          child: Row(children: [Icon(icon), SizedBox(width: 12), Text(lable)]),
+          onTap: () => _onBingeAction(action),
+        ),
+      );
+    }
+
+    return toReturn;
   }
 
   void _onVideoCardTap(BuildContext context, VideoModel video) {
@@ -395,11 +447,51 @@ class _BingePageState extends ConsumerState<BingePage> {
     return true;
   }
 
-  void _onAddPressed(BuildContext context) {
+  void _onActionAdd() {
     context.pushNamed(
       Pages.editBinge.name,
       queryParameters: EditBingePage.buildParams(widget.params),
     );
+  }
+
+  void _onBingeAction(BingeActions action) {
+    switch (action) {
+      case .add:
+      case .edit:
+        _onActionAdd();
+        break;
+      case .moveTo:
+        _onActionMoveTo();
+        break;
+      case .duplicate:
+        _onActionDuplicate();
+        break;
+      case .delete:
+        _onActionDelete();
+        break;
+    }
+  }
+
+  void _onActionMoveTo() {}
+
+  void _onActionDuplicate() {}
+
+  void _onActionDelete() async {
+    final confirm = await CustomDialog.show(
+      context,
+      'Delete series?',
+      'Delete',
+      Text('This will remove the series from your collection.'),
+      cancelText: 'Cancel',
+    );
+
+    if (confirm) {
+      await _controller.executeBingeAction(.delete);
+      final localContext = context;
+      if (localContext.mounted) {
+        Routes.popOrHome(localContext);
+      }
+    }
   }
 }
 

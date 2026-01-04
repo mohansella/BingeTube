@@ -192,21 +192,21 @@ abstract class BaseBingeController implements BingeController {
   }
 
   @override
-  List<BingeActions> supportActions() {
+  List<BingeActions> supportedActions() {
     return [.add];
   }
 
   @override
-  Future<Sery> executeBingeAction(
-    BingeActions action,
-    Collection collection,
-    BingeModel model,
-    VideoModel coverVideo,
-  ) {
+  Future<Sery?> executeBingeAction(
+    BingeActions action, {
+    Collection? collection,
+    BingeModel? model,
+    VideoModel? coverVideo,
+  }) {
     if (action != .add) {
       throw StateError('Unsupported action: $action');
     }
-    return bingeDao.saveBingeModel(collection, model, coverVideo);
+    return bingeDao.saveBingeModel(collection!, model!, coverVideo!);
   }
 
   void onModel(BingeModel event) {
