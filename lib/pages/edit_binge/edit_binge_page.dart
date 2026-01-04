@@ -525,11 +525,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       orElse: () => newModel.videos[0],
     );
 
-    final seryModel = await _bingeDao.saveBingeModel(
-      _collection,
-      newModel,
-      coverVideo,
-    );
+    _controller.executeBingeAction(.add, _collection, newModel, coverVideo);
     EditBingePage._logger.info('series saved $seryModel');
     final localContext = context;
     if (localContext.mounted) {

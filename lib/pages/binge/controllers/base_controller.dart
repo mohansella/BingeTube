@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
+import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
@@ -24,6 +25,7 @@ abstract class BaseBingeController implements BingeController {
   var streamController = StreamController<BingeModel>.broadcast();
 
   final videoDao = VideosDao(Database());
+  final bingeDao = BingeDao(Database());
 
   BaseBingeController({
     required this.initialHeroId,
@@ -187,6 +189,24 @@ abstract class BaseBingeController implements BingeController {
       ),
     );
     _logger.info('videoId:$videoId marked as watched:$isFinished');
+  }
+
+  @override
+  List<BingeActions> supportActions() {
+    return [.add];
+  }
+
+  @override
+  Future<Sery> executeBingeAction(
+    BingeActions action,
+    Collection collection,
+    BingeModel model,
+    VideoModel coverVideo,
+  ) {
+    if (action != .add) {
+      throw StateError('Unsupported action: $action');
+    }
+    return bingeDao.saveBingeModel(collection, model, coverVideo);
   }
 
   void onModel(BingeModel event) {
