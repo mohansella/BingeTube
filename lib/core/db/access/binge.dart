@@ -214,4 +214,30 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       return await query.getSingle();
     });
   }
+
+  Future<List<Sery>> getSeries({required bool isSystem}) async {
+    final query = select(series).join([
+      innerJoin(collections, collections.id.equalsExp(series.collectionId)),
+    ])..where(collections.isSystem.equals(isSystem));
+    final result = await query.get();
+    return result.map((r) => r.readTable(series)).toList();
+  }
+
+  Future<void> addVideos(
+    int seryId,
+    List<String> videoIds,
+    int fromPriority,
+  ) async {
+    await transaction(() async {
+      for (var i = 0; i < videoIds.length; i++) {
+        await into(seriesVsVideos).insert(
+          SeriesVsVideosCompanion.insert(
+            seriesId: seryId,
+            videoId: videoIds[i],
+            priority: ++fromPriority,
+          ),
+        );
+      }
+    });
+  }
 }

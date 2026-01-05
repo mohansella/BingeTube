@@ -1,5 +1,6 @@
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
+import 'package:bingetube/common/widget/binge/choose_sery.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/refine/refine_widget.dart';
 import 'package:bingetube/core/binge/binge_filter.dart';
@@ -131,6 +132,13 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           },
           icon: Icon(_showTitle ? Icons.expand_less : Icons.expand_more),
         ),
+        if (_checkMarked.isNotEmpty)
+          IconButton(
+            icon: Icon(Icons.copy_outlined),
+            tooltip: 'Copy',
+            onPressed: _onCopyPressed,
+          ),
+
         IconButton(
           color: Theme.of(context).colorScheme.primary,
           icon: const Icon(Icons.check),
@@ -475,6 +483,55 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     setState(() {
       _collection = chosenCollection;
     });
+  }
+
+  void _onCopyPressed() async {
+    final chosenSery = await ChooseSeryWidget.showChooseCollection(context);
+    if (chosenSery == null) {
+      return;
+    }
+
+    final targetModel = await _bingeDao.streamBingeModel(chosenSery.id).first;
+    final sourceSet = {..._checkMarked};
+    sourceSet.removeAll(targetModel.videos.map((v) => v.video.id));
+    final localContext = context;
+    if (!localContext.mounted) {
+      return;
+    }
+    if (sourceSet.isEmpty) {
+      CustomDialog.show(
+        localContext,
+        'Nothing to Copy!',
+        'Okay',
+        Text(
+          'All Selected videos already present in target series: ${targetModel.title}',
+        ),
+      );
+      return;
+    }
+
+    final copyConsent = await CustomDialog.show(
+      localContext,
+      'Copy ${sourceSet.length} videos?',
+      'Copy',
+      Text(
+        'This action will copy ${sourceSet.length} videos from the selected ${_checkMarked.length} videos to series: ${targetModel.title}',
+      ),
+      cancelText: 'Cancel',
+    );
+    if (!copyConsent) {
+      return;
+    }
+
+    final sourceList = _sortOrder.where((v) => sourceSet.contains(v)).toList();
+    await _bingeDao.addVideos(
+      chosenSery.id,
+      sourceList,
+      targetModel.videos.length,
+    );
+    if (localContext.mounted) {
+      Routes.popOrHome(localContext);
+    }
   }
 
   void _onSavePressed() async {
