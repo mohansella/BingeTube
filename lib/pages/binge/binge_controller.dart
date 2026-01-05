@@ -91,7 +91,7 @@ abstract class BingeController {
         return SeryVideoBingeController(
           int.parse(id),
           videoId,
-          initialHeroId: videoId,
+          initialHeroId: heroId,
           initialHeroImg: heroImg,
         );
       default:
