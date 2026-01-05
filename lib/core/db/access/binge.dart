@@ -106,8 +106,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   Future<Sery> saveBingeModel(
     Collection collection,
     BingeModel model,
-    VideoModel video,
-  ) async {
+    VideoModel video, {
+    int? seryId,
+  }) async {
     return await transaction(() async {
       final seriesId = await into(series).insert(
         SeriesCompanion.insert(
@@ -176,5 +177,41 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   Future<void> duplicateSery(int seryId, Collection collection) async {
     final model = await streamBingeModel(seryId).first;
     await saveBingeModel(collection, model, model.videos[0]);
+  }
+
+  Future<Sery> editSery(
+    int seryId,
+    Collection collection,
+    BingeModel model,
+    VideoModel coverVideo,
+  ) async {
+    return await transaction(() async {
+      final deleteMap = delete(seriesVsVideos)
+        ..where((sv) => sv.seriesId.equals(seryId));
+      await deleteMap.go();
+      final writeQuery = update(series)..where((s) => s.id.equals(seryId));
+      await writeQuery.write(
+        SeriesCompanion.insert(
+          id: Value(seryId),
+          collectionId: collection.id,
+          coverVideoId: coverVideo.video.id,
+          name: model.title,
+          description: model.description,
+          priority: 0,
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+      for (var i = 0; i < model.videos.length; i++) {
+        await into(seriesVsVideos).insert(
+          SeriesVsVideosCompanion.insert(
+            seriesId: seryId,
+            videoId: model.videos[i].video.id,
+            priority: i + 1,
+          ),
+        );
+      }
+      final query = select(series)..where((s) => s.id.equals(seryId));
+      return await query.getSingle();
+    });
   }
 }

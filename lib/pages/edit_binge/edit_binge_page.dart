@@ -505,6 +505,54 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       videos: videos,
     );
 
+    final actions = _controller.supportedActions();
+    if (actions.length == 1 && actions[0] == .add) {
+      _saveNewModel(newModel);
+    } else {
+      _updateExistingeModel(newModel);
+    }
+  }
+
+  void _updateExistingeModel(BingeModel model) async {
+    final canUpdate = await CustomDialog.show(
+      context,
+      'Update selected videos?',
+      'Update',
+      Text(
+        'You’ve selected ${model.videos.length} of ${_unfilteredModel.videos.length} videos. '
+        'Their order will be updated for this collection.',
+      ),
+      cancelText: 'Cancel',
+    );
+
+    if (!canUpdate) {
+      return;
+    }
+
+    final coverVideo = model.videos.firstWhere(
+      (v) => v.progress.isFinished,
+      orElse: () => model.videos[0],
+    );
+
+    _isLoading = true;
+    final seryModel = await _controller.executeBingeAction(
+      .edit,
+      collection: _collection,
+      model: model,
+      coverVideo: coverVideo,
+    );
+
+    EditBingePage._logger.info('series updated $seryModel');
+    final localContext = context;
+    if (localContext.mounted) {
+      while (localContext.canPop()) {
+        localContext.pop();
+      }
+      localContext.goNamed(Pages.myShows.name);
+    }
+  }
+
+  void _saveNewModel(BingeModel newModel) async {
     final canSave = await CustomDialog.show(
       context,
       'Save selected videos?',
