@@ -1,9 +1,11 @@
+import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 class ListScreenWidget extends StatefulWidget {
   final bool isSystem;
@@ -37,17 +39,38 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         }
         final collections = snapshot.data!;
         if (collections.isEmpty) {
-          return Center(
-            child: Text(
-              widget.isSystem
-                  ? 'Work in progress'
-                  : 'Collection is empty. Add more from search or import.',
-            ),
-          );
+          return _buildCollectionEmpty();
         }
         return ListView.builder(
           itemCount: collections.length,
           itemBuilder: (c, i) => _buildCollection(c, collections[i]),
+        );
+      },
+    );
+  }
+
+  Widget _buildCollectionEmpty() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: constraints.maxWidth * 0.7,
+                height: constraints.maxHeight * 0.7,
+                child: Lottie.asset(Assets.emptyBox.path, fit: BoxFit.contain),
+              ),
+              const SizedBox(height: 8),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  'No collections found. Add one via search, copy, or import.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

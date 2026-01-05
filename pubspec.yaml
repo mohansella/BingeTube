@@ -89,6 +89,7 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/lottie/binge_panda.json
+    - assets/lottie/empty_box.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
