@@ -54,20 +54,29 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   }
 
   Widget _buildCollection(BuildContext context, CollectionModel model) {
-    return Column(
-      mainAxisAlignment: .start,
-      children: [
-        Text('${model.collection.name} (${model.series.length})'),
-        SizedBox(
-          height: 90,
-          child: ListView.separated(
-            scrollDirection: .horizontal,
-            itemCount: model.series.length,
-            itemBuilder: (c, i) => _buildSery(c, model.series[i]),
-            separatorBuilder: (c, i) => SizedBox(width: 8),
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 8.0, left: 8.0),
+      child: Column(
+        children: [
+          Align(
+            alignment: .centerLeft,
+            child: Text(
+              model.collection.name,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
-        ),
-      ],
+          SizedBox(height: 4),
+          SizedBox(
+            height: 90,
+            child: ListView.separated(
+              scrollDirection: .horizontal,
+              itemCount: model.series.length,
+              itemBuilder: (c, i) => _buildSery(c, model.series[i]),
+              separatorBuilder: (c, i) => SizedBox(width: 8),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
