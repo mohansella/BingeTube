@@ -1,8 +1,10 @@
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/search/widgets/search_channel.dart';
 import 'package:bingetube/pages/search/widgets/search_video.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -60,16 +62,44 @@ class SearchPageState extends ConsumerState<SearchPage>
                 ),
               ),
             ] else ...[
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: const Text(
-                    'Add your YouTube API key to start searching',
-                  ),
-                ),
-              ),
+              _buildApiKeyRequired(),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildApiKeyRequired() {
+    return Expanded(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 84),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.vpn_key_rounded, size: 46, color: Colors.grey),
+                const SizedBox(height: 16),
+                const Text(
+                  'API Key Required',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'To search YouTube channels,\nadd your own API key to BingeTube.',
+                  style: TextStyle(color: Colors.grey, height: 1.4),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () => context.pushNamed(Pages.keyConfig.name),
+                  child: const Text('Set up API Key'),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
