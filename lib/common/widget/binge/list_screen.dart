@@ -105,31 +105,33 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
 
   Widget _buildSery(BuildContext context, SeryModel model) {
     final heroId = model.sery.id.toString();
-    return Hero(
-      tag: heroId,
-      child: Material(
-        child: InkWell(
-          onTap: () => _onTapSery(context, model, heroId),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
+    final heroImg = model.thumbnail.mediumUrl;
+    return Material(
+      child: InkWell(
+        onTap: () => _onTapSery(context, model, heroId, heroImg),
+        child: Row(
+          children: [
+            Hero(
+              tag: heroId,
+              child: Image.network(
+                heroImg,
                 width: 160,
-                child: Stack(
-                  fit: .expand,
-                  children: [
-                    Image.network(model.thumbnail.highUrl, fit: BoxFit.cover),
-                  ],
-                ),
+                height: 90,
+                fit: .cover,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _onTapSery(BuildContext context, SeryModel model, String heroId) {
+  void _onTapSery(
+    BuildContext context,
+    SeryModel model,
+    String heroId,
+    String heroImg,
+  ) {
     context.pushNamed(
       Pages.binge.name,
       queryParameters: BingePage.buildParams(
@@ -137,7 +139,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         id: model.sery.id.toString(),
         videoId: model.thumbnail.id,
         heroId: heroId,
-        heroImg: model.thumbnail.highUrl,
+        heroImg: heroImg,
       ),
     );
   }
