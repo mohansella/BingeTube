@@ -55,14 +55,17 @@ final GoRouter _routes = GoRouter(
       routes: [
         CustomGoRoute(
           page: Pages.home,
+          transistionType: .none,
           customBuilder: (context, state) => const HomePage(),
         ),
         CustomGoRoute(
           page: Pages.myShows,
+          transistionType: .none,
           customBuilder: (context, state) => const MyShowsPage(),
         ),
         CustomGoRoute(
           page: Pages.settings,
+          transistionType: .none,
           customBuilder: (context, state) => const SettingsPage(),
         ),
       ],
@@ -88,22 +91,41 @@ final GoRouter _routes = GoRouter(
   ],
 );
 
+enum PageTransistionType { predefined, none, fade }
+
 class CustomGoRoute extends GoRoute {
   final GoRouterWidgetBuilder customBuilder;
   final Pages page;
+  final PageTransistionType transistionType;
 
-  CustomGoRoute({required this.page, required this.customBuilder})
-    : super(
-        name: page.name,
-        path: page.path,
-        builder: customBuilder,
-        pageBuilder: (context, state) => CustomTransitionPage(
-          key: state.pageKey,
-          transitionDuration: const Duration(milliseconds: 250),
-          child: customBuilder(context, state),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        ),
+  CustomGoRoute({
+    required this.page,
+    required this.customBuilder,
+    this.transistionType = .predefined,
+  }) : super(
+         name: page.name,
+         path: page.path,
+         builder: customBuilder,
+         pageBuilder: transistionType == .predefined
+             ? null
+             : (c, s) => buildTransistion(transistionType, customBuilder, c, s),
+       );
+
+  static Page<dynamic> buildTransistion(
+    PageTransistionType type,
+    GoRouterWidgetBuilder customBuilder,
+    BuildContext context,
+    GoRouterState state,
+  ) {
+    if (type == .fade) {
+      return CustomTransitionPage(
+        key: state.pageKey,
+        child: customBuilder(context, state),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
       );
+    }
+    return NoTransitionPage(child: customBuilder(context, state));
+  }
 }
