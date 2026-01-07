@@ -2,15 +2,43 @@ import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/config/font_size.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [_buildTheme(context, ref), _buildFontSize(context, ref)],
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildTheme(context, ref),
+                _buildFontSize(context, ref),
+                _buildVersionInfo(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVersionInfo() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FutureBuilder(
+        future: PackageInfo.fromPlatform(),
+        builder: (_, snapshot) {
+          if (snapshot.hasData) {
+            final info = snapshot.data!;
+            return Text('Version: ${info.version} Build: ${info.buildNumber}');
+          } else {
+            return SizedBox();
+          }
+        },
       ),
     );
   }
