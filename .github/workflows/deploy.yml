@@ -48,7 +48,7 @@ jobs:
           EOF
 
       - name: Test firebase options
-        run: wc -l lib/firebase_options.dart
+        run: wc lib/firebase_options.dart
 
       - name: Analyze
         run: flutter analyze
