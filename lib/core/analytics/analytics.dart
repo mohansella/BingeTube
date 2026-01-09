@@ -11,7 +11,7 @@ sealed class Analytics {
   static Future<void> init() async {
     if (_isInited) return;
 
-    final firebaseOptions = DefaultFirebaseOptions().currentPlatform;
+    final firebaseOptions = DefaultFirebaseOptions.currentPlatform;
     if (firebaseOptions.appId.isEmpty) {
       _logger.info('Firebase analytics disabled');
       _isInited = true;
