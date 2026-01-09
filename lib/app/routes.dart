@@ -1,8 +1,10 @@
+import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bingetube/pages/pages.dart';
@@ -35,6 +37,9 @@ sealed class Routes {
 final _initNotifier = ValueNotifier<bool>(false);
 
 final GoRouter _routes = GoRouter(
+  observers: Analytics.isEnabled
+      ? [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)]
+      : null,
   initialLocation: Pages.splash.path,
   refreshListenable: _initNotifier,
   redirect: (context, routeState) {

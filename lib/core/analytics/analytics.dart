@@ -8,6 +8,9 @@ sealed class Analytics {
 
   static bool _isInited = false;
   static bool _isEnabled = false;
+
+  static bool get isEnabled => _isEnabled;
+
   static Future<void> init() async {
     if (_isInited) return;
 
@@ -22,7 +25,6 @@ sealed class Analytics {
     await Firebase.initializeApp(options: firebaseOptions);
     _isEnabled = true;
     _isInited = true;
-    await FirebaseAnalytics.instance.logAppOpen();
   }
 
   static Future<void> logEvent(
