@@ -22,6 +22,7 @@ sealed class Analytics {
     await Firebase.initializeApp(options: firebaseOptions);
     _isEnabled = true;
     _isInited = true;
+    await FirebaseAnalytics.instance.logAppOpen();
   }
 
   static Future<void> logEvent(
