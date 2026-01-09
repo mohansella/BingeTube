@@ -43,7 +43,9 @@ jobs:
 
       - name: Inject Firebase options
         run: |
-          echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
+          cat << 'EOF' > lib/firebase_options.dart
+          ${{ secrets.DART_FIREBASE_OPTIONS }}
+          EOF
 
       - name: Analyze
         run: flutter analyze
