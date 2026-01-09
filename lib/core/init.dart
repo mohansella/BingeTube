@@ -1,4 +1,4 @@
-import 'package:bingetube/core/analytics/Analytics.dart';
+import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:timezone/data/latest.dart' as tz;
