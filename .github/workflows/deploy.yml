@@ -41,6 +41,10 @@ jobs:
             exit 1
           fi
 
+      - name: Inject Firebase options
+        run: |
+          echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
+
       - name: Analyze
         run: flutter analyze
 
