@@ -44,7 +44,7 @@ jobs:
       - name: Inject Firebase options
         run: |
           cat << 'EOF' > lib/firebase_options.dart
-          ${{ secrets.DART_FIREBASE_OPTIONS }}
+          ${{ secrets.FIREBASE_OPTIONS_DART_FILE }}
           EOF
 
       - name: Test firebase options
