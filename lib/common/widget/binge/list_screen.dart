@@ -1,3 +1,4 @@
+import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
@@ -118,6 +119,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
                 width: 160,
                 height: 90,
                 fit: .cover,
+                errorBuilder: (c, _, _) =>
+                    _buildCoverFallback(c, model, height: 90, width: 160),
               ),
             ),
           ],
@@ -140,6 +143,26 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         videoId: model.thumbnail.id,
         heroId: heroId,
         heroImg: heroImg,
+      ),
+    );
+  }
+
+  Widget _buildCoverFallback(
+    BuildContext context,
+    SeryModel model, {
+    required double height,
+    required double width,
+  }) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final color = Themes.colorFromId(model.sery.id.toString(), brightness);
+    return Material(
+      child: Container(
+        color: color,
+        height: height,
+        width: width,
+        alignment: .center,
+        child: Text(model.sery.name),
       ),
     );
   }

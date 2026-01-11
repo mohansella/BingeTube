@@ -1,4 +1,5 @@
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
@@ -243,7 +244,12 @@ class _BingePageState extends ConsumerState<BingePage> {
               child: Stack(
                 alignment: .bottomCenter,
                 children: [
-                  Image.network(video.thumbnails.mediumUrl, fit: .cover),
+                  Image.network(
+                    video.thumbnails.mediumUrl,
+                    fit: .cover,
+                    errorBuilder: (c, _, _) =>
+                        _buildCoverFallback(c, video.video.id),
+                  ),
                   if (video.progress.isFinished) ...[
                     LinearProgressIndicator(value: 1),
                   ],
@@ -296,6 +302,13 @@ class _BingePageState extends ConsumerState<BingePage> {
         ),
       ),
     );
+  }
+
+  Widget _buildCoverFallback(BuildContext context, String id) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final color = Themes.colorFromId(id, brightness);
+    return Container(color: color, alignment: .center);
   }
 
   List<PopupMenuItem<BingeActions>> _buildMenuItems(
