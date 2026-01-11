@@ -2,6 +2,7 @@ import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 
 sealed class Analytics {
   static final _logger = LogManager.getLogger('Analytics');
@@ -14,9 +15,15 @@ sealed class Analytics {
   static Future<void> init() async {
     if (_isInited) return;
 
+    if (!kReleaseMode) {
+      _logger.info('Firebase analytics disabled in debug mode');
+      _isInited = true;
+      return;
+    }
+
     final firebaseOptions = DefaultFirebaseOptions.currentPlatform;
     if (firebaseOptions.appId.isEmpty) {
-      _logger.info('Firebase analytics disabled');
+      _logger.warning('Firebase analytics not configured!');
       _isInited = true;
       return;
     }
