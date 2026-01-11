@@ -138,6 +138,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       innerJoin(seriesVsVideos, seriesVsVideos.seriesId.equalsExp(series.id)),
       innerJoin(videos, videos.id.equalsExp(seriesVsVideos.videoId)),
     ])..where(series.id.equals(seryId));
+    baseQuery.orderBy([OrderingTerm.asc(seriesVsVideos.priority)]);
     final videosDao = VideosDao(attachedDatabase);
     final fullQuery = videosDao.joinVideoAndChannelTables(
       selectStatement: baseQuery,
