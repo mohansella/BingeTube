@@ -271,6 +271,12 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           Image.network(
             widget.controller.heroImg,
             fit: BoxFit.contain,
+            frameBuilder: (c, child, frame, wasSyncLoaded) {
+              if (frame != null || wasSyncLoaded) {
+                return child;
+              }
+              return _buildCoverFallback(c, widget.videoId);
+            },
             errorBuilder: (c, _, _) => _buildCoverFallback(c, widget.videoId),
           ),
 
