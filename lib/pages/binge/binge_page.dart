@@ -121,7 +121,7 @@ class _BingePageState extends ConsumerState<BingePage> {
         maxHeight: headerHeight,
         child: Container(
           color: Theme.of(context).scaffoldBackgroundColor,
-          padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+          padding: EdgeInsets.all(8.0),
           child: Column(
             children: [
               Row(
