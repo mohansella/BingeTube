@@ -361,6 +361,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                       Image.network(
                         video.thumbnails.mediumUrl,
                         fit: .cover,
+                        frameBuilder: (c, child, frame, wasSyncLoaded) {
+                          if (frame != null || wasSyncLoaded) {
+                            return child;
+                          }
+                          return _buildCoverFallback(c, video.video.id);
+                        },
                         errorBuilder: (c, _, _) =>
                             _buildCoverFallback(c, video.video.id),
                       ),
