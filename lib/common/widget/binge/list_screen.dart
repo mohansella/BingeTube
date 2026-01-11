@@ -161,7 +161,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   }) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
-    final color = Themes.colorFromId(model.sery.id.toString(), brightness);
+    final color = Themes.colorFromId(model.sery.coverVideoId, brightness);
     return Material(
       child: Container(
         color: color,
