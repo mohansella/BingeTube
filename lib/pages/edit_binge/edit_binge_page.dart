@@ -472,8 +472,14 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
 
   void _resetOrder() {
     _isOrderModified = false;
-    final sortedVideos = [..._unfilteredModel.videos]
-      ..sort(_controller.sort.compareModels);
+    final sort = _controller.sort;
+    List<VideoModel> sortedVideos;
+    if (sort.sortType == .system && sort.sortOrder == .desc) {
+      sortedVideos = [..._unfilteredModel.videos].reversed.toList();
+    } else {
+      sortedVideos = [..._unfilteredModel.videos]..sort(sort.compareModels);
+    }
+
     final sortedVideoIds = sortedVideos.map((v) => v.video.id).toList();
     _sortOrder
       ..clear()
