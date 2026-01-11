@@ -380,7 +380,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void updateQueryParams(BuildContext context) {
-    context.goNamed(
+    context.replaceNamed(
       Pages.binge.name,
       queryParameters: BingeController.updateParams(
         baseParams: widget.params,
