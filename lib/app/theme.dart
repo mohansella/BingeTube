@@ -26,6 +26,15 @@ class Themes {
     );
   }
 
+  static Color colorFromId(String id, Brightness brightness) {
+    int hash = id.hashCode;
+    final hue = (hash % 360).toDouble();
+    final sat = 0.38;
+    final light = brightness == .light ? 0.82 : 0.28;
+    final toReturn = HSLColor.fromAHSL(1.0, hue, sat, light).toColor();
+    return toReturn;
+  }
+
   static TextTheme _buildScaledTextTheme(TextTheme base, double scale) {
     return base.copyWith(
       displayLarge: base.displayLarge?.copyWith(

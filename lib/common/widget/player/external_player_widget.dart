@@ -268,12 +268,17 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         fit: StackFit.expand,
         children: [
           // Low-res image (always present)
-          Image.network(widget.controller.heroImg, fit: BoxFit.contain),
+          Image.network(
+            widget.controller.heroImg,
+            fit: BoxFit.contain,
+            errorBuilder: (c, _, _) => _buildCoverFallback(c, widget.videoId),
+          ),
 
           // High-res image fades in ON TOP
           Image.network(
             imageUrl,
             fit: BoxFit.contain,
+            errorBuilder: (_, _, _) => SizedBox(),
             frameBuilder: (context, child, frame, wasSyncLoaded) {
               if (wasSyncLoaded) return child;
 
@@ -288,6 +293,13 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
         ],
       ),
     );
+  }
+
+  Widget _buildCoverFallback(BuildContext context, String id) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final color = Themes.colorFromId(id, brightness);
+    return Container(color: color, alignment: .center);
   }
 
   Widget _buildSkipNext() {
