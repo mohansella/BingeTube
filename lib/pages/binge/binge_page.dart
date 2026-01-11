@@ -244,12 +244,7 @@ class _BingePageState extends ConsumerState<BingePage> {
               child: Stack(
                 alignment: .bottomCenter,
                 children: [
-                  Image.network(
-                    video.thumbnails.mediumUrl,
-                    fit: .cover,
-                    errorBuilder: (c, _, _) =>
-                        _buildCoverFallback(c, video.video.id),
-                  ),
+                  _buildVideoCardImage(video),
                   if (video.progress.isFinished) ...[
                     LinearProgressIndicator(value: 1),
                   ],
@@ -533,6 +528,20 @@ class _BingePageState extends ConsumerState<BingePage> {
         Routes.popOrHome(localContext);
       }
     }
+  }
+
+  Widget _buildVideoCardImage(VideoModel video) {
+    return Image.network(
+      video.thumbnails.mediumUrl,
+      fit: .cover,
+      frameBuilder: (c, child, frame, wasSyncLoaded) {
+        if (frame != null || wasSyncLoaded) {
+          return child;
+        }
+        return _buildCoverFallback(c, video.video.id);
+      },
+      errorBuilder: (c, _, _) => _buildCoverFallback(c, video.video.id),
+    );
   }
 }
 

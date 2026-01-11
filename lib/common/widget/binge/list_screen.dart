@@ -119,6 +119,12 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
                 width: 160,
                 height: 90,
                 fit: .cover,
+                frameBuilder: (c, child, frame, wasSyncLoaded) {
+                  if (frame != null || wasSyncLoaded) {
+                    return child;
+                  }
+                  return _buildCoverFallback(c, model, height: 90, width: 160);
+                },
                 errorBuilder: (c, _, _) =>
                     _buildCoverFallback(c, model, height: 90, width: 160),
               ),
