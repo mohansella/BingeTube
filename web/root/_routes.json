@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "pattern": "/app/*",
+      "serve": "/app/index.html"
+    }
+  ]
+}

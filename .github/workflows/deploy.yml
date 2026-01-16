@@ -60,6 +60,7 @@ jobs:
         run: |
             mkdir -p dist/app
             cp -r build/web/* dist/app/
+            mv dist/app/root/* dist/
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
@@ -67,4 +68,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: bingetube
-          directory: build/web
+          directory: dist
