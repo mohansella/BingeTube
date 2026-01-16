@@ -54,7 +54,7 @@ jobs:
         run: flutter analyze
 
       - name: Build web
-        run: flutter build web --release
+        run: flutter build web --release --base-href=/app/
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
