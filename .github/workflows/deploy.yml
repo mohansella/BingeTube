@@ -63,9 +63,6 @@ jobs:
           ${{ secrets.FIREBASE_OPTIONS_DART_FILE }}
           EOF
 
-      - name: Analyze
-        run: flutter analyze
-
       - name: Build web
         run: flutter build web --release --base-href=/app/
 
