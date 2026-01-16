@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  flutter-web:
+    name: Build Flutter Web
     runs-on: ubuntu-latest
 
     steps:
@@ -47,21 +48,33 @@ jobs:
           ${{ secrets.FIREBASE_OPTIONS_DART_FILE }}
           EOF
 
-      - name: Test firebase options
-        run: wc lib/firebase_options.dart
-
       - name: Analyze
         run: flutter analyze
 
       - name: Build web
         run: flutter build web --release --base-href=/app/
 
+      - name: Upload Flutter build
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-web
+          path: build/web
+
+
+  astro-site:
+    name: Build Astro Website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install Astro dependencies
+      - name: Install dependencies
         working-directory: website
         run: npm ci
 
@@ -69,11 +82,30 @@ jobs:
         working-directory: website
         run: npm run build
 
-      - name: Prepare deploy directory
-        run: |
-          mkdir -p dist/app
-          cp -r build/web/* dist/app/
-          cp -r website/dist/* dist/
+      - name: Upload Astro build
+        uses: actions/upload-artifact@v4
+        with:
+          name: astro-site
+          path: website/dist
+
+
+  deploy:
+    name: Combine & Deploy
+    runs-on: ubuntu-latest
+    needs: [flutter-web, astro-site]
+
+    steps:
+      - name: Download Flutter build
+        uses: actions/download-artifact@v4
+        with:
+          name: flutter-web
+          path: dist/app
+
+      - name: Download Astro build
+        uses: actions/download-artifact@v4
+        with:
+          name: astro-site
+          path: dist
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
