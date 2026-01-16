@@ -56,11 +56,24 @@ jobs:
       - name: Build web
         run: flutter build web --release --base-href=/app/
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Astro dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build Astro site
+        working-directory: website
+        run: npm run build
+
       - name: Prepare deploy directory
         run: |
-            mkdir -p dist/app
-            cp -r build/web/* dist/app/
-            mv dist/app/root/* dist/
+          mkdir -p dist/app
+          cp -r build/web/* dist/app/
+          cp -r website/dist/* dist/
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
