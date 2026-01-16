@@ -56,6 +56,11 @@ jobs:
       - name: Build web
         run: flutter build web --release --base-href=/app/
 
+      - name: Prepare deploy directory
+        run: |
+            mkdir -p dist/app
+            cp -r build/web/* dist/app/
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
