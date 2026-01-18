@@ -14,6 +14,7 @@ const appUrl = "https://bingetube.io/app";
   </head>
 
   <body class="bg-slate-950 text-slate-100 antialiased">
+      <main id="main-content" role="main">
     <!-- Header -->
     <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
       <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -29,7 +30,7 @@ const appUrl = "https://bingetube.io/app";
       <div class="mx-auto max-w-7xl px-6 py-28 text-center">
         <h1 class="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
           Turn YouTube into a
-          <span class="text-indigo-400">binge-worthy series</span>
+          <span class="text-indigo-400">binge‑worthy series</span>
         </h1>
         <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
           Watch channels from episode one. Track progress. Skip repeats.
@@ -62,7 +63,7 @@ const appUrl = "https://bingetube.io/app";
             Starting from the middle instead of episode one
           </div>
           <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6 text-left">
-            Accidentally re-watching videos
+            Accidentally re‑watching videos
           </div>
           <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6 text-left">
             No sense of completion
@@ -129,10 +130,10 @@ const appUrl = "https://bingetube.io/app";
     </section>
 
     <!-- CTA -->
-    <section class="bg-indigo-500">
-      <div class="mx-auto max-w-6xl px-6 py-24 text-center text-slate-950">
+    <section class="bg-indigo-600">
+      <div class="mx-auto max-w-6xl px-6 py-24 text-center text-white">
         <h2 class="text-3xl font-semibold">Ready to actually finish YouTube?</h2>
-        <p class="mx-auto mt-4 max-w-xl text-lg">
+        <p class="mx-auto mt-4 max-w-xl text-lg text-indigo-50">
           Stop endless scrolling. Start completing.
         </p>
         <a href={appUrl} class="mt-10 inline-block rounded-xl bg-slate-950 px-10 py-5 font-medium text-white hover:bg-slate-900 transition">
@@ -145,8 +146,8 @@ const appUrl = "https://bingetube.io/app";
     <footer class="border-t border-slate-800">
       <div class="mx-auto max-w-7xl px-6 py-10 flex flex-col gap-4 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
         <p>© {new Date().getFullYear()} BingeTube</p>
-        <p class="text-slate-500">Finish what you start.</p>
+        <p class="text-slate-400">Finish what you start.</p>
       </div>
     </footer>
-  </body>
+      </main> </body>
 </html>
