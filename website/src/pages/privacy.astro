@@ -1,0 +1,190 @@
+---
+import Layout from "../layout/Layout.astro";
+
+const appName = "BingeTube";
+const website = "https://bingetube.io";
+const contactEmail = "mohansella.store@gmail.com";
+---
+
+<Layout>
+  <main id="main-content" role="main">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div class="text-xl font-semibold tracking-tight">BingeTube</div>
+        <a
+          href="/"
+          class="rounded-xl border border-slate-700 px-5 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+        >
+          Home
+        </a>
+      </div>
+    </header>
+
+    <!-- Page intro -->
+    <section class="border-b border-slate-800">
+      <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+          Privacy Policy
+        </h1>
+        <p class="mt-6 text-slate-300">
+          Your privacy matters. This policy explains how {appName} handles data.
+        </p>
+        <p class="mt-2 text-sm text-slate-500">
+          Last updated: {new Date().toLocaleDateString("en-IN")}
+        </p>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section>
+      <div class="mx-auto max-w-4xl px-6 py-20 space-y-14">
+
+        <!-- Overview -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Overview</h2>
+          <p>
+            {appName} is designed with a privacy-first approach. We do not require
+            user accounts, and we do not maintain a centralized database of
+            personal user information.
+          </p>
+        </div>
+
+        <!-- Information collected -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Information We Collect</h2>
+          <p>
+            {appName} does not collect personally identifiable information such
+            as your name, address, phone number, or payment details.
+          </p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>
+              <strong>Local App Data:</strong> Watch progress, collections, and
+              preferences are stored locally on your device.
+            </li>
+            <li>
+              <strong>Analytics Data:</strong> Anonymous usage data may be
+              collected to improve app performance and user experience.
+            </li>
+          </ul>
+        </div>
+
+        <!-- YouTube -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">YouTube Data</h2>
+          <p>
+            {appName} uses the YouTube Data API to fetch publicly available video
+            metadata such as titles, thumbnails, and publish dates.
+          </p>
+          <p>
+            All video playback happens directly on YouTube. We do not store,
+            download, or re-host any YouTube content.
+          </p>
+          <p>
+            Use of YouTube content is governed by
+            <a
+              href="https://www.youtube.com/t/terms"
+              target="_blank"
+              class="text-indigo-400 hover:underline ml-1"
+            >
+              YouTube’s Terms of Service
+            </a>.
+          </p>
+        </div>
+
+        <!-- API keys -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">User-Provided API Keys</h2>
+          <p>
+            If you choose to use your own YouTube Data API key, it is stored only
+            on your device and never transmitted to our servers.
+          </p>
+          <p>
+            You are responsible for managing your API key and complying with
+            Google’s API usage policies.
+          </p>
+        </div>
+
+        <!-- Cookies -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Cookies & Tracking</h2>
+          <p>
+            {appName} does not use cookies for advertising or cross-site
+            tracking.
+          </p>
+          <p>
+            Basic analytics tools may use anonymized identifiers to understand
+            general usage patterns.
+          </p>
+        </div>
+
+        <!-- Data sharing -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Data Sharing</h2>
+          <p>
+            We do not sell, rent, or trade your data to third parties.
+          </p>
+          <p>
+            Data may be shared only when required by law or to comply with legal
+            obligations.
+          </p>
+        </div>
+
+        <!-- Security -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Data Security</h2>
+          <p>
+            Since most data is stored locally on your device, its security
+            depends on your device’s own protections.
+          </p>
+          <p>
+            We take reasonable measures to protect any limited data processed
+            by our services.
+          </p>
+        </div>
+
+        <!-- Children's privacy -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Children’s Privacy</h2>
+          <p>
+            {appName} does not knowingly collect personal information from
+            children under the age of 13.
+          </p>
+        </div>
+
+        <!-- Changes -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Changes to This Policy</h2>
+          <p>
+            We may update this Privacy Policy from time to time. Changes will be
+            reflected on this page with an updated date.
+          </p>
+        </div>
+
+        <!-- Contact -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Contact</h2>
+          <p>
+            If you have questions or concerns about this Privacy Policy, contact
+            us at:
+          </p>
+          <a
+            href={`mailto:${contactEmail}`}
+            class="text-indigo-400 hover:underline"
+          >
+            {contactEmail}
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {new Date().getFullYear()} BingeTube</p>
+        <p>Finish what you start.</p>
+      </div>
+    </footer>
+  </main>
+</Layout>
