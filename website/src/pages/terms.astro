@@ -1,0 +1,165 @@
+---
+import Layout from "../layout/Layout.astro";
+
+const appName = "BingeTube";
+const website = "https://bingetube.io";
+const contactEmail = "mohansella.store@gmail.com";
+---
+
+<Layout>
+  <main id="main-content" role="main">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div class="text-xl font-semibold tracking-tight">BingeTube</div>
+        <a
+          href="/"
+          class="rounded-xl border border-slate-700 px-5 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+        >
+          Home
+        </a>
+      </div>
+    </header>
+
+    <!-- Page intro -->
+    <section class="border-b border-slate-800">
+      <div class="mx-auto max-w-4xl px-6 py-20 text-center">
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+          Terms & Conditions
+        </h1>
+        <p class="mt-6 text-slate-300">
+          Please read these terms carefully before using BingeTube.
+        </p>
+        <p class="mt-2 text-sm text-slate-500">
+          Last updated: {new Date().toLocaleDateString("en-IN")}
+        </p>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section>
+      <div class="mx-auto max-w-4xl px-6 py-20 space-y-14">
+
+        <!-- Acceptance -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Acceptance of Terms</h2>
+          <p>
+            By accessing or using {appName}, you agree to be bound by these Terms
+            & Conditions. If you do not agree to these terms, please do not use
+            the app or website.
+          </p>
+        </div>
+
+        <!-- Description -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Description of Service</h2>
+          <p>
+            {appName} is a content organization tool that helps users watch
+            YouTube videos in a structured, chronological manner. BingeTube does
+            not host, store, or stream video content directly.
+          </p>
+        </div>
+
+        <!-- YouTube -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">YouTube Content</h2>
+          <p>
+            BingeTube uses the YouTube Data API to display publicly available
+            content. All videos are streamed directly from YouTube and remain
+            subject to YouTube’s own Terms of Service.
+          </p>
+          <p>
+            BingeTube is not affiliated with, endorsed by, or sponsored by
+            YouTube or Google.
+          </p>
+        </div>
+
+        <!-- API keys -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">User-Provided API Keys</h2>
+          <p>
+            If you choose to provide your own YouTube Data API key, you are
+            responsible for managing its usage and complying with Google’s API
+            policies. BingeTube stores API keys only on your device.
+          </p>
+        </div>
+
+        <!-- Usage -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Acceptable Use</h2>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>Do not misuse the app or attempt to disrupt its operation</li>
+            <li>Do not use the app for unlawful purposes</li>
+            <li>Do not attempt to reverse engineer or abuse API limits</li>
+          </ul>
+        </div>
+
+        <!-- Data -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Data & Privacy</h2>
+          <p>
+            Usage of BingeTube is also governed by our Privacy Policy. Data is
+            stored locally on your device and not in a centralized user
+            database.
+          </p>
+          <p>
+            <a href="/privacy" class="text-indigo-400 hover:underline">
+              View Privacy Policy
+            </a>
+          </p>
+        </div>
+
+        <!-- Availability -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Service Availability</h2>
+          <p>
+            We strive to keep BingeTube available at all times but do not
+            guarantee uninterrupted or error-free operation.
+          </p>
+        </div>
+
+        <!-- Limitation -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Limitation of Liability</h2>
+          <p>
+            BingeTube is provided on an "as is" and "as available" basis. We are
+            not responsible for any damages resulting from the use or inability
+            to use the service.
+          </p>
+        </div>
+
+        <!-- Changes -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Changes to These Terms</h2>
+          <p>
+            We may update these Terms & Conditions from time to time. Continued
+            use of the app constitutes acceptance of the updated terms.
+          </p>
+        </div>
+
+        <!-- Contact -->
+        <div class="space-y-4 text-slate-300">
+          <h2 class="text-2xl font-semibold">Contact</h2>
+          <p>
+            If you have questions about these Terms & Conditions, contact us at:
+          </p>
+          <a
+            href={`mailto:${contactEmail}`}
+            class="text-indigo-400 hover:underline"
+          >
+            {contactEmail}
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {new Date().getFullYear()} BingeTube</p>
+        <p>Finish what you start.</p>
+      </div>
+    </footer>
+  </main>
+</Layout>
