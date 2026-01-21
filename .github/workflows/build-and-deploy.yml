@@ -76,8 +76,10 @@ jobs:
       - run: flutter pub get
       - name: Build macOS
         run: |
-          flutter build macos --release \
-            --xcargs 'CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO'
+          export CODE_SIGNING_ALLOWED=NO
+          export CODE_SIGNING_REQUIRED=NO
+          export CODE_SIGN_IDENTITY=""
+          flutter build macos --release
       - name: Package macOS
         shell: bash
         run: |
