@@ -18,25 +18,19 @@ jobs:
         with:
           lfs: true
 
-      - name: Cache Flutter SDK
-        uses: actions/cache@v4
-        with:
-          path: |
-            /opt/hostedtoolcache/flutter
-          key: flutter-${{ runner.os }}-stable
-
-      - name: Cache pub & build_runner
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            .dart_tool
-          key: dart-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          cache: true
+
+      - name: Cache Build Runner
+        uses: actions/cache@v4
+        with:
+          path: .dart_tool
+          key: build-runner-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            build-runner-${{ runner.os }}-
 
       - name: Install dependencies
         run: flutter pub get
@@ -83,6 +77,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
 
       - name: Install dependencies
         working-directory: website
