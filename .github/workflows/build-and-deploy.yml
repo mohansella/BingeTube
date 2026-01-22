@@ -75,18 +75,22 @@ jobs:
           cache: true
       - run: flutter pub get
       - name: Build macOS
+        run: flutter build macos --release
+      - name: Sign macOS app
         run: |
-          flutter build macos --release
+          APP_PATH="build/macos/Build/Products/Release/Runner.app"
+          codesign --force --sign - $APP_PATH --deep --verbose
       - name: Package macOS
         shell: bash
         run: |
-          cd build/macos/Build/Products/Release
-          zip -r "$GITHUB_WORKSPACE/macos-v${{ needs.version-check.outputs.version }}.zip" .
+          APP_PATH="build/macos/Build/Products/Release/Runner.app"
+          cd $(dirname "$APP_PATH")
+          zip -r "$GITHUB_WORKSPACE/macos-v${{ needs.version-check.outputs.version }}.zip" "Runner.app"
       - uses: actions/upload-artifact@v4
         with:
           name: macos-bin
           path: macos-*.zip
-          compression-level: 0
+          compression-level: 9  # Max compression
 
   flutter-linux:
     runs-on: ubuntu-latest
