@@ -74,12 +74,7 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - name: Build macOS
-        run: flutter build macos --release
-      - name: Sign macOS app
-        run: |
-          APP_PATH="build/macos/Build/Products/Release/Runner.app"
-          codesign --force --sign - $APP_PATH --deep --verbose
+      - run: flutter build macos --release
       - name: Package macOS
         shell: bash
         run: |
