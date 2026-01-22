@@ -9,7 +9,6 @@ permissions:
 
 jobs:
   version-check:
-    if: false
     runs-on: ubuntu-latest
     outputs:
       is_bump: ${{ steps.check.outputs.changed }}
