@@ -53,14 +53,14 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter build appbundle --release
-      - name: Package Android
-        run: |
-          mv build/app/outputs/bundle/release/app-release.aab "android-v${{ needs.version-check.outputs.version }}.aab"
+      - run: flutter build apk --debug
+      - run: |
+          mv build/app/outputs/flutter-apk/app-debug.apk \
+             "android-debug-v${{ needs.version-check.outputs.version }}.apk"
       - uses: actions/upload-artifact@v4
         with:
-          name: android-aab
-          path: android-*.aab
+          name: android-debug-apk
+          path: android-debug-*.apk
 
   flutter-ios:
     runs-on: macos-latest
