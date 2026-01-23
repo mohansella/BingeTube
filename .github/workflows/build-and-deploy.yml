@@ -75,7 +75,7 @@ jobs:
       - run: flutter build ipa --release --no-codesign
       - name: Package iOS
         run: |
-          mv build/ios/ipa/Runner.ipa "ios-v${{ needs.version-check.outputs.version }}.ipa"
+          mv build/ios/ipa/BingeTube.ipa "ios-v${{ needs.version-check.outputs.version }}.ipa"
       - uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
@@ -116,9 +116,9 @@ jobs:
       - name: Package macOS
         shell: bash
         run: |
-          APP_PATH="build/macos/Build/Products/Release/Runner.app"
+          APP_PATH="build/macos/Build/Products/Release/BingeTube.app"
           cd $(dirname "$APP_PATH")
-          zip -r "$GITHUB_WORKSPACE/macos-v${{ needs.version-check.outputs.version }}.zip" "Runner.app"
+          zip -r "$GITHUB_WORKSPACE/macos-v${{ needs.version-check.outputs.version }}.zip" "BingeTube.app"
       - uses: actions/upload-artifact@v4
         with:
           name: macos-bin
@@ -186,7 +186,7 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [version-check, flutter-android, flutter-linux, flutter-windows, flutter-macos, flutter-linux]
+    needs: [version-check, flutter-android, flutter-ios, flutter-windows, flutter-macos, flutter-linux]
     if: needs.version-check.outputs.is_bump == 'true'
     steps:
       - uses: actions/download-artifact@v4
