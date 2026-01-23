@@ -73,9 +73,16 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build ipa --release --no-codesign
-      - name: Package iOS
+      - name: Package iOS IPA
         run: |
-          mv build/ios/ipa/BingeTube.ipa "ios-v${{ needs.version-check.outputs.version }}.ipa"
+          # Create IPA from xcarchive (unsigned)
+          cd build/ios/archive/
+          mkdir Payload
+          cp -r Runner.xcarchive/Products/Applications/Runner.app Payload/
+          cp -r Runner.xcarchive/SwiftSupport ./ 2>/dev/null || true
+          zip -r "bingeTube-v${{ needs.version-check.outputs.version }}.ipa" Payload SwiftSupport
+          mv bingeTube-v${{ needs.version-check.outputs.version }}.ipa ../../
+          cd ../../
       - uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
