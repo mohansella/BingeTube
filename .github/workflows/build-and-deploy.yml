@@ -88,8 +88,8 @@ jobs:
           mkdir Payload
           cp -r Runner.xcarchive/Products/Applications/Runner.app Payload/
           cp -r Runner.xcarchive/SwiftSupport ./ 2>/dev/null || true
-          zip -r "bingeTube-v${{ needs.version-check.outputs.version }}.ipa" Payload SwiftSupport
-          mv bingeTube-v${{ needs.version-check.outputs.version }}.ipa ../../
+          zip -r "ios-v${{ needs.version-check.outputs.version }}.ipa" Payload SwiftSupport
+          mv ios-v${{ needs.version-check.outputs.version }}.ipa ../../
           cd ../../
       - uses: actions/upload-artifact@v4
         with:
