@@ -90,6 +90,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/logo.svg
     - assets/images/logo.png
     - assets/lottie/binge_panda.json
     - assets/lottie/empty_box.json
