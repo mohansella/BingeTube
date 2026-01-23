@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          lfs: true
       - id: check
         run: |
           NEW_VER=$(grep 'version:' pubspec.yaml | cut -d' ' -f2 | xargs)
@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -48,6 +50,8 @@ jobs:
     needs: version-check
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -67,6 +71,8 @@ jobs:
     needs: version-check
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -93,6 +99,8 @@ jobs:
     needs: version-check
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -114,6 +122,8 @@ jobs:
     needs: version-check
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -137,6 +147,8 @@ jobs:
     needs: version-check
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -161,6 +173,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
