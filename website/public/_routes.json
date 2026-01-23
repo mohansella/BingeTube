@@ -3,7 +3,6 @@
   "routes": [
     {
       "pattern": "/app/*",
-      "exclude": ["assets/*", "*.js", "*.css", "*.woff*", "*.ttf*", "manifest.json", "version.json"],
       "serve": "/app/index.html",
       "status": 200
     }

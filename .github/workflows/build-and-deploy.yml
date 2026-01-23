@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 2
           lfs: true
       - id: check
         run: |
@@ -27,6 +28,7 @@ jobs:
           else
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
+          echo "new version: $NEW_VER old version: $OLD_VER"
 
   flutter-web:
     runs-on: ubuntu-latest
@@ -216,5 +218,8 @@ jobs:
         with:
           tag_name: v${{ needs.version-check.outputs.version }}
           name: Release v${{ needs.version-check.outputs.version }}
-          files: artifacts/**/*.zip
+          files: |
+            artifacts/**/*.zip
+            artifacts/**/*.apk
+            artifacts/**/*.ipa
           generate_release_notes: true
