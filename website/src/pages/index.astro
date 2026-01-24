@@ -1,193 +1,141 @@
 ---
 import Layout from "../layout/layout.astro";
 import { SiteContants } from "../constants";
+import { 
+  Tv, 
+  Github, 
+  Play, 
+  CheckCircle2, 
+  Library, 
+  ListOrdered, 
+  Settings2,
+  PlusCircle,
+  Zap,
+  LayoutList
+} from '@lucide/astro';
 
 const appUrl = SiteContants.APP_URL;
+const githubUrl = "https://github.com/mohansella/BingeTube";
 ---
 
 <Layout>
-  <main id="main-content" role="main">
-    <!-- Header -->
+  <main id="main-content" role="main" class="bg-slate-950 text-slate-50">
     <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
       <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <div class="text-xl font-semibold tracking-tight">BingeTube</div>
-        <a
-          href={appUrl}
-          class="rounded-xl bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-400"
-        >
-          Open App
-        </a>
+        <div class="flex items-center gap-2 text-xl font-semibold tracking-tight">
+          <Tv class="text-indigo-500" size={24} />
+          <span>BingeTube</span>
+        </div>
+        <div class="flex items-center gap-6">
+          <a href={githubUrl} target="_blank" class="hidden text-slate-400 hover:text-white sm:block">
+            <Github size={20} />
+          </a>
+          <a href={appUrl} class="rounded-xl bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-400">
+            Open App
+          </a>
+        </div>
       </div>
     </header>
 
-    <!-- Hero -->
-    <section class="relative">
+    <section class="relative overflow-hidden">
+      <div class="absolute -top-24 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[120px]"></div>
+      
       <div class="mx-auto max-w-7xl px-6 py-28 text-center">
-        <h1 class="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
-          Turn YouTube into a{" "}
-          <span class="text-indigo-400">binge-worthy series</span>
+        <div class="mx-auto mb-6 w-fit rounded-full border border-indigo-500/20 bg-indigo-500/5 px-4 py-1 text-sm text-indigo-400">
+          <span class="flex items-center gap-2"><Zap size={14} /> Custom series creation now live</span>
+        </div>
+        <h1 class="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-7xl">
+          YouTube, organized as <br />
+          <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">premium series.</span>
         </h1>
-
-        <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
-          Watch channels from episode one. Track progress. Skip repeats. Finish
-          what you start — just like your favorite OTT platform.
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
+          Access thousands of prepared series for free. Track your progress and turn chaotic channels into curated box sets.
         </p>
-
         <div class="mt-10 flex justify-center gap-4">
-          <a
-            href={appUrl}
-            class="rounded-xl bg-indigo-500 px-8 py-4 font-medium text-white transition hover:bg-indigo-400"
-          >
-            Start Watching
+          <a href={appUrl} class="flex items-center gap-2 rounded-xl bg-indigo-500 px-8 py-4 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
+            <Play size={18} fill="currentColor" />
+            Start Binging for Free
           </a>
-          <a
-            href="#why"
-            class="rounded-xl border border-slate-700 px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800"
-          >
-            Why BingeTube?
+          <a href={githubUrl} target="_blank" class="flex items-center gap-2 rounded-xl border border-slate-700 px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800">
+            <Github size={18} />
+            View Source
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Why -->
-    <section id="why" class="border-t border-slate-800">
-      <div class="mx-auto max-w-5xl px-6 py-20 text-center">
-        <h2 class="text-3xl font-semibold">
-          YouTube isn’t built for finishing things
-        </h2>
-
-        <p class="mx-auto mt-6 max-w-2xl text-slate-300">
-          You start a great channel. Then life happens. Algorithms interfere.
-          Suddenly you don’t know where you left off — or what you’ve already
-          watched.
-        </p>
-
-        <div class="mt-10 grid gap-6 sm:grid-cols-2">
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6 text-left">
-            Endless recommendations, no clear progress
-          </div>
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6 text-left">
-            Starting from the middle instead of episode one
-          </div>
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6 text-left">
-            Accidentally re-watching videos
-          </div>
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6 text-left">
-            No sense of completion
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Solution -->
-    <section class="border-t border-slate-800 bg-slate-900">
-      <div class="mx-auto max-w-7xl px-6 py-20">
-        <div class="mx-auto max-w-4xl text-center">
-          <h2 class="text-3xl font-semibold">BingeTube fixes that</h2>
-          <p class="mt-6 text-slate-300">
-            BingeTube treats YouTube content like seasons and episodes. One video
-            after another. Clean. Focused. Satisfying.
-          </p>
-        </div>
-
-        <div class="mt-14 grid gap-6 md:grid-cols-3">
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6">
-            <h3 class="font-medium">Episode order</h3>
-            <p class="mt-2 text-sm text-slate-400">
-              Watch from oldest to newest, automatically.
-            </p>
-          </div>
-
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6">
-            <h3 class="font-medium">Progress tracking</h3>
-            <p class="mt-2 text-sm text-slate-400">
-              Always know where you stopped. Resume instantly.
-            </p>
-          </div>
-
-          <div class="rounded-2xl border border-slate-800 bg-slate-950 p-6">
-            <h3 class="font-medium">Completion mindset</h3>
-            <p class="mt-2 text-sm text-slate-400">
-              Finish a channel and feel it — like completing a season.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Achievement vibe -->
-    <section class="border-t border-slate-800">
-      <div class="mx-auto max-w-7xl px-6 py-20">
-        <div class="grid gap-12 md:grid-cols-2 md:items-center">
-          <div>
-            <h2 class="text-3xl font-semibold">
-              Watching becomes an achievement
-            </h2>
-            <p class="mt-6 text-slate-300">
-              BingeTube turns passive watching into something you can actually
-              complete. Channels feel like quests. Collections feel like box
-              sets.
-            </p>
-
-            <ul class="mt-6 space-y-3 text-slate-300">
-              <li>• Finish entire channels</li>
-              <li>• Binge curated collections</li>
-              <li>• Watch without algorithm noise</li>
+    <section class="border-t border-slate-800 py-24">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="grid gap-16 md:grid-cols-2">
+          
+          <div class="space-y-6">
+            <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
+              <Library size={24} />
+            </div>
+            <h2 class="text-3xl font-bold tracking-tight">Thousands of series, <br/>ready to stream</h2>
+            <p class="text-slate-400 text-lg">Dive into a massive library of already prepared series from top YouTube creators. No setup required—just pick a series and start from Episode 1.</p>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3 text-slate-300">
+                <CheckCircle2 size={18} class="text-indigo-500" /> Watch for free, forever
+              </li>
+              <li class="flex items-center gap-3 text-slate-300">
+                <CheckCircle2 size={18} class="text-indigo-500" /> Track progress as you watch
+              </li>
+              <li class="flex items-center gap-3 text-slate-300">
+                <CheckCircle2 size={18} class="text-indigo-500" /> Clean, ad-free focus
+              </li>
             </ul>
           </div>
 
-          <div class="rounded-3xl border border-slate-800 bg-slate-900 p-10 text-center">
-            <p class="text-sm uppercase tracking-wider text-slate-400">
-              Mindset shift
-            </p>
-            <p class="mt-4 text-2xl font-semibold">
-              From scrolling → completing
-            </p>
+          <div class="rounded-3xl border border-slate-800 bg-slate-900/50 p-8 lg:p-12">
+            <Settings2 class="mb-6 text-cyan-400" size={32} />
+            <h3 class="text-2xl font-bold">Be your own curator</h3>
+            <p class="mt-4 text-slate-400">Convert any channel or playlist into a custom series. Take full control of what you watch and how you watch it.</p>
+            
+            <div class="mt-8 space-y-4">
+              <div class="flex items-start gap-4 rounded-xl bg-slate-950 p-4 border border-slate-800">
+                <PlusCircle class="mt-1 text-indigo-400" size={20} />
+                <div>
+                  <p class="font-medium text-white">Reorder & Remix</p>
+                  <p class="text-sm text-slate-500">Change orders or reorder videos to create the perfect chronological flow.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4 rounded-xl bg-slate-950 p-4 border border-slate-800">
+                <LayoutList class="mt-1 text-indigo-400" size={20} />
+                <div>
+                  <p class="font-medium text-white">Selective Binging</p>
+                  <p class="text-sm text-slate-500">Copy selected videos to custom series or only watch specific highlights from a channel.</p>
+                </div>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="bg-indigo-600">
-      <div class="mx-auto max-w-6xl px-6 py-24 text-center text-white">
-        <h2 class="text-3xl font-semibold">
-          Ready to actually finish YouTube?
-        </h2>
-        <p class="mx-auto mt-4 max-w-xl text-lg text-indigo-50">
-          Stop endless scrolling. Start completing.
-        </p>
-
-        <a
-          href={appUrl}
-          class="mt-10 inline-block rounded-xl bg-slate-950 px-10 py-5 font-medium text-white transition hover:bg-slate-900"
-        >
-          Open BingeTube App
-        </a>
+    <section class="border-t border-slate-800 bg-slate-950 py-20">
+      <div class="mx-auto max-w-3xl px-6 text-center">
+        <h2 class="text-3xl font-semibold italic text-slate-200">"Turn scrolling into completing."</h2>
+        <p class="mt-4 text-slate-400 text-lg">BingeTube is an open-source tool designed to help you actually finish the educational and entertaining content you find on YouTube.</p>
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-800">
-      <div
-        class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <p>© {new Date().getFullYear()} BingeTube</p>
-
-        <div class="flex gap-6">
-          <a
-            href="/privacy"
-            class="transition hover:text-slate-200"
-          >
-            Privacy Policy
+    <footer class="border-t border-slate-800 bg-slate-950">
+      <div class="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-12 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-2 font-semibold text-white">
+            <Tv size={18} class="text-indigo-500" />
+            BingeTube
+          </div>
+          <p>© {new Date().getFullYear()} — Built for finishers.</p>
+        </div>
+        <div class="flex items-center gap-8">
+          <a href={githubUrl} target="_blank" class="flex items-center gap-2 transition hover:text-white">
+            <Github size={16} /> GitHub
           </a>
-          <a
-            href="/terms"
-            class="transition hover:text-slate-200"
-          >
-            Terms of Service
-          </a>
+          <a href="/privacy" class="hover:text-white">Privacy</a>
+          <a href="/terms" class="hover:text-white">Terms</a>
         </div>
       </div>
     </footer>
