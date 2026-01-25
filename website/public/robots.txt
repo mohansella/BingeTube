@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bingetube.app/sitemap.xml
+Sitemap: https://bingetube.io/sitemap-index.xml
