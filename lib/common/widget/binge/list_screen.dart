@@ -18,6 +18,9 @@ class ListScreenWidget extends StatefulWidget {
 
 class _ListScreenWidgetState extends State<ListScreenWidget> {
   late BingeDao _bingeDao;
+  static const double minWidth = 160;
+  double _width = 0;
+  double _height = 0;
 
   @override
   void initState() {
@@ -42,9 +45,18 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         if (collections.isEmpty) {
           return _buildCollectionEmpty();
         }
-        return ListView.builder(
-          itemCount: collections.length,
-          itemBuilder: (c, i) => _buildCollection(c, collections[i]),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            _width = constraints.maxWidth / 5.2;
+            if (_width < minWidth) {
+              _width = minWidth;
+            }
+            _height = _width * 9.0 / 16.0;
+            return ListView.builder(
+              itemCount: collections.length,
+              itemBuilder: (c, i) => _buildCollection(c, collections[i]),
+            );
+          },
         );
       },
     );
@@ -78,20 +90,28 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   }
 
   Widget _buildCollection(BuildContext context, CollectionModel model) {
+    final titleStyle = Theme.of(context).textTheme.bodyMedium;
+    final ratio = _width / minWidth;
+    final oFontSize = (titleStyle?.fontSize ?? 0);
+    var fontSize =  oFontSize * ratio * 0.85;
+    if(fontSize < oFontSize) {
+      fontSize = oFontSize;
+    }
+    final padding = 8 * ratio;
     return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 8.0, left: 8.0),
+      padding: EdgeInsets.only(top: padding, bottom: padding, left: padding),
       child: Column(
         children: [
           Align(
             alignment: .centerLeft,
             child: Text(
               model.collection.name,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: titleStyle?.copyWith(fontSize: fontSize),
             ),
           ),
-          SizedBox(height: 4),
+          SizedBox(height: 4 * (_width / minWidth)),
           SizedBox(
-            height: 90,
+            height: _height,
             child: ListView.separated(
               scrollDirection: .horizontal,
               itemCount: model.series.length,
@@ -116,17 +136,26 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
               tag: heroId,
               child: Image.network(
                 heroImg,
-                width: 160,
-                height: 90,
+                width: _width,
+                height: _height,
                 fit: .cover,
                 frameBuilder: (c, child, frame, wasSyncLoaded) {
                   if (frame != null || wasSyncLoaded) {
                     return child;
                   }
-                  return _buildCoverFallback(c, model, height: 90, width: 160);
+                  return _buildCoverFallback(
+                    c,
+                    model,
+                    height: _height,
+                    width: _width,
+                  );
                 },
-                errorBuilder: (c, _, _) =>
-                    _buildCoverFallback(c, model, height: 90, width: 160),
+                errorBuilder: (c, _, _) => _buildCoverFallback(
+                  c,
+                  model,
+                  height: _height,
+                  width: _width,
+                ),
               ),
             ),
           ],
