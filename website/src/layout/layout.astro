@@ -2,6 +2,12 @@
 import '../styles/global.css';
 import Analytics from '../partials/analytics.astro';
 
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
 const isProd = !import.meta.env.DEV;
 ---
 <!DOCTYPE html>
@@ -9,6 +15,9 @@ const isProd = !import.meta.env.DEV;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
 
     {isProd && <Analytics />}
   </head>

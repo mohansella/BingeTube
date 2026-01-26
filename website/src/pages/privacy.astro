@@ -4,9 +4,12 @@ import Layout from "../layout/layout.astro";
 
 const appName = SiteContants.APP_NAME;
 const contactEmail = SiteContants.SUPPORT_MAIL;
+const lastUpdated = 'Jan 26, 2026';
 ---
 
-<Layout>
+<Layout 
+  title="Privacy Policy – BingeTube" 
+  description="Read how BingeTube handles your data, uses the YouTube Data API, stores information locally, and protects your privacy">
   <main id="main-content" role="main">
     <!-- Header -->
     <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
@@ -31,7 +34,7 @@ const contactEmail = SiteContants.SUPPORT_MAIL;
           Your privacy matters. This policy explains how {appName} handles data.
         </p>
         <p class="mt-2 text-sm text-slate-500">
-          Last updated: {new Date().toLocaleDateString("en-IN")}
+          Last updated: {lastUpdated}
         </p>
       </div>
     </section>

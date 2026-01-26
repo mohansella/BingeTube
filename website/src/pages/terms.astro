@@ -4,9 +4,12 @@ import Layout from "../layout/layout.astro";
 
 const appName = SiteContants.APP_NAME;
 const contactEmail = SiteContants.SUPPORT_MAIL;
+const lastUpdated = 'Jan 26, 2026';
 ---
 
-<Layout>
+<Layout 
+  title="Terms & Conditions – BingeTube" 
+  description="Review the terms and conditions for using BingeTube, including acceptable use, YouTube API usage, data handling, and service limitations.">
   <main id="main-content" role="main">
     <!-- Header -->
     <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
@@ -31,7 +34,7 @@ const contactEmail = SiteContants.SUPPORT_MAIL;
           Please read these terms carefully before using BingeTube.
         </p>
         <p class="mt-2 text-sm text-slate-500">
-          Last updated: {new Date().toLocaleDateString("en-IN")}
+          Last updated: {lastUpdated}
         </p>
       </div>
     </section>
