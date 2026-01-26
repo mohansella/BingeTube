@@ -18,7 +18,7 @@ BingeTube addresses these gaps by organizing videos into curated collections and
 
 ## Key Features
 
-- Watch YouTube channels like a series (oldest to newest)
+- Watch YouTube channels like a series (any order you like)
 - Mark videos as watched or unwatched
 - Automatically skip previously watched videos
 - Track watch history and overall progress
@@ -30,7 +30,8 @@ BingeTube addresses these gaps by organizing videos into curated collections and
 
 ## Tech Stack
 
-- **Flutter** (mobile and web)
+- **Flutter** (mobile, desktop and web)
+- **Drift** (database and ORM handling)
 - **GoRouter** for declarative navigation and deep linking
 - **YouTube Data API v3** (optional)
 - **Local persistence** for storing watch state
