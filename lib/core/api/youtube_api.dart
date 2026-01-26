@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bingetube/core/config/apikey_util.dart';
 import 'package:bingetube/core/constants/constants.dart';
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/search.dart';
@@ -71,6 +72,8 @@ class YoutubeApi {
     );
     if (jsonResult.isError()) {
       return Failure(jsonResult.exceptionOrNull()!);
+    } else {
+      ApiKeyUtil.addQuota(ref, .searchChannel, 100);
     }
     final jsonData = jsonResult.getOrThrow();
     final items = jsonData['items'] as List;
@@ -171,6 +174,8 @@ class YoutubeApi {
 
     if (jsonResult.isError()) {
       return Failure(jsonResult.exceptionOrNull()!);
+    } else {
+      ApiKeyUtil.addQuota(ref, .searchVideo, 100);
     }
     final jsonData = jsonResult.getOrThrow();
     final items = jsonData['items'] as List;
