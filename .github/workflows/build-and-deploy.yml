@@ -111,6 +111,7 @@ jobs:
           channel: stable
           cache: true
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
+        shell: bash
       - run: flutter pub get
       - run: flutter build windows --release
       - name: Package Windows
