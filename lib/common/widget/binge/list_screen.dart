@@ -109,14 +109,14 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
               style: titleStyle?.copyWith(fontSize: fontSize),
             ),
           ),
-          SizedBox(height: 4 * (_width / minWidth)),
+          SizedBox(height: 4 * ratio),
           SizedBox(
             height: _height,
             child: ListView.separated(
               scrollDirection: .horizontal,
               itemCount: model.series.length,
               itemBuilder: (c, i) => _buildSery(c, model.series[i]),
-              separatorBuilder: (c, i) => SizedBox(width: 8),
+              separatorBuilder: (c, i) => SizedBox(width: 4 * ratio),
             ),
           ),
         ],
