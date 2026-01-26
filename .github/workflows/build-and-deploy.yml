@@ -40,7 +40,7 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
       - run: flutter build web --release --base-href=/app/
       - uses: actions/upload-artifact@v4
@@ -59,7 +59,7 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
       - run: flutter build apk --debug
       - run: |
@@ -81,8 +81,8 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
-      - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" > ios/Runner/GoogleService-Info.plist
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
+      - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
       - run: flutter pub get
       - run: flutter build ipa --release --no-codesign
       - name: Package iOS IPA
@@ -111,7 +111,7 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
       - run: flutter build windows --release
       - name: Package Windows
@@ -135,8 +135,8 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
-      - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" > macos/Runner/GoogleService-Info.plist
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
+      - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > macos/Runner/GoogleService-Info.plist
       - run: flutter pub get
       - run: flutter build macos --release
       - name: Package macOS
@@ -165,7 +165,7 @@ jobs:
       - run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libsecret-1-dev pkg-config
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" > lib/firebase_options.dart
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
       - run: flutter build linux --release
       - name: Package Linux
