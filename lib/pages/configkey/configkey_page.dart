@@ -224,6 +224,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
         configuredAtMillis: DateTime.now().millisecondsSinceEpoch,
         lastUsedAtMillis: DateTime.now().millisecondsSinceEpoch,
         lastQuotaResetMillis: ApiKeyMeta.lastQuotaReset(),
+        nextQuotaResetMillis: ApiKeyMeta.nextQuotaReset(),
         quotaSections: {ApiKeyQuotaType.validateKey: 1},
       );
     }

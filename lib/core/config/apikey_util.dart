@@ -11,7 +11,7 @@ sealed class ApiKeyUtil {
     final meta = ref.read(ConfigProviders.apiKeyMeta);
     if (meta.isQuotaUsedInvalid) {
       Future(() {
-        _logger.info('quota resetted');
+        _logger.info('resetting quota - existing: ${meta.nextQuotaResetMillis} calculated:${ApiKeyMeta.nextQuotaReset()}');
         final newMeta = meta.resetQuota();
         ref.read(ConfigProviders.apiKeyMeta.notifier).save(newMeta);
       });
