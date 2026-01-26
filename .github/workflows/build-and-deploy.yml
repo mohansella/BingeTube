@@ -93,8 +93,7 @@ jobs:
           cp -r Runner.xcarchive/Products/Applications/Runner.app Payload/
           cp -r Runner.xcarchive/SwiftSupport ./ 2>/dev/null || true
           zip -r "ios-v${{ needs.version-check.outputs.version }}.ipa" Payload SwiftSupport
-          mv ios-v${{ needs.version-check.outputs.version }}.ipa ../../
-          cd ../../
+          mv ios-v${{ needs.version-check.outputs.version }}.ipa "$GITHUB_WORKSPACE/"
       - uses: actions/upload-artifact@v4
         with:
           name: ios-ipa
