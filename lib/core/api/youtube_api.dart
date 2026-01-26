@@ -274,6 +274,8 @@ class YoutubeApi {
 
     if (jsonResult.isError()) {
       return Failure(jsonResult.exceptionOrNull()!);
+    } else {
+      ApiKeyUtil.addQuota(ref, .updateChannel, 1);
     }
 
     final jsonData = jsonResult.getOrThrow();
@@ -303,6 +305,8 @@ class YoutubeApi {
 
     if (jsonResult.isError()) {
       return Failure(jsonResult.exceptionOrNull()!);
+    } else {
+      ApiKeyUtil.addQuota(ref, .updateVideo, 1);
     }
 
     final jsonData = jsonResult.getOrThrow();
@@ -332,6 +336,8 @@ class YoutubeApi {
 
     if (jsonResult.isError()) {
       return Failure(jsonResult.exceptionOrNull()!);
+    } else {
+      ApiKeyUtil.addQuota(ref, .updateChannel, 1);
     }
 
     final jsonData = jsonResult.getOrThrow();

@@ -21,6 +21,8 @@ enum ApiKeyQuotaType {
   validateKey,
   searchVideo,
   searchChannel,
+  updateVideo,
+  updateChannel,
   pullVideosInChannel,
 }
 
