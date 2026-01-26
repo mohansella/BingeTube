@@ -30,6 +30,27 @@ jobs:
           fi
           echo "new version: $NEW_VER old version: $OLD_VER"
 
+  astro-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: website/package-lock.json
+      - run: echo "${{ secrets.FIREBASE_WEB_SCRIPT_TAG }}" | base64 --decode > website/src/partials/analytics.astro
+      - working-directory: website
+        run: |
+          npm ci
+          npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: astro-site
+          path: website/dist
+
   flutter-web:
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +62,6 @@ jobs:
           channel: stable
           cache: true
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
-      - run: echo "${{ secrets.FIREBASE_WEB_SCRIPT_TAG }}" | base64 --decode > website/src/partials/analytics.astro
       - run: flutter pub get
       - run: flutter build web --release --base-href=/app/
       - uses: actions/upload-artifact@v4
@@ -179,26 +199,6 @@ jobs:
           name: linux-bin
           path: linux-*.zip
           compression-level: 0
-
-  astro-site:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'npm'
-          cache-dependency-path: website/package-lock.json
-      - working-directory: website
-        run: |
-          npm ci
-          npm run build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: astro-site
-          path: website/dist
 
   deploy:
     runs-on: ubuntu-latest
