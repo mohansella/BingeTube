@@ -1,5 +1,6 @@
 import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
+import 'package:bingetube/pages/channel/channel_page.dart';
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
@@ -83,6 +84,10 @@ final GoRouter _routes = GoRouter(
     CustomGoRoute(
       page: Pages.search,
       customBuilder: (context, state) => const SearchPage(),
+    ),
+    CustomGoRoute(
+      page: Pages.channel,
+      customBuilder: (context, state) => ChannelPage(state.uri.queryParameters),
     ),
     CustomGoRoute(
       page: Pages.binge,

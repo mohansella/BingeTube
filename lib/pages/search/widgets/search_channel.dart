@@ -1,7 +1,10 @@
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/pages/channel/channel_page.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:logging/logging.dart';
 
@@ -49,7 +52,17 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
             final channel = channels[index];
             return Card(
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  final params = ChannelPage.buildParams(
+                    channelId: channel.channel.id,
+                    heroId: channel.channel.id,
+                    heroImg: channel.thumbnails.defaultUrl,
+                  );
+                  context.pushNamed(
+                    Pages.channel.name,
+                    queryParameters: params,
+                  );
+                },
                 child: ListTile(
                   leading: CircleAvatar(
                     foregroundImage: NetworkImage(
