@@ -88,6 +88,14 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     );
   }
 
+  Future<ChannelModel> getChannelModelById(String channelId) async {
+    final query = joinChannelTables(selectStatement: select(channels).join([]))
+      ..where(channels.id.equals(channelId));
+
+    final result = await query.getSingle();
+    return mapRowToModel(result);
+  }
+
   Future<List<ChannelModel>> getChannelModelByIds(
     List<String> channelIds,
   ) async {

@@ -1,3 +1,7 @@
+import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/core/db/access/channels.dart';
+import 'package:bingetube/core/db/database.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -25,9 +29,14 @@ class ChannelPage extends ConsumerStatefulWidget {
 }
 
 class _ChannelPageState extends ConsumerState<ChannelPage> {
+  final channelDao = ChannelsDao(Database());
+
   late String channelId;
   late String heroId;
   late String heroImg;
+
+  bool isModelLoading = true;
+  late ChannelModel model;
 
   @override
   void initState() {
@@ -36,10 +45,48 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     channelId = params[_Params.channelId.name]!;
     heroId = params[_Params.heroId.name]!;
     heroImg = params[_Params.heroImg.name]!;
+
+    channelDao.getChannelModelById(channelId).then((v) {
+      setState(() {
+        isModelLoading = false;
+        model = v;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text(channelId);
+    if (isModelLoading) {
+      return CircularProgressIndicator();
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return _buildVideoCardImage(
+          model.thumbnails.defaultUrl,
+          model.channel.id,
+        );
+      },
+    );
+  }
+
+  Widget _buildVideoCardImage(String url, String id) {
+    return Image.network(
+      url,
+      fit: .cover,
+      frameBuilder: (c, child, frame, wasSyncLoaded) {
+        if (frame != null || wasSyncLoaded) {
+          return child;
+        }
+        return _buildCoverFallback(c, id);
+      },
+      errorBuilder: (c, _, _) => _buildCoverFallback(c, id),
+    );
+  }
+
+  Widget _buildCoverFallback(BuildContext context, String id) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final color = Themes.colorFromId(id, brightness);
+    return Container(color: color, alignment: .center);
   }
 }
