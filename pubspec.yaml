@@ -53,6 +53,7 @@ dependencies:
   package_info_plus: ^9.0.0
   firebase_core: ^4.3.0
   firebase_analytics: ^12.1.0
+  readmore: ^3.0.0
 
 dev_dependencies:
   flutter_test:
