@@ -64,9 +64,12 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
                   );
                 },
                 child: ListTile(
-                  leading: CircleAvatar(
-                    foregroundImage: NetworkImage(
-                      channel.thumbnails.defaultUrl,
+                  leading: Hero(
+                    tag: channel.channel.id,
+                    child: CircleAvatar(
+                      foregroundImage: NetworkImage(
+                        channel.thumbnails.defaultUrl,
+                      ),
                     ),
                   ),
                   title: Text(channel.snippet.title),

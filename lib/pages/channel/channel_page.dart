@@ -56,14 +56,19 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isModelLoading) {
-      return CircularProgressIndicator();
-    }
     return LayoutBuilder(
       builder: (context, constraints) {
-        return _buildVideoCardImage(
-          model.thumbnails.defaultUrl,
-          model.channel.id,
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(),
+            body: Hero(
+              tag: heroId,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(80),
+                child: _buildVideoCardImage(heroImg, heroId),
+              ),
+            ),
+          ),
         );
       },
     );
@@ -72,7 +77,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   Widget _buildVideoCardImage(String url, String id) {
     return Image.network(
       url,
-      fit: .cover,
+      fit: .contain,
       frameBuilder: (c, child, frame, wasSyncLoaded) {
         if (frame != null || wasSyncLoaded) {
           return child;
