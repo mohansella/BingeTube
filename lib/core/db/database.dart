@@ -1,12 +1,13 @@
-import 'package:bingetube/core/db/access/channels.dart';
-import 'package:bingetube/core/db/tables/binge.dart';
-import 'package:bingetube/core/db/tables/channels.dart';
-import 'package:bingetube/core/db/tables/search.dart';
-import 'package:bingetube/core/db/tables/videos.dart';
-import 'package:bingetube/core/log/log_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:logging/logging.dart';
+import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/core/db/tables/channels.dart';
+import 'package:bingetube/core/db/tables/videos.dart';
+import 'package:bingetube/core/db/tables/playlists.dart';
+import 'package:bingetube/core/db/tables/search.dart';
+import 'package:bingetube/core/db/tables/binge.dart';
+import 'package:bingetube/core/db/access/channels.dart';
 
 part '../../generated/core/db/database.g.dart';
 
@@ -28,6 +29,12 @@ part '../../generated/core/db/database.g.dart';
     VideoStatuses,
     VideoStatistics,
     VideoProgress,
+
+    //playlist
+    Playlists,
+    PlaylistSnippets,
+    PlaylistThumbnails,
+    PlaylistContentDetails,
 
     //search
     ChannelSearches,
