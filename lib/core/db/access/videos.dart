@@ -123,33 +123,33 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
 
   Future<void> upsertVideoJsonData(item, {String? setag}) async {
     final updatedAt = Value(DateTime.now());
-    final id = Value(item['id'] as String);
+    final id = item['id'];
 
     //order: video, snippet, thumbnails, contentDetails, statuses, statistics, progress
     final snippet = item['snippet'];
-    final videoComp = VideosCompanion(
+    final videoComp = VideosCompanion.insert(
       id: id,
-      channelId: Value(snippet['channelId']),
+      channelId: snippet['channelId'],
       etag: Value(item['etag']),
       setag: setag == null ? Value.absent() : Value(setag),
       updatedAt: updatedAt,
     );
 
-    final snippetComp = VideoSnippetsCompanion(
+    final snippetComp = VideoSnippetsCompanion.insert(
       id: id,
-      publishedAt: Value(DateTime.parse(snippet['publishedAt'])),
-      title: Value(snippet['title']),
-      description: Value(snippet['description']),
-      channelTitle: Value(snippet['channelTitle']),
+      publishedAt: DateTime.parse(snippet['publishedAt']),
+      title: snippet['title'],
+      description: snippet['description'],
+      channelTitle: snippet['channelTitle'],
       updatedAt: updatedAt,
     );
 
     final thumbnails = snippet['thumbnails'];
-    final thumbnailComp = VideoThumbnailsCompanion(
+    final thumbnailComp = VideoThumbnailsCompanion.insert(
       id: id,
-      defaultUrl: Value(thumbnails['default']['url']),
-      mediumUrl: Value(thumbnails['medium']['url']),
-      highUrl: Value(thumbnails['high']['url']),
+      defaultUrl: thumbnails['default']['url'],
+      mediumUrl: thumbnails['medium']['url'],
+      highUrl: thumbnails['high']['url'],
       standardUrl: thumbnails['standard'] == null
           ? Value.absent()
           : Value(thumbnails['standard']['url']),
@@ -160,47 +160,47 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     );
 
     final contentDetails = item['contentDetails'];
-    final contentDetailsComp = VideoContentDetailsCompanion(
+    final contentDetailsComp = VideoContentDetailsCompanion.insert(
       id: id,
-      duration: Value(contentDetails['duration']),
-      dimension: Value(contentDetails['dimension']),
-      definition: Value(contentDetails['definition']),
-      caption: Value(contentDetails['caption']),
-      licensedContent: Value(contentDetails['licensedContent']),
-      projection: Value(contentDetails['projection']),
+      duration: contentDetails['duration'],
+      dimension: contentDetails['dimension'],
+      definition: contentDetails['definition'],
+      caption: contentDetails['caption'],
+      licensedContent: contentDetails['licensedContent'],
+      projection: contentDetails['projection'],
       updatedAt: updatedAt,
     );
 
     final status = item['status'];
-    final statusComp = VideoStatusesCompanion(
+    final statusComp = VideoStatusesCompanion.insert(
       id: id,
-      uploadStatus: Value(status['uploadStatus']),
-      privacyStatus: Value(status['privacyStatus']),
-      license: Value(status['license']),
-      embeddable: Value(status['embeddable']),
-      publicStatsViewable: Value(status['publicStatsViewable']),
-      madeForKids: Value(status['madeForKids']),
+      uploadStatus: status['uploadStatus'],
+      privacyStatus: status['privacyStatus'],
+      license: status['license'],
+      embeddable: status['embeddable'],
+      publicStatsViewable: status['publicStatsViewable'],
+      madeForKids: status['madeForKids'],
       updatedAt: updatedAt,
     );
 
     final statistics = item['statistics'];
-    final statisticsComp = VideoStatisticsCompanion(
+    final statisticsComp = VideoStatisticsCompanion.insert(
       id: id,
-      viewCount: Value(int.parse(statistics['viewCount'])),
+      viewCount: int.parse(statistics['viewCount']),
       likeCount: statistics['likeCount'] == null
           ? Value.absent()
           : Value(int.parse(statistics['likeCount'])),
       dislikeCount: statistics['dislikeCount'] == null
           ? Value.absent()
           : Value(int.parse(statistics['dislikeCount'])),
-      favoriteCount: Value(int.parse(statistics['favoriteCount'])),
+      favoriteCount: int.parse(statistics['favoriteCount']),
       commentCount: statistics['commentCount'] == null
           ? Value.absent()
           : Value(int.parse(statistics['commentCount'])),
       updatedAt: updatedAt,
     );
 
-    final progressComp = VideoProgressCompanion(id: id);
+    final progressComp = VideoProgressCompanion.insert(id: id);
 
     await upsertVideoModel(
       videoComp,

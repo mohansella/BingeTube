@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/tables/playlists.dart';
-import 'package:bingetube/core/db/access/channels.dart';
 
 part '../../../generated/core/db/access/playlists.g.dart';
 

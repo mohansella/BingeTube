@@ -118,10 +118,10 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
 
   Future<void> upsertChannelJsonData(item, {String? setag}) async {
     final updatedAt = Value(DateTime.now());
-    final id = Value(item['id'] as String);
+    final id = item['id'];
 
     //order: (channel, snippet, thumbnails, contentDetails, statistics, status)
-    final channelComp = ChannelsCompanion(
+    final channelComp = ChannelsCompanion.insert(
       id: id,
       etag: Value(item['etag']),
       setag: setag == null ? Value.absent() : Value(setag),
@@ -129,26 +129,26 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     );
 
     final snippet = item['snippet'];
-    final snippetComp = ChannelSnippetsCompanion(
+    final snippetComp = ChannelSnippetsCompanion.insert(
       id: id,
-      title: Value(snippet['title']),
-      description: Value(snippet['description']),
+      title: snippet['title'],
+      description: snippet['description'],
       updatedAt: updatedAt,
     );
 
     final thumbnails = snippet['thumbnails'];
-    final thumbnailsComp = ChannelThumbnailsCompanion(
+    final thumbnailsComp = ChannelThumbnailsCompanion.insert(
       id: id,
-      defaultUrl: Value(thumbnails['default']['url']),
-      mediumUrl: Value(thumbnails['medium']['url']),
-      highUrl: Value(thumbnails['high']['url']),
+      defaultUrl: thumbnails['default']['url'],
+      mediumUrl: thumbnails['medium']['url'],
+      highUrl: thumbnails['high']['url'],
       updatedAt: updatedAt,
     );
 
     final playlists = item['contentDetails']['relatedPlaylists'];
     final likePlaylist = playlists['likes'];
     final uploadPlaylist = playlists['uploads'];
-    final contentComp = ChannelContentDetailsCompanion(
+    final contentComp = ChannelContentDetailsCompanion.insert(
       id: id,
       likesPlaylist: likePlaylist == null
           ? Value.absent()
@@ -156,27 +156,27 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       uploadPlaylist: uploadPlaylist == null
           ? Value.absent()
           : Value(uploadPlaylist),
-      updatedAt: const Value.absent(),
+      updatedAt: updatedAt,
     );
 
     final statistics = item['statistics'];
-    final statisticsComp = ChannelStatisticsCompanion(
+    final statisticsComp = ChannelStatisticsCompanion.insert(
       updatedAt: updatedAt,
       id: id,
-      viewCount: Value(int.parse(statistics['viewCount'])),
-      subscriberCount: Value(int.parse(statistics['subscriberCount'])),
-      hiddenSubscriberCount: Value(statistics['hiddenSubscriberCount']),
-      videoCount: Value(int.parse(statistics['videoCount'])),
+      viewCount: int.parse(statistics['viewCount']),
+      subscriberCount: int.parse(statistics['subscriberCount']),
+      hiddenSubscriberCount: statistics['hiddenSubscriberCount'],
+      videoCount: int.parse(statistics['videoCount']),
     );
 
     final status = item['status'];
     final madeForKids = status['madeForKids'];
-    final statusComp = ChannelStatusesCompanion(
+    final statusComp = ChannelStatusesCompanion.insert(
       updatedAt: updatedAt,
       id: id,
-      privacyStatus: Value(status['privacyStatus']),
-      isLinked: Value(status['isLinked']),
-      longUploadsStatus: Value(status['longUploadsStatus']),
+      privacyStatus: status['privacyStatus'],
+      isLinked: status['isLinked'],
+      longUploadsStatus: status['longUploadsStatus'],
       madeForKids: madeForKids == null ? Value.absent() : Value(madeForKids),
     );
 
