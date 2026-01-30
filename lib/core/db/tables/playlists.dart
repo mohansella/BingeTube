@@ -2,12 +2,19 @@ import 'package:bingetube/core/db/tables/channels.dart';
 import 'package:bingetube/core/db/tables/mixins.dart';
 import 'package:drift/drift.dart';
 
+enum PlaylistType {
+  uploads,
+  likes,
+  normal
+}
+
 @TableIndex(name: 'PlaylistIndexETag', columns: {#etag})
 class Playlists extends Table with TableTimedMixin {
   late final id = text()();
+  late final channelId = text().references(Channels, #id)();
+  late final type = intEnum<PlaylistType>()();
   late final priority = integer()();
   late final etag = text().nullable()();
-  late final channelId = text().references(Channels, #id)();
 
   @override
   get primaryKey => {id};

@@ -5978,6 +5978,29 @@ class $PlaylistsTable extends Playlists
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
+  @override
+  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
+    'channel_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES channels (id)',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<PlaylistType, int> type =
+      GeneratedColumn<int>(
+        'type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<PlaylistType>($PlaylistsTable.$convertertype);
   static const VerificationMeta _priorityMeta = const VerificationMeta(
     'priority',
   );
@@ -5998,28 +6021,15 @@ class $PlaylistsTable extends Playlists
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _channelIdMeta = const VerificationMeta(
-    'channelId',
-  );
-  @override
-  late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
-    'channel_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
-    ),
-  );
   @override
   List<GeneratedColumn> get $columns => [
     createdAt,
     updatedAt,
     id,
+    channelId,
+    type,
     priority,
     etag,
-    channelId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6050,6 +6060,14 @@ class $PlaylistsTable extends Playlists
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('channel_id')) {
+      context.handle(
+        _channelIdMeta,
+        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_channelIdMeta);
+    }
     if (data.containsKey('priority')) {
       context.handle(
         _priorityMeta,
@@ -6063,14 +6081,6 @@ class $PlaylistsTable extends Playlists
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
       );
-    }
-    if (data.containsKey('channel_id')) {
-      context.handle(
-        _channelIdMeta,
-        channelId.isAcceptableOrUnknown(data['channel_id']!, _channelIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_channelIdMeta);
     }
     return context;
   }
@@ -6093,6 +6103,16 @@ class $PlaylistsTable extends Playlists
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      channelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}channel_id'],
+      )!,
+      type: $PlaylistsTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
       priority: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}priority'],
@@ -6101,10 +6121,6 @@ class $PlaylistsTable extends Playlists
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
       ),
-      channelId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}channel_id'],
-      )!,
     );
   }
 
@@ -6112,22 +6128,27 @@ class $PlaylistsTable extends Playlists
   $PlaylistsTable createAlias(String alias) {
     return $PlaylistsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<PlaylistType, int, int> $convertertype =
+      const EnumIndexConverter<PlaylistType>(PlaylistType.values);
 }
 
 class Playlist extends DataClass implements Insertable<Playlist> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String id;
+  final String channelId;
+  final PlaylistType type;
   final int priority;
   final String? etag;
-  final String channelId;
   const Playlist({
     required this.createdAt,
     required this.updatedAt,
     required this.id,
+    required this.channelId,
+    required this.type,
     required this.priority,
     this.etag,
-    required this.channelId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6135,11 +6156,14 @@ class Playlist extends DataClass implements Insertable<Playlist> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
+    map['channel_id'] = Variable<String>(channelId);
+    {
+      map['type'] = Variable<int>($PlaylistsTable.$convertertype.toSql(type));
+    }
     map['priority'] = Variable<int>(priority);
     if (!nullToAbsent || etag != null) {
       map['etag'] = Variable<String>(etag);
     }
-    map['channel_id'] = Variable<String>(channelId);
     return map;
   }
 
@@ -6148,9 +6172,10 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       id: Value(id),
+      channelId: Value(channelId),
+      type: Value(type),
       priority: Value(priority),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
-      channelId: Value(channelId),
     );
   }
 
@@ -6163,9 +6188,12 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
+      channelId: serializer.fromJson<String>(json['channelId']),
+      type: $PlaylistsTable.$convertertype.fromJson(
+        serializer.fromJson<int>(json['type']),
+      ),
       priority: serializer.fromJson<int>(json['priority']),
       etag: serializer.fromJson<String?>(json['etag']),
-      channelId: serializer.fromJson<String>(json['channelId']),
     );
   }
   @override
@@ -6175,9 +6203,12 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
+      'channelId': serializer.toJson<String>(channelId),
+      'type': serializer.toJson<int>(
+        $PlaylistsTable.$convertertype.toJson(type),
+      ),
       'priority': serializer.toJson<int>(priority),
       'etag': serializer.toJson<String?>(etag),
-      'channelId': serializer.toJson<String>(channelId),
     };
   }
 
@@ -6185,25 +6216,28 @@ class Playlist extends DataClass implements Insertable<Playlist> {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? id,
+    String? channelId,
+    PlaylistType? type,
     int? priority,
     Value<String?> etag = const Value.absent(),
-    String? channelId,
   }) => Playlist(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
+    channelId: channelId ?? this.channelId,
+    type: type ?? this.type,
     priority: priority ?? this.priority,
     etag: etag.present ? etag.value : this.etag,
-    channelId: channelId ?? this.channelId,
   );
   Playlist copyWithCompanion(PlaylistsCompanion data) {
     return Playlist(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
+      channelId: data.channelId.present ? data.channelId.value : this.channelId,
+      type: data.type.present ? data.type.value : this.type,
       priority: data.priority.present ? data.priority.value : this.priority,
       etag: data.etag.present ? data.etag.value : this.etag,
-      channelId: data.channelId.present ? data.channelId.value : this.channelId,
     );
   }
 
@@ -6213,16 +6247,17 @@ class Playlist extends DataClass implements Insertable<Playlist> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
+          ..write('channelId: $channelId, ')
+          ..write('type: $type, ')
           ..write('priority: $priority, ')
-          ..write('etag: $etag, ')
-          ..write('channelId: $channelId')
+          ..write('etag: $etag')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, priority, etag, channelId);
+      Object.hash(createdAt, updatedAt, id, channelId, type, priority, etag);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -6230,55 +6265,62 @@ class Playlist extends DataClass implements Insertable<Playlist> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.id == this.id &&
+          other.channelId == this.channelId &&
+          other.type == this.type &&
           other.priority == this.priority &&
-          other.etag == this.etag &&
-          other.channelId == this.channelId);
+          other.etag == this.etag);
 }
 
 class PlaylistsCompanion extends UpdateCompanion<Playlist> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<String> id;
+  final Value<String> channelId;
+  final Value<PlaylistType> type;
   final Value<int> priority;
   final Value<String?> etag;
-  final Value<String> channelId;
   final Value<int> rowid;
   const PlaylistsCompanion({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
+    this.channelId = const Value.absent(),
+    this.type = const Value.absent(),
     this.priority = const Value.absent(),
     this.etag = const Value.absent(),
-    this.channelId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PlaylistsCompanion.insert({
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     required String id,
+    required String channelId,
+    required PlaylistType type,
     required int priority,
     this.etag = const Value.absent(),
-    required String channelId,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       priority = Value(priority),
-       channelId = Value(channelId);
+       channelId = Value(channelId),
+       type = Value(type),
+       priority = Value(priority);
   static Insertable<Playlist> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<String>? id,
+    Expression<String>? channelId,
+    Expression<int>? type,
     Expression<int>? priority,
     Expression<String>? etag,
-    Expression<String>? channelId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
+      if (channelId != null) 'channel_id': channelId,
+      if (type != null) 'type': type,
       if (priority != null) 'priority': priority,
       if (etag != null) 'etag': etag,
-      if (channelId != null) 'channel_id': channelId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -6287,18 +6329,20 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<String>? id,
+    Value<String>? channelId,
+    Value<PlaylistType>? type,
     Value<int>? priority,
     Value<String?>? etag,
-    Value<String>? channelId,
     Value<int>? rowid,
   }) {
     return PlaylistsCompanion(
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
+      channelId: channelId ?? this.channelId,
+      type: type ?? this.type,
       priority: priority ?? this.priority,
       etag: etag ?? this.etag,
-      channelId: channelId ?? this.channelId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6315,14 +6359,19 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (channelId.present) {
+      map['channel_id'] = Variable<String>(channelId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(
+        $PlaylistsTable.$convertertype.toSql(type.value),
+      );
+    }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
     }
     if (etag.present) {
       map['etag'] = Variable<String>(etag.value);
-    }
-    if (channelId.present) {
-      map['channel_id'] = Variable<String>(channelId.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -6336,9 +6385,10 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
+          ..write('channelId: $channelId, ')
+          ..write('type: $type, ')
           ..write('priority: $priority, ')
           ..write('etag: $etag, ')
-          ..write('channelId: $channelId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -16390,9 +16440,10 @@ typedef $$PlaylistsTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       required String id,
+      required String channelId,
+      required PlaylistType type,
       required int priority,
       Value<String?> etag,
-      required String channelId,
       Value<int> rowid,
     });
 typedef $$PlaylistsTableUpdateCompanionBuilder =
@@ -16400,9 +16451,10 @@ typedef $$PlaylistsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<String> id,
+      Value<String> channelId,
+      Value<PlaylistType> type,
       Value<int> priority,
       Value<String?> etag,
-      Value<String> channelId,
       Value<int> rowid,
     });
 
@@ -16521,6 +16573,12 @@ class $$PlaylistsTableFilterComposer
     column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<PlaylistType, PlaylistType, int> get type =>
+      $composableBuilder(
+        column: $table.type,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnFilters<int> get priority => $composableBuilder(
     column: $table.priority,
@@ -16656,6 +16714,11 @@ class $$PlaylistsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get priority => $composableBuilder(
     column: $table.priority,
     builder: (column) => ColumnOrderings(column),
@@ -16707,6 +16770,9 @@ class $$PlaylistsTableAnnotationComposer
 
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<PlaylistType, int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
 
   GeneratedColumn<int> get priority =>
       $composableBuilder(column: $table.priority, builder: (column) => column);
@@ -16851,17 +16917,19 @@ class $$PlaylistsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
+                Value<String> channelId = const Value.absent(),
+                Value<PlaylistType> type = const Value.absent(),
                 Value<int> priority = const Value.absent(),
                 Value<String?> etag = const Value.absent(),
-                Value<String> channelId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PlaylistsCompanion(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
+                channelId: channelId,
+                type: type,
                 priority: priority,
                 etag: etag,
-                channelId: channelId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -16869,17 +16937,19 @@ class $$PlaylistsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
+                required String channelId,
+                required PlaylistType type,
                 required int priority,
                 Value<String?> etag = const Value.absent(),
-                required String channelId,
                 Value<int> rowid = const Value.absent(),
               }) => PlaylistsCompanion.insert(
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 id: id,
+                channelId: channelId,
+                type: type,
                 priority: priority,
                 etag: etag,
-                channelId: channelId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
