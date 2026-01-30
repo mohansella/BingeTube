@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 @TableIndex(name: 'PlaylistIndexETag', columns: {#etag})
 class Playlists extends Table with TableTimedMixin {
   late final id = text()();
+  late final priority = integer()();
   late final etag = text().nullable()();
   late final channelId = text().references(Channels, #id)();
 
