@@ -272,6 +272,8 @@ class YoutubeApi {
     final channelDao = ChannelsDao(Database());
     final playlistDao = PlaylistsDao(Database());
 
+    dynamic uploadItem;
+    dynamic likeItem;
     final channel = await channelDao.getChannelModelById(channelId);
     final uploadId = channel.contentDetails.uploadPlaylist;
     if (uploadId != null) {
@@ -288,7 +290,7 @@ class YoutubeApi {
       }
       final jsonData = jsonResult.getOrThrow();
       final items = jsonData['items'] as List;
-      await playlistDao.upsertPlaylistJson(items[0], type: .uploads);
+      uploadItem = items[0];
     }
 
     final likesId = channel.contentDetails.likesPlaylist;
@@ -306,9 +308,14 @@ class YoutubeApi {
       }
       final jsonData = jsonResult.getOrThrow();
       final items = jsonData['items'] as List;
-      await playlistDao.upsertPlaylistJson(items[0], type: .likes);
+      likeItem = items[0];
     }
 
+    playlistDao.upsertAllPlaylistItems(
+      [],
+      uploadItem: uploadItem,
+      likeItem: likeItem,
+    );
     return Failure(Exception());
   }
 

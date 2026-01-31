@@ -117,6 +117,29 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     });
   }
 
+  Future<void> upsertAllPlaylistItems(
+    List<dynamic> normalItems, {
+    required uploadItem,
+    required likeItem,
+  }) async {
+    await transaction(() async {
+      if (uploadItem != null) {
+        await upsertPlaylistJson(uploadItem, type: .uploads);
+      }
+      if (likeItem != null) {
+        await upsertPlaylistJson(likeItem, type: .likes);
+      }
+      var priority = 1;
+      for (final normalItem in normalItems) {
+        await upsertPlaylistJson(
+          normalItem,
+          priority: priority++,
+          type: .normal,
+        );
+      }
+    });
+  }
+
   Future<void> upsertPlaylistJson(
     item, {
     int priority = 0,

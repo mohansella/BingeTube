@@ -120,6 +120,9 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   }
 
   void _triggerSyncIfNeeded(List<PlaylistModel> list) {
+    if(_isFetchTriggered) {
+      return;
+    }
     final nowTime = DateTime.now();
     bool isAnyExpired = list.any((p) {
       final expiresAt = p.playlist.updatedAt.add(
@@ -128,7 +131,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
       return expiresAt.isBefore(nowTime);
     });
 
-    if (!_isFetchTriggered && (list.isEmpty || isAnyExpired)) {
+    if (list.isEmpty || isAnyExpired) {
       _isFetchTriggered = true;
       ChannelPage._logger.info(
         'triggering fetch. isAnyExpired:$isAnyExpired existing length:${list.length}',
