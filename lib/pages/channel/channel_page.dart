@@ -1,7 +1,10 @@
 import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/core/api/youtube_api.dart';
+import 'package:bingetube/core/constants/constants.dart';
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:readmore/readmore.dart';
@@ -9,6 +12,8 @@ import 'package:readmore/readmore.dart';
 enum _Params { channelId, heroId, heroImg }
 
 class ChannelPage extends ConsumerStatefulWidget {
+  static final _logger = LogManager.getLogger('ChannelPage');
+
   final Map<String, String> queryParameters;
 
   const ChannelPage(this.queryParameters, {super.key});
@@ -38,8 +43,8 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   late String _heroImg;
 
   bool _isModelLoading = true;
+  bool _isFetchTriggered = false;
   late ChannelModel _model;
-  late double _width;
 
   @override
   void initState() {
@@ -59,24 +64,20 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        _width = constraints.minWidth;
-        return SafeArea(
-          child: Scaffold(
-            appBar: AppBar(),
-            body: SingleChildScrollView(
-              child: Column(
-              crossAxisAlignment: .stretch,
-              children: [ _buildChannelInfo(), _buildPlaylist()]),
-            ),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: .stretch,
+            children: [_buildChannelInfo(), _buildPlaylistStream()],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Widget _buildPlaylist() {
+  Widget _buildPlaylistStream() {
     return Align(
       alignment: .center,
       child: StreamBuilder(
@@ -93,18 +94,43 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
           if (data.likes != null) {
             list = [data.likes!, ...list];
           }
+
+          _triggerSyncIfNeeded(list);
+
           if (list.isEmpty) {
             return Text('No playlist available');
           } else {
-            return ListView.builder(
-              itemBuilder: (context, i) {
-                final curr = list[i];
-                return ListTile(title: Text(curr.snippet.title));
-              },
-            );
+            return _buildPlaylistRaw(list);
           }
         },
       ),
+    );
+  }
+
+  void _triggerSyncIfNeeded(List<PlaylistModel> list) {
+    final nowTime = DateTime.now();
+    bool isAnyExpired = list.any((p) {
+      final expiresAt = p.playlist.updatedAt.add(
+        CacheConstants.syncChannelSearchResultAfter,
+      );
+      return expiresAt.isAfter(nowTime);
+    });
+
+    if (!_isFetchTriggered && (list.isEmpty || isAnyExpired)) {
+      _isFetchTriggered = true;
+      ChannelPage._logger.info(
+        'triggering fetch. isAnyExpired:$isAnyExpired existing length:${list.length}',
+      );
+      YoutubeApi.syncPlaylist(ref, _channelId);
+    }
+  }
+
+  ListView _buildPlaylistRaw(List<PlaylistModel> list) {
+    return ListView.builder(
+      itemBuilder: (context, i) {
+        final curr = list[i];
+        return ListTile(title: Text(curr.snippet.title));
+      },
     );
   }
 

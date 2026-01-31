@@ -265,31 +265,13 @@ class YoutubeApi {
     return Success(model!);
   }
 
-  static Future<Result<PlaylistModels>> fetchPlaylists(
+  static Future<Result<PlaylistModels>> syncPlaylist(
     WidgetRef ref,
     String channelId,
   ) async {
-    final playlistDao = PlaylistsDao(Database());
-    final dbResult = await playlistDao.getPlaylistModels(channelId);
-
-    //return db results if cache not expired
-    if (dbResult.uploads != null) {
-      final expiresAt = dbResult.uploads!.playlist.updatedAt.add(
-        CacheConstants.syncChannelSearchResultAfter,
-      );
-      final nowTime = DateTime.now();
-      if (nowTime.isAfter(expiresAt)) {
-        _logger.warning('playlists expired for channel:$channelId');
-      } else {
-        _logger.info(
-          'returning playlists for channel:$channelId with items:${dbResult.normals.length}',
-        );
-        return Success(dbResult);
-      }
-    }
-
-    //fetch uploads and likes
     final channelDao = ChannelsDao(Database());
+    final playlistDao = PlaylistsDao(Database());
+
     final channel = await channelDao.getChannelModelById(channelId);
     final uploadId = channel.contentDetails.uploadPlaylist;
     if (uploadId != null) {
@@ -304,9 +286,13 @@ class YoutubeApi {
       } else {
         ApiKeyUtil.addQuota(ref, .fetchPlaylist, 1);
       }
+      final jsonData = jsonResult.getOrThrow();
+      final items = jsonData['items'] as List;
+      await playlistDao.upsertPlaylistJson(items[0], type: .uploads);
     }
+
     final likesId = channel.contentDetails.likesPlaylist;
-    if (likesId != null) {
+    if (likesId != null && likesId.isNotEmpty) {
       final jsonResult = await _getJsonResponse(
         ref,
         'FetchLikesPlaylist',
@@ -318,6 +304,9 @@ class YoutubeApi {
       } else {
         ApiKeyUtil.addQuota(ref, .fetchPlaylist, 1);
       }
+      final jsonData = jsonResult.getOrThrow();
+      final items = jsonData['items'] as List;
+      await playlistDao.upsertPlaylistJson(items[0], type: .likes);
     }
 
     return Failure(Exception());

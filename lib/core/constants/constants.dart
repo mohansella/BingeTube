@@ -9,4 +9,5 @@ sealed class CacheConstants {
   static final syncChannelSearchResultAfter = Duration(hours: 1);
   static final syncVideosSearchResultAfter = Duration(hours: 1);
   static final syncChannelPlaylistAfter = Duration(hours: 1);
+  static final syncPlaylistMetaAfter = Duration(hours: 1);
 }

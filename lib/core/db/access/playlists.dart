@@ -115,9 +115,9 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     });
   }
 
-  Future<void> upsertChannelJsonData(
+  Future<void> upsertPlaylistJson(
     item, {
-    required int priority,
+    int priority = 0,
     required PlaylistType type,
   }) async {
     final updatedAt = Value(DateTime.now());
@@ -142,7 +142,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
       updatedAt: updatedAt,
     );
 
-    final thumbnails = item['thumbnails'];
+    final thumbnails = snippet['thumbnails'];
     final thumbComp = PlaylistThumbnailsCompanion.insert(
       id: id,
       defaultUrl: thumbnails['default']['url'],
