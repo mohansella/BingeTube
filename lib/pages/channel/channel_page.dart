@@ -46,6 +46,14 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   bool _isFetchTriggered = false;
   late ChannelModel _model;
 
+  bool _isFetchInProgress = false;
+  late int _fetchCount;
+  late int _fetchTotal;
+  double get _progress {
+    if (_fetchTotal == 0) return 0;
+    return (_fetchCount / _fetchTotal).clamp(0.0, 1.0);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,7 +78,19 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: .stretch,
-            children: [_buildChannelInfo(), _buildPlaylistStream()],
+            children: [
+              _buildChannelInfo(),
+              if (_isFetchInProgress) ...[
+                LinearProgressIndicator(value: _progress),
+                const SizedBox(height: 4),
+                Text(
+                  '$_fetchCount / $_fetchTotal playlists updated',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+              ],
+              _buildPlaylistStream(),
+            ],
           ),
         ),
       ),
@@ -119,8 +139,8 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     );
   }
 
-  void _triggerSyncIfNeeded(List<PlaylistModel> list) {
-    if(_isFetchTriggered) {
+  Future<void> _triggerSyncIfNeeded(List<PlaylistModel> list) async {
+    if (_isFetchTriggered) {
       return;
     }
     final nowTime = DateTime.now();
@@ -132,11 +152,27 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     });
 
     if (list.isEmpty || isAnyExpired) {
-      _isFetchTriggered = true;
+      await Future.delayed(Duration.zero);
+      setState(() {
+        _isFetchTriggered = true;
+        _isFetchInProgress = true;
+        _fetchCount = 0;
+        _fetchTotal = 1;
+      });
       ChannelPage._logger.info(
         'triggering fetch. isAnyExpired:$isAnyExpired existing length:${list.length}',
       );
-      YoutubeApi.syncPlaylist(ref, _channelId);
+      YoutubeApi.syncPlaylist(ref, _channelId, (count, total) {
+        setState(() {
+          _fetchCount = count;
+          _fetchTotal = total;
+        });
+        return context.mounted;
+      }).whenComplete(() {
+        setState(() {
+          _isFetchInProgress = false;
+        });
+      });
     }
   }
 

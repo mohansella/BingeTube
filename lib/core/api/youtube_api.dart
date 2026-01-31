@@ -282,7 +282,9 @@ class YoutubeApi {
   static Future<Result<PlaylistModels>> syncPlaylist(
     WidgetRef ref,
     String channelId,
+    bool Function(int, int) updateProgress,
   ) async {
+    Result<PlaylistModels> failure = Failure(Exception());
     final channelDao = ChannelsDao(Database());
     final playlistDao = PlaylistsDao(Database());
 
@@ -291,6 +293,7 @@ class YoutubeApi {
     final channel = await channelDao.getChannelModelById(channelId);
     final uploadId = channel.contentDetails.uploadPlaylist;
     if (uploadId != null) {
+      if (!updateProgress(0, 3)) return failure;
       final jsonResult = await _getJsonResponse(
         ref,
         'FetchUploadPlaylist',
@@ -309,6 +312,7 @@ class YoutubeApi {
 
     final likesId = channel.contentDetails.likesPlaylist;
     if (likesId != null && likesId.isNotEmpty) {
+      if (!updateProgress(1, 3)) return failure;
       final jsonResult = await _getJsonResponse(
         ref,
         'FetchLikesPlaylist',
@@ -324,6 +328,7 @@ class YoutubeApi {
       final items = jsonData['items'] as List;
       likeItem = items[0];
     }
+    if (!updateProgress(2, 3)) return failure;
 
     var isNextPageAvailable = true;
     String nextPageToken = '';
@@ -332,7 +337,8 @@ class YoutubeApi {
       final jsonResult = await _getJsonResponse(
         ref,
         'FetchNormalPlaylist',
-        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet&channelId=$channelId&pageToken=$nextPageToken&maxResults=50',
+        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet'
+            '&channelId=$channelId&pageToken=$nextPageToken&maxResults=50',
       );
 
       if (jsonResult.isError()) {
@@ -344,6 +350,9 @@ class YoutubeApi {
       final items = jsonData['items'] as List;
       normalItems.addAll(items);
       _logger.info('found:${items.length} total:${normalItems.length}');
+
+      final totalResults = jsonData['pageInfo']['totalResults'];
+      if (!updateProgress(normalItems.length, totalResults)) return failure;
 
       nextPageToken = jsonData['nextPageToken'] ?? '';
       isNextPageAvailable = nextPageToken.isNotEmpty;
