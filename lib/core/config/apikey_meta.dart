@@ -23,7 +23,7 @@ enum ApiKeyQuotaType {
   searchChannel,
   updateVideo,
   updateChannel,
-  pullVideosInChannel,
+  fetchPlaylist,
 }
 
 class ApiKeyMeta {

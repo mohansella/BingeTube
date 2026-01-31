@@ -1,23 +1,26 @@
 import 'dart:convert';
 
-import 'package:bingetube/core/config/apikey_util.dart';
+import 'package:bingetube/core/db/access/playlists.dart';
+import 'package:http/http.dart';
+import 'package:logging/logging.dart';
+import 'package:result_dart/result_dart.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 import 'package:bingetube/core/constants/constants.dart';
+import 'package:bingetube/core/config/apikey_util.dart';
+import 'package:bingetube/core/http/http_client.dart';
+import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/core/utils/core_utils.dart';
+
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
-import 'package:http/http.dart';
-import 'package:logging/logging.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import 'package:bingetube/core/http/http_client.dart';
-import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/core/utils/core_utils.dart';
-import 'package:result_dart/result_dart.dart';
 
 const _searchBaseUrl = 'https://www.googleapis.com/youtube/v3/search';
 const _channelsBaseUrl = 'https://www.googleapis.com/youtube/v3/channels';
 const _videosBaseUrl = 'https://www.googleapis.com/youtube/v3/videos';
+const _playlistBaseUrl = 'https://www.googleapis.com/youtube/v3/playlists';
 
 class YoutubeApi {
   static final Logger _logger = LogManager.getLogger('YoutubeApi');
@@ -125,7 +128,7 @@ class YoutubeApi {
 
     _logger.info('need to update ${channelsNeedUpdate.length} channels');
     if (channelsNeedUpdate.isNotEmpty) {
-      final syncResult = await forceSyncChannelsWithSETag(
+      final syncResult = await _forceSyncChannelsWithSETag(
         ref,
         channelsNeedUpdate,
       );
@@ -216,7 +219,7 @@ class YoutubeApi {
     }
     _logger.info('need to sync ${channelIdsToSync.length} channels');
     if (channelIdsToSync.isNotEmpty) {
-      final syncResult = await forceSyncChannels(ref, channelIdsToSync);
+      final syncResult = await _forceSyncChannels(ref, channelIdsToSync);
       if (syncResult.isError()) {
         return Failure(syncResult.exceptionOrNull()!);
       }
@@ -250,7 +253,7 @@ class YoutubeApi {
 
     _logger.info('need to update ${videosNeedUpdate.length} videos');
     if (videosNeedUpdate.isNotEmpty) {
-      final syncResult = await forceSyncVideosWithSETag(ref, videosNeedUpdate);
+      final syncResult = await _forceSyncVideosWithSETag(ref, videosNeedUpdate);
       if (syncResult.isError()) {
         return Failure(syncResult.exceptionOrNull()!);
       }
@@ -262,7 +265,65 @@ class YoutubeApi {
     return Success(model!);
   }
 
-  static Future<Result<void>> forceSyncChannelsWithSETag(
+  static Future<Result<PlaylistModels>> fetchPlaylists(
+    WidgetRef ref,
+    String channelId,
+  ) async {
+    final playlistDao = PlaylistsDao(Database());
+    final dbResult = await playlistDao.getPlaylistModels(channelId);
+
+    //return db results if cache not expired
+    if (dbResult.uploads != null) {
+      final expiresAt = dbResult.uploads!.playlist.updatedAt.add(
+        CacheConstants.syncChannelSearchResultAfter,
+      );
+      final nowTime = DateTime.now();
+      if (nowTime.isAfter(expiresAt)) {
+        _logger.warning('playlists expired for channel:$channelId');
+      } else {
+        _logger.info(
+          'returning playlists for channel:$channelId with items:${dbResult.normals.length}',
+        );
+        return Success(dbResult);
+      }
+    }
+
+    //fetch uploads and likes
+    final channelDao = ChannelsDao(Database());
+    final channel = await channelDao.getChannelModelById(channelId);
+    final uploadId = channel.contentDetails.uploadPlaylist;
+    if (uploadId != null) {
+      final jsonResult = await _getJsonResponse(
+        ref,
+        'FetchUploadPlaylist',
+        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet&id=$uploadId',
+      );
+
+      if (jsonResult.isError()) {
+        return Failure(jsonResult.exceptionOrNull()!);
+      } else {
+        ApiKeyUtil.addQuota(ref, .fetchPlaylist, 1);
+      }
+    }
+    final likesId = channel.contentDetails.likesPlaylist;
+    if (likesId != null) {
+      final jsonResult = await _getJsonResponse(
+        ref,
+        'FetchLikesPlaylist',
+        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet&id=$likesId',
+      );
+
+      if (jsonResult.isError()) {
+        return Failure(jsonResult.exceptionOrNull()!);
+      } else {
+        ApiKeyUtil.addQuota(ref, .fetchPlaylist, 1);
+      }
+    }
+
+    return Failure(Exception());
+  }
+
+  static Future<Result<void>> _forceSyncChannelsWithSETag(
     WidgetRef ref,
     Map<String, String> channelsVsSETag,
   ) async {
@@ -293,7 +354,7 @@ class YoutubeApi {
     return Success(Unit);
   }
 
-  static Future<Result<void>> forceSyncVideosWithSETag(
+  static Future<Result<void>> _forceSyncVideosWithSETag(
     WidgetRef ref,
     Map<String, String> videosVsSETag,
   ) async {
@@ -324,7 +385,7 @@ class YoutubeApi {
     return Success(Unit);
   }
 
-  static Future<Result<void>> forceSyncChannels(
+  static Future<Result<void>> _forceSyncChannels(
     WidgetRef ref,
     Set<String> channelIds,
   ) async {
