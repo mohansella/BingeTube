@@ -332,7 +332,7 @@ class YoutubeApi {
       final jsonResult = await _getJsonResponse(
         ref,
         'FetchNormalPlaylist',
-        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet&channelId=$channelId&pageToken=$nextPageToken',
+        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet&channelId=$channelId&pageToken=$nextPageToken&maxResults=50',
       );
 
       if (jsonResult.isError()) {
@@ -343,6 +343,7 @@ class YoutubeApi {
       final jsonData = jsonResult.getOrThrow();
       final items = jsonData['items'] as List;
       normalItems.addAll(items);
+      _logger.info('found:${items.length} total:${normalItems.length}');
 
       nextPageToken = jsonData['nextPageToken'] ?? '';
       isNextPageAvailable = nextPageToken.isNotEmpty;

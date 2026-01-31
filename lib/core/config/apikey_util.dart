@@ -19,6 +19,7 @@ sealed class ApiKeyUtil {
   }
 
   static void addQuota(WidgetRef ref, ApiKeyQuotaType quotaType, int count) {
+    adjustQuota(ref);
     final meta = ref.read(ConfigProviders.apiKeyMeta);
     final quotaSections = meta.quotaSections;
     quotaSections[quotaType] = count + (quotaSections[quotaType] ?? 0);
