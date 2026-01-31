@@ -117,11 +117,13 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
 
           _triggerSyncIfNeeded(list);
 
-          if (list.isEmpty) {
-            return Text('No playlist available');
-          } else {
-            return _buildPlaylistRaw(list);
+          if (list.isEmpty && !_isFetchInProgress) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('No playlist available'),
+            );
           }
+          return _buildPlaylistRaw(list);
         },
       ),
     );
