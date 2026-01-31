@@ -12,4 +12,7 @@ mixin _$PlaylistsDaoMixin on DatabaseAccessor<Database> {
       attachedDatabase.playlistThumbnails;
   $PlaylistContentDetailsTable get playlistContentDetails =>
       attachedDatabase.playlistContentDetails;
+  $VideosTable get videos => attachedDatabase.videos;
+  $PlaylistVsVideosTable get playlistVsVideos =>
+      attachedDatabase.playlistVsVideos;
 }

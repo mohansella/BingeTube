@@ -1,5 +1,6 @@
-import 'package:bingetube/core/db/tables/channels.dart';
 import 'package:bingetube/core/db/tables/mixins.dart';
+import 'package:bingetube/core/db/tables/channels.dart';
+import 'package:bingetube/core/db/tables/videos.dart';
 import 'package:drift/drift.dart';
 
 enum PlaylistType { uploads, likes, normal }
@@ -45,4 +46,13 @@ class PlaylistContentDetails extends Table with TableTimedMixin {
 
   @override
   get primaryKey => {id};
+}
+
+class PlaylistVsVideos extends Table {
+  late final playlistId = text().references(Playlists, #id)();
+  late final videoId = text().references(Videos, #id)();
+  late final priority = integer()();
+
+  @override
+  get primaryKey => {playlistId, videoId};
 }

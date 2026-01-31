@@ -36,6 +36,7 @@ class PlaylistModel {
     PlaylistSnippets,
     PlaylistThumbnails,
     PlaylistContentDetails,
+    PlaylistVsVideos,
   ],
 )
 class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {

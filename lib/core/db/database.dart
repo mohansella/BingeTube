@@ -35,6 +35,7 @@ part '../../generated/core/db/database.g.dart';
     PlaylistSnippets,
     PlaylistThumbnails,
     PlaylistContentDetails,
+    PlaylistVsVideos,
 
     //search
     ChannelSearches,
