@@ -107,13 +107,25 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     );
   }
 
+  ListView _buildPlaylistRaw(List<PlaylistModel> list) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: list.length,
+      itemBuilder: (context, i) {
+        final curr = list[i];
+        return ListTile(title: Text(curr.snippet.title));
+      },
+    );
+  }
+
   void _triggerSyncIfNeeded(List<PlaylistModel> list) {
     final nowTime = DateTime.now();
     bool isAnyExpired = list.any((p) {
       final expiresAt = p.playlist.updatedAt.add(
         CacheConstants.syncChannelSearchResultAfter,
       );
-      return expiresAt.isAfter(nowTime);
+      return expiresAt.isBefore(nowTime);
     });
 
     if (!_isFetchTriggered && (list.isEmpty || isAnyExpired)) {
@@ -123,15 +135,6 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
       );
       YoutubeApi.syncPlaylist(ref, _channelId);
     }
-  }
-
-  ListView _buildPlaylistRaw(List<PlaylistModel> list) {
-    return ListView.builder(
-      itemBuilder: (context, i) {
-        final curr = list[i];
-        return ListTile(title: Text(curr.snippet.title));
-      },
-    );
   }
 
   Widget _buildChannelInfo() {

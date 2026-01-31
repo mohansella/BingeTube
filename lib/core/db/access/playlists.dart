@@ -42,13 +42,15 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   PlaylistsDao(super.attachedDatabase);
 
   Future<PlaylistModels> getPlaylistModels(String channelId) async {
-    final query = _joinChannelTables()..where(playlists.id.equals(channelId));
+    final query = _joinChannelTables()
+      ..where(playlists.channelId.equals(channelId));
     final results = await query.get();
     return mapRowsToModels(results);
   }
 
   Stream<PlaylistModels> streamPlaylistModels(String channelId) {
-    final query = _joinChannelTables()..where(playlists.id.equals(channelId));
+    final query = _joinChannelTables()
+      ..where(playlists.channelId.equals(channelId));
     return query.watch().map((r) => mapRowsToModels(r));
   }
 
