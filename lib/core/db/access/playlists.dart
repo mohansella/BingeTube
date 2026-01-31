@@ -42,9 +42,14 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   PlaylistsDao(super.attachedDatabase);
 
   Future<PlaylistModels> getPlaylistModels(String channelId) async {
-    final query = _joinChannelTables()..where(channels.id.equals(channelId));
+    final query = _joinChannelTables()..where(playlists.id.equals(channelId));
     final results = await query.get();
     return mapRowsToModels(results);
+  }
+
+  Stream<PlaylistModels> streamPlaylistModels(String channelId) {
+    final query = _joinChannelTables()..where(playlists.id.equals(channelId));
+    return query.watch().map((r) => mapRowsToModels(r));
   }
 
   JoinedSelectStatement<HasResultSet, dynamic> _joinChannelTables({
@@ -52,14 +57,14 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   }) {
     final sel = selectStatement ?? select(playlists).join([]);
     final query = sel.join([
-      innerJoin(playlistSnippets, playlistSnippets.id.equalsExp(channels.id)),
+      innerJoin(playlistSnippets, playlistSnippets.id.equalsExp(playlists.id)),
       innerJoin(
         playlistThumbnails,
-        playlistThumbnails.id.equalsExp(channels.id),
+        playlistThumbnails.id.equalsExp(playlists.id),
       ),
       innerJoin(
         playlistContentDetails,
-        playlistContentDetails.id.equalsExp(channels.id),
+        playlistContentDetails.id.equalsExp(playlists.id),
       ),
     ]);
 
@@ -121,6 +126,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     final snippet = item['snippet'];
     final playlistComp = PlaylistsCompanion.insert(
       id: id,
+      etag: item['etag'],
       priority: priority,
       type: type,
       channelId: snippet['channelId'],

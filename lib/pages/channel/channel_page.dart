@@ -1,8 +1,8 @@
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/core/db/access/channels.dart';
+import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:readmore/readmore.dart';
 
@@ -30,28 +30,29 @@ class ChannelPage extends ConsumerStatefulWidget {
 }
 
 class _ChannelPageState extends ConsumerState<ChannelPage> {
-  final channelDao = ChannelsDao(Database());
+  final _channelDao = ChannelsDao(Database());
+  final _playlistDao = PlaylistsDao(Database());
 
-  late String channelId;
-  late String heroId;
-  late String heroImg;
+  late String _channelId;
+  late String _heroId;
+  late String _heroImg;
 
-  bool isModelLoading = true;
-  late ChannelModel model;
-  late double width;
+  bool _isModelLoading = true;
+  late ChannelModel _model;
+  late double _width;
 
   @override
   void initState() {
     super.initState();
     final params = widget.queryParameters;
-    channelId = params[_Params.channelId.name]!;
-    heroId = params[_Params.heroId.name]!;
-    heroImg = params[_Params.heroImg.name]!;
+    _channelId = params[_Params.channelId.name]!;
+    _heroId = params[_Params.heroId.name]!;
+    _heroImg = params[_Params.heroImg.name]!;
 
-    channelDao.getChannelModelById(channelId).then((v) {
+    _channelDao.getChannelModelById(_channelId).then((v) {
       setState(() {
-        isModelLoading = false;
-        model = v;
+        _isModelLoading = false;
+        _model = v;
       });
     });
   }
@@ -60,16 +61,50 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        width = constraints.minWidth;
+        _width = constraints.minWidth;
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(),
             body: SingleChildScrollView(
-              child: Column(children: [_buildChannelInfo()]),
+              child: Column(
+              crossAxisAlignment: .stretch,
+              children: [ _buildChannelInfo(), _buildPlaylist()]),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPlaylist() {
+    return Align(
+      alignment: .center,
+      child: StreamBuilder(
+        stream: _playlistDao.streamPlaylistModels(_channelId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+          final data = snapshot.data!;
+          var list = data.normals;
+          if (data.uploads != null) {
+            list = [data.uploads!, ...list];
+          }
+          if (data.likes != null) {
+            list = [data.likes!, ...list];
+          }
+          if (list.isEmpty) {
+            return Text('No playlist available');
+          } else {
+            return ListView.builder(
+              itemBuilder: (context, i) {
+                final curr = list[i];
+                return ListTile(title: Text(curr.snippet.title));
+              },
+            );
+          }
+        },
+      ),
     );
   }
 
@@ -84,19 +119,19 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
             mainAxisSize: .min,
             children: [
               Hero(
-                tag: heroId,
+                tag: _heroId,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: _buildVideoCardImage(heroImg, heroId),
+                  child: _buildVideoCardImage(_heroImg, _heroId),
                 ),
               ),
               const SizedBox(width: 8.0),
               Column(
                 crossAxisAlignment: .start,
                 children: [
-                  if (!isModelLoading) ...[
+                  if (!_isModelLoading) ...[
                     Text(
-                      model.snippet.title,
+                      _model.snippet.title,
                       style: theme.textTheme.titleLarge,
                     ),
                     Text(
@@ -110,16 +145,15 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
               ),
             ],
           ),
-          if (!isModelLoading) ...[
+          if (!_isModelLoading) ...[
             const SizedBox(height: 8.0),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
-                model.snippet.description,
+                _model.snippet.description,
                 style: theme.textTheme.bodySmall,
                 trimLines: 2,
                 trimMode: .Line,
-                
               ),
             ),
           ],
@@ -151,12 +185,12 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
 
   String _buildSubsAndVideosText() {
     final buffer = StringBuffer();
-    if (!model.statistics.hiddenSubscriberCount) {
-      final count = model.statistics.subscriberCount;
+    if (!_model.statistics.hiddenSubscriberCount) {
+      final count = _model.statistics.subscriberCount;
       _writeShortNumber(count, buffer);
       buffer.write(' subscribers * ');
     }
-    _writeShortNumber(model.statistics.videoCount, buffer);
+    _writeShortNumber(_model.statistics.videoCount, buffer);
     buffer.write(' videos');
 
     return buffer.toString();

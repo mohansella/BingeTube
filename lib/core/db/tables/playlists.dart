@@ -14,7 +14,7 @@ class Playlists extends Table with TableTimedMixin {
   late final channelId = text().references(Channels, #id)();
   late final type = intEnum<PlaylistType>()();
   late final priority = integer()();
-  late final etag = text().nullable()();
+  late final etag = text()();
 
   @override
   get primaryKey => {id};

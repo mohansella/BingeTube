@@ -6017,9 +6017,9 @@ class $PlaylistsTable extends Playlists
   late final GeneratedColumn<String> etag = GeneratedColumn<String>(
     'etag',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -6081,6 +6081,8 @@ class $PlaylistsTable extends Playlists
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
       );
+    } else if (isInserting) {
+      context.missing(_etagMeta);
     }
     return context;
   }
@@ -6120,7 +6122,7 @@ class $PlaylistsTable extends Playlists
       etag: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
-      ),
+      )!,
     );
   }
 
@@ -6140,7 +6142,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
   final String channelId;
   final PlaylistType type;
   final int priority;
-  final String? etag;
+  final String etag;
   const Playlist({
     required this.createdAt,
     required this.updatedAt,
@@ -6148,7 +6150,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
     required this.channelId,
     required this.type,
     required this.priority,
-    this.etag,
+    required this.etag,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6161,9 +6163,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       map['type'] = Variable<int>($PlaylistsTable.$convertertype.toSql(type));
     }
     map['priority'] = Variable<int>(priority);
-    if (!nullToAbsent || etag != null) {
-      map['etag'] = Variable<String>(etag);
-    }
+    map['etag'] = Variable<String>(etag);
     return map;
   }
 
@@ -6175,7 +6175,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       channelId: Value(channelId),
       type: Value(type),
       priority: Value(priority),
-      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      etag: Value(etag),
     );
   }
 
@@ -6193,7 +6193,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
         serializer.fromJson<int>(json['type']),
       ),
       priority: serializer.fromJson<int>(json['priority']),
-      etag: serializer.fromJson<String?>(json['etag']),
+      etag: serializer.fromJson<String>(json['etag']),
     );
   }
   @override
@@ -6208,7 +6208,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
         $PlaylistsTable.$convertertype.toJson(type),
       ),
       'priority': serializer.toJson<int>(priority),
-      'etag': serializer.toJson<String?>(etag),
+      'etag': serializer.toJson<String>(etag),
     };
   }
 
@@ -6219,7 +6219,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
     String? channelId,
     PlaylistType? type,
     int? priority,
-    Value<String?> etag = const Value.absent(),
+    String? etag,
   }) => Playlist(
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -6227,7 +6227,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
     channelId: channelId ?? this.channelId,
     type: type ?? this.type,
     priority: priority ?? this.priority,
-    etag: etag.present ? etag.value : this.etag,
+    etag: etag ?? this.etag,
   );
   Playlist copyWithCompanion(PlaylistsCompanion data) {
     return Playlist(
@@ -6278,7 +6278,7 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
   final Value<String> channelId;
   final Value<PlaylistType> type;
   final Value<int> priority;
-  final Value<String?> etag;
+  final Value<String> etag;
   final Value<int> rowid;
   const PlaylistsCompanion({
     this.createdAt = const Value.absent(),
@@ -6297,12 +6297,13 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
     required String channelId,
     required PlaylistType type,
     required int priority,
-    this.etag = const Value.absent(),
+    required String etag,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        channelId = Value(channelId),
        type = Value(type),
-       priority = Value(priority);
+       priority = Value(priority),
+       etag = Value(etag);
   static Insertable<Playlist> custom({
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -6332,7 +6333,7 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
     Value<String>? channelId,
     Value<PlaylistType>? type,
     Value<int>? priority,
-    Value<String?>? etag,
+    Value<String>? etag,
     Value<int>? rowid,
   }) {
     return PlaylistsCompanion(
@@ -16443,7 +16444,7 @@ typedef $$PlaylistsTableCreateCompanionBuilder =
       required String channelId,
       required PlaylistType type,
       required int priority,
-      Value<String?> etag,
+      required String etag,
       Value<int> rowid,
     });
 typedef $$PlaylistsTableUpdateCompanionBuilder =
@@ -16454,7 +16455,7 @@ typedef $$PlaylistsTableUpdateCompanionBuilder =
       Value<String> channelId,
       Value<PlaylistType> type,
       Value<int> priority,
-      Value<String?> etag,
+      Value<String> etag,
       Value<int> rowid,
     });
 
@@ -16920,7 +16921,7 @@ class $$PlaylistsTableTableManager
                 Value<String> channelId = const Value.absent(),
                 Value<PlaylistType> type = const Value.absent(),
                 Value<int> priority = const Value.absent(),
-                Value<String?> etag = const Value.absent(),
+                Value<String> etag = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PlaylistsCompanion(
                 createdAt: createdAt,
@@ -16940,7 +16941,7 @@ class $$PlaylistsTableTableManager
                 required String channelId,
                 required PlaylistType type,
                 required int priority,
-                Value<String?> etag = const Value.absent(),
+                required String etag,
                 Value<int> rowid = const Value.absent(),
               }) => PlaylistsCompanion.insert(
                 createdAt: createdAt,
