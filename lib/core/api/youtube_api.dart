@@ -138,9 +138,16 @@ class YoutubeApi {
     }
     searchDao.insertChannelSearch(query, channelIds);
 
-    final model = await searchDao.getChannelSearchModel(query);
+    var model = await searchDao.getChannelSearchModel(query);
     _logger.info('returning ${model?.channels.length} models');
-    return Success(model!);
+    if (model == null) {
+      final now = DateTime.now();
+      model = ChannelSearchModel(
+        ChannelSearche(createdAt: now, updatedAt: now, id: 0, query: query),
+        [],
+      );
+    }
+    return Success(model);
   }
 
   static Future<Result<VideoSearchModel>> searchVideos(
@@ -260,9 +267,16 @@ class YoutubeApi {
     }
     searchDao.insertVideoSearch(query, videoIds);
 
-    final model = await searchDao.getVideoSearchModel(query);
+    var model = await searchDao.getVideoSearchModel(query);
     _logger.info('returning ${model?.videos.length} models');
-    return Success(model!);
+    if (model == null) {
+      final now = DateTime.now();
+      model = VideoSearchModel(
+        VideoSearche(createdAt: now, updatedAt: now, id: 0, query: query),
+        [],
+      );
+    }
+    return Success(model);
   }
 
   static Future<Result<PlaylistModels>> syncPlaylist(
@@ -311,8 +325,32 @@ class YoutubeApi {
       likeItem = items[0];
     }
 
+    var isNextPageAvailable = true;
+    String nextPageToken = '';
+    List<dynamic> normalItems = [];
+    while (isNextPageAvailable) {
+      final jsonResult = await _getJsonResponse(
+        ref,
+        'FetchNormalPlaylist',
+        '$_playlistBaseUrl?key=API_KEY&part=contentDetails,snippet&channelId=$channelId&pageToken=$nextPageToken',
+      );
+
+      if (jsonResult.isError()) {
+        return Failure(jsonResult.exceptionOrNull()!);
+      } else {
+        ApiKeyUtil.addQuota(ref, .fetchPlaylist, 1);
+      }
+      final jsonData = jsonResult.getOrThrow();
+      final items = jsonData['items'] as List;
+      normalItems.addAll(items);
+
+      nextPageToken = jsonData['nextPageToken'] ?? '';
+      isNextPageAvailable = nextPageToken.isNotEmpty;
+    }
+    _logger.info('found normalItems:${normalItems.length}');
+
     playlistDao.upsertAllPlaylistItems(
-      [],
+      normalItems,
       uploadItem: uploadItem,
       likeItem: likeItem,
     );
