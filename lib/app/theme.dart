@@ -26,12 +26,18 @@ class Themes {
     );
   }
 
-  static Color colorFromId(String id, Brightness brightness) {
+  static Color colorFromId(
+    String id,
+    Brightness brightness, {
+    double alpha = 1.0,
+    double sat = 0.38,
+    double light = 0.72,
+    double dark = 0.28,
+  }) {
     int hash = id.hashCode;
     final hue = (hash % 360).toDouble();
-    final sat = 0.38;
-    final light = brightness == .light ? 0.82 : 0.28;
-    final toReturn = HSLColor.fromAHSL(1.0, hue, sat, light).toColor();
+    final lightness = brightness == .light ? light : dark;
+    final toReturn = HSLColor.fromAHSL(alpha, hue, sat, lightness).toColor();
     return toReturn;
   }
 

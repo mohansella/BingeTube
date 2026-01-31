@@ -80,21 +80,29 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
             crossAxisAlignment: .stretch,
             children: [
               _buildChannelInfo(),
-              if (_isFetchInProgress) ...[
-                LinearProgressIndicator(value: _progress),
-                const SizedBox(height: 4),
-                Text(
-                  '$_fetchCount / $_fetchTotal playlists updated',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelSmall,
-                ),
-              ],
+              ..._buildProgress(),
               _buildPlaylistStream(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildProgress() {
+    return [
+      if (_isFetchInProgress) ...[
+        LinearProgressIndicator(value: _progress),
+        const SizedBox(height: 4),
+        Text(
+          '$_fetchCount / $_fetchTotal playlists updated',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+      ] else ...[
+        SizedBox(height: 24),
+      ],
+    ];
   }
 
   Widget _buildPlaylistStream() {
@@ -132,13 +140,110 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   ListView _buildPlaylistRaw(List<PlaylistModel> list) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: list.length,
       itemBuilder: (context, i) {
-        final curr = list[i];
-        return ListTile(title: Text(curr.snippet.title));
+        return _buildPlaylistCard(context, list[i]);
       },
     );
+  }
+
+  Widget _buildPlaylistCard(BuildContext contet, PlaylistModel model) {
+    return Card(
+      clipBehavior: .hardEdge,
+      child: InkWell(
+        onTap: () {},
+        child: Row(
+          children: [
+            _buildPlaylistImages(model),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: .start,
+                crossAxisAlignment: .start,
+                children: [
+                  Text(
+                    model.snippet.title,
+                    maxLines: 2,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w500),
+                  ),
+                  Text(
+                    '${model.details.itemCount} videos',
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w200),
+                  ),
+                  Text(
+                    model.snippet.description,
+                    maxLines: 1,
+                    overflow: .ellipsis,
+                    style: TextStyle(fontWeight: .w300),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaylistImages(PlaylistModel model) {
+    final id = model.playlist.id;
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Padding(
+            padding: .only(top: 0.0),
+            child: ClipRRect(
+              borderRadius: .circular(10),
+              child: _buildPlaylistImageFallback(id, alpha: 0.5),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Padding(
+            padding: .only(top: 3.0),
+            child: ClipRRect(
+              borderRadius: .circular(10),
+              child: _buildPlaylistImageFallback(id, alpha: 0.9),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 6.0),
+          child: ClipRRect(
+            borderRadius: .circular(10),
+            child: _buildPlaylistImage(model),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlaylistImage(PlaylistModel model) {
+    return Image.network(
+      model.thumbnails.highUrl,
+      fit: .cover,
+      height: 90,
+      width: 160,
+      frameBuilder: (c, child, frame, wasSyncLoaded) {
+        if (frame != null || wasSyncLoaded) {
+          return child;
+        }
+        return _buildPlaylistImageFallback(model.snippet.id);
+      },
+      errorBuilder: (c, _, _) => _buildPlaylistImageFallback(model.snippet.id),
+    );
+  }
+
+  Widget _buildPlaylistImageFallback(String id, {double alpha = 1.0}) {
+    final theme = Theme.of(context);
+    final brightness = theme.brightness;
+    final color = Themes.colorFromId(id, brightness, alpha: alpha, sat: 0.1);
+    return Container(color: color, alignment: .center);
   }
 
   Future<void> _triggerSyncIfNeeded(List<PlaylistModel> list) async {
@@ -154,9 +259,9 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     });
 
     if (list.isEmpty || isAnyExpired) {
+      _isFetchTriggered = true;
       await Future.delayed(Duration.zero);
       setState(() {
-        _isFetchTriggered = true;
         _isFetchInProgress = true;
         _fetchCount = 0;
         _fetchTotal = 1;
@@ -192,7 +297,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
                 tag: _heroId,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: _buildVideoCardImage(_heroImg, _heroId),
+                  child: _buildChannelImage(_heroImg, _heroId),
                 ),
               ),
               const SizedBox(width: 8.0),
@@ -232,21 +337,21 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     );
   }
 
-  Widget _buildVideoCardImage(String url, String id) {
+  Widget _buildChannelImage(String url, String id) {
     return Image.network(
       url,
       fit: .contain,
-      frameBuilder: (c, child, frame, wasSyncLoaded) {
+      frameBuilder: (_, child, frame, wasSyncLoaded) {
         if (frame != null || wasSyncLoaded) {
           return child;
         }
-        return _buildCoverFallback(c, id);
+        return _buildChannelImageFallback(id);
       },
-      errorBuilder: (c, _, _) => _buildCoverFallback(c, id),
+      errorBuilder: (c, _, _) => _buildChannelImageFallback(id),
     );
   }
 
-  Widget _buildCoverFallback(BuildContext context, String id) {
+  Widget _buildChannelImageFallback(String id) {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
     final color = Themes.colorFromId(id, brightness);
