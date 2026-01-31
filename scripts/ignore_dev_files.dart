@@ -21,10 +21,7 @@ void main(List<String> args) async {
       continue;
     }
 
-    final result = await Process.run(
-      'git',
-      ['update-index', action, file],
-    );
+    final result = await Process.run('git', ['update-index', action, file]);
 
     if (result.exitCode == 0) {
       print('${args[0]}: $file');

@@ -2,11 +2,7 @@ import 'package:bingetube/core/db/tables/channels.dart';
 import 'package:bingetube/core/db/tables/mixins.dart';
 import 'package:drift/drift.dart';
 
-enum PlaylistType {
-  uploads,
-  likes,
-  normal
-}
+enum PlaylistType { uploads, likes, normal }
 
 @TableIndex(name: 'PlaylistIndexETag', columns: {#etag})
 class Playlists extends Table with TableTimedMixin {

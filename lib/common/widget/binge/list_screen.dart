@@ -93,8 +93,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
     final titleStyle = Theme.of(context).textTheme.bodyMedium;
     final ratio = _width / minWidth;
     final oFontSize = (titleStyle?.fontSize ?? 0);
-    var fontSize =  oFontSize * ratio * 0.85;
-    if(fontSize < oFontSize) {
+    var fontSize = oFontSize * ratio * 0.85;
+    if (fontSize < oFontSize) {
       fontSize = oFontSize;
     }
     final padding = 8 * ratio;

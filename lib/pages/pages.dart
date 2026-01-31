@@ -7,7 +7,7 @@ enum Pages {
 
   keyConfig('/keyconfig', 'Key Config'),
   search('/search', 'Search'),
-  channel('/channel','Channel'),
+  channel('/channel', 'Channel'),
 
   binge('/binge', 'Binge'),
   editBinge('/edit_binge', 'Edit Binge');
