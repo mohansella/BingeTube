@@ -1,3 +1,4 @@
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:drift/drift.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/tables/playlists.dart';
@@ -71,6 +72,20 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
         await into(playlistVsVideos).insert(vsComp);
       }
     });
+  }
+
+  Future<List<VideoModel>> getVideoModels(String playlistId) async {
+    final videoDao = VideosDao(db);
+    final query =
+        videoDao.joinVideoAndChannelTables(
+            selectStatement: select(playlistVsVideos).join([
+              innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId)),
+            ]),
+          )
+          ..where(playlistVsVideos.playlistId.equals(playlistId))
+          ..orderBy([OrderingTerm.asc(playlistVsVideos.priority)]);
+    final results = await query.get();
+    return results.map((r) => videoDao.mapRowToModel(r)).toList();
   }
 
   Future<void> upsertAllPlaylistItems(
