@@ -279,7 +279,7 @@ class YoutubeApi {
     return Success(model);
   }
 
-  static Future<Result<PlaylistModels>> syncPlaylist(
+  static Future<Result<void>> syncPlaylist(
     WidgetRef ref,
     String channelId,
     bool Function(int, int) updateProgress,
@@ -359,13 +359,16 @@ class YoutubeApi {
     }
     _logger.info('found normalItems:${normalItems.length}');
 
-    playlistDao.upsertAllPlaylistItems(
+    await playlistDao.upsertAllPlaylistItems(
       normalItems,
       uploadItem: uploadItem,
       likeItem: likeItem,
     );
-    return Failure(Exception());
+
+    return Success(Unit);
   }
+
+
 
   static Future<Result<void>> _forceSyncChannelsWithSETag(
     WidgetRef ref,
