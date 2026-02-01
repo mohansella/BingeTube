@@ -46,13 +46,54 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     final query = _joinChannelTables()
       ..where(playlists.channelId.equals(channelId));
     final results = await query.get();
-    return mapRowsToModels(results);
+    return _mapRowsToModels(results);
   }
 
   Stream<PlaylistModels> streamPlaylistModels(String channelId) {
     final query = _joinChannelTables()
       ..where(playlists.channelId.equals(channelId));
-    return query.watch().map((r) => mapRowsToModels(r));
+    return query.watch().map((r) => _mapRowsToModels(r));
+  }
+
+  Future<void> upsertVideos(String playlistId, List<String> videoIds) async {
+    await transaction(() async {
+      final deleteQuery = delete(playlistVsVideos)
+        ..where((v) => v.playlistId.equals(playlistId));
+      await deleteQuery.go();
+
+      int priority = 1;
+      for (final videoId in videoIds) {
+        final vsComp = PlaylistVsVideosCompanion.insert(
+          playlistId: playlistId,
+          videoId: videoId,
+          priority: priority++,
+        );
+        await into(playlistVsVideos).insert(vsComp);
+      }
+    });
+  }
+
+  Future<void> upsertAllPlaylistItems(
+    List<dynamic> normalItems, {
+    required uploadItem,
+    required likeItem,
+  }) async {
+    await transaction(() async {
+      if (uploadItem != null) {
+        await _upsertPlaylistJson(uploadItem, type: .uploads);
+      }
+      if (likeItem != null) {
+        await _upsertPlaylistJson(likeItem, type: .likes);
+      }
+      var priority = 1;
+      for (final normalItem in normalItems) {
+        await _upsertPlaylistJson(
+          normalItem,
+          priority: priority++,
+          type: .normal,
+        );
+      }
+    });
   }
 
   JoinedSelectStatement<HasResultSet, dynamic> _joinChannelTables({
@@ -74,7 +115,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     return query;
   }
 
-  PlaylistModel mapRowToModel(TypedResult result) {
+  PlaylistModel _mapRowToModel(TypedResult result) {
     return PlaylistModel(
       playlist: result.readTable(playlists),
       snippet: result.readTable(playlistSnippets),
@@ -83,12 +124,12 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     );
   }
 
-  PlaylistModels mapRowsToModels(List<TypedResult> results) {
+  PlaylistModels _mapRowsToModels(List<TypedResult> results) {
     PlaylistModel? uploads;
     PlaylistModel? likes;
     List<PlaylistModel> normals = [];
     for (final result in results) {
-      final model = mapRowToModel(result);
+      final model = _mapRowToModel(result);
       final type = model.playlist.type;
       if (type == .uploads) {
         uploads = model;
@@ -118,30 +159,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     });
   }
 
-  Future<void> upsertAllPlaylistItems(
-    List<dynamic> normalItems, {
-    required uploadItem,
-    required likeItem,
-  }) async {
-    await transaction(() async {
-      if (uploadItem != null) {
-        await upsertPlaylistJson(uploadItem, type: .uploads);
-      }
-      if (likeItem != null) {
-        await upsertPlaylistJson(likeItem, type: .likes);
-      }
-      var priority = 1;
-      for (final normalItem in normalItems) {
-        await upsertPlaylistJson(
-          normalItem,
-          priority: priority++,
-          type: .normal,
-        );
-      }
-    });
-  }
-
-  Future<void> upsertPlaylistJson(
+  Future<void> _upsertPlaylistJson(
     item, {
     int priority = 0,
     required PlaylistType type,

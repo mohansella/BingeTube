@@ -152,7 +152,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     return Card(
       clipBehavior: .hardEdge,
       child: InkWell(
-        onTap: () {},
+        onTap: () => _onTapPlaylist(model),
         child: Row(
           children: [
             _buildPlaylistImages(model),
@@ -369,6 +369,10 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     buffer.write(' videos');
 
     return buffer.toString();
+  }
+
+  void _onTapPlaylist(PlaylistModel model) {
+
   }
 
   void _writeShortNumber(int count, StringBuffer buffer) {
