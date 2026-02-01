@@ -372,7 +372,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   }
 
   void _onTapPlaylist(PlaylistModel model) {
-
+    YoutubeApi.syncPlaylistVideos(ref, model.playlist.id);
   }
 
   void _writeShortNumber(int count, StringBuffer buffer) {

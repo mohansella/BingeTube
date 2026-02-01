@@ -21,6 +21,8 @@ const _searchBaseUrl = 'https://www.googleapis.com/youtube/v3/search';
 const _channelsBaseUrl = 'https://www.googleapis.com/youtube/v3/channels';
 const _videosBaseUrl = 'https://www.googleapis.com/youtube/v3/videos';
 const _playlistBaseUrl = 'https://www.googleapis.com/youtube/v3/playlists';
+const _playlistItemsBaseurl =
+    'https://www.googleapis.com/youtube/v3/playlistItems';
 
 class YoutubeApi {
   static final Logger _logger = LogManager.getLogger('YoutubeApi');
@@ -368,7 +370,66 @@ class YoutubeApi {
     return Success(Unit);
   }
 
+  static Future<Result<void>> syncPlaylistVideos(
+    WidgetRef ref,
+    String playlistId,
+  ) async {
+    var isNextPageAvailable = true;
+    String nextPageToken = '';
+    List<String> videoIds = [];
+    while (isNextPageAvailable) {
+      final jsonResult = await _getJsonResponse(
+        ref,
+        'SyncPlaylistVideos',
+        '$_playlistItemsBaseurl?key=API_KEY&part=snippet&maxResults=50'
+            '&playlistId=$playlistId&pageToken=$nextPageToken',
+      );
+      if (jsonResult.isError()) {
+        return Failure(jsonResult.exceptionOrNull()!);
+      } else {
+        ApiKeyUtil.addQuota(ref, .fetchPlaylistItems, 1);
+      }
 
+      final jsonData = jsonResult.getOrThrow();
+      final items = jsonData['items'] as List;
+      for (final item in items) {
+        final resourceId = item['snippet']['resourceId'];
+        final kind = resourceId['kind'];
+        if (kind != 'youtube#video') {
+          _logger.warning(
+            'unexpected kind found in playlist:$playlistId with resourceId:$resourceId',
+          );
+          continue;
+        }
+        videoIds.add(resourceId['videoId']);
+      }
+
+      final total = jsonData['pageInfo']['totalResults'];
+      _logger.info('fetched ${videoIds.length} from total:$total');
+
+      nextPageToken = jsonData['nextPageToken'] ?? '';
+      isNextPageAvailable = nextPageToken.isNotEmpty;
+    }
+    _logger.info('fetched ${videoIds.length} for playlist: $playlistId');
+
+    final videosDao = VideosDao(Database());
+    final videosInDB = await videosDao.getVideosById(videoIds);
+    final isAfter = DateTime.now().subtract(
+      CacheConstants.syncPlaylistItemsAfter,
+    );
+    final videosValidInDB = videosInDB
+        .where((v) => v.updatedAt.isAfter(isAfter))
+        .map((v) => v.id)
+        .toSet();
+    final videosNeedUpdate = videoIds.where(
+      (v) => !videosValidInDB.contains(v),
+    );
+    _logger.info(
+      'videosInDB:${videosInDB.length} valid:${videosValidInDB.length} needsUpdate:${videosNeedUpdate.length}',
+    );
+
+    return Failure(Exception());
+  }
 
   static Future<Result<void>> _forceSyncChannelsWithSETag(
     WidgetRef ref,
