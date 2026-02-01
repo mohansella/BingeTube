@@ -421,14 +421,25 @@ class YoutubeApi {
         .where((v) => v.updatedAt.isAfter(isAfter))
         .map((v) => v.id)
         .toSet();
-    final videosNeedUpdate = videoIds.where(
-      (v) => !videosValidInDB.contains(v),
-    );
+    final items = videoIds.where((v) => !videosValidInDB.contains(v)).toList();
     _logger.info(
-      'videosInDB:${videosInDB.length} valid:${videosValidInDB.length} needsUpdate:${videosNeedUpdate.length}',
+      'videosInDB:${videosInDB.length} valid:${videosValidInDB.length} needsUpdate:${items.length}',
     );
 
-    return Failure(Exception());
+    for (var i = 0; i < items.length; i += 50) {
+      final end = (i + 50).clamp(0, items.length);
+      _logger.info('syncing videos [$i-$end] of ${items.length} items');
+      final batch = items.sublist(i, end);
+      _forceSyncVideosWithSETag(
+        ref,
+        Map.fromEntries(batch.map((b) => MapEntry(b, null))),
+      );
+    }
+
+    final playlistDao = PlaylistsDao(Database());
+    await playlistDao.upsertVideos(playlistId, videoIds);
+
+    return Success(Unit);
   }
 
   static Future<Result<void>> _forceSyncChannelsWithSETag(
@@ -464,7 +475,7 @@ class YoutubeApi {
 
   static Future<Result<void>> _forceSyncVideosWithSETag(
     WidgetRef ref,
-    Map<String, String> videosVsSETag,
+    Map<String, String?> videosVsSETag,
   ) async {
     final jsonResult = await _getJsonResponse(
       ref,
@@ -485,7 +496,7 @@ class YoutubeApi {
     final videosDao = VideosDao(database);
 
     for (final item in items) {
-      String setag = videosVsSETag[item['id'] as String]!;
+      final setag = videosVsSETag[item['id']];
       await videosDao.upsertVideoJsonData(item, setag: setag);
     }
 
