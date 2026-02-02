@@ -88,6 +88,18 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     return results.map((r) => videoDao.mapRowToModel(r)).toList();
   }
 
+  Future<DateTime?> getPlaylistItemsUpdateTime(String playlistId) async {
+    final query =
+        select(playlistVsVideos).join([
+            innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId)),
+          ])
+          ..where(playlistVsVideos.playlistId.equals(playlistId))
+          ..orderBy([OrderingTerm.asc(videos.updatedAt)])
+          ..limit(1);
+    final result = await query.getSingleOrNull();
+    return result?.readTable(videos).updatedAt;
+  }
+
   Future<void> upsertAllPlaylistItems(
     List<dynamic> normalItems, {
     required uploadItem,

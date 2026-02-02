@@ -374,6 +374,20 @@ class YoutubeApi {
     WidgetRef ref,
     String playlistId,
   ) async {
+    final playlistDao = PlaylistsDao(Database());
+    final lastUpdateTime = await playlistDao.getPlaylistItemsUpdateTime(
+      playlistId,
+    );
+    final isAfter = DateTime.now().subtract(
+      CacheConstants.syncPlaylistItemsAfter,
+    );
+    if (lastUpdateTime == null) {
+      _logger.info('no entries found in db for playlist:$playlistId');
+    } else if (lastUpdateTime.isAfter(isAfter)) {
+      _logger.info('cache entries valid for playlist:$playlistId');
+      return Success(Unit);
+    }
+
     var isNextPageAvailable = true;
     String nextPageToken = '';
     List<String> videoIds = [];
@@ -414,9 +428,6 @@ class YoutubeApi {
 
     final videosDao = VideosDao(Database());
     final videosInDB = await videosDao.getVideosById(videoIds);
-    final isAfter = DateTime.now().subtract(
-      CacheConstants.syncPlaylistItemsAfter,
-    );
     final videosValidInDB = videosInDB
         .where((v) => v.updatedAt.isAfter(isAfter))
         .map((v) => v.id)
@@ -430,13 +441,12 @@ class YoutubeApi {
       final end = (i + 50).clamp(0, items.length);
       _logger.info('syncing videos [$i-$end] of ${items.length} items');
       final batch = items.sublist(i, end);
-      _forceSyncVideosWithSETag(
+      await _forceSyncVideosWithSETag(
         ref,
         Map.fromEntries(batch.map((b) => MapEntry(b, null))),
       );
     }
 
-    final playlistDao = PlaylistsDao(Database());
     await playlistDao.upsertVideos(playlistId, videoIds);
 
     return Success(Unit);
