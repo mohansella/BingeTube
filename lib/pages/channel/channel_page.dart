@@ -413,7 +413,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
 
     final isCancelled = await CustomDialog.show(
       context,
-      'Syncing playlist items',
+      'Syncing Playlist',
       'Cancel',
       FutureBuilder(
         future: future,
@@ -439,7 +439,9 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
               return Column(
                 mainAxisSize: .min,
                 children: [
-                  Text('${isSync ? "fetching" : "synching"} - $progress/$end'),
+                  Text(
+                    '$progress of $end items ${isSync ? "synchronized" : "fetched"}',
+                  ),
                   SizedBox(height: 8),
                   LinearProgressIndicator(value: progress / end),
                 ],
