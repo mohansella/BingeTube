@@ -447,7 +447,20 @@ class YoutubeApi {
       );
     }
 
-    await playlistDao.upsertVideos(playlistId, videoIds);
+    final videoIdsSet = <String>{};
+    final uniqueVideoIds = <String>[];
+    for (final videoId in videoIds) {
+      if (videoIdsSet.contains(videoId)) {
+        continue;
+      }
+      videoIdsSet.add(videoId);
+      uniqueVideoIds.add(videoId);
+    }
+    _logger.info(
+      'inserting videos:${uniqueVideoIds.length} duplicates:${videoIds.length - uniqueVideoIds.length}',
+    );
+
+    await playlistDao.upsertVideos(playlistId, uniqueVideoIds);
 
     return Success(Unit);
   }
