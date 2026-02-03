@@ -221,7 +221,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
           padding: const EdgeInsets.only(top: 6.0),
           child: ClipRRect(
             borderRadius: .circular(10),
-            child: _buildPlaylistImage(model, imgUrl),
+            child: Hero(tag: id, child: _buildPlaylistImage(model, imgUrl)),
           ),
         ),
       ],
