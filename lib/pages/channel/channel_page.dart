@@ -1,4 +1,5 @@
 import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/constants/constants.dart';
 import 'package:bingetube/core/db/access/channels.dart';
@@ -6,6 +7,7 @@ import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:readmore/readmore.dart';
 
@@ -371,8 +373,60 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     return buffer.toString();
   }
 
-  void _onTapPlaylist(PlaylistModel model) {
-    YoutubeApi.syncPlaylistVideos(ref, model.playlist.id);
+  void _onTapPlaylist(PlaylistModel model) async {
+    var isSync = false;
+    var progress = 0;
+    var end = 1;
+
+    bool Function(bool, int, int) callback = (s, p, e) => true;
+    bool callbackWrapper(s, p, e) => callback(s, p, e);
+    final future = YoutubeApi.syncPlaylistVideos(
+      ref,
+      model.playlist.id,
+      callbackWrapper,
+    );
+
+    final isCancelled = await CustomDialog.show(
+      context,
+      'Syncing playlist items',
+      'Cancel',
+      FutureBuilder(
+        future: future,
+        builder: (fContext, snapshot) {
+          if (snapshot.hasData && fContext.mounted) {
+            Future.microtask(() {
+              if (fContext.mounted) fContext.pop();
+            });
+          }
+          return StatefulBuilder(
+            builder: (localContext, setLocalState) {
+              callback = (s, p, e) {
+                Future.microtask(() {
+                  if (!localContext.mounted) return;
+                  setLocalState(() {
+                    isSync = s;
+                    progress = p;
+                    end = e;
+                  });
+                });
+                return localContext.mounted;
+              };
+              return Column(
+                mainAxisSize: .min,
+                children: [
+                  Text('${isSync ? "fetching" : "synching"} - $progress/$end'),
+                  SizedBox(height: 8),
+                  LinearProgressIndicator(value: progress / end),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+    ChannelPage._logger.info(
+      'playlist sync dialog closed. isCancelled:$isCancelled',
+    );
   }
 
   void _writeShortNumber(int count, StringBuffer buffer) {

@@ -373,14 +373,19 @@ class YoutubeApi {
   static Future<Result<void>> syncPlaylistVideos(
     WidgetRef ref,
     String playlistId,
+    bool Function(bool, int, int) updateProgress,
   ) async {
+    Result<void> failure = Failure(Exception());
     final playlistDao = PlaylistsDao(Database());
+    if (!updateProgress(false, 0, 1)) return failure;
+
     final lastUpdateTime = await playlistDao.getPlaylistItemsUpdateTime(
       playlistId,
     );
     final isAfter = DateTime.now().subtract(
       CacheConstants.syncPlaylistItemsAfter,
     );
+    _logger.info('lastUpdateTime:$lastUpdateTime isAfter:$isAfter');
     if (lastUpdateTime == null) {
       _logger.info('no entries found in db for playlist:$playlistId');
     } else if (lastUpdateTime.isAfter(isAfter)) {
@@ -420,6 +425,7 @@ class YoutubeApi {
 
       final total = jsonData['pageInfo']['totalResults'];
       _logger.info('fetched ${videoIds.length} from total:$total');
+      if (!updateProgress(false, videoIds.length, total)) return failure;
 
       nextPageToken = jsonData['nextPageToken'] ?? '';
       isNextPageAvailable = nextPageToken.isNotEmpty;
@@ -437,14 +443,19 @@ class YoutubeApi {
       'videosInDB:${videosInDB.length} valid:${videosValidInDB.length} needsUpdate:${items.length}',
     );
 
+    if (!updateProgress(true, 0, 1)) return failure;
     for (var i = 0; i < items.length; i += 50) {
       final end = (i + 50).clamp(0, items.length);
       _logger.info('syncing videos [$i-$end] of ${items.length} items');
       final batch = items.sublist(i, end);
-      await _forceSyncVideosWithSETag(
+      final syncResult = await _forceSyncVideosWithSETag(
         ref,
         Map.fromEntries(batch.map((b) => MapEntry(b, null))),
       );
+      if (syncResult.isError()) {
+        return Failure(syncResult.exceptionOrNull()!);
+      }
+      if (!updateProgress(true, i + 1, items.length)) return failure;
     }
 
     final videoIdsSet = <String>{};

@@ -7,12 +7,12 @@ class CustomDialog {
     String confirmText,
     Widget? content, {
     String? cancelText,
-    bool? barrierDismissible,
+    bool barrierDismissible = false,
   }) async {
     var toReturn = false;
     await showDialog(
       context: context,
-      barrierDismissible: barrierDismissible ?? false,
+      barrierDismissible: barrierDismissible,
       builder: (context) {
         return AlertDialog(
           title: Text(title),
