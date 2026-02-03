@@ -471,7 +471,16 @@ class YoutubeApi {
       'inserting videos:${uniqueVideoIds.length} duplicates:${videoIds.length - uniqueVideoIds.length}',
     );
 
-    await playlistDao.upsertVideos(playlistId, uniqueVideoIds);
+    final videosToInsert = await videosDao.getVideosById(uniqueVideoIds);
+    final missedVideosCount = uniqueVideoIds.length - videosToInsert.length;
+    if (missedVideosCount != 0) {
+      _logger.warning('video ids missed in sync results: $missedVideosCount');
+    }
+
+    await playlistDao.upsertVideos(
+      playlistId,
+      videosToInsert.map((v) => v.id).toList(),
+    );
 
     return Success(Unit);
   }
