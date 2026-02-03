@@ -81,7 +81,15 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     });
   }
 
-  Future<List<VideoModel>> getVideoModels(String playlistId) async {
+  Future<VideoModel> getFirstVideoModel(String playlistId) async {
+    final models = await getVideoModels(playlistId, limit: 1);
+    return models[0];
+  }
+
+  Future<List<VideoModel>> getVideoModels(
+    String playlistId, {
+    int? limit,
+  }) async {
     final videoDao = VideosDao(db);
     final query =
         videoDao.joinVideoAndChannelTables(
@@ -91,6 +99,9 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
           )
           ..where(playlistVsVideos.playlistId.equals(playlistId))
           ..orderBy([OrderingTerm.asc(playlistVsVideos.priority)]);
+    if (limit != null) {
+      query.limit(limit);
+    }
     final results = await query.get();
     return results.map((r) => videoDao.mapRowToModel(r)).toList();
   }

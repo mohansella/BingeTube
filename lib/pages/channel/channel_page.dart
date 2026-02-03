@@ -6,6 +6,8 @@ import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/pages/binge/binge_page.dart';
+import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -151,13 +153,14 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   }
 
   Widget _buildPlaylistCard(BuildContext contet, PlaylistModel model) {
+    final imgUrl = model.thumbnails.highUrl;
     return Card(
       clipBehavior: .hardEdge,
       child: InkWell(
-        onTap: () => _onTapPlaylist(model),
+        onTap: () => _onTapPlaylist(model, imgUrl),
         child: Row(
           children: [
-            _buildPlaylistImages(model),
+            _buildPlaylistImages(model, imgUrl),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -192,7 +195,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     );
   }
 
-  Widget _buildPlaylistImages(PlaylistModel model) {
+  Widget _buildPlaylistImages(PlaylistModel model, String imgUrl) {
     final id = model.playlist.id;
     return Stack(
       children: [
@@ -218,16 +221,16 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
           padding: const EdgeInsets.only(top: 6.0),
           child: ClipRRect(
             borderRadius: .circular(10),
-            child: _buildPlaylistImage(model),
+            child: _buildPlaylistImage(model, imgUrl),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPlaylistImage(PlaylistModel model) {
+  Widget _buildPlaylistImage(PlaylistModel model, String imgUrl) {
     return Image.network(
-      model.thumbnails.highUrl,
+      imgUrl,
       fit: .cover,
       height: 90,
       width: 160,
@@ -373,7 +376,29 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     return buffer.toString();
   }
 
-  void _onTapPlaylist(PlaylistModel model) async {
+  void _onTapPlaylist(PlaylistModel model, String imgUrl) async {
+    final id = model.playlist.id;
+    final isCompleted = await _syncVideosWithCustomDialogProgress(model);
+    if (!isCompleted) {
+      return;
+    }
+    final firstVideo = await _playlistDao.getFirstVideoModel(id);
+    final lContext = context;
+    if (lContext.mounted) {
+      lContext.pushNamed(
+        Pages.binge.name,
+        queryParameters: BingePage.buildParams(
+          type: .playlistVideos,
+          id: id,
+          videoId: firstVideo.video.id,
+          heroId: id,
+          heroImg: imgUrl,
+        ),
+      );
+    }
+  }
+
+  Future<bool> _syncVideosWithCustomDialogProgress(PlaylistModel model) async {
     var isSync = false;
     var progress = 0;
     var end = 1;
@@ -427,6 +452,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     ChannelPage._logger.info(
       'playlist sync dialog closed. isCancelled:$isCancelled',
     );
+    return !isCancelled;
   }
 
   void _writeShortNumber(int count, StringBuffer buffer) {
