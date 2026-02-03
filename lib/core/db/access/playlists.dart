@@ -1,4 +1,5 @@
 import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:drift/drift.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/tables/playlists.dart';
@@ -50,6 +51,12 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     return _mapRowsToModels(results);
   }
 
+  Future<PlaylistModel> getPlaylistModel(String playlistId) async {
+    final query = _joinChannelTables()..where(playlists.id.equals(playlistId));
+    final result = await query.getSingle();
+    return _mapRowToModel(result);
+  }
+
   Stream<PlaylistModels> streamPlaylistModels(String channelId) {
     final query = _joinChannelTables()
       ..where(playlists.channelId.equals(channelId));
@@ -86,6 +93,16 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
           ..orderBy([OrderingTerm.asc(playlistVsVideos.priority)]);
     final results = await query.get();
     return results.map((r) => videoDao.mapRowToModel(r)).toList();
+  }
+
+  Future<BingeModel> getBingeModel(String playlistId) async {
+    final playlist = await getPlaylistModel(playlistId);
+    final videos = await getVideoModels(playlistId);
+    return BingeModel(
+      title: playlist.snippet.title,
+      description: playlist.snippet.description,
+      videos: videos,
+    );
   }
 
   Future<DateTime?> getPlaylistItemsUpdateTime(String playlistId) async {
