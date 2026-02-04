@@ -1,3 +1,4 @@
+import 'package:bingetube/common/widget/player/server/player_server.dart';
 import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/database.dart';
@@ -20,6 +21,9 @@ sealed class CoreInit {
     //initialize sqlite3 with drift
     var db = Database();
     await db.customSelect('SELECT 1').get();
+
+    //initialize localserver
+    await PlayerServer().start();
 
     _isInitialized = true;
   }
