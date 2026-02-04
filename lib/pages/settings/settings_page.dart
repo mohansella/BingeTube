@@ -1,5 +1,6 @@
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/config/font_size.dart';
+import 'package:bingetube/core/config/player_type.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -17,6 +18,7 @@ class SettingsPage extends ConsumerWidget {
               children: [
                 _buildTheme(context, ref),
                 _buildFontSize(context, ref),
+                _buildPlayerType(context, ref),
                 _buildVersionInfo(),
               ],
             ),
@@ -102,6 +104,41 @@ class SettingsPage extends ConsumerWidget {
             selected: {appFontSize},
             onSelectionChanged: (s) {
               ref.read(ConfigProviders.appFontSize.notifier).save(s.first);
+            },
+            showSelectedIcon: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container _buildPlayerType(BuildContext context, WidgetRef ref) {
+    var playerType = ref.watch(ConfigProviders.playerType);
+    return Container(
+      height: 56,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Icon(Icons.text_fields, size: 24),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Player Type',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+          SegmentedButton(
+            segments: PlayerType.values
+                .map(
+                  (v) => ButtonSegment(
+                    label: Text(v.name[0].toUpperCase() + v.name.substring(1)),
+                    value: v,
+                  ),
+                )
+                .toList(),
+            selected: {playerType},
+            onSelectionChanged: (s) {
+              ref.read(ConfigProviders.playerType.notifier).save(s.first);
             },
             showSelectedIcon: false,
           ),

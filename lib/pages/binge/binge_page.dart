@@ -73,6 +73,7 @@ class _BingePageState extends ConsumerState<BingePage> {
         return SafeArea(
           child: Scaffold(
             body: PlayerWidget(
+              playerType: ref.read(ConfigProviders.playerType),
               videoId: _controller.activeVideoId,
               controller: _controller,
               parentScroll: _parentScroll,

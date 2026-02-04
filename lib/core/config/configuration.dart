@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bingetube/core/config/apikey_meta.dart';
 import 'package:bingetube/core/config/font_size.dart';
+import 'package:bingetube/core/config/player_type.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -24,6 +25,12 @@ enum ConfigKey<T> {
     AppFontSize.medium,
     AppFontSize.fromEnum,
     AppFontSize.toEnum,
+  ),
+
+  playerType<PlayerType>(
+    PlayerType.external,
+    PlayerType.fromEnum,
+    PlayerType.toEnum,
   );
 
   final T defaultValue;
@@ -46,6 +53,10 @@ sealed class ConfigProviders {
 
   static final appFontSize = NotifierProvider(
     () => ConfigController<AppFontSize>(ConfigKey.appFontSize),
+  );
+
+  static final playerType = NotifierProvider(
+    () => ConfigController<PlayerType>(ConfigKey.playerType),
   );
 }
 
