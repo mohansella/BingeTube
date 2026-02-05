@@ -24,10 +24,10 @@ class ExternalPlayerWidget extends PlayerWidget {
   }) : super.internal();
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _ExternalPlayerState();
+  ExternalPlayerState createState() => ExternalPlayerState();
 }
 
-class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
+class ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   VideoModel? _model;
   bool _loading = true;
   Object? _error;
@@ -35,13 +35,16 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   double _width = 0;
   double _height = 0;
 
+  get playerWidth => _width;
+  get playerHeight => _height;
+
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
 
   get _parentScroll => widget.parentScroll;
   get _childScroll => widget.childScroll;
 
-  BingeController get controller => widget.controller;
+  BingeController get _controller => widget.controller;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +73,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
                       automaticallyImplyLeading: false,
                       expandedHeight: _height,
                       flexibleSpace: FlexibleSpaceBar(
-                        background: _buildPlayerStack(),
+                        background: buildPlayerStack(),
                       ),
                     ),
                   ];
@@ -103,7 +106,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     _isMarkWatched = false;
     final restartId = ++_restartId;
     try {
-      final value = await controller.getActiveVideoModel();
+      final value = await _controller.getActiveVideoModel();
       if (restartId == _restartId) {
         setState(() {
           _model = value;
@@ -235,7 +238,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     );
   }
 
-  Widget _buildPlayerStack() {
+  Widget buildPlayerStack() {
     return SizedBox(
       height: _height,
       width: double.infinity,
@@ -315,14 +318,14 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
           setState(() {
             _isMarkWatched = true;
           });
-          controller.markActiveVideoWatched();
+          _controller.markActiveVideoWatched();
         },
         Icons.check_outlined,
         _width / 14,
         'Mark Watched',
       );
     }
-    final isEnabled = controller.isNextVideoExists;
+    final isEnabled = _controller.isNextVideoExists;
     return _buildIconControl(
       isEnabled ? () => widget.onEvent(.onNext) : null,
       Icons.skip_next,
@@ -332,7 +335,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
   }
 
   Widget _buildSkipPrevious() {
-    final isEnabled = controller.isPrevVideoExists;
+    final isEnabled = _controller.isPrevVideoExists;
     return _buildIconControl(
       isEnabled ? () => widget.onEvent(.onPrev) : null,
       Icons.skip_previous,
@@ -363,7 +366,7 @@ class _ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
       'opening externally id:${model.video.id} title: ${model.snippet.title}',
     );
     final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
-    controller.markActiveVideoStarted();
+    _controller.markActiveVideoStarted();
     await launchUrl(url, mode: .externalNonBrowserApplication);
   }
 
