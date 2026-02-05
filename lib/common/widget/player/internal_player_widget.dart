@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/common/widget/player/server/player_server.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class InternalPlayerWidget extends PlayerWidget {
   const InternalPlayerWidget({
@@ -20,24 +20,28 @@ class InternalPlayerWidget extends PlayerWidget {
   @override
   ConsumerState<InternalPlayerWidget> createState() =>
       _InternalPlayerWidgetState();
+
+  static get isSupportedPlatform {
+    return Platform.isAndroid ||
+        Platform.isIOS ||
+        Platform.isMacOS ||
+        Platform.isWindows;
+  }
 }
 
 class _InternalPlayerWidgetState extends ConsumerState<InternalPlayerWidget> {
   @override
   Widget build(BuildContext context) {
     final url = 'http://localhost:${PlayerServer().port}?id=${widget.videoId}';
-    final controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse(url));
-    if (Platform.isAndroid || Platform.isMacOS || Platform.isIOS) {
+    if (InternalPlayerWidget.isSupportedPlatform) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Flutter Simple Example')),
-        body: WebViewWidget(controller: controller),
+        appBar: AppBar(title: const Text('')),
+        body: InAppWebView(initialUrlRequest: URLRequest(url: WebUri(url))),
       );
     }
     return Scaffold(
       appBar: AppBar(),
-      body: Text('internal player currently not support for this platform'),
+      body: Text('Internal player currently not support for this platform'),
     );
   }
 }
