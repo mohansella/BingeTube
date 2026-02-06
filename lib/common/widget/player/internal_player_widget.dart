@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -6,6 +7,8 @@ import 'package:bingetube/common/widget/player/base_player_widget.dart';
 import 'package:bingetube/common/widget/player/server/player_server.dart';
 
 class InternalPlayerWidget extends BasePlayerWidget {
+  static final _logger = LogManager.getLogger('InternalPlayerWidget');
+
   const InternalPlayerWidget({
     super.key,
     required super.videoId,
@@ -89,13 +92,14 @@ class _InternalPlayerState extends BasePlayerState {
         initController(webControl);
       },
       onLoadStop: (controller, url) async {
+        //avoid mouse over event falling on iframe
         await controller.evaluateJavascript(
           source: """
-          document.querySelectorAll('iframe').forEach(i => {
-            i.style.pointerEvents = 'none';
-            i.style.cursor = 'default';
-          });
-        """,
+            document.querySelectorAll('iframe').forEach(i => {
+              i.style.pointerEvents = 'none';
+              i.style.cursor = 'default';
+            });
+          """,
         );
       },
     );
@@ -114,28 +118,65 @@ class _InternalPlayerState extends BasePlayerState {
 
   void initController(InAppWebViewController webControl) {
     if (_videoController != null) return;
-    _videoController = _VideoController(webControl);
+    _videoController = _VideoController(this, webControl);
   }
 
   void _onPlayTap() async {
+    await _videoController?.playVideo();
     setState(() {
       _playState = .playing;
     });
-    await _videoController?.playVideo();
   }
 
   void _onPauseTap() async {
+    await _videoController?.pauseVideo();
     setState(() {
       _playState = .paused;
     });
-    await _videoController?.pauseVideo();
   }
+
+  void _onWebPlayerReady() async {
+    await _videoController?.playVideo();
+    setState(() {
+      _playState = .playing;
+    });
+  }
+
+  void _onWebPlayerStateChange(data) {}
+  void _onWebPlayerQualityChange(data) {}
+  void _onWebPlayerRateChange(data) {}
+  void _onWebPlayerError(data) {}
 }
 
 class _VideoController {
   final InAppWebViewController controller;
+  final _InternalPlayerState state;
 
-  _VideoController(this.controller);
+  _VideoController(this.state, this.controller) {
+    controller.addJavaScriptHandler(
+      handlerName: 'appBridge',
+      callback: _callbackFromJS,
+    );
+  }
+
+  dynamic _callbackFromJS(List<dynamic> args) {
+    final data = args.first as Map;
+    InternalPlayerWidget._logger.info('From web: $data');
+    final event = data['event'] as String;
+    final payload = data['payload'];
+    switch (event) {
+      case 'onReady':
+        return state._onWebPlayerReady();
+      case 'onStateChange':
+        return state._onWebPlayerStateChange(payload);
+      case 'onQualityChange':
+        return state._onWebPlayerQualityChange(payload);
+      case 'onRateChange':
+        return state._onWebPlayerRateChange(payload);
+      case 'onError':
+        return state._onWebPlayerError(payload);
+    }
+  }
 
   void loadVideo(String videoId) {
     final port = PlayerServer().port;

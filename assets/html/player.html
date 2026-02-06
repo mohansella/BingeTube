@@ -21,6 +21,21 @@
     <div id="player"></div>
 
     <script>
+      window.AppBridge = {
+        send(event, payload) {
+          const message = { event, payload };
+
+          const webview = window.flutter_inappwebview;
+          if ( webview && webview.callHandler) {
+            webview.callHandler( 'appBridge', message);
+          } else {
+            console.log('[AppBridge]', message);
+          }
+        }
+      };
+    </script>
+
+    <script>
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
 
@@ -36,10 +51,16 @@
                 return;
             }
 
+            function bridge(name) {
+              return function (event) {
+                AppBridge.send(name, event?.data);
+              };
+            }
+
             player = new YT.Player('player', {
                 videoId: videoId,
                 playerVars: {
-                  autoplay: 1,          // you control play()
+                  autoplay: 0,          // you control play()
                   controls: 0,          // no UI controls
                   disablekb: 1,         // disable keyboard shortcuts
                   fs: 0,                // disable fullscreen button
@@ -53,14 +74,16 @@
                   showinfo: 0,          // deprecated but harmless
                 },
                 events: {
-                    'onReady': onPlayerReady
+                  onReady: bridge('onReady'),
+                  onStateChange: bridge('onStateChange'),
+                  onPlaybackQualityChange: bridge('onQualityChange'),
+                  onPlaybackRateChange: bridge('onRateChange'),
+                  onError: bridge('onError')
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            event.target.playVideo();
-        }
+
     </script>
 </body>
 </html>
