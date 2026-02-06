@@ -14,7 +14,7 @@ class PlayerServer {
   PlayerServer._internal();
 
   HttpServer? _server;
-  int _port = 0;
+  int _port = 8081;
 
   int get port => _port;
   bool get isRunning => _server != null;
@@ -23,7 +23,7 @@ class PlayerServer {
     if (_server != null) return;
 
     try {
-      _server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      _server = await HttpServer.bind(InternetAddress.loopbackIPv4, port);
       _port = _server!.port;
 
       _server!.listen((HttpRequest request) async {
