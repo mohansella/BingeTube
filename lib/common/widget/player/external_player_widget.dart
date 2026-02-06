@@ -1,16 +1,11 @@
-import 'dart:math' as math;
-
-import 'package:bingetube/app/theme.dart';
-import 'package:bingetube/common/widget/player/player_widget.dart';
-import 'package:bingetube/core/config/configuration.dart';
-import 'package:bingetube/core/db/access/videos.dart';
-import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ExternalPlayerWidget extends PlayerWidget {
+import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/common/widget/player/base_player_widget.dart';
+
+class ExternalPlayerWidget extends BasePlayerWidget {
   static final _logger = LogManager.getLogger('ExternalPlayerWidget');
 
   const ExternalPlayerWidget({
@@ -21,249 +16,57 @@ class ExternalPlayerWidget extends PlayerWidget {
     required super.childScroll,
     required super.onEvent,
     required super.slivers,
-  }) : super.internal();
+  });
 
   @override
   ExternalPlayerState createState() => ExternalPlayerState();
 }
 
-class ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
-  VideoModel? _model;
-  bool _loading = true;
-  Object? _error;
-
-  double _width = 0;
-  double _height = 0;
-
-  get playerWidth => _width;
-  get playerHeight => _height;
-
+class ExternalPlayerState extends BasePlayerState {
   bool _isExternallyOpened = false;
   bool _isMarkWatched = false;
 
-  get _parentScroll => widget.parentScroll;
-  get _childScroll => widget.childScroll;
-
-  BingeController get _controller => widget.controller;
-
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constrains) {
-        final aspectWidth = constrains.maxHeight * 16.0 / 9.0;
-        final aspectHeight = constrains.maxWidth * 9.0 / 16.0;
-        final maxWidth = constrains.maxWidth;
-        final maxHeight = constrains.maxHeight;
-        if (aspectWidth < maxWidth) {
-          _width = aspectWidth;
-          _height = constrains.maxHeight;
-        } else {
-          _width = constrains.maxWidth;
-          _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
-        }
-        widget.onEvent(.onHeight, data: _height);
-        return NotificationListener<ScrollEndNotification>(
-          onNotification: _scrollEndListener,
-          child: NestedScrollView(
-            controller: _parentScroll,
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-                  return [
-                    SliverAppBar(
-                      automaticallyImplyLeading: false,
-                      expandedHeight: _height,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: buildPlayerStack(),
-                      ),
-                    ),
-                  ];
-                },
-            body: NotificationListener<ScrollNotification>(
-              onNotification: _onChildScroll,
-              child: CustomScrollView(
-                controller: _childScroll,
-                slivers: widget.slivers, //SliverList
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    restartState();
-  }
-
-  int _restartId = 0;
-  void restartState() async {
-    _loading = true;
-    _model = null;
-    _error = null;
+  void restartState() {
     _isExternallyOpened = false;
     _isMarkWatched = false;
-    final restartId = ++_restartId;
-    try {
-      final value = await _controller.getActiveVideoModel();
-      if (restartId == _restartId) {
-        setState(() {
-          _model = value;
-          _loading = false;
-        });
-        _parentScroll.animateTo(
-          0.0,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      } else {
-        ExternalPlayerWidget._logger.shout(
-          'restartState skipped since user navigated to another:$_restartId from:$restartId',
-        );
-      }
-    } catch (e) {
-      ExternalPlayerWidget._logger.shout(
-        'getActiveVideoModel causes error:',
-        e,
-      );
-      if (restartId == _restartId) {
-        setState(() {
-          _error = e;
-          _loading = false;
-        });
-      }
-      rethrow;
-    }
+    super.restartState();
   }
 
   @override
-  void didUpdateWidget(covariant ExternalPlayerWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.videoId != widget.videoId) {
-      restartState();
-    }
-  }
-
-  Widget _buildControls(BuildContext context) {
-    final w = math.min(math.max(400, _width), 600);
-    final appFontSize = ref.read(ConfigProviders.appFontSize);
-    final theme = Themes.dark(appFontSize);
-    return Theme(
-      data: theme,
-      child: Padding(
-        padding: EdgeInsets.all(w / 40),
-        child: Stack(
-          children: [
-            InkWell(
-              onTap: () => widget.onEvent(.onBack),
-              child: Tooltip(
-                message: 'Back',
-                child: Icon(Icons.arrow_back, size: w / 20),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: w / 14),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    _model?.snippet.title ?? '',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: w / 30,
-                    ),
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                  ),
-                  Text(
-                    _model?.snippet.channelTitle ?? '',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontSize: w / 40,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Center(
-              child: Row(
-                mainAxisAlignment: .center,
-                children: [
-                  _buildSkipPrevious(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: w / 14),
-                    child: _buildPlayAndOthers(theme),
-                  ),
-                  _buildSkipNext(),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildIconControl(
-    void Function()? onTap,
-    IconData icon,
-    double size,
-    String tooltip,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      child: Tooltip(
-        margin: EdgeInsets.only(top: 8),
-        message: tooltip,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black.withAlpha(140),
-            shape: .circle,
-          ),
-          child: Icon(
-            icon,
-            size: size,
-            color: onTap == null ? Colors.white30 : Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlayAndOthers(ThemeData theme) {
-    return _buildIconControl(
+  Widget buildPlayPause() {
+    return buildIconControl(
       () => _openExternally(),
       Icons.open_in_new_outlined,
-      _width / 10,
+      playerWidth / 10,
       'Open Externally',
     );
   }
 
-  Widget buildPlayerStack() {
-    return SizedBox(
-      height: _height,
-      width: double.infinity,
-      child: Stack(
-        fit: .expand,
-        children: [
-          ColoredBox(color: Colors.black),
-          _buildImage(),
-          if (_loading) ...[
-            Center(child: CircularProgressIndicator()),
-          ] else if (_error != null) ...[
-            Center(child: Text('error: $_error')),
-          ],
-          _buildTopGradient(),
-          _buildControls(context),
-        ],
-      ),
-    );
+  @override
+  Widget buildSkipNext() {
+    if (_isExternallyOpened && !_isMarkWatched) {
+      return buildIconControl(
+        () {
+          setState(() {
+            _isMarkWatched = true;
+          });
+          controller.markActiveVideoWatched();
+        },
+        Icons.check_outlined,
+        playerWidth / 14,
+        'Mark Watched',
+      );
+    }
+    return super.buildSkipNext();
   }
 
-  Widget _buildImage() {
+  @override
+  Widget buildMedia() {
     final imageUrl =
-        _model?.thumbnails.maxresUrl ??
-        _model?.thumbnails.standardUrl ??
-        _model?.thumbnails.highUrl ??
+        model?.thumbnails.maxresUrl ??
+        model?.thumbnails.standardUrl ??
+        model?.thumbnails.highUrl ??
         widget.controller.heroImg;
     return Hero(
       tag: widget.controller.heroId,
@@ -311,114 +114,15 @@ class ExternalPlayerState extends ConsumerState<ExternalPlayerWidget> {
     return Container(color: color, alignment: .center);
   }
 
-  Widget _buildSkipNext() {
-    if (_isExternallyOpened && !_isMarkWatched) {
-      return _buildIconControl(
-        () {
-          setState(() {
-            _isMarkWatched = true;
-          });
-          _controller.markActiveVideoWatched();
-        },
-        Icons.check_outlined,
-        _width / 14,
-        'Mark Watched',
-      );
-    }
-    final isEnabled = _controller.isNextVideoExists;
-    return _buildIconControl(
-      isEnabled ? () => widget.onEvent(.onNext) : null,
-      Icons.skip_next,
-      _width / 14,
-      'Next',
-    );
-  }
-
-  Widget _buildSkipPrevious() {
-    final isEnabled = _controller.isPrevVideoExists;
-    return _buildIconControl(
-      isEnabled ? () => widget.onEvent(.onPrev) : null,
-      Icons.skip_previous,
-      _width / 14,
-      'Previous',
-    );
-  }
-
-  Container _buildTopGradient() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: const [0.0, 0.25],
-          colors: [Colors.black.withAlpha(200), Colors.transparent],
-        ),
-      ),
-    );
-  }
-
   Future<void> _openExternally() async {
     setState(() {
       _isExternallyOpened = true;
     });
-    final model = _model!;
     ExternalPlayerWidget._logger.info(
       'opening externally id:${model.video.id} title: ${model.snippet.title}',
     );
     final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
-    _controller.markActiveVideoStarted();
+    controller.markActiveVideoStarted();
     await launchUrl(url, mode: .externalNonBrowserApplication);
-  }
-
-  bool _scrollEndListener(notification) {
-    ExternalPlayerWidget._logger.finer(
-      'depth:${notification.depth} parent:${_parentScroll.offset} child:${_childScroll.offset}',
-    );
-    widget.onEvent(.onScrollEnd);
-    bool toReturn = false;
-    if (notification.depth != 0) {
-      return toReturn;
-    }
-    final offset = _parentScroll.offset;
-    if (_parentScroll.position.atEdge && offset != 0) {
-      return toReturn;
-    }
-    Future.microtask(() {
-      if (offset > 0 && offset < _height) {
-        if (offset > _height / 2) {
-          _parentScroll.animateTo(
-            _height,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
-        } else {
-          _parentScroll.animateTo(
-            0.0,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
-        }
-      }
-    });
-    return toReturn;
-  }
-
-  bool _onChildScroll(ScrollNotification notification) {
-    final offset = _childScroll.offset;
-    if (offset < 0 && _parentScroll.offset > 0) {
-      Future.microtask(() {
-        _parentScroll.animateTo(
-          0.0,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-        _childScroll.animateTo(
-          0.0,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      });
-    }
-    return false;
   }
 }

@@ -1,12 +1,11 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-import 'package:bingetube/common/widget/player/external_player_widget.dart';
+import 'package:bingetube/common/widget/player/base_player_widget.dart';
 import 'package:bingetube/common/widget/player/server/player_server.dart';
 
-class InternalPlayerWidget extends ExternalPlayerWidget {
+class InternalPlayerWidget extends BasePlayerWidget {
   const InternalPlayerWidget({
     super.key,
     required super.videoId,
@@ -18,7 +17,7 @@ class InternalPlayerWidget extends ExternalPlayerWidget {
   });
 
   @override
-  ExternalPlayerState createState() => _InternalPlayerState();
+  BasePlayerState createState() => _InternalPlayerState();
 
   static get isSupportedPlatform {
     return Platform.isAndroid ||
@@ -28,11 +27,11 @@ class InternalPlayerWidget extends ExternalPlayerWidget {
   }
 }
 
-class _InternalPlayerState extends ExternalPlayerState {
+class _InternalPlayerState extends BasePlayerState {
   InAppWebViewController? _controller;
 
   @override
-  void didUpdateWidget(covariant ExternalPlayerWidget oldWidget) {
+  void didUpdateWidget(covariant InternalPlayerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.videoId != widget.videoId) {
@@ -50,23 +49,29 @@ class _InternalPlayerState extends ExternalPlayerState {
     return _buildNotSupported();
   }
 
-  Widget _buildSupported(BuildContext context) {
-    return super.build(context);
+  @override
+  Widget buildPlayPause() {
+    return buildIconControl(
+      () => {},
+      Icons.play_arrow,
+      playerWidth / 10,
+      'Play',
+    );
   }
 
   @override
-  Widget buildPlayerStack() {
+  Widget buildMedia() {
     final url = 'http://localhost:${PlayerServer().port}?id=${widget.videoId}';
-    return SizedBox(
-      height: playerHeight,
-      width: playerWidth,
-      child: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(url)),
-        onWebViewCreated: (webControl) {
-          _controller = webControl;
-        },
-      ),
+    return InAppWebView(
+      initialUrlRequest: URLRequest(url: WebUri(url)),
+      onWebViewCreated: (webControl) {
+        _controller = webControl;
+      },
     );
+  }
+
+  Widget _buildSupported(BuildContext context) {
+    return super.build(context);
   }
 
   Widget _buildNotSupported() {

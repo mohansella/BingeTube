@@ -39,10 +39,18 @@
             player = new YT.Player('player', {
                 videoId: videoId,
                 playerVars: {
-                    'autoplay': 1,
-                    'controls': 1,
-                    'rel': 0,
-                    'fs': 0
+                  autoplay: 0,          // you control play()
+                  controls: 0,          // no UI controls
+                  disablekb: 1,         // disable keyboard shortcuts
+                  fs: 0,                // disable fullscreen button
+                  modestbranding: 1,    // minimal YouTube branding
+                  rel: 0,               // no related videos (important!)
+                  iv_load_policy: 3,    // hide annotations
+                  playsinline: 1,       // avoid forced fullscreen on mobile
+                  cc_load_policy: 0,    // captions off
+                  enablejsapi: 1,       // REQUIRED for API control
+                  origin: window.location.origin,
+                  showinfo: 0,          // deprecated but harmless
                 },
                 events: {
                     'onReady': onPlayerReady
