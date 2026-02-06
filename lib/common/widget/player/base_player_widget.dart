@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -26,10 +27,10 @@ abstract class BasePlayerWidget extends PlayerWidget {
 }
 
 abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
-  get model => _model!;
-  get playerWidth => _width;
-  get playerHeight => _height;
-  get controller => widget.controller;
+  VideoModel? get model => _model;
+  double get playerWidth => _width;
+  double get playerHeight => _height;
+  BingeController get controller => widget.controller;
 
   VideoModel? _model;
   bool _loading = true;

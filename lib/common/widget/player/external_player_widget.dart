@@ -119,9 +119,9 @@ class ExternalPlayerState extends BasePlayerState {
       _isExternallyOpened = true;
     });
     ExternalPlayerWidget._logger.info(
-      'opening externally id:${model.video.id} title: ${model.snippet.title}',
+      'opening externally id:${model!.video.id} title: ${model!.snippet.title}',
     );
-    final url = Uri.parse('https://www.youtube.com/watch?v=${model.video.id}');
+    final url = Uri.parse('https://www.youtube.com/watch?v=${model!.video.id}');
     controller.markActiveVideoStarted();
     await launchUrl(url, mode: .externalNonBrowserApplication);
   }

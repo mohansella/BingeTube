@@ -28,16 +28,22 @@ class InternalPlayerWidget extends BasePlayerWidget {
 }
 
 class _InternalPlayerState extends BasePlayerState {
-  InAppWebViewController? _controller;
+  _VideoController? _videoController;
+
+  bool _isPlaying = true;
+
+  @override
+  void restartState() {
+    _isPlaying = true;
+    super.restartState();
+  }
 
   @override
   void didUpdateWidget(covariant InternalPlayerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.videoId != widget.videoId) {
-      final port = PlayerServer().port;
-      final newUrl = 'http://localhost:$port?id=${widget.videoId}';
-      _controller?.loadUrl(urlRequest: URLRequest(url: WebUri(newUrl)));
+      _videoController?.loadVideo(widget.videoId);
     }
   }
 
@@ -52,8 +58,8 @@ class _InternalPlayerState extends BasePlayerState {
   @override
   Widget buildPlayPause() {
     return buildIconControl(
-      () => {},
-      Icons.play_arrow,
+      _onPlayPause,
+      _isPlaying ? Icons.pause_outlined : Icons.play_arrow,
       playerWidth / 10,
       'Play',
     );
@@ -61,13 +67,30 @@ class _InternalPlayerState extends BasePlayerState {
 
   @override
   Widget buildMedia() {
+    return _buildWebView();
+  }
+
+  InAppWebView _buildWebView() {
     final url = 'http://localhost:${PlayerServer().port}?id=${widget.videoId}';
     return InAppWebView(
-      initialUrlRequest: URLRequest(url: WebUri(url)),
-      onWebViewCreated: (webControl) {
-        _controller = webControl;
-      },
-    );
+    initialUrlRequest: URLRequest(url: WebUri(url)),
+    initialSettings: InAppWebViewSettings(
+      mediaPlaybackRequiresUserGesture: false,
+    ),
+    onWebViewCreated: (webControl) {
+      initController(webControl);
+    },
+    onLoadStop: (controller, url) async {
+      await controller.evaluateJavascript(
+        source: """
+          document.querySelectorAll('iframe').forEach(i => {
+            i.style.pointerEvents = 'none';
+            i.style.cursor = 'default';
+          });
+        """,
+      );
+    },
+  );
   }
 
   Widget _buildSupported(BuildContext context) {
@@ -79,5 +102,41 @@ class _InternalPlayerState extends BasePlayerState {
       appBar: AppBar(),
       body: Text('Internal player currently not support for this platform'),
     );
+  }
+
+  void initController(InAppWebViewController webControl) {
+    if (_videoController != null) return;
+    _videoController = _VideoController(webControl);
+  }
+
+  void _onPlayPause() {
+    if (_isPlaying) {
+      _videoController?.pauseVideo();
+    } else {
+      _videoController?.playVideo();
+    }
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+  }
+}
+
+class _VideoController {
+  final InAppWebViewController controller;
+
+  _VideoController(this.controller);
+
+  void loadVideo(String videoId) {
+    final port = PlayerServer().port;
+    final newUrl = 'http://localhost:$port?id=$videoId';
+    controller.loadUrl(urlRequest: URLRequest(url: WebUri(newUrl)));
+  }
+
+  Future<void> pauseVideo() {
+    return controller.evaluateJavascript(source: 'player.pauseVideo()');
+  }
+
+  Future<void> playVideo() {
+    return controller.evaluateJavascript(source: 'player.playVideo()');
   }
 }
