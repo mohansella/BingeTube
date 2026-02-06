@@ -30,11 +30,11 @@ class InternalPlayerWidget extends BasePlayerWidget {
 class _InternalPlayerState extends BasePlayerState {
   _VideoController? _videoController;
 
-  bool _isPlaying = true;
+  _PlayState _playState = .loading;
 
   @override
   void restartState() {
-    _isPlaying = true;
+    _playState = .loading;
     super.restartState();
   }
 
@@ -57,12 +57,20 @@ class _InternalPlayerState extends BasePlayerState {
 
   @override
   Widget buildPlayPause() {
-    return buildIconControl(
-      _onPlayPause,
-      _isPlaying ? Icons.pause_outlined : Icons.play_arrow,
-      playerWidth / 10,
-      'Play',
-    );
+    final size = playerWidth / 10;
+    switch (_playState) {
+      case .loading:
+        return CircularProgressIndicator();
+      case .paused:
+        return buildIconControl(_onPlayTap, Icons.play_arrow, size, 'Play');
+      case .playing:
+        return buildIconControl(
+          _onPauseTap,
+          Icons.pause_outlined,
+          size,
+          'Pause',
+        );
+    }
   }
 
   @override
@@ -73,24 +81,24 @@ class _InternalPlayerState extends BasePlayerState {
   InAppWebView _buildWebView() {
     final url = 'http://localhost:${PlayerServer().port}?id=${widget.videoId}';
     return InAppWebView(
-    initialUrlRequest: URLRequest(url: WebUri(url)),
-    initialSettings: InAppWebViewSettings(
-      mediaPlaybackRequiresUserGesture: false,
-    ),
-    onWebViewCreated: (webControl) {
-      initController(webControl);
-    },
-    onLoadStop: (controller, url) async {
-      await controller.evaluateJavascript(
-        source: """
+      initialUrlRequest: URLRequest(url: WebUri(url)),
+      initialSettings: InAppWebViewSettings(
+        mediaPlaybackRequiresUserGesture: false,
+      ),
+      onWebViewCreated: (webControl) {
+        initController(webControl);
+      },
+      onLoadStop: (controller, url) async {
+        await controller.evaluateJavascript(
+          source: """
           document.querySelectorAll('iframe').forEach(i => {
             i.style.pointerEvents = 'none';
             i.style.cursor = 'default';
           });
         """,
-      );
-    },
-  );
+        );
+      },
+    );
   }
 
   Widget _buildSupported(BuildContext context) {
@@ -109,15 +117,18 @@ class _InternalPlayerState extends BasePlayerState {
     _videoController = _VideoController(webControl);
   }
 
-  void _onPlayPause() {
-    if (_isPlaying) {
-      _videoController?.pauseVideo();
-    } else {
-      _videoController?.playVideo();
-    }
+  void _onPlayTap() async {
     setState(() {
-      _isPlaying = !_isPlaying;
+      _playState = .playing;
     });
+    await _videoController?.playVideo();
+  }
+
+  void _onPauseTap() async {
+    setState(() {
+      _playState = .paused;
+    });
+    await _videoController?.pauseVideo();
   }
 }
 
@@ -140,3 +151,5 @@ class _VideoController {
     return controller.evaluateJavascript(source: 'player.playVideo()');
   }
 }
+
+enum _PlayState { loading, paused, playing }
