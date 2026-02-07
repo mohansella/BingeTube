@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -40,8 +41,8 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
   double _width = 0;
   double _height = 0;
 
-  get _parentScroll => widget.parentScroll;
-  get _childScroll => widget.childScroll;
+  ScrollController get _parentScroll => widget.parentScroll;
+  ScrollController get _childScroll => widget.childScroll;
 
   Widget buildMedia();
   Widget buildPlayPause();
@@ -110,11 +111,13 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
           _model = value;
           _loading = false;
         });
-        _parentScroll.animateTo(
-          0.0,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
+        if (_parentScroll.hasClients) {
+          _parentScroll.animateTo(
+            0.0,
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
+        }
       } else {
         BasePlayerWidget._logger.shout(
           'restartState skipped since user navigated to another:$_restartId from:$restartId',

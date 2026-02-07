@@ -1,12 +1,13 @@
 import 'dart:io';
-import 'package:bingetube/app/routes.dart';
-import 'package:bingetube/core/log/log_manager.dart';
+import 'package:flutter/foundation.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
+import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/common/widget/player/base_player_widget.dart';
 import 'package:bingetube/common/widget/player/server/player_server.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class InternalPlayerWidget extends BasePlayerWidget {
   static final _logger = LogManager.getLogger('InternalPlayerWidget');
@@ -25,12 +26,15 @@ class InternalPlayerWidget extends BasePlayerWidget {
   @override
   BasePlayerState createState() => _InternalPlayerState();
 
-  static get isSupportedPlatform {
-    return Platform.isAndroid ||
-        Platform.isIOS ||
-        Platform.isMacOS ||
-        Platform.isWindows;
+  static get isWebViewSupportedPlatform {
+    return !kIsWeb &&
+        (Platform.isAndroid ||
+            Platform.isIOS ||
+            Platform.isMacOS ||
+            Platform.isWindows);
   }
+
+  static get isWebPlatform => kIsWeb;
 }
 
 class _InternalPlayerState extends BasePlayerState {
@@ -55,8 +59,8 @@ class _InternalPlayerState extends BasePlayerState {
 
   @override
   Widget build(BuildContext context) {
-    if (InternalPlayerWidget.isSupportedPlatform) {
-      return _buildSupported(context);
+    if (InternalPlayerWidget.isWebViewSupportedPlatform) {
+      return _buildForWebView(context);
     }
     return _buildNotSupported();
   }
@@ -120,7 +124,7 @@ class _InternalPlayerState extends BasePlayerState {
     );
   }
 
-  Widget _buildSupported(BuildContext context) {
+  Widget _buildForWebView(BuildContext context) {
     return Scaffold(appBar: _buildAppBar(), body: super.build(context));
   }
 
