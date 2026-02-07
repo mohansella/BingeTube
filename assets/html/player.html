@@ -60,15 +60,15 @@
             player = new YT.Player('player', {
                 videoId: videoId,
                 playerVars: {
-                  autoplay: 0,          // you control play()
-                  controls: 0,          // no UI controls
-                  disablekb: 1,         // disable keyboard shortcuts
-                  fs: 0,                // disable fullscreen button
-                  modestbranding: 1,    // minimal YouTube branding
-                  rel: 0,               // no related videos (important!)
+                  autoplay: 1,
+                  controls: 1,
+                  disablekb: 0,
+                  fs: 1,
+                  modestbranding: 1,
+                  rel: 0,               // no related videos
                   iv_load_policy: 3,    // hide annotations
                   playsinline: 1,       // avoid forced fullscreen on mobile
-                  cc_load_policy: 0,    // captions off
+                  //cc_load_policy: 0,    // captions off
                   enablejsapi: 1,       // REQUIRED for API control
                   origin: window.location.origin,
                   showinfo: 0,          // deprecated but harmless

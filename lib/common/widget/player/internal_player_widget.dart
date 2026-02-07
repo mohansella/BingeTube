@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -81,6 +82,11 @@ class _InternalPlayerState extends BasePlayerState {
     return _buildWebView();
   }
 
+  @override
+  Widget buildControls(BuildContext context) {
+    return SizedBox();
+  }
+
   InAppWebView _buildWebView() {
     final url = 'http://localhost:${PlayerServer().port}?id=${widget.videoId}';
     return InAppWebView(
@@ -91,22 +97,58 @@ class _InternalPlayerState extends BasePlayerState {
       onWebViewCreated: (webControl) {
         initController(webControl);
       },
-      onLoadStop: (controller, url) async {
-        //avoid mouse over event falling on iframe
-        await controller.evaluateJavascript(
-          source: """
-            document.querySelectorAll('iframe').forEach(i => {
-              i.style.pointerEvents = 'none';
-              i.style.cursor = 'default';
-            });
-          """,
-        );
-      },
     );
   }
 
   Widget _buildSupported(BuildContext context) {
-    return super.build(context);
+    return Scaffold(appBar: _buildAppBar(), body: super.build(context));
+  }
+
+  AppBar _buildAppBar() {
+    final iconSize = 28.0;
+    final style = TextStyle(fontSize: 14);
+    return AppBar(
+      automaticallyImplyLeading: false,
+      title: Row(
+        mainAxisAlignment: .spaceBetween,
+        children: [
+          buildIconControl(
+            () => Routes.popOrHome(context),
+            Icons.arrow_back,
+            iconSize,
+            'Back',
+            colorDecoration: false,
+          ),
+          buildIconControl(
+            controller.isPrevVideoExists ? () => widget.onEvent(.onPrev) : null,
+            Icons.skip_previous,
+            iconSize,
+            'Skip Previous',
+            colorDecoration: false,
+            text: 'Previous Ep.',
+            textStyle: style,
+          ),
+          buildIconControl(
+            controller.isNextVideoExists ? () => widget.onEvent(.onNext) : null,
+            Icons.skip_next,
+            iconSize,
+            'Skip Next',
+            colorDecoration: false,
+            text: 'Next Ep.',
+            textStyle: style,
+          ),
+          buildIconControl(
+            () => widget.onEvent(.onListToggle),
+            Icons.video_library_outlined,
+            iconSize - 5,
+            'Episodes',
+            text: 'All Episodes',
+            colorDecoration: false,
+            textStyle: style,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildNotSupported() {
@@ -136,9 +178,11 @@ class _InternalPlayerState extends BasePlayerState {
   }
 
   void _onWebPlayerReady() async {
+    /*
     await _videoController?.playVideo();
+    */
     setState(() {
-      _playState = .playing;
+      _playState = .paused;
     });
   }
 

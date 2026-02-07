@@ -139,61 +139,66 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     }
   }
 
-  Widget _buildControls(BuildContext context) {
+  Widget buildControls(BuildContext context) {
     final w = math.min(math.max(400, _width), 600);
     final appFontSize = ref.read(ConfigProviders.appFontSize);
     final theme = Themes.dark(appFontSize);
-    return Theme(
-      data: theme,
-      child: Padding(
-        padding: EdgeInsets.all(w / 40),
-        child: Stack(
-          children: [
-            InkWell(
-              onTap: () => widget.onEvent(.onBack),
-              child: Tooltip(
-                message: 'Back',
-                child: Icon(Icons.arrow_back, size: w / 20),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: w / 14),
-              child: Column(
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    _model?.snippet.title ?? '',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: w / 30,
-                    ),
-                    maxLines: 1,
-                    overflow: .ellipsis,
+    return Stack(
+      children: [
+        _buildTopGradient(),
+        Theme(
+          data: theme,
+          child: Padding(
+            padding: EdgeInsets.all(w / 40),
+            child: Stack(
+              children: [
+                InkWell(
+                  onTap: () => widget.onEvent(.onBack),
+                  child: Tooltip(
+                    message: 'Back',
+                    child: Icon(Icons.arrow_back, size: w / 20),
                   ),
-                  Text(
-                    _model?.snippet.channelTitle ?? '',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontSize: w / 40,
-                    ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: w / 14),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Text(
+                        _model?.snippet.title ?? '',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: w / 30,
+                        ),
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                      ),
+                      Text(
+                        _model?.snippet.channelTitle ?? '',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontSize: w / 40,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            Center(
-              child: Row(
-                mainAxisAlignment: .center,
-                children: [
-                  _buildSkipPrevious(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: w / 14),
-                    child: buildPlayPause(),
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      _buildSkipPrevious(),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: w / 14),
+                        child: buildPlayPause(),
+                      ),
+                      buildSkipNext(),
+                    ],
                   ),
-                  buildSkipNext(),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -201,8 +206,11 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     void Function()? onTap,
     IconData icon,
     double size,
-    String tooltip,
-  ) {
+    String tooltip, {
+    bool colorDecoration = true,
+    String? text,
+    TextStyle? textStyle,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Tooltip(
@@ -210,13 +218,18 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
         message: tooltip,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withAlpha(140),
+            color: colorDecoration ? Colors.black.withAlpha(140) : null,
             shape: .circle,
           ),
-          child: Icon(
-            icon,
-            size: size,
-            color: onTap == null ? Colors.white30 : Colors.white,
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: size,
+                color: onTap == null ? Colors.white30 : Colors.white,
+              ),
+              if (text != null) ...[Text(text, style: textStyle)],
+            ],
           ),
         ),
       ),
@@ -230,15 +243,14 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
       child: Stack(
         fit: .expand,
         children: [
-          ColoredBox(color: Colors.black),
+          //ColoredBox(color: Colors.black),
           buildMedia(),
           if (_loading) ...[
             Center(child: CircularProgressIndicator()),
           ] else if (_error != null) ...[
             Center(child: Text('error: $_error')),
           ],
-          _buildTopGradient(),
-          _buildControls(context),
+          buildControls(context),
         ],
       ),
     );

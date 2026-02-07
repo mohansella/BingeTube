@@ -383,6 +383,9 @@ class _BingePageState extends ConsumerState<BingePage> {
       case .onScrollEnd:
         _updateCollapseState();
         break;
+      case .onListToggle:
+        _onCollapsePressed();
+        break;
       default:
         BingePage._logger.warning('unhandled eventType:$eventType');
     }

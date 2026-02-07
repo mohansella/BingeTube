@@ -14,6 +14,7 @@ enum PlayerEventType {
   onPlay,
   onHeight,
   onScrollEnd,
+  onListToggle,
 }
 
 abstract class PlayerWidget extends ConsumerStatefulWidget {
