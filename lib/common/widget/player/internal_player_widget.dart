@@ -6,6 +6,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 import 'package:bingetube/common/widget/player/base_player_widget.dart';
 import 'package:bingetube/common/widget/player/server/player_server.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class InternalPlayerWidget extends BasePlayerWidget {
   static final _logger = LogManager.getLogger('InternalPlayerWidget');
@@ -94,9 +95,27 @@ class _InternalPlayerState extends BasePlayerState {
       initialUrlRequest: URLRequest(url: WebUri(url)),
       initialSettings: InAppWebViewSettings(
         mediaPlaybackRequiresUserGesture: false,
+        useShouldOverrideUrlLoading: true,
       ),
       onWebViewCreated: (webControl) {
         initController(webControl);
+      },
+      shouldOverrideUrlLoading: (_, action) async {
+        final uri = action.request.url;
+        final allowedPrefix = [
+          'http://localhost',
+          'about:blank',
+          'https://www.youtube.com/embed/',
+        ];
+        if (uri != null) {
+          final url = uri.toString();
+          if (!allowedPrefix.any((p) => url.startsWith(p))) {
+            launchUrl(uri);
+            InternalPlayerWidget._logger.warning('Attempted navigation: $url');
+            return NavigationActionPolicy.CANCEL;
+          }
+        }
+        return NavigationActionPolicy.ALLOW;
       },
     );
   }
