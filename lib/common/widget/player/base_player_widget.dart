@@ -20,6 +20,7 @@ abstract class BasePlayerWidget extends PlayerWidget {
     required super.childScroll,
     required super.onEvent,
     required super.slivers,
+    required super.isCollapsed,
   }) : super.internal();
 
   @override

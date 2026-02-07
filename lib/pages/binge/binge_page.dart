@@ -84,6 +84,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 _buildPlaylistHeader(context, snapshot),
                 _buildPlaylist(context, snapshot),
               ],
+              isCollapsed: _isCollapsed,
             ),
           ),
         );

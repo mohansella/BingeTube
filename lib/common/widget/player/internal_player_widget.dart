@@ -18,6 +18,7 @@ class InternalPlayerWidget extends BasePlayerWidget {
     required super.childScroll,
     required super.onEvent,
     required super.slivers,
+    required super.isCollapsed,
   });
 
   @override
@@ -104,7 +105,10 @@ class _InternalPlayerState extends BasePlayerState {
     return Scaffold(appBar: _buildAppBar(), body: super.build(context));
   }
 
-  AppBar _buildAppBar() {
+  AppBar? _buildAppBar() {
+    if (!widget.isCollapsed) {
+      return null;
+    }
     final iconSize = 28.0;
     final style = TextStyle(fontSize: 14);
     return AppBar(
@@ -142,7 +146,7 @@ class _InternalPlayerState extends BasePlayerState {
             Icons.video_library_outlined,
             iconSize - 5,
             'Episodes',
-            text: 'All Episodes',
+            text: 'All Ep.',
             colorDecoration: false,
             textStyle: style,
           ),
