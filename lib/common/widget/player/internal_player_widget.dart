@@ -182,12 +182,29 @@ class _InternalPlayerState extends BasePlayerState {
   }
 
   void _onWebPlayerReady() async {
-    /*
-    await _videoController?.playVideo();
-    */
     setState(() {
       _playState = .paused;
     });
+    await _videoController?.startProgressTracking();
+  }
+
+  void _onWebPlayerProgress(data) {
+    double getData(String key) {
+      return double.parse(data[key].toString());
+    }
+
+    final current = getData('current');
+    final duration = getData('duration');
+    final progress = getData('progress');
+    InternalPlayerWidget._logger.finer(
+      'progress:$progress current:$current duration:$duration',
+    );
+
+    if (duration - current < 0) {
+      if (controller.isNextVideoExists) {
+        widget.onEvent(.onNext);
+      }
+    }
   }
 
   void _onWebPlayerStateChange(data) {}
@@ -209,7 +226,6 @@ class _VideoController {
 
   dynamic _callbackFromJS(List<dynamic> args) {
     final data = args.first as Map;
-    InternalPlayerWidget._logger.info('From web: $data');
     final event = data['event'] as String;
     final payload = data['payload'];
     switch (event) {
@@ -223,7 +239,10 @@ class _VideoController {
         return state._onWebPlayerRateChange(payload);
       case 'onError':
         return state._onWebPlayerError(payload);
+      case 'onProgress':
+        return state._onWebPlayerProgress(payload);
     }
+    InternalPlayerWidget._logger.warning('unhandled event from web: $data');
   }
 
   void loadVideo(String videoId) {
@@ -238,6 +257,10 @@ class _VideoController {
 
   Future<void> playVideo() {
     return controller.evaluateJavascript(source: 'player.playVideo()');
+  }
+
+  Future<void> startProgressTracking() {
+    return controller.evaluateJavascript(source: 'startProgressTracking()');
   }
 }
 

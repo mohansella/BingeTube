@@ -1,89 +1,118 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Maximize Video Player</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
-        }
-        #player {
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
+  <title>Maximize Video Player</title>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    #player {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="player"></div>
+  <div id="player"></div>
 
-    <script>
-      window.AppBridge = {
-        send(event, payload) {
-          const message = { event, payload };
+  <script>
+    window.AppBridge = {
+      send(event, payload) {
+        const message = {event, payload};
 
-          const webview = window.flutter_inappwebview;
-          if ( webview && webview.callHandler) {
-            webview.callHandler( 'appBridge', message);
-          } else {
-            console.log('[AppBridge]', message);
-          }
+        const webview = window.flutter_inappwebview;
+        if (webview && webview.callHandler) {
+          webview.callHandler('appBridge', message);
+        } else {
+          console.log('[AppBridge]', message);
         }
-      };
-    </script>
+      }
+    };
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('id');
+    function startProgressTracking() {
+      stopProgressTracking();
 
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      let prevProgress;
+      window.progressTimer = setInterval(() => {
+        const current = player.getCurrentTime();   // seconds
+        const duration = player.getDuration();     // seconds
+        const progress = (current / duration) * 100;
 
-        var player;
-        function onYouTubeIframeAPIReady() {
-            if (!videoId) {
-                console.error("No video ID provided in URL parameters.");
-                return;
-            }
-
-            function bridge(name) {
-              return function (event) {
-                AppBridge.send(name, event?.data);
-              };
-            }
-
-            player = new YT.Player('player', {
-                videoId: videoId,
-                playerVars: {
-                  autoplay: 1,
-                  controls: 1,
-                  disablekb: 0,
-                  fs: 1,
-                  modestbranding: 1,
-                  rel: 0,               // no related videos
-                  iv_load_policy: 3,    // hide annotations
-                  playsinline: 1,       // avoid forced fullscreen on mobile
-                  //cc_load_policy: 0,    // captions off
-                  enablejsapi: 1,       // REQUIRED for API control
-                  origin: window.location.origin,
-                  showinfo: 0,          // deprecated but harmless
-                },
-                events: {
-                  onReady: bridge('onReady'),
-                  onStateChange: bridge('onStateChange'),
-                  onPlaybackQualityChange: bridge('onQualityChange'),
-                  onPlaybackRateChange: bridge('onRateChange'),
-                  onError: bridge('onError')
-                }
-            });
+        if (prevProgress == progress) {
+          return;
         }
+        prevProgress = progress;
+        AppBridge.send('onProgress', {current, duration, progress});
+      }, 500);
+    }
+
+    function stopProgressTracking() {
+      if (window.progressTimer) {
+        clearInterval(window.progressTimer);
+        window.progressTimer = null;
+      }
+    }
+  </script>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('id');
+
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    var player;
+    function onYouTubeIframeAPIReady() {
+      if (!videoId) {
+        console.error("No video ID provided in URL parameters.");
+        return;
+      }
+
+      function bridge(name) {
+        return function (event) {
+          AppBridge.send(name, event?.data);
+        };
+      }
+
+      player = new YT.Player('player', {
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+          disablekb: 0,
+          fs: 1,
+          modestbranding: 1,
+          rel: 0,               // no related videos
+          iv_load_policy: 3,    // hide annotations
+          playsinline: 1,       // avoid forced fullscreen on mobile
+          //cc_load_policy: 0,    // captions off
+          enablejsapi: 1,       // REQUIRED for API control
+          origin: window.location.origin,
+          showinfo: 0,          // deprecated but harmless
+        },
+        events: {
+          onReady: bridge('onReady'),
+          onStateChange: bridge('onStateChange'),
+          onPlaybackQualityChange: bridge('onQualityChange'),
+          onPlaybackRateChange: bridge('onRateChange'),
+          onError: bridge('onError')
+        }
+      });
+    }
 
 
-    </script>
+  </script>
 </body>
+
 </html>
