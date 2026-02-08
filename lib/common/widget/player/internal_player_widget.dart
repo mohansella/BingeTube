@@ -1,13 +1,9 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:bingetube/common/widget/player/player/player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/common/widget/player/base_player_widget.dart';
-import 'package:bingetube/common/widget/player/server/player_server.dart';
 
 class InternalPlayerWidget extends BasePlayerWidget {
   static final _logger = LogManager.getLogger('InternalPlayerWidget');
@@ -25,27 +21,14 @@ class InternalPlayerWidget extends BasePlayerWidget {
 
   @override
   BasePlayerState createState() => _InternalPlayerState();
-
-  static get isWebViewSupportedPlatform {
-    return !kIsWeb &&
-        (Platform.isAndroid ||
-            Platform.isIOS ||
-            Platform.isMacOS ||
-            Platform.isWindows);
-  }
-
-  static get isWebPlatform => kIsWeb;
 }
 
-class _InternalPlayerState extends BasePlayerState {
-  _VideoController? _videoController;
+class _InternalPlayerState extends BasePlayerState implements PlayerListener {
+  late Player player;
 
-  _PlayState _playState = .loading;
-
-  @override
-  void restartState() {
-    _playState = .loading;
-    super.restartState();
+  _InternalPlayerState() {
+    player = Player.create(this);
+    InternalPlayerWidget._logger.info('player name: ${player.playerName}');
   }
 
   @override
@@ -53,79 +36,23 @@ class _InternalPlayerState extends BasePlayerState {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.videoId != widget.videoId) {
-      _videoController?.loadVideo(widget.videoId);
+      player.loadVideo(widget.videoId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (InternalPlayerWidget.isWebViewSupportedPlatform) {
-      return _buildForWebView(context);
-    }
-    return _buildNotSupported();
-  }
-
-  @override
-  Widget buildPlayPause() {
-    final size = playerWidth / 10;
-    switch (_playState) {
-      case .loading:
-        return CircularProgressIndicator();
-      case .paused:
-        return buildIconControl(_onPlayTap, Icons.play_arrow, size, 'Play');
-      case .playing:
-        return buildIconControl(
-          _onPauseTap,
-          Icons.pause_outlined,
-          size,
-          'Pause',
-        );
-    }
+    return Scaffold(appBar: _buildAppBar(), body: super.build(context));
   }
 
   @override
   Widget buildMedia() {
-    return _buildWebView();
+    return player.build(widget.videoId);
   }
 
   @override
   Widget buildControls(BuildContext context) {
     return SizedBox();
-  }
-
-  InAppWebView _buildWebView() {
-    final url = 'http://localhost:${PlayerServer().port}?id=${widget.videoId}';
-    return InAppWebView(
-      initialUrlRequest: URLRequest(url: WebUri(url)),
-      initialSettings: InAppWebViewSettings(
-        mediaPlaybackRequiresUserGesture: false,
-        useShouldOverrideUrlLoading: true,
-      ),
-      onWebViewCreated: (webControl) {
-        initController(webControl);
-      },
-      shouldOverrideUrlLoading: (_, action) async {
-        final uri = action.request.url;
-        final allowedPrefix = [
-          'http://localhost',
-          'about:blank',
-          'https://www.youtube.com/embed/',
-        ];
-        if (uri != null) {
-          final url = uri.toString();
-          if (!allowedPrefix.any((p) => url.startsWith(p))) {
-            launchUrl(uri);
-            InternalPlayerWidget._logger.warning('Attempted navigation: $url');
-            return NavigationActionPolicy.CANCEL;
-          }
-        }
-        return NavigationActionPolicy.ALLOW;
-      },
-    );
-  }
-
-  Widget _buildForWebView(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(), body: super.build(context));
   }
 
   AppBar? _buildAppBar() {
@@ -178,48 +105,28 @@ class _InternalPlayerState extends BasePlayerState {
     );
   }
 
-  Widget _buildNotSupported() {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Text('Internal player currently not support for this platform'),
+  @override
+  Widget buildPlayPause() {
+    return SizedBox();
+  }
+
+  @override
+  void onPlayerError(payload) {
+    InternalPlayerWidget._logger.warning(
+      'unexpected error in player: $payload',
     );
   }
 
-  void initController(InAppWebViewController webControl) {
-    if (_videoController != null) return;
-    _videoController = _VideoController(this, webControl);
-  }
-
-  void _onPlayTap() async {
-    await _videoController?.playVideo();
-    setState(() {
-      _playState = .playing;
-    });
-  }
-
-  void _onPauseTap() async {
-    await _videoController?.pauseVideo();
-    setState(() {
-      _playState = .paused;
-    });
-  }
-
-  void _onWebPlayerReady() async {
-    setState(() {
-      _playState = .paused;
-    });
-    await _videoController?.startProgressTracking();
-  }
-
-  void _onWebPlayerProgress(data) {
+  @override
+  void onPlayerProgress(payload) {
     double getData(String key) {
-      return double.parse(data[key].toString());
+      return double.parse(payload[key].toString());
     }
 
     final current = getData('current');
     final duration = getData('duration');
     final progress = getData('progress');
-    InternalPlayerWidget._logger.finer(
+    InternalPlayerWidget._logger.fine(
       'progress:$progress current:$current duration:$duration',
     );
 
@@ -230,61 +137,17 @@ class _InternalPlayerState extends BasePlayerState {
     }
   }
 
-  void _onWebPlayerStateChange(data) {}
-  void _onWebPlayerQualityChange(data) {}
-  void _onWebPlayerRateChange(data) {}
-  void _onWebPlayerError(data) {}
+  @override
+  void onPlayerQualityChange(payload) {}
+
+  @override
+  void onPlayerRateChange(payload) {}
+
+  @override
+  void onPlayerReady() {
+    player.startProgressTracking();
+  }
+
+  @override
+  void onPlayerStateChange(payload) {}
 }
-
-class _VideoController {
-  final InAppWebViewController controller;
-  final _InternalPlayerState state;
-
-  _VideoController(this.state, this.controller) {
-    controller.addJavaScriptHandler(
-      handlerName: 'appBridge',
-      callback: _callbackFromJS,
-    );
-  }
-
-  dynamic _callbackFromJS(List<dynamic> args) {
-    final data = args.first as Map;
-    final event = data['event'] as String;
-    final payload = data['payload'];
-    switch (event) {
-      case 'onReady':
-        return state._onWebPlayerReady();
-      case 'onStateChange':
-        return state._onWebPlayerStateChange(payload);
-      case 'onQualityChange':
-        return state._onWebPlayerQualityChange(payload);
-      case 'onRateChange':
-        return state._onWebPlayerRateChange(payload);
-      case 'onError':
-        return state._onWebPlayerError(payload);
-      case 'onProgress':
-        return state._onWebPlayerProgress(payload);
-    }
-    InternalPlayerWidget._logger.warning('unhandled event from web: $data');
-  }
-
-  void loadVideo(String videoId) {
-    final port = PlayerServer().port;
-    final newUrl = 'http://localhost:$port?id=$videoId';
-    controller.loadUrl(urlRequest: URLRequest(url: WebUri(newUrl)));
-  }
-
-  Future<void> pauseVideo() {
-    return controller.evaluateJavascript(source: 'player.pauseVideo()');
-  }
-
-  Future<void> playVideo() {
-    return controller.evaluateJavascript(source: 'player.playVideo()');
-  }
-
-  Future<void> startProgressTracking() {
-    return controller.evaluateJavascript(source: 'startProgressTracking()');
-  }
-}
-
-enum _PlayState { loading, paused, playing }
