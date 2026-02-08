@@ -111,22 +111,20 @@ class _InternalPlayerState extends BasePlayerState implements PlayerListener {
   }
 
   @override
-  void onPlayerError(payload) {
+  void onPlayerError(String payload) {
     InternalPlayerWidget._logger.warning(
       'unexpected error in player: $payload',
     );
   }
 
   @override
-  void onPlayerProgress(payload) {
-    double getData(String key) {
-      return double.parse(payload[key].toString());
-    }
+  void onPlayerProgress(String payload) {
+    final splits = payload.split(',');
 
-    final current = getData('current');
-    final duration = getData('duration');
-    final progress = getData('progress');
-    InternalPlayerWidget._logger.fine(
+    final current = double.parse(splits[0]);
+    final duration = double.parse(splits[1]);
+    final progress = splits[2];
+    InternalPlayerWidget._logger.finer(
       'progress:$progress current:$current duration:$duration',
     );
 
@@ -138,10 +136,10 @@ class _InternalPlayerState extends BasePlayerState implements PlayerListener {
   }
 
   @override
-  void onPlayerQualityChange(payload) {}
+  void onPlayerQualityChange(String payload) {}
 
   @override
-  void onPlayerRateChange(payload) {}
+  void onPlayerRateChange(String payload) {}
 
   @override
   void onPlayerReady() {
@@ -149,5 +147,5 @@ class _InternalPlayerState extends BasePlayerState implements PlayerListener {
   }
 
   @override
-  void onPlayerStateChange(payload) {}
+  void onPlayerStateChange(String payload) {}
 }

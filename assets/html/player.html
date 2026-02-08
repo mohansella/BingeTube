@@ -26,12 +26,17 @@
 
   <script>
     window.AppBridge = {
-      send(event, payload) {
-        const message = {event, payload};
+      send(eventname, payload) {
+        if (eventname == 'onReady') window.isPlayerReady = true;
+        payload = payload?.toString();
+        const message = {eventname, payload};
 
         const webview = window.flutter_inappwebview;
+        const webBridge = window.appBridge;
         if (webview && webview.callHandler) {
           webview.callHandler('appBridge', message);
+        } else if (webBridge) {
+          webBridge(message);
         } else {
           console.log('[AppBridge]', message);
         }
@@ -51,7 +56,7 @@
           return;
         }
         prevProgress = progress;
-        AppBridge.send('onProgress', {current, duration, progress});
+        AppBridge.send('onProgress', `${current},${duration},${progress}`);
       }, 500);
     }
 

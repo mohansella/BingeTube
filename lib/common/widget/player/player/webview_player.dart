@@ -58,23 +58,9 @@ class WebviewPlayer extends Player {
 
   dynamic _callbackFromJS(List<dynamic> args) {
     final data = args.first as Map;
-    final event = data['event'] as String;
-    final payload = data['payload'];
-    switch (event) {
-      case 'onReady':
-        return listener.onPlayerReady();
-      case 'onStateChange':
-        return listener.onPlayerStateChange(payload);
-      case 'onQualityChange':
-        return listener.onPlayerQualityChange(payload);
-      case 'onRateChange':
-        return listener.onPlayerRateChange(payload);
-      case 'onError':
-        return listener.onPlayerError(payload);
-      case 'onProgress':
-        return listener.onPlayerProgress(payload);
-    }
-    WebviewPlayer._logger.warning('unhandled event from web: $data');
+    final eventname = data['eventname'] as String;
+    final payload = data['payload'] as String?;
+    handleEvent(eventname, payload);
   }
 
   @override

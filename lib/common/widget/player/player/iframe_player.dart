@@ -1,4 +1,6 @@
+import 'dart:js_interop_unsafe';
 import 'dart:ui_web' as ui_web;
+import 'dart:js_interop';
 
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:web/web.dart' as web;
@@ -48,16 +50,41 @@ class IframePlayer extends Player {
       if (_videoId != null) {
         element.src = url;
       }
+      element.onLoad.listen(_onIFrameLoad);
       return element;
     });
   }
 
   @override
   void startProgressTracking() {
-    // TODO: implement startProgressTracking
+    final window = _iframeElement!.contentWindow as IframeWindow;
+    window.startProgressTracking();
+  }
+
+  void _onIFrameLoad(web.Event event) {
+    final window = _iframeElement!.contentWindow! as IframeWindow;
+    final appBridge = (JSObject data) {
+      final eventname = data.getProperty('eventname'.toJS) as JSString;
+      final payloadObj = data.has('payload')
+          ? data.getProperty('payload'.toJS) as JSAny
+          : null;
+      final payload = payloadObj?.toString();
+      handleEvent(eventname.toString(), payload);
+    }.toJS;
+    window.appBridge = appBridge;
+    if (window.isPlayerReady == true.toJS) {
+      listener.onPlayerReady();
+    }
   }
 }
 
 Player createPlayer(PlayerListener listener) {
   return IframePlayer(listener: listener);
+}
+
+@JS()
+extension type IframeWindow(JSObject _) implements JSObject {
+  external void startProgressTracking();
+  external set appBridge(JSFunction fn);
+  external JSBoolean? isPlayerReady;
 }

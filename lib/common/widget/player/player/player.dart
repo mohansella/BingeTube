@@ -21,6 +21,24 @@ abstract class Player {
 
   Player({required this.listener});
 
+  void handleEvent(String eventname, String? payload) {
+    switch (eventname) {
+      case 'onReady':
+        return listener.onPlayerReady();
+      case 'onStateChange':
+        return listener.onPlayerStateChange(payload!);
+      case 'onQualityChange':
+        return listener.onPlayerQualityChange(payload!);
+      case 'onRateChange':
+        return listener.onPlayerRateChange(payload!);
+      case 'onError':
+        return listener.onPlayerError(payload!);
+      case 'onProgress':
+        return listener.onPlayerProgress(payload!);
+    }
+    throw Exception('Unknown eventname:$eventname with payload:$payload');
+  }
+
   static Player create(PlayerListener listener) {
     return platform.createPlayer(listener);
   }
@@ -28,9 +46,9 @@ abstract class Player {
 
 abstract class PlayerListener {
   void onPlayerReady();
-  void onPlayerStateChange(payload);
-  void onPlayerQualityChange(payload);
-  void onPlayerRateChange(payload);
-  void onPlayerError(payload);
-  void onPlayerProgress(payload);
+  void onPlayerStateChange(String payload);
+  void onPlayerQualityChange(String payload);
+  void onPlayerRateChange(String payload);
+  void onPlayerError(String payload);
+  void onPlayerProgress(String payload);
 }
