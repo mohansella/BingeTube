@@ -55,6 +55,7 @@ dependencies:
   firebase_analytics: ^12.1.0
   readmore: ^3.0.0
   flutter_inappwebview: ^6.1.5
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:
