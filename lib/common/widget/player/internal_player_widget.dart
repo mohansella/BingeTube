@@ -1,4 +1,6 @@
 import 'package:bingetube/common/widget/player/player/player.dart';
+import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/db/database.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bingetube/app/routes.dart';
@@ -117,22 +119,36 @@ class _InternalPlayerState extends BasePlayerState implements PlayerListener {
     );
   }
 
+  String _progId = '';
+  double _progPos = 0;
   @override
-  void onPlayerProgress(String payload) {
+  void onPlayerProgress(String payload) async {
     final splits = payload.split(',');
 
-    final current = double.parse(splits[0]);
+    final pos = double.parse(splits[0]);
     final duration = double.parse(splits[1]);
     final progress = splits[2];
-    InternalPlayerWidget._logger.finer(
-      'progress:$progress current:$current duration:$duration',
+    InternalPlayerWidget._logger.info(
+      'pos:$pos duration:$duration progress:$progress',
     );
+    final id = model!.video.id;
+    final dao = VideosDao(Database());
 
-    if (duration - current < 0) {
+    bool isFinished = false;
+    if (duration - pos < 0) {
+      isFinished = true;
       if (controller.isNextVideoExists) {
         widget.onEvent(.onNext);
       }
     }
+
+    if (!isFinished && _progId == id && (_progPos - pos).abs() < 10) {
+      return;
+    } else {
+      _progId = id;
+      _progPos = pos;
+    }
+    await dao.upsertVideoProgress(id, isFinished, pos: pos);
   }
 
   @override

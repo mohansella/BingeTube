@@ -23,7 +23,7 @@ class SeryVideoBingeController extends BaseBingeController {
 
   @override
   List<BingeActions> supportedActions() {
-    return [.edit, .moveTo, .duplicate, .delete];
+    return [.edit, .moveTo, .duplicate, .delete, .export];
   }
 
   @override

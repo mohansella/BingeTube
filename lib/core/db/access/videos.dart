@@ -25,6 +25,28 @@ class VideoModel {
     required this.progress,
     required this.channel,
   });
+
+  double get progressPercent {
+    if (progress.isFinished) {
+      return 1;
+    }
+    return progress.watchPosition / duration;
+  }
+
+  int get duration {
+    final duration = contentDetails.duration;
+    final regex = RegExp(r'^P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$');
+
+    final match = regex.firstMatch(duration);
+    if (match == null) return 0;
+
+    final days = int.tryParse(match.group(1) ?? '0') ?? 0;
+    final hours = int.tryParse(match.group(2) ?? '0') ?? 0;
+    final minutes = int.tryParse(match.group(3) ?? '0') ?? 0;
+    final seconds = int.tryParse(match.group(4) ?? '0') ?? 0;
+
+    return days * 86400 + hours * 3600 + minutes * 60 + seconds;
+  }
 }
 
 @DriftAccessor(
@@ -66,8 +88,19 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     });
   }
 
-  void upsertVideoProgress(VideoProgressCompanion progress) async {
-    await into(videoProgress).insert(progress, mode: .insertOrReplace);
+  Future<void> upsertVideoProgress(
+    String id,
+    bool isFinished, {
+    double? pos,
+  }) async {
+    final nowTime = DateTime.now();
+    final comp = VideoProgressCompanion.insert(
+      id: id,
+      updatedAt: Value(nowTime),
+      isFinished: Value(isFinished),
+      watchPosition: pos == null ? Value.absent() : Value(pos.floor()),
+    );
+    await into(videoProgress).insert(comp, mode: .insertOrReplace);
   }
 
   JoinedSelectStatement<HasResultSet, dynamic> joinVideoAndChannelTables({

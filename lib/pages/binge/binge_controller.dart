@@ -17,7 +17,7 @@ enum BingeType {
 
 enum BingeParams { type, id, heroId, heroImg, videoId }
 
-enum BingeActions { add, edit, moveTo, duplicate, delete }
+enum BingeActions { add, edit, moveTo, duplicate, delete, export }
 
 class BingeModel {
   final String title;

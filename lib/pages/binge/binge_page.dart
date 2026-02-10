@@ -247,9 +247,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 alignment: .bottomCenter,
                 children: [
                   _buildVideoCardImage(video),
-                  if (video.progress.isFinished) ...[
-                    LinearProgressIndicator(value: 1),
-                  ],
+                  LinearProgressIndicator(value: video.progressPercent),
                 ],
               ),
             ),
@@ -336,6 +334,10 @@ class _BingePageState extends ConsumerState<BingePage> {
         case .delete:
           icon = Icons.delete_outline;
           lable = 'Delete';
+          break;
+        case .export:
+          icon = Icons.import_export;
+          lable = 'Export';
           break;
       }
       toReturn.add(
@@ -483,6 +485,9 @@ class _BingePageState extends ConsumerState<BingePage> {
       case .delete:
         _onActionDelete();
         break;
+      case .export:
+        _onActionExport();
+        break;
     }
   }
 
@@ -534,6 +539,8 @@ class _BingePageState extends ConsumerState<BingePage> {
       }
     }
   }
+
+  void _onActionExport() async {}
 
   Widget _buildVideoCardImage(VideoModel video) {
     return Image.network(

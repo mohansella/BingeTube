@@ -7,7 +7,6 @@ import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
-import 'package:drift/drift.dart';
 
 abstract class BaseBingeController implements BingeController {
   static final _logger = LogManager.getLogger('BaseBingeController');
@@ -163,13 +162,7 @@ abstract class BaseBingeController implements BingeController {
   @override
   void markActiveVideoWatched() {
     final videoId = activeVideoId;
-    videoDao.upsertVideoProgress(
-      VideoProgressCompanion(
-        id: Value(videoId),
-        updatedAt: Value(DateTime.now()),
-        isFinished: Value(true),
-      ),
-    );
+    videoDao.upsertVideoProgress(videoId, true);
     _logger.info('active videoId:$videoId marked as watched');
   }
 
@@ -181,13 +174,7 @@ abstract class BaseBingeController implements BingeController {
   @override
   void setVideoWatched(VideoModel model, bool isFinished) {
     final videoId = model.video.id;
-    videoDao.upsertVideoProgress(
-      VideoProgressCompanion(
-        id: Value(videoId),
-        updatedAt: Value(DateTime.now()),
-        isFinished: Value(isFinished),
-      ),
-    );
+    videoDao.upsertVideoProgress(videoId, isFinished);
     _logger.info('videoId:$videoId marked as watched:$isFinished');
   }
 
