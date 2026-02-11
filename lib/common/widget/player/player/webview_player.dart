@@ -50,7 +50,7 @@ class WebviewPlayer extends Player {
   void _initController(InAppWebViewController webController) {
     if (_controller != null) return;
     _controller = webController;
-    _controller?.addJavaScriptHandler(
+    _controller!.addJavaScriptHandler(
       handlerName: 'appBridge',
       callback: _callbackFromJS,
     );
@@ -67,20 +67,17 @@ class WebviewPlayer extends Player {
   void loadVideo(String videoId) {
     final port = PlayerServer().port;
     final newUrl = 'http://localhost:$port?id=$videoId';
-    _controller?.loadUrl(urlRequest: URLRequest(url: WebUri(newUrl)));
+    _controller!.loadUrl(urlRequest: URLRequest(url: WebUri(newUrl)));
   }
 
   @override
   void startProgressTracking() {
-    _controller?.evaluateJavascript(source: 'startProgressTracking()');
+    _controller!.evaluateJavascript(source: 'startProgressTracking()');
   }
 
-  void pauseVideo() {
-    _controller?.evaluateJavascript(source: 'player.pauseVideo()');
-  }
-
-  void playVideo() {
-    _controller?.evaluateJavascript(source: 'player.playVideo()');
+  @override
+  void seekTo(int pos) {
+    _controller!.evaluateJavascript(source: 'seekTo($pos)');
   }
 }
 

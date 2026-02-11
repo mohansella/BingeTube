@@ -371,9 +371,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                             _buildCoverFallback(c, video.video.id),
                       ),
                       Container(color: Colors.black.withAlpha(50)),
-                      if (video.progress.isFinished) ...[
-                        LinearProgressIndicator(value: 1),
-                      ],
+                      LinearProgressIndicator(value: video.progressPercent),
                       if (_isDrag) ...[
                         Center(
                           child: Icon(
@@ -612,7 +610,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     }
 
     final coverVideo = model.videos.firstWhere(
-      (v) => v.progress.isFinished,
+      (v) => v.progressData.isFinished,
       orElse: () => model.videos[0],
     );
 
@@ -651,7 +649,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     }
 
     final coverVideo = newModel.videos.firstWhere(
-      (v) => v.progress.isFinished,
+      (v) => v.progressData.isFinished,
       orElse: () => newModel.videos[0],
     );
 

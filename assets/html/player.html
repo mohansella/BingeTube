@@ -66,6 +66,10 @@
         window.progressTimer = null;
       }
     }
+
+    function seekTo(pos) {
+      player.seekTo(pos);
+    }
   </script>
 
   <script>
@@ -93,7 +97,7 @@
       player = new YT.Player('player', {
         videoId: videoId,
         playerVars: {
-          autoplay: 1,
+          autoplay: 0,
           controls: 1,
           disablekb: 0,
           fs: 1,

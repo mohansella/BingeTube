@@ -128,7 +128,7 @@ class _InternalPlayerState extends BasePlayerState implements PlayerListener {
     final pos = double.parse(splits[0]);
     final duration = double.parse(splits[1]);
     final progress = splits[2];
-    InternalPlayerWidget._logger.info(
+    InternalPlayerWidget._logger.finer(
       'pos:$pos duration:$duration progress:$progress',
     );
     final id = model!.video.id;
@@ -160,6 +160,8 @@ class _InternalPlayerState extends BasePlayerState implements PlayerListener {
   @override
   void onPlayerReady() {
     player.startProgressTracking();
+    final pos = model!.progressData.watchPosition;
+    player.seekTo(pos);
   }
 
   @override

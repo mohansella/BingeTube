@@ -18,6 +18,7 @@ abstract class Player {
   void loadVideo(String videoId);
 
   void startProgressTracking();
+  void seekTo(int pos);
 
   Player({required this.listener});
 

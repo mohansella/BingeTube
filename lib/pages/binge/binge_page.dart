@@ -279,17 +279,17 @@ class _BingePageState extends ConsumerState<BingePage> {
               ),
             ),
             IconButton(
-              tooltip: video.progress.isFinished
+              tooltip: video.progressData.isFinished
                   ? 'Mark Unwatched'
                   : 'Mark Watched',
               icon: Icon(
-                video.progress.isFinished
+                video.progressData.isFinished
                     ? Icons.visibility_off
                     : Icons.visibility,
               ),
               onPressed: () => _controller.setVideoWatched(
                 video,
-                !video.progress.isFinished,
+                !video.progressData.isFinished,
               ),
             ),
             const SizedBox(width: 12),

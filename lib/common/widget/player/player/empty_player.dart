@@ -21,6 +21,11 @@ class EmptyPlayer extends Player {
   void startProgressTracking() {
     throw UnimplementedError();
   }
+
+  @override
+  void seekTo(int pos) {
+    throw UnimplementedError();
+  }
 }
 
 Player createPlayer(PlayerListener listener) {

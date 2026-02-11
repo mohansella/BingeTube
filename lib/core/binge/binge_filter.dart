@@ -32,9 +32,9 @@ abstract class BingeFilter with _$BingeFilter {
   );
 
   bool matches(VideoModel model) {
-    if (watchType == .watched && !model.progress.isFinished) {
+    if (watchType == .watched && !model.progressData.isFinished) {
       return false;
-    } else if (watchType == .unwatched && model.progress.isFinished) {
+    } else if (watchType == .unwatched && model.progressData.isFinished) {
       return false;
     }
 

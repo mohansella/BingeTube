@@ -12,7 +12,7 @@ class VideoModel {
   final VideoContentDetail contentDetails;
   final VideoStatuse status;
   final VideoStatistic statistics;
-  final VideoProgressData progress;
+  final VideoProgressData progressData;
   final ChannelModel channel;
 
   VideoModel({
@@ -22,15 +22,15 @@ class VideoModel {
     required this.contentDetails,
     required this.status,
     required this.statistics,
-    required this.progress,
+    required this.progressData,
     required this.channel,
   });
 
   double get progressPercent {
-    if (progress.isFinished) {
+    if (progressData.isFinished) {
       return 1;
     }
-    return progress.watchPosition / duration;
+    return progressData.watchPosition / duration;
   }
 
   int get duration {
@@ -137,7 +137,7 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       contentDetails: result.readTable(videoContentDetails),
       status: result.readTable(videoStatuses),
       statistics: result.readTable(videoStatistics),
-      progress: result.readTable(videoProgress),
+      progressData: result.readTable(videoProgress),
       channel: _channelsDao.mapRowToModel(result),
     );
   }
