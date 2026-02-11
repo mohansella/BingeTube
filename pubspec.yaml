@@ -56,6 +56,7 @@ dependencies:
   readmore: ^3.0.0
   flutter_inappwebview: ^6.1.5
   web: ^1.1.1
+  file_picker: ^10.3.10
 
 dev_dependencies:
   flutter_test:

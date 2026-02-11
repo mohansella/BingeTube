@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
@@ -13,6 +15,7 @@ import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -131,7 +134,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 children: [
                   _buildCollapseIcon(),
                   _buildTitleColumn(snapshot),
-                  _buildFilterAndModify(context),
+                  _buildFilterAndModify(snapshot),
                 ],
               ),
               if (_showRefine) ...[
@@ -204,7 +207,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Widget _buildFilterAndModify(BuildContext context) {
+  Widget _buildFilterAndModify(AsyncSnapshot<BingeModel> snapshot) {
     final actions = _controller.supportedActions();
 
     return Row(
@@ -225,7 +228,7 @@ class _BingePageState extends ConsumerState<BingePage> {
           PopupMenuButton(
             tooltip: 'Actions',
             icon: Icon(Icons.more_vert),
-            itemBuilder: (c) => _buildMenuItems(c, actions),
+            itemBuilder: (_) => _buildMenuItems(snapshot, actions),
           ),
         ],
       ],
@@ -308,7 +311,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   List<PopupMenuItem<BingeActions>> _buildMenuItems(
-    BuildContext context,
+    AsyncSnapshot<BingeModel> snapshot,
     List<BingeActions> actions,
   ) {
     IconData icon;
@@ -344,7 +347,7 @@ class _BingePageState extends ConsumerState<BingePage> {
       toReturn.add(
         PopupMenuItem(
           child: Row(children: [Icon(icon), SizedBox(width: 12), Text(lable)]),
-          onTap: () => _onBingeAction(action),
+          onTap: () => _onBingeAction(snapshot, action),
         ),
       );
     }
@@ -471,7 +474,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  void _onBingeAction(BingeActions action) {
+  void _onBingeAction(AsyncSnapshot<BingeModel> snapshot, BingeActions action) {
     switch (action) {
       case .add:
       case .edit:
@@ -487,7 +490,7 @@ class _BingePageState extends ConsumerState<BingePage> {
         _onActionDelete();
         break;
       case .export:
-        _onActionExport();
+        _onActionExport(snapshot);
         break;
     }
   }
@@ -541,7 +544,20 @@ class _BingePageState extends ConsumerState<BingePage> {
     }
   }
 
-  void _onActionExport() async {}
+  void _onActionExport(AsyncSnapshot<BingeModel> snapshot) async {
+    final fileName = 'export_${DateTime.now()}.binge';
+    final model = snapshot.requireData;
+    final json = model.toJson();
+    final jsonString = jsonEncode(json);
+    final filePath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Select where to save your export:',
+      fileName: fileName,
+      bytes: utf8.encode(jsonString),
+      type: .custom,
+      allowedExtensions: ['binge', 'json'],
+    );
+    BingePage._logger.info('exported at $filePath');
+  }
 
   Widget _buildVideoCardImage(VideoModel video) {
     return Image.network(
