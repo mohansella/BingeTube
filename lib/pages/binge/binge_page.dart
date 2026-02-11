@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
@@ -11,11 +9,11 @@ import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/models/binge_model.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
+import 'package:bingetube/core/db/port/sery_port.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -545,18 +543,8 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onActionExport(AsyncSnapshot<BingeModel> snapshot) async {
-    final fileName = 'export_${DateTime.now()}.binge';
     final model = snapshot.requireData;
-    final json = model.toJson();
-    final jsonString = jsonEncode(json);
-    final filePath = await FilePicker.platform.saveFile(
-      dialogTitle: 'Select where to save your export:',
-      fileName: fileName,
-      bytes: utf8.encode(jsonString),
-      type: .custom,
-      allowedExtensions: ['binge', 'json'],
-    );
-    BingePage._logger.info('exported at $filePath');
+    SeryPort.export(model);
   }
 
   Widget _buildVideoCardImage(VideoModel video) {
