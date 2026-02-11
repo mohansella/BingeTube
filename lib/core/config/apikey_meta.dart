@@ -24,7 +24,7 @@ enum ApiKeyQuotaType {
   updateVideo,
   updateChannel,
   fetchPlaylist,
-  fetchPlaylistItems
+  fetchPlaylistItems,
 }
 
 class ApiKeyMeta {

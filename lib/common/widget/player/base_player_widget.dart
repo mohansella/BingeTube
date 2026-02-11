@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
 import 'package:bingetube/core/config/configuration.dart';
-import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 
 abstract class BasePlayerWidget extends PlayerWidget {

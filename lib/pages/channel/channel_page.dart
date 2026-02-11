@@ -5,6 +5,7 @@ import 'package:bingetube/core/constants/constants.dart';
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';

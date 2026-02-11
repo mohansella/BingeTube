@@ -1,53 +1,10 @@
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/db/tables/videos.dart';
 import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/videos.g.dart';
-
-class VideoModel {
-  final Video video;
-  final VideoSnippet snippet;
-  final VideoThumbnail thumbnails;
-  final VideoContentDetail contentDetails;
-  final VideoStatuse status;
-  final VideoStatistic statistics;
-  final VideoProgressData progressData;
-  final ChannelModel channel;
-
-  VideoModel({
-    required this.video,
-    required this.snippet,
-    required this.thumbnails,
-    required this.contentDetails,
-    required this.status,
-    required this.statistics,
-    required this.progressData,
-    required this.channel,
-  });
-
-  double get progressPercent {
-    if (progressData.isFinished) {
-      return 1;
-    }
-    return progressData.watchPosition / duration;
-  }
-
-  int get duration {
-    final duration = contentDetails.duration;
-    final regex = RegExp(r'^P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$');
-
-    final match = regex.firstMatch(duration);
-    if (match == null) return 0;
-
-    final days = int.tryParse(match.group(1) ?? '0') ?? 0;
-    final hours = int.tryParse(match.group(2) ?? '0') ?? 0;
-    final minutes = int.tryParse(match.group(3) ?? '0') ?? 0;
-    final seconds = int.tryParse(match.group(4) ?? '0') ?? 0;
-
-    return days * 86400 + hours * 3600 + minutes * 60 + seconds;
-  }
-}
 
 @DriftAccessor(
   tables: [

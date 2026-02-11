@@ -1,26 +1,9 @@
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/db/tables/channels.dart';
 import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/channels.g.dart';
-
-class ChannelModel {
-  final Channel channel;
-  final ChannelSnippet snippet;
-  final ChannelThumbnail thumbnails;
-  final ChannelContentDetail contentDetails;
-  final ChannelStatistic statistics;
-  final ChannelStatuse status;
-
-  ChannelModel({
-    required this.channel,
-    required this.snippet,
-    required this.thumbnails,
-    required this.contentDetails,
-    required this.statistics,
-    required this.status,
-  });
-}
 
 @DriftAccessor(
   tables: [

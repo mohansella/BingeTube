@@ -5,6 +5,8 @@ import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/binge_model.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 

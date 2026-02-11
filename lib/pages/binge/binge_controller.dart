@@ -1,7 +1,8 @@
 import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
-import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/binge_model.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/pages/binge/controllers/playlist_controller.dart';
 import 'package:bingetube/pages/binge/controllers/search_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/sery_video_controller.dart';
@@ -18,18 +19,6 @@ enum BingeType {
 enum BingeParams { type, id, heroId, heroImg, videoId }
 
 enum BingeActions { add, edit, moveTo, duplicate, delete, export }
-
-class BingeModel {
-  final String title;
-  final String description;
-  final List<VideoModel> videos;
-
-  BingeModel({
-    required this.title,
-    required this.description,
-    required this.videos,
-  });
-}
 
 abstract class BingeController {
   void dispose();

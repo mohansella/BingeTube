@@ -1,6 +1,6 @@
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/search.dart';
-import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';

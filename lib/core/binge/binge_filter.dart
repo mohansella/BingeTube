@@ -1,4 +1,4 @@
-import 'package:bingetube/core/db/access/videos.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '../../generated/core/binge/binge_filter.freezed.dart';

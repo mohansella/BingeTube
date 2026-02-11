@@ -1,6 +1,8 @@
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/channel_model.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/db/tables/search.dart';
 import 'package:drift/drift.dart';
 

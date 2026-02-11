@@ -1,4 +1,4 @@
-import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:bingetube/core/db/models/binge_model.dart';
 import 'package:bingetube/pages/binge/controllers/base_controller.dart';
 
 class SingleVideoBingeController extends BaseBingeController {

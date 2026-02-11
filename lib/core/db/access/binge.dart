@@ -1,26 +1,15 @@
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/binge_model.dart';
+import 'package:bingetube/core/db/models/collection_model.dart';
+import 'package:bingetube/core/db/models/sery_model.dart';
+import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/db/tables/binge.dart';
 import 'package:bingetube/core/db/tables/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/binge.g.dart';
-
-class CollectionModel {
-  final Collection collection;
-  final List<SeryModel> series;
-
-  CollectionModel({required this.collection, required this.series});
-}
-
-class SeryModel {
-  final Sery sery;
-  final VideoThumbnail thumbnail;
-
-  SeryModel({required this.sery, required this.thumbnail});
-}
 
 @DriftAccessor(
   tables: [Collections, Series, SeriesVsVideos, VideoThumbnails, Videos],

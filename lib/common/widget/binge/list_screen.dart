@@ -2,6 +2,8 @@ import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/collection_model.dart';
+import 'package:bingetube/core/db/models/sery_model.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
