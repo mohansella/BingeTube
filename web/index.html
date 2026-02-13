@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -27,40 +28,49 @@
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
   <title>BingeTube</title>
   <link rel="manifest" href="manifest.json">
+
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
   <style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    background: #121212; /* match app background */
-  }
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: #121212;
+      /* match app background */
+    }
 
-  #native-splash {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #121212;
-    z-index: 0;
-  }
+    #native-splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #121212;
+      z-index: 0;
+    }
 
-  #native-splash img {
-    width: 32vw;          /* same as FractionallySizedBox */
-    max-width: 420px;     /* prevent oversized on desktop */
-    height: auto;
-  }
-</style>
+    #native-splash>* {
+      width: 32vw;
+      /* same as FractionallySizedBox */
+      max-width: 420px;
+      /* prevent oversized on desktop */
+      height: auto;
+    }
+  </style>
 </head>
+
 <body>
   <!-- Native splash -->
   <div id="native-splash">
-    <img src="assets/assets/images/logo.svg" alt="Loading" />
+    <lottie-player src="assets/assets/lottie/binge_panda.json" background="transparent" speed="1" loop autoplay />
   </div>
 
   <script src="flutter_bootstrap.js" async></script>
 </body>
+
 </html>
