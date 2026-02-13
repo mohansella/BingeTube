@@ -44,6 +44,19 @@ class VideoModel {
     return days * 86400 + hours * 3600 + minutes * 60 + seconds;
   }
 
+  String formatDuration() {
+    final duration = Duration(seconds: this.duration);
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+
+    if (hours > 0) {
+      return "$hours:${minutes.toString().padLeft(2, '0')}:$seconds";
+    } else {
+      return "$minutes:$seconds";
+    }
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'video': video.toJson(),

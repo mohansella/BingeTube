@@ -246,9 +246,10 @@ class _BingePageState extends ConsumerState<BingePage> {
               width: 160,
               height: 90,
               child: Stack(
-                alignment: .bottomCenter,
+                alignment: Alignment.bottomCenter,
                 children: [
                   _buildVideoCardImage(video),
+                  _buildDuration(video),
                   LinearProgressIndicator(value: video.progressPercent),
                 ],
               ),
@@ -296,6 +297,29 @@ class _BingePageState extends ConsumerState<BingePage> {
             ),
             const SizedBox(width: 12),
           ],
+        ),
+      ),
+    );
+  }
+
+  Positioned _buildDuration(VideoModel video) {
+    final duration = video.formatDuration();
+    return Positioned(
+      bottom: 8,
+      right: 8,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.black.withAlpha(200),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          duration,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 10,
+          ),
         ),
       ),
     );

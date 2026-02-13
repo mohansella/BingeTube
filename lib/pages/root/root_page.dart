@@ -24,7 +24,7 @@ class RootPageState extends State<RootPage> {
           child: Image.asset(Assets.logoPng.path),
         ),
         leadingWidth: 45,
-        titleSpacing: 10,
+        titleSpacing: 0,
         actions: [
           IconButton(
             onPressed: () => context.pushNamed(Pages.keyConfig.name),
