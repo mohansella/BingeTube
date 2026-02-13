@@ -1,14 +1,19 @@
+import 'package:path/path.dart' as path;
+
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
+
+import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/collection_model.dart';
 import 'package:bingetube/core/db/models/sery_model.dart';
+import 'package:bingetube/core/db/port/sery_port.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 
 class ListScreenWidget extends StatefulWidget {
   final bool isSystem;
@@ -129,40 +134,40 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   Widget _buildSery(BuildContext context, SeryModel model) {
     final heroId = model.sery.id.toString();
     final heroImg = model.thumbnail.mediumUrl;
-    return Material(
-      child: InkWell(
-        onTap: () => _onTapSery(context, model, heroId, heroImg),
-        child: Row(
-          children: [
-            Hero(
-              tag: heroId,
-              child: Image.network(
-                heroImg,
-                width: _width,
-                height: _height,
-                fit: .cover,
-                frameBuilder: (c, child, frame, wasSyncLoaded) {
-                  if (frame != null || wasSyncLoaded) {
-                    return child;
-                  }
-                  return _buildCoverFallback(
-                    c,
-                    model,
-                    height: _height,
-                    width: _width,
-                  );
-                },
-                errorBuilder: (c, _, _) => _buildCoverFallback(
-                  c,
-                  model,
-                  height: _height,
-                  width: _width,
-                ),
-              ),
-            ),
-          ],
+    return DragItemWidget(
+      allowedOperations: () => [DropOperation.copy],
+      dragItemProvider: (request) async {
+        final tempFile = await SeryPort.exportToTempDirectory(model.sery.id);
+        final fileName = '${path.basename(tempFile.path)}.binge';
+        final item = DragItem(suggestedName: fileName);
+        item.add(Formats.fileUri(tempFile.uri));
+        return item;
+      },
+      child: DraggableWidget(
+        child: Material(
+          child: InkWell(
+            onTap: () => _onTapSery(context, model, heroId, heroImg),
+            child: Hero(tag: heroId, child: _buildSeryImage(heroImg, model)),
+          ),
         ),
       ),
+    );
+  }
+
+  Image _buildSeryImage(String heroImg, SeryModel model) {
+    return Image.network(
+      heroImg,
+      width: _width,
+      height: _height,
+      fit: .cover,
+      frameBuilder: (c, child, frame, wasSyncLoaded) {
+        if (frame != null || wasSyncLoaded) {
+          return child;
+        }
+        return _buildCoverFallback(c, model, height: _height, width: _width);
+      },
+      errorBuilder: (c, _, _) =>
+          _buildCoverFallback(c, model, height: _height, width: _width),
     );
   }
 

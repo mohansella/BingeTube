@@ -58,6 +58,8 @@ dependencies:
   web: ^1.1.1
   file_picker: ^10.3.10
   crypto: ^3.0.7
+  super_drag_and_drop: ^0.9.1
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
