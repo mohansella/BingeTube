@@ -10,11 +10,14 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
+    return SingleChildScrollView(
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 700),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _buildTheme(context, ref),
                 _buildFontSize(context, ref),
@@ -24,23 +27,27 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildVersionInfo() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: FutureBuilder(
-        future: PackageInfo.fromPlatform(),
-        builder: (_, snapshot) {
-          if (snapshot.hasData) {
-            final info = snapshot.data!;
-            return Text('Version: ${info.version} Build: ${info.buildNumber}');
-          } else {
-            return SizedBox();
-          }
-        },
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: FutureBuilder(
+          future: PackageInfo.fromPlatform(),
+          builder: (_, snapshot) {
+            if (snapshot.hasData) {
+              final info = snapshot.data!;
+              return Text(
+                'Version: ${info.version} Build: ${info.buildNumber}',
+              );
+            } else {
+              return SizedBox();
+            }
+          },
+        ),
       ),
     );
   }
@@ -119,13 +126,10 @@ class SettingsPage extends ConsumerWidget {
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Icon(Icons.text_fields, size: 24),
+          Icon(Icons.ondemand_video, size: 24),
           SizedBox(width: 8),
           Expanded(
-            child: Text(
-              'Player Type',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            child: Text('Player', style: Theme.of(context).textTheme.bodyLarge),
           ),
           SegmentedButton(
             segments: PlayerType.values
