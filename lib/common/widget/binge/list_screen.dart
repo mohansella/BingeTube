@@ -134,20 +134,46 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   Widget _buildSery(BuildContext context, SeryModel model) {
     final heroId = model.sery.id.toString();
     final heroImg = model.thumbnail.mediumUrl;
-    return DragItemWidget(
-      allowedOperations: () => [DropOperation.copy],
-      dragItemProvider: (request) async {
-        final tempFile = await SeryPort.exportToTempDirectory(model.sery.id);
-        final fileName = '${path.basename(tempFile.path)}.binge';
-        final item = DragItem(suggestedName: fileName);
-        item.add(Formats.fileUri(tempFile.uri));
-        return item;
+    return DropRegion(
+      formats: [Formats.fileUri],
+      onDropOver: (event) {
+        final seryId = event.session.items.first.localData as int;
+        if (seryId == model.sery.id) {
+          return DropOperation.none;
+        } else {
+          return DropOperation.move;
+        }
       },
-      child: DraggableWidget(
-        child: Material(
-          child: InkWell(
-            onTap: () => _onTapSery(context, model, heroId, heroImg),
-            child: Hero(tag: heroId, child: _buildSeryImage(heroImg, model)),
+      onPerformDrop: (event) async {
+        final seryId = event.session.items.first.localData as int;
+        final pos = event.position.local.dx - (_width / 2);
+        final targetPriority = model.sery.priority;
+        final priority = pos < 0 ? targetPriority : targetPriority + 1;
+        final collectionId = model.sery.collectionId;
+        await BingeDao(Database()).moveSery(
+          seryId: seryId,
+          collectionId: collectionId,
+          priority: priority,
+        );
+      },
+      child: DragItemWidget(
+        allowedOperations: () => [DropOperation.copy],
+        dragItemProvider: (request) async {
+          final tempFile = await SeryPort.exportToTempDirectory(model.sery.id);
+          final fileName = '${path.basename(tempFile.path)}.binge';
+          final item = DragItem(
+            suggestedName: fileName,
+            localData: model.sery.id,
+          );
+          item.add(Formats.fileUri(tempFile.uri));
+          return item;
+        },
+        child: DraggableWidget(
+          child: Material(
+            child: InkWell(
+              onTap: () => _onTapSery(context, model, heroId, heroImg),
+              child: Hero(tag: heroId, child: _buildSeryImage(heroImg, model)),
+            ),
           ),
         ),
       ),

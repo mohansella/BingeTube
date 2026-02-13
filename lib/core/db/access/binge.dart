@@ -83,6 +83,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
             .putIfAbsent(collection.id, () => <SeryModel>[])
             .add(SeryModel(sery: sery, thumbnail: thumbnail));
       }
+      for (final seryies in idVsSeries.values) {
+        seryies.sort((a, b) => a.sery.priority - b.sery.priority);
+      }
       final models = idVsCollection.values
           .map((c) => CollectionModel(collection: c, series: idVsSeries[c.id]!))
           .toList();
@@ -153,15 +156,42 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     });
   }
 
-  Future<void> moveSery(int seryId, Collection collection) async {
-    final query = update(series)..where((s) => s.id.equals(seryId));
-    await query.write(
-      SeriesCompanion(
-        updatedAt: Value(DateTime.now()),
-        id: Value(seryId),
-        collectionId: Value(collection.id),
-      ),
-    );
+  Future<void> moveSery({
+    required int seryId,
+    required int collectionId,
+    int priority = 1,
+  }) async {
+    await transaction(() async {
+      final seriesQuery = select(series)
+        ..where((s) => series.collectionId.equals(collectionId))
+        ..where((s) => s.priority.isBiggerOrEqualValue(priority))
+        ..orderBy([(s) => OrderingTerm.asc(s.priority)]);
+      final seryies = await seriesQuery.get();
+      var newPriority = priority;
+      for (final sery in seryies) {
+        if (sery.id == seryId) {
+          return;
+        }
+        final updateQuery = update(series)..where((s) => s.id.equals(sery.id));
+        await updateQuery.write(
+          SeriesCompanion(
+            id: Value(sery.id),
+            collectionId: Value(sery.collectionId),
+            priority: Value(newPriority++),
+          ),
+        );
+      }
+
+      final query = update(series)..where((s) => s.id.equals(seryId));
+      await query.write(
+        SeriesCompanion(
+          updatedAt: Value(DateTime.now()),
+          id: Value(seryId),
+          collectionId: Value(collectionId),
+          priority: Value(priority),
+        ),
+      );
+    });
   }
 
   Future<void> duplicateSery(int seryId, Collection collection) async {
