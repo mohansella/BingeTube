@@ -179,21 +179,18 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
       },
       onDropOver: (event) {
         final item = event.session.items.first;
-        if (item.localData == null) {
-          return DropOperation.copy;
-        }
-        final seryId = item.localData as int;
-        if (seryId == model.sery.id) {
-          return DropOperation.none;
-        } else {
-          final pos = event.position.local.dx - (_width / 2);
-          if (pos < 0 != _droppingOnLeft) {
-            setState(() {
-              _droppingOnLeft = pos < 0;
-            });
+        final isLocalData = item.localData != null;
+        if (isLocalData) {
+          final seryId = item.localData as int;
+          if (seryId == model.sery.id) {
+            return DropOperation.none;
           }
-          return DropOperation.move;
         }
+        final pos = event.position.local.dx - (_width / 2);
+        setState(() {
+          _droppingOnLeft = pos < 0;
+        });
+        return isLocalData ? DropOperation.move : DropOperation.copy;
       },
       onPerformDrop: (event) async {
         final item = event.session.items.first;
@@ -241,17 +238,18 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         child: Material(
           child: InkWell(
             onTap: () => _onTapSery(context, model, heroId, heroImg),
-            child: Hero(
-              tag: heroId,
-              child: Transform.translate(
-                offset: Offset(dropShift, 0.0),
-                child: _buildSeryImage(heroImg, model),
-              ),
+            child: Transform.translate(
+              offset: Offset(dropShift, 0.0),
+              child: _buildActualSery(heroId, heroImg, model),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Hero _buildActualSery(String heroId, String heroImg, SeryModel model) {
+    return Hero(tag: heroId, child: _buildSeryImage(heroImg, model));
   }
 
   Future<void> _addVirtualFile(DragItem item, SeryModel model) async {
