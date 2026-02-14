@@ -147,19 +147,18 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
 
   DropRegion _buildDropRegion(SeryModel model, Widget child) {
     return DropRegion(
-      formats: [Formats.fileUri],
+      formats: [Formats.fileUri, Formats.htmlFile],
       onDropEnter: (event) {
         setState(() {
           final item = event.session.items.first;
-          if (item.localData == null) {
-            return;
+          if (item.localData != null) {
+            final seryId = item.localData as int;
+            if (seryId == model.sery.id) {
+              _droppingOnSeryId = -1;
+              return;
+            }
           }
-          final seryId = item.localData as int;
-          if (seryId == model.sery.id) {
-            _droppingOnSeryId = -1;
-          } else {
-            _droppingOnSeryId = model.sery.id;
-          }
+          _droppingOnSeryId = model.sery.id;
         });
       },
       onDropLeave: (event) {
@@ -330,26 +329,28 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   }
 
   Future<void> _performDropsFromExternal(PerformDropEvent event) async {
-    for (final item in event.session.items) {
+    final items = event.session.items;
+    ListScreenWidget._logger.info('dropped: ${items.length} items');
+    for (final item in items) {
       await _performDropFromExternal(item);
     }
   }
 
   Future<void> _performDropFromExternal(DropItem item) async {
-    final reader = item.dataReader;
+    final reader = item.dataReader!;
+    ListScreenWidget._logger.info('supported format: ${item.platformFormats}');
 
     // 1. Check if the item is a file
-    if (reader!.canProvide(Formats.fileUri)) {
+    if (kIsWeb || reader.canProvide(Formats.fileUri)) {
       reader.getFile(
         null,
         (file) async {
-          // The 'file' object is of type DropValueFile
           final fileName = file.fileName;
-          final fileSize = file.fileSize; // bytes
+          final fileSize = file.fileSize;
 
-          // 2. Read the actual file content as a stream or bytes
-          //final stream = file.getStream();
           //final bytes = await file.readAll();
+          //final value = utf8.decode(bytes);
+          //final json = jsonDecode(value);
 
           ListScreenWidget._logger.info('Dropped file: $fileName');
           ListScreenWidget._logger.info('Size: ${fileSize! / 1024} KB');
