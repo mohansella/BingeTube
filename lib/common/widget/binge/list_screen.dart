@@ -150,7 +150,11 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
       formats: [Formats.fileUri],
       onDropEnter: (event) {
         setState(() {
-          final seryId = event.session.items.first.localData as int;
+          final item = event.session.items.first;
+          if (item.localData == null) {
+            return;
+          }
+          final seryId = item.localData as int;
           if (seryId == model.sery.id) {
             _droppingOnSeryId = -1;
           } else {
@@ -164,7 +168,11 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         });
       },
       onDropOver: (event) {
-        final seryId = event.session.items.first.localData as int;
+        final item = event.session.items.first;
+        if (item.localData == null) {
+          return DropOperation.copy;
+        }
+        final seryId = item.localData as int;
         if (seryId == model.sery.id) {
           return DropOperation.none;
         } else {
@@ -178,16 +186,22 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         }
       },
       onPerformDrop: (event) async {
-        final seryId = event.session.items.first.localData as int;
+        final item = event.session.items.first;
         final pos = event.position.local.dx - (_width / 2);
         final targetPriority = model.sery.priority;
         final priority = pos < 0 ? targetPriority : targetPriority + 1;
         final collectionId = model.sery.collectionId;
-        await BingeDao(Database()).moveSery(
-          seryId: seryId,
-          collectionId: collectionId,
-          priority: priority,
-        );
+
+        if (item.localData == null) {
+          await _performDropsFromExternal(event);
+        } else {
+          final seryId = item.localData as int;
+          await BingeDao(Database()).moveSery(
+            seryId: seryId,
+            collectionId: collectionId,
+            priority: priority,
+          );
+        }
       },
       child: child,
     );
@@ -313,5 +327,37 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         child: Text(model.sery.name),
       ),
     );
+  }
+
+  Future<void> _performDropsFromExternal(PerformDropEvent event) async {
+    for (final item in event.session.items) {
+      await _performDropFromExternal(item);
+    }
+  }
+
+  Future<void> _performDropFromExternal(DropItem item) async {
+    final reader = item.dataReader;
+
+    // 1. Check if the item is a file
+    if (reader!.canProvide(Formats.fileUri)) {
+      reader.getFile(
+        null,
+        (file) async {
+          // The 'file' object is of type DropValueFile
+          final fileName = file.fileName;
+          final fileSize = file.fileSize; // bytes
+
+          // 2. Read the actual file content as a stream or bytes
+          //final stream = file.getStream();
+          //final bytes = await file.readAll();
+
+          ListScreenWidget._logger.info('Dropped file: $fileName');
+          ListScreenWidget._logger.info('Size: ${fileSize! / 1024} KB');
+        },
+        onError: (error) {
+          ListScreenWidget._logger.warning('Error reading file', error);
+        },
+      );
+    }
   }
 }
