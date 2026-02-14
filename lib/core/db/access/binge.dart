@@ -177,7 +177,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
           SeriesCompanion(
             id: Value(sery.id),
             collectionId: Value(sery.collectionId),
-            priority: Value(newPriority++),
+            priority: Value(++newPriority),
           ),
         );
       }
@@ -185,7 +185,6 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       final query = update(series)..where((s) => s.id.equals(seryId));
       await query.write(
         SeriesCompanion(
-          updatedAt: Value(DateTime.now()),
           id: Value(seryId),
           collectionId: Value(collectionId),
           priority: Value(priority),
