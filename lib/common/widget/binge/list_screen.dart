@@ -29,6 +29,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   double _width = 0;
   double _height = 0;
 
+  int _droppingOnSeryId = -1;
+  bool _droppingOnLeft = true;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
 
   @override
   void didUpdateWidget(covariant ListScreenWidget oldWidget) {
+    _droppingOnSeryId = -1;
+    _droppingOnLeft = true;
     super.didUpdateWidget(oldWidget);
   }
 
@@ -122,8 +127,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
             child: ListView.separated(
               scrollDirection: .horizontal,
               itemCount: model.series.length,
-              itemBuilder: (c, i) => _buildSery(c, model.series[i]),
-              separatorBuilder: (c, i) => SizedBox(width: 4 * ratio),
+              itemBuilder: (_, i) => _buildSery(model.series[i]),
+              separatorBuilder: (_, _) => SizedBox(width: 4 * ratio),
             ),
           ),
         ],
@@ -131,16 +136,39 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
     );
   }
 
-  Widget _buildSery(BuildContext context, SeryModel model) {
-    final heroId = model.sery.id.toString();
-    final heroImg = model.thumbnail.mediumUrl;
+  Widget _buildSery(SeryModel model) {
+    return _buildDropRegion(model, _buildDragItem(model));
+  }
+
+  DropRegion _buildDropRegion(SeryModel model, Widget child) {
     return DropRegion(
       formats: [Formats.fileUri],
+      onDropEnter: (event) {
+        setState(() {
+          final seryId = event.session.items.first.localData as int;
+          if (seryId == model.sery.id) {
+            _droppingOnSeryId = -1;
+          } else {
+            _droppingOnSeryId = model.sery.id;
+          }
+        });
+      },
+      onDropLeave: (event) {
+        setState(() {
+          _droppingOnSeryId = -1;
+        });
+      },
       onDropOver: (event) {
         final seryId = event.session.items.first.localData as int;
         if (seryId == model.sery.id) {
           return DropOperation.none;
         } else {
+          final pos = event.position.local.dx - (_width / 2);
+          if (pos < 0 != _droppingOnLeft) {
+            setState(() {
+              _droppingOnLeft = pos < 0;
+            });
+          }
           return DropOperation.move;
         }
       },
@@ -156,23 +184,38 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
           priority: priority,
         );
       },
-      child: DragItemWidget(
-        allowedOperations: () => [DropOperation.copy],
-        dragItemProvider: (request) async {
-          final tempFile = await SeryPort.exportToTempDirectory(model.sery.id);
-          final fileName = '${path.basename(tempFile.path)}.binge';
-          final item = DragItem(
-            suggestedName: fileName,
-            localData: model.sery.id,
-          );
-          item.add(Formats.fileUri(tempFile.uri));
-          return item;
-        },
-        child: DraggableWidget(
-          child: Material(
-            child: InkWell(
-              onTap: () => _onTapSery(context, model, heroId, heroImg),
-              child: Hero(tag: heroId, child: _buildSeryImage(heroImg, model)),
+      child: child,
+    );
+  }
+
+  DragItemWidget _buildDragItem(SeryModel model) {
+    final heroId = model.sery.id.toString();
+    final heroImg = model.thumbnail.mediumUrl;
+    double dropShift = model.sery.id == _droppingOnSeryId ? 20 : 0;
+    dropShift = _droppingOnLeft ? dropShift : -dropShift;
+
+    return DragItemWidget(
+      allowedOperations: () => [DropOperation.move, DropOperation.copy],
+      dragItemProvider: (request) async {
+        final tempFile = await SeryPort.exportToTempDirectory(model.sery.id);
+        final fileName = '${path.basename(tempFile.path)}.binge';
+        final item = DragItem(
+          suggestedName: fileName,
+          localData: model.sery.id,
+        );
+        item.add(Formats.fileUri(tempFile.uri));
+        return item;
+      },
+      child: DraggableWidget(
+        child: Material(
+          child: InkWell(
+            onTap: () => _onTapSery(context, model, heroId, heroImg),
+            child: Hero(
+              tag: heroId,
+              child: Transform.translate(
+                offset: Offset(dropShift, 0.0),
+                child: _buildSeryImage(heroImg, model),
+              ),
             ),
           ),
         ),
@@ -190,10 +233,15 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         if (frame != null || wasSyncLoaded) {
           return child;
         }
-        return _buildCoverFallback(c, model, height: _height, width: _width);
+        return _buildSeryImageFallback(
+          c,
+          model,
+          height: _height,
+          width: _width,
+        );
       },
       errorBuilder: (c, _, _) =>
-          _buildCoverFallback(c, model, height: _height, width: _width),
+          _buildSeryImageFallback(c, model, height: _height, width: _width),
     );
   }
 
@@ -215,7 +263,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
     );
   }
 
-  Widget _buildCoverFallback(
+  Widget _buildSeryImageFallback(
     BuildContext context,
     SeryModel model, {
     required double height,
