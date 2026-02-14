@@ -1,16 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/core/utils/file_utils.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
-
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
+
 import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/core/utils/file_utils.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
@@ -233,25 +231,13 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   Future<void> _addVirtualFile(DragItem item, SeryModel model) async {
     final seryId = model.sery.id;
     if (kIsWeb) {
-      final bingeDao = BingeDao(Database());
-      int count = await bingeDao.getVideosCount(seryId);
-      if (count > 1000) {
-        return;
-      }
-      final model = await bingeDao.streamBingeModel(seryId).first;
-      final bytes = SeryPort.buildJsonBytes(model);
-      final fileName = SeryPort.buildFileName(model.title, bytes: bytes);
-      final base64Data = base64Encode(bytes);
-      final dataUri = 'data:application/octet-stream;base64,$base64Data';
-      item.add(Formats.fileUri(Uri.parse(dataUri))); //download via uri
-      item.add(Formats.plainText(fileName)); //name suggestion
       return;
     }
     return item.addVirtualFile(
       format: Formats.json,
       provider: (sinkProvider, progress) async {
         try {
-          final tempFile = await SeryPort.exportToTempDirectory(model.sery.id);
+          final tempFile = await SeryPort.exportToTempDirectory(seryId);
           final file = File(tempFile.path);
           final size = await file.length();
 
