@@ -259,4 +259,16 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       }
     });
   }
+
+  Future<int> getVideosCount(int seryId) async {
+    final query = selectOnly(seriesVsVideos)
+      ..addColumns([seriesVsVideos.videoId.count()])
+      ..where(seriesVsVideos.seriesId.equals(seryId));
+
+    final result = await query.map((row) {
+      return row.read(seriesVsVideos.videoId.count())!;
+    }).getSingle();
+
+    return result;
+  }
 }

@@ -12,11 +12,11 @@ import 'package:file_picker/file_picker.dart';
 sealed class SeryPort {
   static final _logger = LogManager.getLogger('SeryPort');
 
-  static Future<String?> export(BingeModel model) async {
-    final bytes = _getModelJsonBytes(model);
+  static Future<String?> exportWithOSMenu(BingeModel model) async {
+    final bytes = buildJsonBytes(model);
     final filePath = await FilePicker.platform.saveFile(
       dialogTitle: 'Select where to save your export:',
-      fileName: _buildFileName(model, bytes),
+      fileName: buildFileName(model.title),
       bytes: bytes,
       type: .custom,
       allowedExtensions: ['binge'],
@@ -27,20 +27,25 @@ sealed class SeryPort {
 
   static Future<File> exportToTempDirectory(int seryId) async {
     final model = await BingeDao(Database()).streamBingeModel(seryId).first;
-    final bytes = _getModelJsonBytes(model);
-    final fileName = _buildFileName(model, bytes);
+    final bytes = buildJsonBytes(model);
+    final fileName = buildFileName(model.title, bytes: bytes);
     final file = FileUtils.writeToTempFile(fileName, bytes);
     return file;
   }
 
-  static String _buildFileName(BingeModel model, Uint8List bytes) {
-    final slugTitle = FileUtils.toSlugFileName(model.title);
-    final jsonHash = FileUtils.generateHash(bytes);
-    final fileName = '$slugTitle-$jsonHash';
+  static String buildFileName(
+    String title, {
+    Uint8List? bytes,
+    bool withExtension = true,
+  }) {
+    final slugTitle = FileUtils.toSlugFileName(title);
+    final jsonHash = bytes == null ? '' : '-${FileUtils.generateHash(bytes)}';
+    final extension = withExtension ? '.binge' : '';
+    final fileName = '$slugTitle$jsonHash$extension';
     return fileName;
   }
 
-  static Uint8List _getModelJsonBytes(BingeModel model) {
+  static Uint8List buildJsonBytes(BingeModel model) {
     final json = model.toJson();
     final videosJson = json['videos'] as List<Map<String, dynamic>>;
     final channelJsons = <String, dynamic>{};

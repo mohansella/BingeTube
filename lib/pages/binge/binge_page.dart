@@ -568,7 +568,7 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   void _onActionExport(AsyncSnapshot<BingeModel> snapshot) async {
     final model = snapshot.requireData;
-    SeryPort.export(model);
+    SeryPort.exportWithOSMenu(model);
   }
 
   Widget _buildVideoCardImage(VideoModel video) {
