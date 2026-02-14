@@ -95,17 +95,31 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return toReturn;
   }
 
-  Future<Sery> saveBingeModel(
-    Collection collection,
+  Future<void> importBingeModel(
     BingeModel model,
-    VideoModel video, {
+    int collectionId,
+    String coverId,
+    int priority,
+  ) async {
+    final sery = await saveBingeModel(model, collectionId, coverId);
+    await moveSery(
+      seryId: sery.id,
+      collectionId: collectionId,
+      priority: priority,
+    );
+  }
+
+  Future<Sery> saveBingeModel(
+    BingeModel model,
+    int collectionId,
+    String coverVideoId, {
     int? seryId,
   }) async {
     return await transaction(() async {
       final seriesId = await into(series).insert(
         SeriesCompanion.insert(
-          collectionId: collection.id,
-          coverVideoId: video.video.id,
+          collectionId: collectionId,
+          coverVideoId: coverVideoId,
           name: model.title,
           description: model.description,
           priority: 0,
@@ -136,6 +150,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       selectStatement: baseQuery,
     );
     return fullQuery.watch().map((result) {
+      if (result.isEmpty) {
+        return BingeModel(title: '', description: '', videos: []);
+      }
       final sery = result[0].readTable(series);
       final videos = result.map(videosDao.mapRowToModel).toList();
       return BingeModel(
@@ -193,9 +210,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     });
   }
 
-  Future<void> duplicateSery(int seryId, Collection collection) async {
+  Future<void> duplicateSery(int seryId, int collectionId) async {
     final model = await streamBingeModel(seryId).first;
-    await saveBingeModel(collection, model, model.videos[0]);
+    await saveBingeModel(model, collectionId, model.videos[0].video.id);
   }
 
   Future<Sery> editSery(

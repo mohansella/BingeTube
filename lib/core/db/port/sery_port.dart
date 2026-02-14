@@ -64,4 +64,29 @@ sealed class SeryPort {
     final jsonString = jsonEncode(json);
     return utf8.encode(jsonString);
   }
+
+  static Future<void> importAsJson(json, int collectionId, int priority) async {
+    final videosJson = json['videos'] as List<dynamic>;
+    final channelJsons = json['channels'];
+    final createdAt = DateTime.now().millisecondsSinceEpoch;
+    final progressData = <String, dynamic>{
+      'updatedAt': createdAt,
+      'watchPosition': 0,
+      'isFinished': false,
+    };
+    for (final videoJson in videosJson) {
+      final videoId = videoJson['video']['id'];
+      videoJson['progressData'] = {...progressData, 'id': videoId};
+      for (Map<String, dynamic> dataObj in videoJson.values) {
+        dataObj['createdAt'] = createdAt;
+      }
+      final channelId = videoJson['video']['channelId'] as String;
+      final channelJson = channelJsons[channelId];
+      videoJson['channel'] = channelJson;
+    }
+    final model = BingeModel.fromJson(json);
+    final bingeDao = BingeDao(Database());
+    final coverId = videosJson[0]['video']['id'];
+    await bingeDao.importBingeModel(model, collectionId, coverId, priority);
+  }
 }

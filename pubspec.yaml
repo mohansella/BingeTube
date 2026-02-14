@@ -60,6 +60,7 @@ dependencies:
   crypto: ^3.0.7
   super_drag_and_drop: ^0.9.1
   path: ^1.9.1
+  super_clipboard: ^0.9.1
 
 dev_dependencies:
   flutter_test:

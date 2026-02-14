@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import 'package:bingetube/app/theme.dart';
@@ -34,20 +36,29 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   double _width = 0;
   double _height = 0;
 
-  int _droppingOnSeryId = -1;
-  bool _droppingOnLeft = true;
+  late int _droppingOnSeryId;
+  late bool _droppingOnLeft;
+  late int _dropCollectionId;
+  late int _dropPriority;
 
   @override
   void initState() {
     super.initState();
     _bingeDao = BingeDao(Database());
+    _initDropState();
   }
 
   @override
   void didUpdateWidget(covariant ListScreenWidget oldWidget) {
-    _droppingOnSeryId = -1;
-    _droppingOnLeft = true;
     super.didUpdateWidget(oldWidget);
+    _initDropState();
+  }
+
+  void _initDropState() {
+    _droppingOnSeryId = -1;
+    _droppingOnLeft = false;
+    _dropCollectionId = -1;
+    _dropPriority = -1;
   }
 
   @override
@@ -192,6 +203,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         final collectionId = model.sery.collectionId;
 
         if (item.localData == null) {
+          _dropCollectionId = collectionId;
+          _dropPriority = priority;
           await _performDropsFromExternal(event);
         } else {
           final seryId = item.localData as int;
@@ -340,25 +353,29 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
     final reader = item.dataReader!;
     ListScreenWidget._logger.info('supported format: ${item.platformFormats}');
 
-    // 1. Check if the item is a file
     if (kIsWeb || reader.canProvide(Formats.fileUri)) {
-      reader.getFile(
-        null,
-        (file) async {
-          final fileName = file.fileName;
-          final fileSize = file.fileSize;
-
-          //final bytes = await file.readAll();
-          //final value = utf8.decode(bytes);
-          //final json = jsonDecode(value);
-
-          ListScreenWidget._logger.info('Dropped file: $fileName');
-          ListScreenWidget._logger.info('Size: ${fileSize! / 1024} KB');
-        },
-        onError: (error) {
-          ListScreenWidget._logger.warning('Error reading file', error);
-        },
-      );
+      reader.getFile(null, _importFile, onError: _importError);
     }
+  }
+
+  Future<void> _importFile(DataReaderFile file) async {
+    final fileName = file.fileName;
+    final fileSize = file.fileSize;
+
+    ListScreenWidget._logger.info(
+      'Dropped file: $fileName Size:$fileSize bytes',
+    );
+
+    final bytes = await file.readAll();
+    final value = utf8.decode(bytes);
+    final json = jsonDecode(value);
+    if (_dropCollectionId == -1 || _dropPriority == -1) {
+      throw Exception('invalid state');
+    }
+    await SeryPort.importAsJson(json, _dropCollectionId, _dropPriority);
+  }
+
+  void _importError(Object error) {
+    ListScreenWidget._logger.warning('Error reading file', error);
   }
 }

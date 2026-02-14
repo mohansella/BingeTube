@@ -19,10 +19,10 @@ sealed class FileUtils {
     return digest.toString().substring(0, length);
   }
 
-  static Future<File> writeToTempFile(String fileName, Uint8List data) async {
+  static Future<File> writeToTempFile(String fileName, Uint8List bytes) async {
     final tempDir = await getTemporaryDirectory();
     final tempFile = File('${tempDir.path}/$fileName');
-    await tempFile.writeAsBytes(data);
+    await tempFile.writeAsBytes(bytes);
     return tempFile;
   }
 }
