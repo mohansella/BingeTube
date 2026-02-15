@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bingetube/core/db/access/binge.dart';
+import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/binge_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
@@ -50,14 +51,13 @@ sealed class SeryPort {
     final videosJson = json['videos'] as List<Map<String, dynamic>>;
     final channelJsons = <String, dynamic>{};
     for (final videoJson in videosJson) {
-      for (Map<String, dynamic> dataObj in videoJson.values) {
-        dataObj.remove('createdAt');
-      }
+      videoJson['video'].remove('createdAt');
       videoJson.remove('progressData'); //user's progress removed
       final channelJson = videoJson.remove('channel') as Map<String, dynamic>;
       final channelId = channelJson['channel']['id'] as String;
       if (!channelJsons.containsKey(channelId)) {
         channelJsons[channelId] = channelJson;
+        channelJson['channel'].remove('createdAt');
       }
     }
     json['channels'] = channelJsons;
@@ -77,16 +77,19 @@ sealed class SeryPort {
     for (final videoJson in videosJson) {
       final videoId = videoJson['video']['id'];
       videoJson['progressData'] = {...progressData, 'id': videoId};
-      for (Map<String, dynamic> dataObj in videoJson.values) {
-        dataObj['createdAt'] = createdAt;
-      }
+      videoJson['video']['createdAt'] = createdAt;
       final channelId = videoJson['video']['channelId'] as String;
       final channelJson = channelJsons[channelId];
+      channelJson['channel']['createdAt'] = createdAt;
       videoJson['channel'] = channelJson;
     }
+
     final model = BingeModel.fromJson(json);
-    final bingeDao = BingeDao(Database());
+    final db = Database();
+    final videosDao = VideosDao(db);
+    final bingeDao = BingeDao(db);
     final coverId = videosJson[0]['video']['id'];
+    await videosDao.importVideoModels(model.videos);
     await bingeDao.importBingeModel(model, collectionId, coverId, priority);
   }
 }

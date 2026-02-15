@@ -1,6 +1,8 @@
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/db/tables/channels.dart';
+import 'package:bingetube/core/lang/extensions.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/channels.g.dart';
@@ -16,6 +18,8 @@ part '../../../generated/core/db/access/channels.g.dart';
   ],
 )
 class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
+  static final _logger = LogManager.getLogger('ChannelsDao');
+
   ChannelsDao(super.db);
 
   Future<void> upsertChannel(ChannelsCompanion channel) async {
@@ -80,7 +84,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
   }
 
   Future<List<ChannelModel>> getChannelModelByIds(
-    List<String> channelIds,
+    Set<String> channelIds,
   ) async {
     final query = joinChannelTables(selectStatement: select(channels).join([]))
       ..where(channels.id.isIn(channelIds));
@@ -116,7 +120,6 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       id: id,
       title: snippet['title'],
       description: snippet['description'],
-      updatedAt: updatedAt,
     );
 
     final thumbnails = snippet['thumbnails'];
@@ -125,7 +128,6 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       defaultUrl: thumbnails['default']['url'],
       mediumUrl: thumbnails['medium']['url'],
       highUrl: thumbnails['high']['url'],
-      updatedAt: updatedAt,
     );
 
     final playlists = item['contentDetails']['relatedPlaylists'];
@@ -139,12 +141,10 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       uploadPlaylist: uploadPlaylist == null
           ? Value.absent()
           : Value(uploadPlaylist),
-      updatedAt: updatedAt,
     );
 
     final statistics = item['statistics'];
     final statisticsComp = ChannelStatisticsCompanion.insert(
-      updatedAt: updatedAt,
       id: id,
       viewCount: int.parse(statistics['viewCount']),
       subscriberCount: int.parse(statistics['subscriberCount']),
@@ -155,7 +155,6 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     final status = item['status'];
     final madeForKids = status['madeForKids'];
     final statusComp = ChannelStatusesCompanion.insert(
-      updatedAt: updatedAt,
       id: id,
       privacyStatus: status['privacyStatus'],
       isLinked: status['isLinked'],
@@ -171,5 +170,51 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       statisticsComp,
       statusComp,
     );
+  }
+
+  Future<void> importChannelModels(
+    Map<String, ChannelModel> idVsChannel,
+  ) async {
+    final existingIdVsChannel = <String, ChannelModel>{};
+    final expiredChannelId = <String>{};
+    final nowTime = DateTime.now();
+    for (final chunkIds in idVsChannel.keys.toList().chunked(100)) {
+      final chunkModels = await getChannelModelByIds(chunkIds.toSet());
+      for (final chunkModel in chunkModels) {
+        final channelId = chunkModel.channel.id;
+
+        if (!existingIdVsChannel.containsKey(channelId)) {
+          existingIdVsChannel[channelId] = chunkModel;
+          final importModelTime = idVsChannel[channelId]!.channel.updatedAt;
+          if (importModelTime.isBefore(nowTime) &&
+              importModelTime.isAfter(chunkModel.channel.updatedAt)) {
+            expiredChannelId.add(channelId);
+          }
+        }
+      }
+    }
+
+    final neededChannelsId = idVsChannel.keys.toSet();
+    for (final channelId in existingIdVsChannel.keys) {
+      if (!expiredChannelId.contains(channelId)) {
+        neededChannelsId.remove(channelId);
+      }
+    }
+
+    ChannelsDao._logger.info(
+      'importChannels:${idVsChannel.length} existingChannels:${existingIdVsChannel.length} expiredChannels:${expiredChannelId.length} neededChannels:${neededChannelsId.length}',
+    );
+
+    for (final channelId in neededChannelsId) {
+      final model = idVsChannel[channelId]!;
+      await upsertChannelModel(
+        model.channel.toCompanion(true),
+        model.snippet.toCompanion(true),
+        model.thumbnails.toCompanion(true),
+        model.contentDetails.toCompanion(true),
+        model.statistics.toCompanion(true),
+        model.status.toCompanion(true),
+      );
+    }
   }
 }

@@ -11,7 +11,7 @@ class Channels extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class ChannelSnippets extends Table with TableTimedMixin {
+class ChannelSnippets extends Table {
   late final id = text().references(Channels, #id)();
   late final title = text()();
   late final description = text()();
@@ -20,7 +20,7 @@ class ChannelSnippets extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class ChannelThumbnails extends Table with TableTimedMixin {
+class ChannelThumbnails extends Table {
   late final id = text().references(Channels, #id)();
   late final defaultUrl = text()();
   late final mediumUrl = text()();
@@ -30,7 +30,7 @@ class ChannelThumbnails extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class ChannelContentDetails extends Table with TableTimedMixin {
+class ChannelContentDetails extends Table {
   late final id = text().references(Channels, #id)();
   late final likesPlaylist = text().nullable()();
   late final uploadPlaylist = text().nullable()();
@@ -39,7 +39,7 @@ class ChannelContentDetails extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class ChannelStatistics extends Table with TableTimedMixin {
+class ChannelStatistics extends Table {
   late final id = text().references(Channels, #id)();
   late final viewCount = integer()();
   late final subscriberCount = integer()();
@@ -50,7 +50,7 @@ class ChannelStatistics extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class ChannelStatuses extends Table with TableTimedMixin {
+class ChannelStatuses extends Table {
   late final id = text().references(Channels, #id)();
   late final privacyStatus = text()();
   late final isLinked = boolean()();

@@ -1,7 +1,10 @@
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/db/tables/videos.dart';
+import 'package:bingetube/core/lang/extensions.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/videos.g.dart';
@@ -18,6 +21,8 @@ part '../../../generated/core/db/access/videos.g.dart';
   ],
 )
 class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
+  static final _logger = LogManager.getLogger('VideosDao');
+
   late ChannelsDao _channelsDao;
   VideosDao(super.attachedDatabase) {
     _channelsDao = ChannelsDao(attachedDatabase);
@@ -50,10 +55,8 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     bool isFinished, {
     double? pos,
   }) async {
-    final nowTime = DateTime.now();
     final comp = VideoProgressCompanion.insert(
       id: id,
-      updatedAt: Value(nowTime),
       isFinished: Value(isFinished),
       watchPosition: pos == null ? Value.absent() : Value(pos.floor()),
     );
@@ -99,7 +102,7 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     );
   }
 
-  Future<List<Video>> getVideosById(List<String> videoIds) async {
+  Future<List<Video>> getVideosById(Set<String> videoIds) async {
     final query = select(videos);
     query.where((id) => videos.id.isIn(videoIds));
     return query.get();
@@ -109,6 +112,12 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     final query = joinVideoAndChannelTables()..where(videos.id.equals(videoId));
     final result = await query.getSingle();
     return mapRowToModel(result);
+  }
+
+  Future<List<VideoModel>> getVideoModelsById(Set<String> videoIds) async {
+    final query = joinVideoAndChannelTables()..where(videos.id.isIn(videoIds));
+    final result = await query.get();
+    return result.map(mapRowToModel).toList();
   }
 
   Future<void> upsertVideoJsonData(item, {String? setag}) async {
@@ -131,7 +140,6 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       title: snippet['title'],
       description: snippet['description'],
       channelTitle: snippet['channelTitle'],
-      updatedAt: updatedAt,
     );
 
     final thumbnails = snippet['thumbnails'];
@@ -146,7 +154,6 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       maxresUrl: thumbnails['maxres'] == null
           ? Value.absent()
           : Value(thumbnails['maxres']['url']),
-      updatedAt: updatedAt,
     );
 
     final contentDetails = item['contentDetails'];
@@ -158,7 +165,6 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       caption: contentDetails['caption'],
       licensedContent: contentDetails['licensedContent'],
       projection: contentDetails['projection'],
-      updatedAt: updatedAt,
     );
 
     final status = item['status'];
@@ -170,7 +176,6 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       embeddable: status['embeddable'],
       publicStatsViewable: status['publicStatsViewable'],
       madeForKids: status['madeForKids'],
-      updatedAt: updatedAt,
     );
 
     final statistics = item['statistics'];
@@ -187,7 +192,6 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       commentCount: statistics['commentCount'] == null
           ? Value.absent()
           : Value(int.parse(statistics['commentCount'])),
-      updatedAt: updatedAt,
     );
 
     final progressComp = VideoProgressCompanion.insert(id: id);
@@ -201,5 +205,68 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       statisticsComp,
       progressComp,
     );
+  }
+
+  Future<void> importVideoModels(List<VideoModel> modelsList) async {
+    final idVsVideo = <String, VideoModel>{};
+    final idVsChannel = <String, ChannelModel>{};
+    for (final model in modelsList) {
+      final id = model.video.id;
+      if (!idVsVideo.containsKey(id)) {
+        idVsVideo[id] = model;
+      }
+      final channelId = model.channel.channel.id;
+      if (!idVsChannel.containsKey(channelId)) {
+        idVsChannel[channelId] = model.channel;
+      }
+    }
+    VideosDao._logger.info(
+      'reduced ${modelsList.length} models to ${idVsVideo.length} with channels:${idVsChannel.length}',
+    );
+
+    final channelDao = ChannelsDao(db);
+    await channelDao.importChannelModels(idVsChannel);
+
+    final existingIdVsVideo = <String, VideoModel>{};
+    final expiredVideoId = <String>{};
+    final nowTime = DateTime.now();
+    for (final chunkIds in idVsVideo.keys.toList().chunked(100)) {
+      final chunkModels = await getVideoModelsById(chunkIds.toSet());
+      for (final chunkModel in chunkModels) {
+        final videoId = chunkModel.video.id;
+
+        if (!existingIdVsVideo.containsKey(videoId)) {
+          existingIdVsVideo[videoId] = chunkModel;
+          final importModelTime = idVsVideo[videoId]!.video.updatedAt;
+          if (importModelTime.isBefore(nowTime) &&
+              importModelTime.isAfter(chunkModel.video.updatedAt)) {
+            expiredVideoId.add(videoId);
+          }
+        }
+      }
+    }
+
+    final neededVideosId = idVsVideo.keys.toSet();
+    for (final videoId in existingIdVsVideo.keys) {
+      if (!expiredVideoId.contains(videoId)) {
+        neededVideosId.remove(videoId);
+      }
+    }
+    VideosDao._logger.info(
+      'importVideos:${idVsVideo.length} existingVideos:${existingIdVsVideo.length} expiredVideos:${expiredVideoId.length} neededVideos:${neededVideosId.length}',
+    );
+
+    for (final videoId in neededVideosId) {
+      final model = idVsVideo[videoId]!;
+      await upsertVideoModel(
+        model.video.toCompanion(true),
+        model.snippet.toCompanion(true),
+        model.thumbnails.toCompanion(true),
+        model.contentDetails.toCompanion(true),
+        model.status.toCompanion(true),
+        model.statistics.toCompanion(true),
+        model.progressData.toCompanion(true),
+      );
+    }
   }
 }

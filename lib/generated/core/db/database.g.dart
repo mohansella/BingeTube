@@ -356,30 +356,6 @@ class $ChannelSnippetsTable extends ChannelSnippets
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelSnippetsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -413,13 +389,7 @@ class $ChannelSnippetsTable extends ChannelSnippets
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
-    id,
-    title,
-    description,
-  ];
+  List<GeneratedColumn> get $columns => [id, title, description];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -432,18 +402,6 @@ class $ChannelSnippetsTable extends ChannelSnippets
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -477,14 +435,6 @@ class $ChannelSnippetsTable extends ChannelSnippets
   ChannelSnippet map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ChannelSnippet(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -507,14 +457,10 @@ class $ChannelSnippetsTable extends ChannelSnippets
 }
 
 class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String title;
   final String description;
   const ChannelSnippet({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.title,
     required this.description,
@@ -522,8 +468,6 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['title'] = Variable<String>(title);
     map['description'] = Variable<String>(description);
@@ -532,8 +476,6 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
 
   ChannelSnippetsCompanion toCompanion(bool nullToAbsent) {
     return ChannelSnippetsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       title: Value(title),
       description: Value(description),
@@ -546,8 +488,6 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ChannelSnippet(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       description: serializer.fromJson<String>(json['description']),
@@ -557,31 +497,20 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'title': serializer.toJson<String>(title),
       'description': serializer.toJson<String>(description),
     };
   }
 
-  ChannelSnippet copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
-    String? id,
-    String? title,
-    String? description,
-  }) => ChannelSnippet(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-    id: id ?? this.id,
-    title: title ?? this.title,
-    description: description ?? this.description,
-  );
+  ChannelSnippet copyWith({String? id, String? title, String? description}) =>
+      ChannelSnippet(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        description: description ?? this.description,
+      );
   ChannelSnippet copyWithCompanion(ChannelSnippetsCompanion data) {
     return ChannelSnippet(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       description: data.description.present
@@ -593,8 +522,6 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
   @override
   String toString() {
     return (StringBuffer('ChannelSnippet(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('description: $description')
@@ -603,36 +530,28 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, title, description);
+  int get hashCode => Object.hash(id, title, description);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChannelSnippet &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.title == this.title &&
           other.description == this.description);
 }
 
 class ChannelSnippetsCompanion extends UpdateCompanion<ChannelSnippet> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> title;
   final Value<String> description;
   final Value<int> rowid;
   const ChannelSnippetsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChannelSnippetsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required String title,
     required String description,
@@ -641,16 +560,12 @@ class ChannelSnippetsCompanion extends UpdateCompanion<ChannelSnippet> {
        title = Value(title),
        description = Value(description);
   static Insertable<ChannelSnippet> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? title,
     Expression<String>? description,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (description != null) 'description': description,
@@ -659,16 +574,12 @@ class ChannelSnippetsCompanion extends UpdateCompanion<ChannelSnippet> {
   }
 
   ChannelSnippetsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? title,
     Value<String>? description,
     Value<int>? rowid,
   }) {
     return ChannelSnippetsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -679,12 +590,6 @@ class ChannelSnippetsCompanion extends UpdateCompanion<ChannelSnippet> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -703,8 +608,6 @@ class ChannelSnippetsCompanion extends UpdateCompanion<ChannelSnippet> {
   @override
   String toString() {
     return (StringBuffer('ChannelSnippetsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('description: $description, ')
@@ -720,30 +623,6 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelThumbnailsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -790,14 +669,7 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
-    id,
-    defaultUrl,
-    mediumUrl,
-    highUrl,
-  ];
+  List<GeneratedColumn> get $columns => [id, defaultUrl, mediumUrl, highUrl];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -810,18 +682,6 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -860,14 +720,6 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
   ChannelThumbnail map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ChannelThumbnail(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -895,15 +747,11 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
 
 class ChannelThumbnail extends DataClass
     implements Insertable<ChannelThumbnail> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String defaultUrl;
   final String mediumUrl;
   final String highUrl;
   const ChannelThumbnail({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.defaultUrl,
     required this.mediumUrl,
@@ -912,8 +760,6 @@ class ChannelThumbnail extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['default_url'] = Variable<String>(defaultUrl);
     map['medium_url'] = Variable<String>(mediumUrl);
@@ -923,8 +769,6 @@ class ChannelThumbnail extends DataClass
 
   ChannelThumbnailsCompanion toCompanion(bool nullToAbsent) {
     return ChannelThumbnailsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       defaultUrl: Value(defaultUrl),
       mediumUrl: Value(mediumUrl),
@@ -938,8 +782,6 @@ class ChannelThumbnail extends DataClass
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ChannelThumbnail(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       defaultUrl: serializer.fromJson<String>(json['defaultUrl']),
       mediumUrl: serializer.fromJson<String>(json['mediumUrl']),
@@ -950,8 +792,6 @@ class ChannelThumbnail extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'defaultUrl': serializer.toJson<String>(defaultUrl),
       'mediumUrl': serializer.toJson<String>(mediumUrl),
@@ -960,15 +800,11 @@ class ChannelThumbnail extends DataClass
   }
 
   ChannelThumbnail copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     String? defaultUrl,
     String? mediumUrl,
     String? highUrl,
   }) => ChannelThumbnail(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     defaultUrl: defaultUrl ?? this.defaultUrl,
     mediumUrl: mediumUrl ?? this.mediumUrl,
@@ -976,8 +812,6 @@ class ChannelThumbnail extends DataClass
   );
   ChannelThumbnail copyWithCompanion(ChannelThumbnailsCompanion data) {
     return ChannelThumbnail(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       defaultUrl: data.defaultUrl.present
           ? data.defaultUrl.value
@@ -990,8 +824,6 @@ class ChannelThumbnail extends DataClass
   @override
   String toString() {
     return (StringBuffer('ChannelThumbnail(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('defaultUrl: $defaultUrl, ')
           ..write('mediumUrl: $mediumUrl, ')
@@ -1001,14 +833,11 @@ class ChannelThumbnail extends DataClass
   }
 
   @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, defaultUrl, mediumUrl, highUrl);
+  int get hashCode => Object.hash(id, defaultUrl, mediumUrl, highUrl);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChannelThumbnail &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.defaultUrl == this.defaultUrl &&
           other.mediumUrl == this.mediumUrl &&
@@ -1016,16 +845,12 @@ class ChannelThumbnail extends DataClass
 }
 
 class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> defaultUrl;
   final Value<String> mediumUrl;
   final Value<String> highUrl;
   final Value<int> rowid;
   const ChannelThumbnailsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.defaultUrl = const Value.absent(),
     this.mediumUrl = const Value.absent(),
@@ -1033,8 +858,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
     this.rowid = const Value.absent(),
   });
   ChannelThumbnailsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required String defaultUrl,
     required String mediumUrl,
@@ -1045,8 +868,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
        mediumUrl = Value(mediumUrl),
        highUrl = Value(highUrl);
   static Insertable<ChannelThumbnail> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? defaultUrl,
     Expression<String>? mediumUrl,
@@ -1054,8 +875,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (defaultUrl != null) 'default_url': defaultUrl,
       if (mediumUrl != null) 'medium_url': mediumUrl,
@@ -1065,8 +884,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
   }
 
   ChannelThumbnailsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? defaultUrl,
     Value<String>? mediumUrl,
@@ -1074,8 +891,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
     Value<int>? rowid,
   }) {
     return ChannelThumbnailsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       defaultUrl: defaultUrl ?? this.defaultUrl,
       mediumUrl: mediumUrl ?? this.mediumUrl,
@@ -1087,12 +902,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -1114,8 +923,6 @@ class ChannelThumbnailsCompanion extends UpdateCompanion<ChannelThumbnail> {
   @override
   String toString() {
     return (StringBuffer('ChannelThumbnailsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('defaultUrl: $defaultUrl, ')
           ..write('mediumUrl: $mediumUrl, ')
@@ -1132,30 +939,6 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelContentDetailsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -1191,13 +974,7 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
     requiredDuringInsert: false,
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
-    id,
-    likesPlaylist,
-    uploadPlaylist,
-  ];
+  List<GeneratedColumn> get $columns => [id, likesPlaylist, uploadPlaylist];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1210,18 +987,6 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -1254,14 +1019,6 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
   ChannelContentDetail map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ChannelContentDetail(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -1285,14 +1042,10 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
 
 class ChannelContentDetail extends DataClass
     implements Insertable<ChannelContentDetail> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String? likesPlaylist;
   final String? uploadPlaylist;
   const ChannelContentDetail({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     this.likesPlaylist,
     this.uploadPlaylist,
@@ -1300,8 +1053,6 @@ class ChannelContentDetail extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     if (!nullToAbsent || likesPlaylist != null) {
       map['likes_playlist'] = Variable<String>(likesPlaylist);
@@ -1314,8 +1065,6 @@ class ChannelContentDetail extends DataClass
 
   ChannelContentDetailsCompanion toCompanion(bool nullToAbsent) {
     return ChannelContentDetailsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       likesPlaylist: likesPlaylist == null && nullToAbsent
           ? const Value.absent()
@@ -1332,8 +1081,6 @@ class ChannelContentDetail extends DataClass
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ChannelContentDetail(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       likesPlaylist: serializer.fromJson<String?>(json['likesPlaylist']),
       uploadPlaylist: serializer.fromJson<String?>(json['uploadPlaylist']),
@@ -1343,8 +1090,6 @@ class ChannelContentDetail extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'likesPlaylist': serializer.toJson<String?>(likesPlaylist),
       'uploadPlaylist': serializer.toJson<String?>(uploadPlaylist),
@@ -1352,14 +1097,10 @@ class ChannelContentDetail extends DataClass
   }
 
   ChannelContentDetail copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     Value<String?> likesPlaylist = const Value.absent(),
     Value<String?> uploadPlaylist = const Value.absent(),
   }) => ChannelContentDetail(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     likesPlaylist: likesPlaylist.present
         ? likesPlaylist.value
@@ -1370,8 +1111,6 @@ class ChannelContentDetail extends DataClass
   );
   ChannelContentDetail copyWithCompanion(ChannelContentDetailsCompanion data) {
     return ChannelContentDetail(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       likesPlaylist: data.likesPlaylist.present
           ? data.likesPlaylist.value
@@ -1385,8 +1124,6 @@ class ChannelContentDetail extends DataClass
   @override
   String toString() {
     return (StringBuffer('ChannelContentDetail(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('likesPlaylist: $likesPlaylist, ')
           ..write('uploadPlaylist: $uploadPlaylist')
@@ -1395,14 +1132,11 @@ class ChannelContentDetail extends DataClass
   }
 
   @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, likesPlaylist, uploadPlaylist);
+  int get hashCode => Object.hash(id, likesPlaylist, uploadPlaylist);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChannelContentDetail &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.likesPlaylist == this.likesPlaylist &&
           other.uploadPlaylist == this.uploadPlaylist);
@@ -1410,39 +1144,29 @@ class ChannelContentDetail extends DataClass
 
 class ChannelContentDetailsCompanion
     extends UpdateCompanion<ChannelContentDetail> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String?> likesPlaylist;
   final Value<String?> uploadPlaylist;
   final Value<int> rowid;
   const ChannelContentDetailsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.likesPlaylist = const Value.absent(),
     this.uploadPlaylist = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ChannelContentDetailsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     this.likesPlaylist = const Value.absent(),
     this.uploadPlaylist = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<ChannelContentDetail> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? likesPlaylist,
     Expression<String>? uploadPlaylist,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (likesPlaylist != null) 'likes_playlist': likesPlaylist,
       if (uploadPlaylist != null) 'upload_playlist': uploadPlaylist,
@@ -1451,16 +1175,12 @@ class ChannelContentDetailsCompanion
   }
 
   ChannelContentDetailsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String?>? likesPlaylist,
     Value<String?>? uploadPlaylist,
     Value<int>? rowid,
   }) {
     return ChannelContentDetailsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       likesPlaylist: likesPlaylist ?? this.likesPlaylist,
       uploadPlaylist: uploadPlaylist ?? this.uploadPlaylist,
@@ -1471,12 +1191,6 @@ class ChannelContentDetailsCompanion
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -1495,8 +1209,6 @@ class ChannelContentDetailsCompanion
   @override
   String toString() {
     return (StringBuffer('ChannelContentDetailsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('likesPlaylist: $likesPlaylist, ')
           ..write('uploadPlaylist: $uploadPlaylist, ')
@@ -1512,30 +1224,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelStatisticsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -1597,8 +1285,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     viewCount,
     subscriberCount,
@@ -1617,18 +1303,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -1681,14 +1355,6 @@ class $ChannelStatisticsTable extends ChannelStatistics
   ChannelStatistic map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ChannelStatistic(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -1720,16 +1386,12 @@ class $ChannelStatisticsTable extends ChannelStatistics
 
 class ChannelStatistic extends DataClass
     implements Insertable<ChannelStatistic> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final int viewCount;
   final int subscriberCount;
   final bool hiddenSubscriberCount;
   final int videoCount;
   const ChannelStatistic({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.viewCount,
     required this.subscriberCount,
@@ -1739,8 +1401,6 @@ class ChannelStatistic extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['view_count'] = Variable<int>(viewCount);
     map['subscriber_count'] = Variable<int>(subscriberCount);
@@ -1751,8 +1411,6 @@ class ChannelStatistic extends DataClass
 
   ChannelStatisticsCompanion toCompanion(bool nullToAbsent) {
     return ChannelStatisticsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       viewCount: Value(viewCount),
       subscriberCount: Value(subscriberCount),
@@ -1767,8 +1425,6 @@ class ChannelStatistic extends DataClass
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ChannelStatistic(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       viewCount: serializer.fromJson<int>(json['viewCount']),
       subscriberCount: serializer.fromJson<int>(json['subscriberCount']),
@@ -1782,8 +1438,6 @@ class ChannelStatistic extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'viewCount': serializer.toJson<int>(viewCount),
       'subscriberCount': serializer.toJson<int>(subscriberCount),
@@ -1793,16 +1447,12 @@ class ChannelStatistic extends DataClass
   }
 
   ChannelStatistic copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     int? viewCount,
     int? subscriberCount,
     bool? hiddenSubscriberCount,
     int? videoCount,
   }) => ChannelStatistic(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     viewCount: viewCount ?? this.viewCount,
     subscriberCount: subscriberCount ?? this.subscriberCount,
@@ -1811,8 +1461,6 @@ class ChannelStatistic extends DataClass
   );
   ChannelStatistic copyWithCompanion(ChannelStatisticsCompanion data) {
     return ChannelStatistic(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       viewCount: data.viewCount.present ? data.viewCount.value : this.viewCount,
       subscriberCount: data.subscriberCount.present
@@ -1830,8 +1478,6 @@ class ChannelStatistic extends DataClass
   @override
   String toString() {
     return (StringBuffer('ChannelStatistic(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('viewCount: $viewCount, ')
           ..write('subscriberCount: $subscriberCount, ')
@@ -1843,8 +1489,6 @@ class ChannelStatistic extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
     id,
     viewCount,
     subscriberCount,
@@ -1855,8 +1499,6 @@ class ChannelStatistic extends DataClass
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChannelStatistic &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.viewCount == this.viewCount &&
           other.subscriberCount == this.subscriberCount &&
@@ -1865,8 +1507,6 @@ class ChannelStatistic extends DataClass
 }
 
 class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<int> viewCount;
   final Value<int> subscriberCount;
@@ -1874,8 +1514,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
   final Value<int> videoCount;
   final Value<int> rowid;
   const ChannelStatisticsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.viewCount = const Value.absent(),
     this.subscriberCount = const Value.absent(),
@@ -1884,8 +1522,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     this.rowid = const Value.absent(),
   });
   ChannelStatisticsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required int viewCount,
     required int subscriberCount,
@@ -1898,8 +1534,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
        hiddenSubscriberCount = Value(hiddenSubscriberCount),
        videoCount = Value(videoCount);
   static Insertable<ChannelStatistic> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<int>? viewCount,
     Expression<int>? subscriberCount,
@@ -1908,8 +1542,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (viewCount != null) 'view_count': viewCount,
       if (subscriberCount != null) 'subscriber_count': subscriberCount,
@@ -1921,8 +1553,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
   }
 
   ChannelStatisticsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<int>? viewCount,
     Value<int>? subscriberCount,
@@ -1931,8 +1561,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
     Value<int>? rowid,
   }) {
     return ChannelStatisticsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       viewCount: viewCount ?? this.viewCount,
       subscriberCount: subscriberCount ?? this.subscriberCount,
@@ -1946,12 +1574,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -1978,8 +1600,6 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
   @override
   String toString() {
     return (StringBuffer('ChannelStatisticsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('viewCount: $viewCount, ')
           ..write('subscriberCount: $subscriberCount, ')
@@ -1997,30 +1617,6 @@ class $ChannelStatusesTable extends ChannelStatuses
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelStatusesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2086,8 +1682,6 @@ class $ChannelStatusesTable extends ChannelStatuses
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     privacyStatus,
     isLinked,
@@ -2106,18 +1700,6 @@ class $ChannelStatusesTable extends ChannelStatuses
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -2171,14 +1753,6 @@ class $ChannelStatusesTable extends ChannelStatuses
   ChannelStatuse map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ChannelStatuse(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -2209,16 +1783,12 @@ class $ChannelStatusesTable extends ChannelStatuses
 }
 
 class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String privacyStatus;
   final bool isLinked;
   final String longUploadsStatus;
   final bool? madeForKids;
   const ChannelStatuse({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.privacyStatus,
     required this.isLinked,
@@ -2228,8 +1798,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['privacy_status'] = Variable<String>(privacyStatus);
     map['is_linked'] = Variable<bool>(isLinked);
@@ -2242,8 +1810,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
 
   ChannelStatusesCompanion toCompanion(bool nullToAbsent) {
     return ChannelStatusesCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       privacyStatus: Value(privacyStatus),
       isLinked: Value(isLinked),
@@ -2260,8 +1826,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ChannelStatuse(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       privacyStatus: serializer.fromJson<String>(json['privacyStatus']),
       isLinked: serializer.fromJson<bool>(json['isLinked']),
@@ -2273,8 +1837,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'privacyStatus': serializer.toJson<String>(privacyStatus),
       'isLinked': serializer.toJson<bool>(isLinked),
@@ -2284,16 +1846,12 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   }
 
   ChannelStatuse copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     String? privacyStatus,
     bool? isLinked,
     String? longUploadsStatus,
     Value<bool?> madeForKids = const Value.absent(),
   }) => ChannelStatuse(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     privacyStatus: privacyStatus ?? this.privacyStatus,
     isLinked: isLinked ?? this.isLinked,
@@ -2302,8 +1860,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   );
   ChannelStatuse copyWithCompanion(ChannelStatusesCompanion data) {
     return ChannelStatuse(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       privacyStatus: data.privacyStatus.present
           ? data.privacyStatus.value
@@ -2321,8 +1877,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   @override
   String toString() {
     return (StringBuffer('ChannelStatuse(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('privacyStatus: $privacyStatus, ')
           ..write('isLinked: $isLinked, ')
@@ -2333,21 +1887,12 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
-    id,
-    privacyStatus,
-    isLinked,
-    longUploadsStatus,
-    madeForKids,
-  );
+  int get hashCode =>
+      Object.hash(id, privacyStatus, isLinked, longUploadsStatus, madeForKids);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ChannelStatuse &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.privacyStatus == this.privacyStatus &&
           other.isLinked == this.isLinked &&
@@ -2356,8 +1901,6 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
 }
 
 class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> privacyStatus;
   final Value<bool> isLinked;
@@ -2365,8 +1908,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
   final Value<bool?> madeForKids;
   final Value<int> rowid;
   const ChannelStatusesCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.privacyStatus = const Value.absent(),
     this.isLinked = const Value.absent(),
@@ -2375,8 +1916,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
     this.rowid = const Value.absent(),
   });
   ChannelStatusesCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required String privacyStatus,
     required bool isLinked,
@@ -2388,8 +1927,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
        isLinked = Value(isLinked),
        longUploadsStatus = Value(longUploadsStatus);
   static Insertable<ChannelStatuse> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? privacyStatus,
     Expression<bool>? isLinked,
@@ -2398,8 +1935,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (privacyStatus != null) 'privacy_status': privacyStatus,
       if (isLinked != null) 'is_linked': isLinked,
@@ -2410,8 +1945,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
   }
 
   ChannelStatusesCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? privacyStatus,
     Value<bool>? isLinked,
@@ -2420,8 +1953,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
     Value<int>? rowid,
   }) {
     return ChannelStatusesCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       privacyStatus: privacyStatus ?? this.privacyStatus,
       isLinked: isLinked ?? this.isLinked,
@@ -2434,12 +1965,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -2464,8 +1989,6 @@ class ChannelStatusesCompanion extends UpdateCompanion<ChannelStatuse> {
   @override
   String toString() {
     return (StringBuffer('ChannelStatusesCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('privacyStatus: $privacyStatus, ')
           ..write('isLinked: $isLinked, ')
@@ -2887,30 +2410,6 @@ class $VideoSnippetsTable extends VideoSnippets
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoSnippetsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2967,8 +2466,6 @@ class $VideoSnippetsTable extends VideoSnippets
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     publishedAt,
     title,
@@ -2987,18 +2484,6 @@ class $VideoSnippetsTable extends VideoSnippets
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -3054,14 +2539,6 @@ class $VideoSnippetsTable extends VideoSnippets
   VideoSnippet map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoSnippet(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -3092,16 +2569,12 @@ class $VideoSnippetsTable extends VideoSnippets
 }
 
 class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final DateTime publishedAt;
   final String title;
   final String description;
   final String channelTitle;
   const VideoSnippet({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.publishedAt,
     required this.title,
@@ -3111,8 +2584,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['published_at'] = Variable<DateTime>(publishedAt);
     map['title'] = Variable<String>(title);
@@ -3123,8 +2594,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
 
   VideoSnippetsCompanion toCompanion(bool nullToAbsent) {
     return VideoSnippetsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       publishedAt: Value(publishedAt),
       title: Value(title),
@@ -3139,8 +2608,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoSnippet(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       publishedAt: serializer.fromJson<DateTime>(json['publishedAt']),
       title: serializer.fromJson<String>(json['title']),
@@ -3152,8 +2619,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'publishedAt': serializer.toJson<DateTime>(publishedAt),
       'title': serializer.toJson<String>(title),
@@ -3163,16 +2628,12 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   }
 
   VideoSnippet copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     DateTime? publishedAt,
     String? title,
     String? description,
     String? channelTitle,
   }) => VideoSnippet(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     publishedAt: publishedAt ?? this.publishedAt,
     title: title ?? this.title,
@@ -3181,8 +2642,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   );
   VideoSnippet copyWithCompanion(VideoSnippetsCompanion data) {
     return VideoSnippet(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       publishedAt: data.publishedAt.present
           ? data.publishedAt.value
@@ -3200,8 +2659,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   @override
   String toString() {
     return (StringBuffer('VideoSnippet(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('publishedAt: $publishedAt, ')
           ..write('title: $title, ')
@@ -3212,21 +2669,12 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
-    id,
-    publishedAt,
-    title,
-    description,
-    channelTitle,
-  );
+  int get hashCode =>
+      Object.hash(id, publishedAt, title, description, channelTitle);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoSnippet &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.publishedAt == this.publishedAt &&
           other.title == this.title &&
@@ -3235,8 +2683,6 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
 }
 
 class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<DateTime> publishedAt;
   final Value<String> title;
@@ -3244,8 +2690,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
   final Value<String> channelTitle;
   final Value<int> rowid;
   const VideoSnippetsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.publishedAt = const Value.absent(),
     this.title = const Value.absent(),
@@ -3254,8 +2698,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
     this.rowid = const Value.absent(),
   });
   VideoSnippetsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required DateTime publishedAt,
     required String title,
@@ -3268,8 +2710,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
        description = Value(description),
        channelTitle = Value(channelTitle);
   static Insertable<VideoSnippet> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<DateTime>? publishedAt,
     Expression<String>? title,
@@ -3278,8 +2718,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (publishedAt != null) 'published_at': publishedAt,
       if (title != null) 'title': title,
@@ -3290,8 +2728,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
   }
 
   VideoSnippetsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<DateTime>? publishedAt,
     Value<String>? title,
@@ -3300,8 +2736,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
     Value<int>? rowid,
   }) {
     return VideoSnippetsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       publishedAt: publishedAt ?? this.publishedAt,
       title: title ?? this.title,
@@ -3314,12 +2748,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -3344,8 +2772,6 @@ class VideoSnippetsCompanion extends UpdateCompanion<VideoSnippet> {
   @override
   String toString() {
     return (StringBuffer('VideoSnippetsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('publishedAt: $publishedAt, ')
           ..write('title: $title, ')
@@ -3363,30 +2789,6 @@ class $VideoThumbnailsTable extends VideoThumbnails
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoThumbnailsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -3456,8 +2858,6 @@ class $VideoThumbnailsTable extends VideoThumbnails
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     defaultUrl,
     mediumUrl,
@@ -3477,18 +2877,6 @@ class $VideoThumbnailsTable extends VideoThumbnails
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -3542,14 +2930,6 @@ class $VideoThumbnailsTable extends VideoThumbnails
   VideoThumbnail map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoThumbnail(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -3584,8 +2964,6 @@ class $VideoThumbnailsTable extends VideoThumbnails
 }
 
 class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String defaultUrl;
   final String mediumUrl;
@@ -3593,8 +2971,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   final String? standardUrl;
   final String? maxresUrl;
   const VideoThumbnail({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.defaultUrl,
     required this.mediumUrl,
@@ -3605,8 +2981,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['default_url'] = Variable<String>(defaultUrl);
     map['medium_url'] = Variable<String>(mediumUrl);
@@ -3622,8 +2996,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
 
   VideoThumbnailsCompanion toCompanion(bool nullToAbsent) {
     return VideoThumbnailsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       defaultUrl: Value(defaultUrl),
       mediumUrl: Value(mediumUrl),
@@ -3643,8 +3015,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoThumbnail(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       defaultUrl: serializer.fromJson<String>(json['defaultUrl']),
       mediumUrl: serializer.fromJson<String>(json['mediumUrl']),
@@ -3657,8 +3027,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'defaultUrl': serializer.toJson<String>(defaultUrl),
       'mediumUrl': serializer.toJson<String>(mediumUrl),
@@ -3669,8 +3037,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   }
 
   VideoThumbnail copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     String? defaultUrl,
     String? mediumUrl,
@@ -3678,8 +3044,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
     Value<String?> standardUrl = const Value.absent(),
     Value<String?> maxresUrl = const Value.absent(),
   }) => VideoThumbnail(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     defaultUrl: defaultUrl ?? this.defaultUrl,
     mediumUrl: mediumUrl ?? this.mediumUrl,
@@ -3689,8 +3053,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   );
   VideoThumbnail copyWithCompanion(VideoThumbnailsCompanion data) {
     return VideoThumbnail(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       defaultUrl: data.defaultUrl.present
           ? data.defaultUrl.value
@@ -3707,8 +3069,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   @override
   String toString() {
     return (StringBuffer('VideoThumbnail(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('defaultUrl: $defaultUrl, ')
           ..write('mediumUrl: $mediumUrl, ')
@@ -3720,22 +3080,12 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   }
 
   @override
-  int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
-    id,
-    defaultUrl,
-    mediumUrl,
-    highUrl,
-    standardUrl,
-    maxresUrl,
-  );
+  int get hashCode =>
+      Object.hash(id, defaultUrl, mediumUrl, highUrl, standardUrl, maxresUrl);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoThumbnail &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.defaultUrl == this.defaultUrl &&
           other.mediumUrl == this.mediumUrl &&
@@ -3745,8 +3095,6 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
 }
 
 class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> defaultUrl;
   final Value<String> mediumUrl;
@@ -3755,8 +3103,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
   final Value<String?> maxresUrl;
   final Value<int> rowid;
   const VideoThumbnailsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.defaultUrl = const Value.absent(),
     this.mediumUrl = const Value.absent(),
@@ -3766,8 +3112,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
     this.rowid = const Value.absent(),
   });
   VideoThumbnailsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required String defaultUrl,
     required String mediumUrl,
@@ -3780,8 +3124,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
        mediumUrl = Value(mediumUrl),
        highUrl = Value(highUrl);
   static Insertable<VideoThumbnail> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? defaultUrl,
     Expression<String>? mediumUrl,
@@ -3791,8 +3133,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (defaultUrl != null) 'default_url': defaultUrl,
       if (mediumUrl != null) 'medium_url': mediumUrl,
@@ -3804,8 +3144,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
   }
 
   VideoThumbnailsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? defaultUrl,
     Value<String>? mediumUrl,
@@ -3815,8 +3153,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
     Value<int>? rowid,
   }) {
     return VideoThumbnailsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       defaultUrl: defaultUrl ?? this.defaultUrl,
       mediumUrl: mediumUrl ?? this.mediumUrl,
@@ -3830,12 +3166,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -3863,8 +3193,6 @@ class VideoThumbnailsCompanion extends UpdateCompanion<VideoThumbnail> {
   @override
   String toString() {
     return (StringBuffer('VideoThumbnailsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('defaultUrl: $defaultUrl, ')
           ..write('mediumUrl: $mediumUrl, ')
@@ -3883,30 +3211,6 @@ class $VideoContentDetailsTable extends VideoContentDetails
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoContentDetailsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -3990,8 +3294,6 @@ class $VideoContentDetailsTable extends VideoContentDetails
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     duration,
     dimension,
@@ -4012,18 +3314,6 @@ class $VideoContentDetailsTable extends VideoContentDetails
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -4089,14 +3379,6 @@ class $VideoContentDetailsTable extends VideoContentDetails
   VideoContentDetail map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoContentDetail(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -4136,8 +3418,6 @@ class $VideoContentDetailsTable extends VideoContentDetails
 
 class VideoContentDetail extends DataClass
     implements Insertable<VideoContentDetail> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String duration;
   final String dimension;
@@ -4146,8 +3426,6 @@ class VideoContentDetail extends DataClass
   final bool licensedContent;
   final String projection;
   const VideoContentDetail({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.duration,
     required this.dimension,
@@ -4159,8 +3437,6 @@ class VideoContentDetail extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['duration'] = Variable<String>(duration);
     map['dimension'] = Variable<String>(dimension);
@@ -4173,8 +3449,6 @@ class VideoContentDetail extends DataClass
 
   VideoContentDetailsCompanion toCompanion(bool nullToAbsent) {
     return VideoContentDetailsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       duration: Value(duration),
       dimension: Value(dimension),
@@ -4191,8 +3465,6 @@ class VideoContentDetail extends DataClass
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoContentDetail(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       duration: serializer.fromJson<String>(json['duration']),
       dimension: serializer.fromJson<String>(json['dimension']),
@@ -4206,8 +3478,6 @@ class VideoContentDetail extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'duration': serializer.toJson<String>(duration),
       'dimension': serializer.toJson<String>(dimension),
@@ -4219,8 +3489,6 @@ class VideoContentDetail extends DataClass
   }
 
   VideoContentDetail copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     String? duration,
     String? dimension,
@@ -4229,8 +3497,6 @@ class VideoContentDetail extends DataClass
     bool? licensedContent,
     String? projection,
   }) => VideoContentDetail(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     duration: duration ?? this.duration,
     dimension: dimension ?? this.dimension,
@@ -4241,8 +3507,6 @@ class VideoContentDetail extends DataClass
   );
   VideoContentDetail copyWithCompanion(VideoContentDetailsCompanion data) {
     return VideoContentDetail(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       duration: data.duration.present ? data.duration.value : this.duration,
       dimension: data.dimension.present ? data.dimension.value : this.dimension,
@@ -4262,8 +3526,6 @@ class VideoContentDetail extends DataClass
   @override
   String toString() {
     return (StringBuffer('VideoContentDetail(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('duration: $duration, ')
           ..write('dimension: $dimension, ')
@@ -4277,8 +3539,6 @@ class VideoContentDetail extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
     id,
     duration,
     dimension,
@@ -4291,8 +3551,6 @@ class VideoContentDetail extends DataClass
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoContentDetail &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.duration == this.duration &&
           other.dimension == this.dimension &&
@@ -4303,8 +3561,6 @@ class VideoContentDetail extends DataClass
 }
 
 class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> duration;
   final Value<String> dimension;
@@ -4314,8 +3570,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
   final Value<String> projection;
   final Value<int> rowid;
   const VideoContentDetailsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.duration = const Value.absent(),
     this.dimension = const Value.absent(),
@@ -4326,8 +3580,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     this.rowid = const Value.absent(),
   });
   VideoContentDetailsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required String duration,
     required String dimension,
@@ -4344,8 +3596,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
        licensedContent = Value(licensedContent),
        projection = Value(projection);
   static Insertable<VideoContentDetail> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? duration,
     Expression<String>? dimension,
@@ -4356,8 +3606,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (duration != null) 'duration': duration,
       if (dimension != null) 'dimension': dimension,
@@ -4370,8 +3618,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
   }
 
   VideoContentDetailsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? duration,
     Value<String>? dimension,
@@ -4382,8 +3628,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
     Value<int>? rowid,
   }) {
     return VideoContentDetailsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       duration: duration ?? this.duration,
       dimension: dimension ?? this.dimension,
@@ -4398,12 +3642,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -4434,8 +3672,6 @@ class VideoContentDetailsCompanion extends UpdateCompanion<VideoContentDetail> {
   @override
   String toString() {
     return (StringBuffer('VideoContentDetailsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('duration: $duration, ')
           ..write('dimension: $dimension, ')
@@ -4455,30 +3691,6 @@ class $VideoStatusesTable extends VideoStatuses
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoStatusesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -4567,8 +3779,6 @@ class $VideoStatusesTable extends VideoStatuses
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     uploadStatus,
     privacyStatus,
@@ -4589,18 +3799,6 @@ class $VideoStatusesTable extends VideoStatuses
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -4675,14 +3873,6 @@ class $VideoStatusesTable extends VideoStatuses
   VideoStatuse map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoStatuse(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -4721,8 +3911,6 @@ class $VideoStatusesTable extends VideoStatuses
 }
 
 class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final String uploadStatus;
   final String privacyStatus;
@@ -4731,8 +3919,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   final bool publicStatsViewable;
   final bool madeForKids;
   const VideoStatuse({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.uploadStatus,
     required this.privacyStatus,
@@ -4744,8 +3930,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['upload_status'] = Variable<String>(uploadStatus);
     map['privacy_status'] = Variable<String>(privacyStatus);
@@ -4758,8 +3942,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
 
   VideoStatusesCompanion toCompanion(bool nullToAbsent) {
     return VideoStatusesCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       uploadStatus: Value(uploadStatus),
       privacyStatus: Value(privacyStatus),
@@ -4776,8 +3958,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoStatuse(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
       privacyStatus: serializer.fromJson<String>(json['privacyStatus']),
@@ -4793,8 +3973,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'uploadStatus': serializer.toJson<String>(uploadStatus),
       'privacyStatus': serializer.toJson<String>(privacyStatus),
@@ -4806,8 +3984,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   }
 
   VideoStatuse copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     String? uploadStatus,
     String? privacyStatus,
@@ -4816,8 +3992,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
     bool? publicStatsViewable,
     bool? madeForKids,
   }) => VideoStatuse(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     uploadStatus: uploadStatus ?? this.uploadStatus,
     privacyStatus: privacyStatus ?? this.privacyStatus,
@@ -4828,8 +4002,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   );
   VideoStatuse copyWithCompanion(VideoStatusesCompanion data) {
     return VideoStatuse(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       uploadStatus: data.uploadStatus.present
           ? data.uploadStatus.value
@@ -4853,8 +4025,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   @override
   String toString() {
     return (StringBuffer('VideoStatuse(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('uploadStatus: $uploadStatus, ')
           ..write('privacyStatus: $privacyStatus, ')
@@ -4868,8 +4038,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
 
   @override
   int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
     id,
     uploadStatus,
     privacyStatus,
@@ -4882,8 +4050,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoStatuse &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.uploadStatus == this.uploadStatus &&
           other.privacyStatus == this.privacyStatus &&
@@ -4894,8 +4060,6 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
 }
 
 class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<String> uploadStatus;
   final Value<String> privacyStatus;
@@ -4905,8 +4069,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
   final Value<bool> madeForKids;
   final Value<int> rowid;
   const VideoStatusesCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.uploadStatus = const Value.absent(),
     this.privacyStatus = const Value.absent(),
@@ -4917,8 +4079,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
     this.rowid = const Value.absent(),
   });
   VideoStatusesCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required String uploadStatus,
     required String privacyStatus,
@@ -4935,8 +4095,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
        publicStatsViewable = Value(publicStatsViewable),
        madeForKids = Value(madeForKids);
   static Insertable<VideoStatuse> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<String>? uploadStatus,
     Expression<String>? privacyStatus,
@@ -4947,8 +4105,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (uploadStatus != null) 'upload_status': uploadStatus,
       if (privacyStatus != null) 'privacy_status': privacyStatus,
@@ -4962,8 +4118,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
   }
 
   VideoStatusesCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<String>? uploadStatus,
     Value<String>? privacyStatus,
@@ -4974,8 +4128,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
     Value<int>? rowid,
   }) {
     return VideoStatusesCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       uploadStatus: uploadStatus ?? this.uploadStatus,
       privacyStatus: privacyStatus ?? this.privacyStatus,
@@ -4990,12 +4142,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -5026,8 +4172,6 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
   @override
   String toString() {
     return (StringBuffer('VideoStatusesCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('uploadStatus: $uploadStatus, ')
           ..write('privacyStatus: $privacyStatus, ')
@@ -5047,30 +4191,6 @@ class $VideoStatisticsTable extends VideoStatistics
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoStatisticsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -5140,8 +4260,6 @@ class $VideoStatisticsTable extends VideoStatistics
   );
   @override
   List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
     id,
     viewCount,
     likeCount,
@@ -5161,18 +4279,6 @@ class $VideoStatisticsTable extends VideoStatistics
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -5230,14 +4336,6 @@ class $VideoStatisticsTable extends VideoStatistics
   VideoStatistic map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoStatistic(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -5272,8 +4370,6 @@ class $VideoStatisticsTable extends VideoStatistics
 }
 
 class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final int viewCount;
   final int? likeCount;
@@ -5281,8 +4377,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   final int favoriteCount;
   final int? commentCount;
   const VideoStatistic({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.viewCount,
     this.likeCount,
@@ -5293,8 +4387,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['view_count'] = Variable<int>(viewCount);
     if (!nullToAbsent || likeCount != null) {
@@ -5312,8 +4404,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
 
   VideoStatisticsCompanion toCompanion(bool nullToAbsent) {
     return VideoStatisticsCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       viewCount: Value(viewCount),
       likeCount: likeCount == null && nullToAbsent
@@ -5335,8 +4425,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoStatistic(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       viewCount: serializer.fromJson<int>(json['viewCount']),
       likeCount: serializer.fromJson<int?>(json['likeCount']),
@@ -5349,8 +4437,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'viewCount': serializer.toJson<int>(viewCount),
       'likeCount': serializer.toJson<int?>(likeCount),
@@ -5361,8 +4447,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   }
 
   VideoStatistic copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     int? viewCount,
     Value<int?> likeCount = const Value.absent(),
@@ -5370,8 +4454,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     int? favoriteCount,
     Value<int?> commentCount = const Value.absent(),
   }) => VideoStatistic(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     viewCount: viewCount ?? this.viewCount,
     likeCount: likeCount.present ? likeCount.value : this.likeCount,
@@ -5381,8 +4463,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   );
   VideoStatistic copyWithCompanion(VideoStatisticsCompanion data) {
     return VideoStatistic(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       viewCount: data.viewCount.present ? data.viewCount.value : this.viewCount,
       likeCount: data.likeCount.present ? data.likeCount.value : this.likeCount,
@@ -5401,8 +4481,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   @override
   String toString() {
     return (StringBuffer('VideoStatistic(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('viewCount: $viewCount, ')
           ..write('likeCount: $likeCount, ')
@@ -5415,8 +4493,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
 
   @override
   int get hashCode => Object.hash(
-    createdAt,
-    updatedAt,
     id,
     viewCount,
     likeCount,
@@ -5428,8 +4504,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoStatistic &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.viewCount == this.viewCount &&
           other.likeCount == this.likeCount &&
@@ -5439,8 +4513,6 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
 }
 
 class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<int> viewCount;
   final Value<int?> likeCount;
@@ -5449,8 +4521,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   final Value<int?> commentCount;
   final Value<int> rowid;
   const VideoStatisticsCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.viewCount = const Value.absent(),
     this.likeCount = const Value.absent(),
@@ -5460,8 +4530,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     this.rowid = const Value.absent(),
   });
   VideoStatisticsCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     required int viewCount,
     this.likeCount = const Value.absent(),
@@ -5473,8 +4541,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
        viewCount = Value(viewCount),
        favoriteCount = Value(favoriteCount);
   static Insertable<VideoStatistic> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<int>? viewCount,
     Expression<int>? likeCount,
@@ -5484,8 +4550,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (viewCount != null) 'view_count': viewCount,
       if (likeCount != null) 'like_count': likeCount,
@@ -5497,8 +4561,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   }
 
   VideoStatisticsCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<int>? viewCount,
     Value<int?>? likeCount,
@@ -5508,8 +4570,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
     Value<int>? rowid,
   }) {
     return VideoStatisticsCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       viewCount: viewCount ?? this.viewCount,
       likeCount: likeCount ?? this.likeCount,
@@ -5523,12 +4583,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -5556,8 +4610,6 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   @override
   String toString() {
     return (StringBuffer('VideoStatisticsCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('viewCount: $viewCount, ')
           ..write('likeCount: $likeCount, ')
@@ -5576,30 +4628,6 @@ class $VideoProgressTable extends VideoProgress
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoProgressTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -5640,13 +4668,7 @@ class $VideoProgressTable extends VideoProgress
     defaultValue: const Constant(false),
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    createdAt,
-    updatedAt,
-    id,
-    watchPosition,
-    isFinished,
-  ];
+  List<GeneratedColumn> get $columns => [id, watchPosition, isFinished];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -5659,18 +4681,6 @@ class $VideoProgressTable extends VideoProgress
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
-      );
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -5700,14 +4710,6 @@ class $VideoProgressTable extends VideoProgress
   VideoProgressData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return VideoProgressData(
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -5731,14 +4733,10 @@ class $VideoProgressTable extends VideoProgress
 
 class VideoProgressData extends DataClass
     implements Insertable<VideoProgressData> {
-  final DateTime createdAt;
-  final DateTime updatedAt;
   final String id;
   final int watchPosition;
   final bool isFinished;
   const VideoProgressData({
-    required this.createdAt,
-    required this.updatedAt,
     required this.id,
     required this.watchPosition,
     required this.isFinished,
@@ -5746,8 +4744,6 @@ class VideoProgressData extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     map['id'] = Variable<String>(id);
     map['watch_position'] = Variable<int>(watchPosition);
     map['is_finished'] = Variable<bool>(isFinished);
@@ -5756,8 +4752,6 @@ class VideoProgressData extends DataClass
 
   VideoProgressCompanion toCompanion(bool nullToAbsent) {
     return VideoProgressCompanion(
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
       id: Value(id),
       watchPosition: Value(watchPosition),
       isFinished: Value(isFinished),
@@ -5770,8 +4764,6 @@ class VideoProgressData extends DataClass
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoProgressData(
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       id: serializer.fromJson<String>(json['id']),
       watchPosition: serializer.fromJson<int>(json['watchPosition']),
       isFinished: serializer.fromJson<bool>(json['isFinished']),
@@ -5781,8 +4773,6 @@ class VideoProgressData extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'watchPosition': serializer.toJson<int>(watchPosition),
       'isFinished': serializer.toJson<bool>(isFinished),
@@ -5790,22 +4780,16 @@ class VideoProgressData extends DataClass
   }
 
   VideoProgressData copyWith({
-    DateTime? createdAt,
-    DateTime? updatedAt,
     String? id,
     int? watchPosition,
     bool? isFinished,
   }) => VideoProgressData(
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
     id: id ?? this.id,
     watchPosition: watchPosition ?? this.watchPosition,
     isFinished: isFinished ?? this.isFinished,
   );
   VideoProgressData copyWithCompanion(VideoProgressCompanion data) {
     return VideoProgressData(
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
       watchPosition: data.watchPosition.present
           ? data.watchPosition.value
@@ -5819,8 +4803,6 @@ class VideoProgressData extends DataClass
   @override
   String toString() {
     return (StringBuffer('VideoProgressData(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('watchPosition: $watchPosition, ')
           ..write('isFinished: $isFinished')
@@ -5829,53 +4811,40 @@ class VideoProgressData extends DataClass
   }
 
   @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, watchPosition, isFinished);
+  int get hashCode => Object.hash(id, watchPosition, isFinished);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is VideoProgressData &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt &&
           other.id == this.id &&
           other.watchPosition == this.watchPosition &&
           other.isFinished == this.isFinished);
 }
 
 class VideoProgressCompanion extends UpdateCompanion<VideoProgressData> {
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   final Value<String> id;
   final Value<int> watchPosition;
   final Value<bool> isFinished;
   final Value<int> rowid;
   const VideoProgressCompanion({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.id = const Value.absent(),
     this.watchPosition = const Value.absent(),
     this.isFinished = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   VideoProgressCompanion.insert({
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     required String id,
     this.watchPosition = const Value.absent(),
     this.isFinished = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<VideoProgressData> custom({
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
     Expression<String>? id,
     Expression<int>? watchPosition,
     Expression<bool>? isFinished,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (id != null) 'id': id,
       if (watchPosition != null) 'watch_position': watchPosition,
       if (isFinished != null) 'is_finished': isFinished,
@@ -5884,16 +4853,12 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressData> {
   }
 
   VideoProgressCompanion copyWith({
-    Value<DateTime>? createdAt,
-    Value<DateTime>? updatedAt,
     Value<String>? id,
     Value<int>? watchPosition,
     Value<bool>? isFinished,
     Value<int>? rowid,
   }) {
     return VideoProgressCompanion(
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
       watchPosition: watchPosition ?? this.watchPosition,
       isFinished: isFinished ?? this.isFinished,
@@ -5904,12 +4869,6 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -5928,8 +4887,6 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressData> {
   @override
   String toString() {
     return (StringBuffer('VideoProgressCompanion(')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('id: $id, ')
           ..write('watchPosition: $watchPosition, ')
           ..write('isFinished: $isFinished, ')
@@ -11475,8 +10432,6 @@ typedef $$ChannelsTableProcessedTableManager =
     >;
 typedef $$ChannelSnippetsTableCreateCompanionBuilder =
     ChannelSnippetsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required String title,
       required String description,
@@ -11484,8 +10439,6 @@ typedef $$ChannelSnippetsTableCreateCompanionBuilder =
     });
 typedef $$ChannelSnippetsTableUpdateCompanionBuilder =
     ChannelSnippetsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String> title,
       Value<String> description,
@@ -11528,16 +10481,6 @@ class $$ChannelSnippetsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnFilters(column),
@@ -11581,16 +10524,6 @@ class $$ChannelSnippetsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get title => $composableBuilder(
     column: $table.title,
     builder: (column) => ColumnOrderings(column),
@@ -11634,12 +10567,6 @@ class $$ChannelSnippetsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
@@ -11700,15 +10627,11 @@ class $$ChannelSnippetsTableTableManager
               $$ChannelSnippetsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String> description = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelSnippetsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 title: title,
                 description: description,
@@ -11716,15 +10639,11 @@ class $$ChannelSnippetsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required String title,
                 required String description,
                 Value<int> rowid = const Value.absent(),
               }) => ChannelSnippetsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 title: title,
                 description: description,
@@ -11802,8 +10721,6 @@ typedef $$ChannelSnippetsTableProcessedTableManager =
     >;
 typedef $$ChannelThumbnailsTableCreateCompanionBuilder =
     ChannelThumbnailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required String defaultUrl,
       required String mediumUrl,
@@ -11812,8 +10729,6 @@ typedef $$ChannelThumbnailsTableCreateCompanionBuilder =
     });
 typedef $$ChannelThumbnailsTableUpdateCompanionBuilder =
     ChannelThumbnailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String> defaultUrl,
       Value<String> mediumUrl,
@@ -11858,16 +10773,6 @@ class $$ChannelThumbnailsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get defaultUrl => $composableBuilder(
     column: $table.defaultUrl,
     builder: (column) => ColumnFilters(column),
@@ -11916,16 +10821,6 @@ class $$ChannelThumbnailsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get defaultUrl => $composableBuilder(
     column: $table.defaultUrl,
     builder: (column) => ColumnOrderings(column),
@@ -11974,12 +10869,6 @@ class $$ChannelThumbnailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get defaultUrl => $composableBuilder(
     column: $table.defaultUrl,
     builder: (column) => column,
@@ -12048,16 +10937,12 @@ class $$ChannelThumbnailsTableTableManager
               ),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> defaultUrl = const Value.absent(),
                 Value<String> mediumUrl = const Value.absent(),
                 Value<String> highUrl = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelThumbnailsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 defaultUrl: defaultUrl,
                 mediumUrl: mediumUrl,
@@ -12066,16 +10951,12 @@ class $$ChannelThumbnailsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required String defaultUrl,
                 required String mediumUrl,
                 required String highUrl,
                 Value<int> rowid = const Value.absent(),
               }) => ChannelThumbnailsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 defaultUrl: defaultUrl,
                 mediumUrl: mediumUrl,
@@ -12154,8 +11035,6 @@ typedef $$ChannelThumbnailsTableProcessedTableManager =
     >;
 typedef $$ChannelContentDetailsTableCreateCompanionBuilder =
     ChannelContentDetailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       Value<String?> likesPlaylist,
       Value<String?> uploadPlaylist,
@@ -12163,8 +11042,6 @@ typedef $$ChannelContentDetailsTableCreateCompanionBuilder =
     });
 typedef $$ChannelContentDetailsTableUpdateCompanionBuilder =
     ChannelContentDetailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String?> likesPlaylist,
       Value<String?> uploadPlaylist,
@@ -12212,16 +11089,6 @@ class $$ChannelContentDetailsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get likesPlaylist => $composableBuilder(
     column: $table.likesPlaylist,
     builder: (column) => ColumnFilters(column),
@@ -12265,16 +11132,6 @@ class $$ChannelContentDetailsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get likesPlaylist => $composableBuilder(
     column: $table.likesPlaylist,
     builder: (column) => ColumnOrderings(column),
@@ -12318,12 +11175,6 @@ class $$ChannelContentDetailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get likesPlaylist => $composableBuilder(
     column: $table.likesPlaylist,
     builder: (column) => column,
@@ -12397,15 +11248,11 @@ class $$ChannelContentDetailsTableTableManager
               ),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String?> likesPlaylist = const Value.absent(),
                 Value<String?> uploadPlaylist = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelContentDetailsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 likesPlaylist: likesPlaylist,
                 uploadPlaylist: uploadPlaylist,
@@ -12413,15 +11260,11 @@ class $$ChannelContentDetailsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 Value<String?> likesPlaylist = const Value.absent(),
                 Value<String?> uploadPlaylist = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelContentDetailsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 likesPlaylist: likesPlaylist,
                 uploadPlaylist: uploadPlaylist,
@@ -12498,8 +11341,6 @@ typedef $$ChannelContentDetailsTableProcessedTableManager =
     >;
 typedef $$ChannelStatisticsTableCreateCompanionBuilder =
     ChannelStatisticsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required int viewCount,
       required int subscriberCount,
@@ -12509,8 +11350,6 @@ typedef $$ChannelStatisticsTableCreateCompanionBuilder =
     });
 typedef $$ChannelStatisticsTableUpdateCompanionBuilder =
     ChannelStatisticsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<int> viewCount,
       Value<int> subscriberCount,
@@ -12556,16 +11395,6 @@ class $$ChannelStatisticsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<int> get viewCount => $composableBuilder(
     column: $table.viewCount,
     builder: (column) => ColumnFilters(column),
@@ -12619,16 +11448,6 @@ class $$ChannelStatisticsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get viewCount => $composableBuilder(
     column: $table.viewCount,
     builder: (column) => ColumnOrderings(column),
@@ -12682,12 +11501,6 @@ class $$ChannelStatisticsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<int> get viewCount =>
       $composableBuilder(column: $table.viewCount, builder: (column) => column);
 
@@ -12763,8 +11576,6 @@ class $$ChannelStatisticsTableTableManager
               ),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<int> viewCount = const Value.absent(),
                 Value<int> subscriberCount = const Value.absent(),
@@ -12772,8 +11583,6 @@ class $$ChannelStatisticsTableTableManager
                 Value<int> videoCount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelStatisticsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 viewCount: viewCount,
                 subscriberCount: subscriberCount,
@@ -12783,8 +11592,6 @@ class $$ChannelStatisticsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required int viewCount,
                 required int subscriberCount,
@@ -12792,8 +11599,6 @@ class $$ChannelStatisticsTableTableManager
                 required int videoCount,
                 Value<int> rowid = const Value.absent(),
               }) => ChannelStatisticsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 viewCount: viewCount,
                 subscriberCount: subscriberCount,
@@ -12873,8 +11678,6 @@ typedef $$ChannelStatisticsTableProcessedTableManager =
     >;
 typedef $$ChannelStatusesTableCreateCompanionBuilder =
     ChannelStatusesCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required String privacyStatus,
       required bool isLinked,
@@ -12884,8 +11687,6 @@ typedef $$ChannelStatusesTableCreateCompanionBuilder =
     });
 typedef $$ChannelStatusesTableUpdateCompanionBuilder =
     ChannelStatusesCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String> privacyStatus,
       Value<bool> isLinked,
@@ -12930,16 +11731,6 @@ class $$ChannelStatusesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get privacyStatus => $composableBuilder(
     column: $table.privacyStatus,
     builder: (column) => ColumnFilters(column),
@@ -12993,16 +11784,6 @@ class $$ChannelStatusesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get privacyStatus => $composableBuilder(
     column: $table.privacyStatus,
     builder: (column) => ColumnOrderings(column),
@@ -13056,12 +11837,6 @@ class $$ChannelStatusesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get privacyStatus => $composableBuilder(
     column: $table.privacyStatus,
     builder: (column) => column,
@@ -13132,8 +11907,6 @@ class $$ChannelStatusesTableTableManager
               $$ChannelStatusesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> privacyStatus = const Value.absent(),
                 Value<bool> isLinked = const Value.absent(),
@@ -13141,8 +11914,6 @@ class $$ChannelStatusesTableTableManager
                 Value<bool?> madeForKids = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelStatusesCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 privacyStatus: privacyStatus,
                 isLinked: isLinked,
@@ -13152,8 +11923,6 @@ class $$ChannelStatusesTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required String privacyStatus,
                 required bool isLinked,
@@ -13161,8 +11930,6 @@ class $$ChannelStatusesTableTableManager
                 Value<bool?> madeForKids = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ChannelStatusesCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 privacyStatus: privacyStatus,
                 isLinked: isLinked,
@@ -14521,8 +13288,6 @@ typedef $$VideosTableProcessedTableManager =
     >;
 typedef $$VideoSnippetsTableCreateCompanionBuilder =
     VideoSnippetsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required DateTime publishedAt,
       required String title,
@@ -14532,8 +13297,6 @@ typedef $$VideoSnippetsTableCreateCompanionBuilder =
     });
 typedef $$VideoSnippetsTableUpdateCompanionBuilder =
     VideoSnippetsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<DateTime> publishedAt,
       Value<String> title,
@@ -14578,16 +13341,6 @@ class $$VideoSnippetsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<DateTime> get publishedAt => $composableBuilder(
     column: $table.publishedAt,
     builder: (column) => ColumnFilters(column),
@@ -14641,16 +13394,6 @@ class $$VideoSnippetsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<DateTime> get publishedAt => $composableBuilder(
     column: $table.publishedAt,
     builder: (column) => ColumnOrderings(column),
@@ -14704,12 +13447,6 @@ class $$VideoSnippetsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<DateTime> get publishedAt => $composableBuilder(
     column: $table.publishedAt,
     builder: (column) => column,
@@ -14780,8 +13517,6 @@ class $$VideoSnippetsTableTableManager
               $$VideoSnippetsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<DateTime> publishedAt = const Value.absent(),
                 Value<String> title = const Value.absent(),
@@ -14789,8 +13524,6 @@ class $$VideoSnippetsTableTableManager
                 Value<String> channelTitle = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoSnippetsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 publishedAt: publishedAt,
                 title: title,
@@ -14800,8 +13533,6 @@ class $$VideoSnippetsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required DateTime publishedAt,
                 required String title,
@@ -14809,8 +13540,6 @@ class $$VideoSnippetsTableTableManager
                 required String channelTitle,
                 Value<int> rowid = const Value.absent(),
               }) => VideoSnippetsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 publishedAt: publishedAt,
                 title: title,
@@ -14887,8 +13616,6 @@ typedef $$VideoSnippetsTableProcessedTableManager =
     >;
 typedef $$VideoThumbnailsTableCreateCompanionBuilder =
     VideoThumbnailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required String defaultUrl,
       required String mediumUrl,
@@ -14899,8 +13626,6 @@ typedef $$VideoThumbnailsTableCreateCompanionBuilder =
     });
 typedef $$VideoThumbnailsTableUpdateCompanionBuilder =
     VideoThumbnailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String> defaultUrl,
       Value<String> mediumUrl,
@@ -14946,16 +13671,6 @@ class $$VideoThumbnailsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get defaultUrl => $composableBuilder(
     column: $table.defaultUrl,
     builder: (column) => ColumnFilters(column),
@@ -15014,16 +13729,6 @@ class $$VideoThumbnailsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get defaultUrl => $composableBuilder(
     column: $table.defaultUrl,
     builder: (column) => ColumnOrderings(column),
@@ -15082,12 +13787,6 @@ class $$VideoThumbnailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get defaultUrl => $composableBuilder(
     column: $table.defaultUrl,
     builder: (column) => column,
@@ -15159,8 +13858,6 @@ class $$VideoThumbnailsTableTableManager
               $$VideoThumbnailsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> defaultUrl = const Value.absent(),
                 Value<String> mediumUrl = const Value.absent(),
@@ -15169,8 +13866,6 @@ class $$VideoThumbnailsTableTableManager
                 Value<String?> maxresUrl = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoThumbnailsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 defaultUrl: defaultUrl,
                 mediumUrl: mediumUrl,
@@ -15181,8 +13876,6 @@ class $$VideoThumbnailsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required String defaultUrl,
                 required String mediumUrl,
@@ -15191,8 +13884,6 @@ class $$VideoThumbnailsTableTableManager
                 Value<String?> maxresUrl = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoThumbnailsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 defaultUrl: defaultUrl,
                 mediumUrl: mediumUrl,
@@ -15273,8 +13964,6 @@ typedef $$VideoThumbnailsTableProcessedTableManager =
     >;
 typedef $$VideoContentDetailsTableCreateCompanionBuilder =
     VideoContentDetailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required String duration,
       required String dimension,
@@ -15286,8 +13975,6 @@ typedef $$VideoContentDetailsTableCreateCompanionBuilder =
     });
 typedef $$VideoContentDetailsTableUpdateCompanionBuilder =
     VideoContentDetailsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String> duration,
       Value<String> dimension,
@@ -15339,16 +14026,6 @@ class $$VideoContentDetailsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get duration => $composableBuilder(
     column: $table.duration,
     builder: (column) => ColumnFilters(column),
@@ -15412,16 +14089,6 @@ class $$VideoContentDetailsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get duration => $composableBuilder(
     column: $table.duration,
     builder: (column) => ColumnOrderings(column),
@@ -15485,12 +14152,6 @@ class $$VideoContentDetailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get duration =>
       $composableBuilder(column: $table.duration, builder: (column) => column);
 
@@ -15575,8 +14236,6 @@ class $$VideoContentDetailsTableTableManager
               ),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> duration = const Value.absent(),
                 Value<String> dimension = const Value.absent(),
@@ -15586,8 +14245,6 @@ class $$VideoContentDetailsTableTableManager
                 Value<String> projection = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoContentDetailsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 duration: duration,
                 dimension: dimension,
@@ -15599,8 +14256,6 @@ class $$VideoContentDetailsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required String duration,
                 required String dimension,
@@ -15610,8 +14265,6 @@ class $$VideoContentDetailsTableTableManager
                 required String projection,
                 Value<int> rowid = const Value.absent(),
               }) => VideoContentDetailsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 duration: duration,
                 dimension: dimension,
@@ -15692,8 +14345,6 @@ typedef $$VideoContentDetailsTableProcessedTableManager =
     >;
 typedef $$VideoStatusesTableCreateCompanionBuilder =
     VideoStatusesCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required String uploadStatus,
       required String privacyStatus,
@@ -15705,8 +14356,6 @@ typedef $$VideoStatusesTableCreateCompanionBuilder =
     });
 typedef $$VideoStatusesTableUpdateCompanionBuilder =
     VideoStatusesCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<String> uploadStatus,
       Value<String> privacyStatus,
@@ -15753,16 +14402,6 @@ class $$VideoStatusesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get uploadStatus => $composableBuilder(
     column: $table.uploadStatus,
     builder: (column) => ColumnFilters(column),
@@ -15826,16 +14465,6 @@ class $$VideoStatusesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get uploadStatus => $composableBuilder(
     column: $table.uploadStatus,
     builder: (column) => ColumnOrderings(column),
@@ -15899,12 +14528,6 @@ class $$VideoStatusesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<String> get uploadStatus => $composableBuilder(
     column: $table.uploadStatus,
     builder: (column) => column,
@@ -15985,8 +14608,6 @@ class $$VideoStatusesTableTableManager
               $$VideoStatusesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> uploadStatus = const Value.absent(),
                 Value<String> privacyStatus = const Value.absent(),
@@ -15996,8 +14617,6 @@ class $$VideoStatusesTableTableManager
                 Value<bool> madeForKids = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatusesCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 uploadStatus: uploadStatus,
                 privacyStatus: privacyStatus,
@@ -16009,8 +14628,6 @@ class $$VideoStatusesTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required String uploadStatus,
                 required String privacyStatus,
@@ -16020,8 +14637,6 @@ class $$VideoStatusesTableTableManager
                 required bool madeForKids,
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatusesCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 uploadStatus: uploadStatus,
                 privacyStatus: privacyStatus,
@@ -16100,8 +14715,6 @@ typedef $$VideoStatusesTableProcessedTableManager =
     >;
 typedef $$VideoStatisticsTableCreateCompanionBuilder =
     VideoStatisticsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       required int viewCount,
       Value<int?> likeCount,
@@ -16112,8 +14725,6 @@ typedef $$VideoStatisticsTableCreateCompanionBuilder =
     });
 typedef $$VideoStatisticsTableUpdateCompanionBuilder =
     VideoStatisticsCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<int> viewCount,
       Value<int?> likeCount,
@@ -16159,16 +14770,6 @@ class $$VideoStatisticsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<int> get viewCount => $composableBuilder(
     column: $table.viewCount,
     builder: (column) => ColumnFilters(column),
@@ -16227,16 +14828,6 @@ class $$VideoStatisticsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get viewCount => $composableBuilder(
     column: $table.viewCount,
     builder: (column) => ColumnOrderings(column),
@@ -16295,12 +14886,6 @@ class $$VideoStatisticsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<int> get viewCount =>
       $composableBuilder(column: $table.viewCount, builder: (column) => column);
 
@@ -16374,8 +14959,6 @@ class $$VideoStatisticsTableTableManager
               $$VideoStatisticsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<int> viewCount = const Value.absent(),
                 Value<int?> likeCount = const Value.absent(),
@@ -16384,8 +14967,6 @@ class $$VideoStatisticsTableTableManager
                 Value<int?> commentCount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatisticsCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 viewCount: viewCount,
                 likeCount: likeCount,
@@ -16396,8 +14977,6 @@ class $$VideoStatisticsTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 required int viewCount,
                 Value<int?> likeCount = const Value.absent(),
@@ -16406,8 +14985,6 @@ class $$VideoStatisticsTableTableManager
                 Value<int?> commentCount = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoStatisticsCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 viewCount: viewCount,
                 likeCount: likeCount,
@@ -16488,8 +15065,6 @@ typedef $$VideoStatisticsTableProcessedTableManager =
     >;
 typedef $$VideoProgressTableCreateCompanionBuilder =
     VideoProgressCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       required String id,
       Value<int> watchPosition,
       Value<bool> isFinished,
@@ -16497,8 +15072,6 @@ typedef $$VideoProgressTableCreateCompanionBuilder =
     });
 typedef $$VideoProgressTableUpdateCompanionBuilder =
     VideoProgressCompanion Function({
-      Value<DateTime> createdAt,
-      Value<DateTime> updatedAt,
       Value<String> id,
       Value<int> watchPosition,
       Value<bool> isFinished,
@@ -16541,16 +15114,6 @@ class $$VideoProgressTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
     builder: (column) => ColumnFilters(column),
@@ -16594,16 +15157,6 @@ class $$VideoProgressTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
     builder: (column) => ColumnOrderings(column),
@@ -16647,12 +15200,6 @@ class $$VideoProgressTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
   GeneratedColumn<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
     builder: (column) => column,
@@ -16715,15 +15262,11 @@ class $$VideoProgressTableTableManager
               $$VideoProgressTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<int> watchPosition = const Value.absent(),
                 Value<bool> isFinished = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoProgressCompanion(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 watchPosition: watchPosition,
                 isFinished: isFinished,
@@ -16731,15 +15274,11 @@ class $$VideoProgressTableTableManager
               ),
           createCompanionCallback:
               ({
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 required String id,
                 Value<int> watchPosition = const Value.absent(),
                 Value<bool> isFinished = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => VideoProgressCompanion.insert(
-                createdAt: createdAt,
-                updatedAt: updatedAt,
                 id: id,
                 watchPosition: watchPosition,
                 isFinished: isFinished,

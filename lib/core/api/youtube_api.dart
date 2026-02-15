@@ -237,7 +237,7 @@ class YoutubeApi {
     //2. find videoIds that needs update
     final videosDao = VideosDao(database);
     final videosInDb = await videosDao.getVideosById(
-      videoIdVsSETag.keys.toList(),
+      videoIdVsSETag.keys.toSet(),
     );
     final videosInDbMap = Map.fromEntries(
       videosInDb.map((v) => MapEntry(v.id, v)),
@@ -433,7 +433,7 @@ class YoutubeApi {
     _logger.info('fetched ${videoIds.length} for playlist: $playlistId');
 
     final videosDao = VideosDao(Database());
-    final videosInDB = await videosDao.getVideosById(videoIds);
+    final videosInDB = await videosDao.getVideosById(videoIds.toSet());
     final videosValidInDB = videosInDB
         .where((v) => v.updatedAt.isAfter(isAfter))
         .map((v) => v.id)
@@ -443,7 +443,7 @@ class YoutubeApi {
       'videosInDB:${videosInDB.length} valid:${videosValidInDB.length} needsUpdate:${items.length}',
     );
 
-    if (!updateProgress(true, 0, 1)) return failure;
+    if (!updateProgress(true, 0, items.length)) return failure;
     for (var i = 0; i < items.length; i += 50) {
       final end = (i + 50).clamp(0, items.length);
       _logger.info('syncing videos [$i-$end] of ${items.length} items');
@@ -459,20 +459,18 @@ class YoutubeApi {
     }
 
     final videoIdsSet = <String>{};
-    final uniqueVideoIds = <String>[];
     for (final videoId in videoIds) {
       if (videoIdsSet.contains(videoId)) {
         continue;
       }
       videoIdsSet.add(videoId);
-      uniqueVideoIds.add(videoId);
     }
     _logger.info(
-      'inserting videos:${uniqueVideoIds.length} duplicates:${videoIds.length - uniqueVideoIds.length}',
+      'inserting videos:${videoIdsSet.length} duplicates:${videoIds.length - videoIdsSet.length}',
     );
 
-    final videosToInsert = await videosDao.getVideosById(uniqueVideoIds);
-    final missedVideosCount = uniqueVideoIds.length - videosToInsert.length;
+    final videosToInsert = await videosDao.getVideosById(videoIdsSet);
+    final missedVideosCount = videoIdsSet.length - videosToInsert.length;
     if (missedVideosCount != 0) {
       _logger.warning('video ids missed in sync results: $missedVideosCount');
     }

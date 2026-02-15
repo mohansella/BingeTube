@@ -13,7 +13,7 @@ class Videos extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class VideoSnippets extends Table with TableTimedMixin {
+class VideoSnippets extends Table {
   late final id = text().references(Videos, #id)();
   late final publishedAt = dateTime()();
   late final title = text()();
@@ -24,7 +24,7 @@ class VideoSnippets extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class VideoThumbnails extends Table with TableTimedMixin {
+class VideoThumbnails extends Table {
   late final id = text().references(Videos, #id)();
   late final defaultUrl = text()();
   late final mediumUrl = text()();
@@ -36,7 +36,7 @@ class VideoThumbnails extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class VideoContentDetails extends Table with TableTimedMixin {
+class VideoContentDetails extends Table {
   late final id = text().references(Videos, #id)();
   late final duration = text()();
   late final dimension = text()();
@@ -49,7 +49,7 @@ class VideoContentDetails extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class VideoStatuses extends Table with TableTimedMixin {
+class VideoStatuses extends Table {
   late final id = text().references(Videos, #id)();
   late final uploadStatus = text()();
   late final privacyStatus = text()();
@@ -62,7 +62,7 @@ class VideoStatuses extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class VideoStatistics extends Table with TableTimedMixin {
+class VideoStatistics extends Table {
   late final id = text().references(Videos, #id)();
   late final viewCount = integer()();
   late final likeCount = integer().nullable()();
@@ -74,7 +74,7 @@ class VideoStatistics extends Table with TableTimedMixin {
   get primaryKey => {id};
 }
 
-class VideoProgress extends Table with TableTimedMixin {
+class VideoProgress extends Table {
   late final id = text().references(Videos, #id)();
   late final watchPosition = integer().withDefault(const Constant(0))();
   late final isFinished = boolean().withDefault(const Constant(false))();
