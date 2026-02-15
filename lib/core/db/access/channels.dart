@@ -91,10 +91,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
 
     final results = await query.get();
     final channelModels = results.map(mapRowToModel).toList();
-    final idVsModel = Map.fromEntries(
-      channelModels.map((m) => MapEntry(m.channel.id, m)),
-    );
-    return channelIds.map((id) => idVsModel[id]!).toList();
+    return channelModels;
   }
 
   Future<List<Channel>> getChannelsById(List<String> channelIds) async {

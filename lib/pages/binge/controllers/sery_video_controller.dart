@@ -23,6 +23,12 @@ class SeryVideoBingeController extends BaseBingeController {
   Stream<BingeModel> get dbStream => _bingeDao.streamBingeModel(seryId);
 
   @override
+  void setActiveVideoId(String videoId) {
+    super.setActiveVideoId(videoId);
+    _bingeDao.updateSeryCover(seryId: seryId, videoId: videoId);
+  }
+
+  @override
   List<BingeActions> supportedActions() {
     return [.edit, .moveTo, .duplicate, .delete, .export];
   }

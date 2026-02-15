@@ -251,6 +251,18 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     });
   }
 
+  Future<void> updateSeryCover({
+    required int seryId,
+    required String videoId,
+  }) async {
+    final comp = SeriesCompanion(
+      id: Value(seryId),
+      coverVideoId: Value(videoId),
+    );
+    final query = update(series)..where((s) => s.id.equals(seryId));
+    await query.write(comp);
+  }
+
   Future<List<Sery>> getSeries({required bool isSystem}) async {
     final query = select(series).join([
       innerJoin(collections, collections.id.equalsExp(series.collectionId)),

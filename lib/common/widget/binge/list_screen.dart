@@ -30,12 +30,16 @@ class ListScreenWidget extends StatefulWidget {
   State<ListScreenWidget> createState() => _ListScreenWidgetState();
 }
 
-class _ListScreenWidgetState extends State<ListScreenWidget> {
-  late BingeDao _bingeDao;
+class _ListScreenWidgetState extends State<ListScreenWidget>
+    with SingleTickerProviderStateMixin {
   static const double minWidth = 160;
+
+  late BingeDao _bingeDao;
+  late AnimationController _lottieController;
   double _width = 0;
   double _height = 0;
 
+  late bool _droppingOnEmpty;
   late int _droppingOnSeryId;
   late bool _droppingOnLeft;
   late int _dropCollectionId;
@@ -45,7 +49,14 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   void initState() {
     super.initState();
     _bingeDao = BingeDao(Database());
+    _lottieController = AnimationController(vsync: this);
     _initDropState();
+  }
+
+  @override
+  void dispose() {
+    _lottieController.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,6 +66,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   }
 
   void _initDropState() {
+    _droppingOnEmpty = false;
     _droppingOnSeryId = -1;
     _droppingOnLeft = false;
     _dropCollectionId = -1;
@@ -94,23 +106,35 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                width: constraints.maxWidth * 0.7,
-                height: constraints.maxHeight * 0.7,
-                child: Lottie.asset(Assets.emptyBox.path, fit: BoxFit.contain),
-              ),
-              const SizedBox(height: 8),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  'No collections found. Add one via search, copy, or import.',
-                  textAlign: TextAlign.center,
+          child: _buildDropRegion(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: constraints.maxWidth * 0.7,
+                  height: constraints.maxHeight * 0.7,
+                  child: Lottie.asset(
+                    Assets.emptyBox.path,
+                    fit: BoxFit.contain,
+                    controller: _lottieController,
+                    onLoaded: (composition) {
+                      _lottieController
+                        ..duration = composition.duration
+                        ..forward()
+                        ..repeat();
+                    },
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    'No collections found. Add one via search, copy, or import.',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -153,14 +177,19 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
   }
 
   Widget _buildSery(SeryModel model) {
-    return _buildDropRegion(model, _buildDragItem(model));
+    return _buildDropRegion(model: model, child: _buildDragItem(model));
   }
 
-  DropRegion _buildDropRegion(SeryModel model, Widget child) {
+  DropRegion _buildDropRegion({SeryModel? model, required Widget child}) {
     return DropRegion(
       formats: [Formats.fileUri, Formats.htmlFile],
       onDropEnter: (event) {
         setState(() {
+          if (model == null) {
+            _droppingOnEmpty = true;
+            _lottieController.stop(canceled: false);
+            return;
+          }
           final item = event.session.items.first;
           if (item.localData != null) {
             final seryId = item.localData as int;
@@ -174,6 +203,10 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
       },
       onDropLeave: (event) {
         setState(() {
+          if (_droppingOnEmpty) {
+            _droppingOnEmpty = false;
+            _lottieController.forward();
+          }
           _droppingOnSeryId = -1;
         });
       },
@@ -182,7 +215,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
         final isLocalData = item.localData != null;
         if (isLocalData) {
           final seryId = item.localData as int;
-          if (seryId == model.sery.id) {
+          if (model != null && seryId == model.sery.id) {
             return DropOperation.none;
           }
         }
@@ -195,9 +228,13 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
       onPerformDrop: (event) async {
         final item = event.session.items.first;
         final pos = event.position.local.dx - (_width / 2);
-        final targetPriority = model.sery.priority;
+        final targetPriority = model?.sery.priority ?? 1;
         final priority = pos < 0 ? targetPriority : targetPriority + 1;
-        final collectionId = model.sery.collectionId;
+
+        final bingeDao = BingeDao(Database());
+        final collectionId =
+            model?.sery.collectionId ??
+            (await bingeDao.getDefaultCollection()).id;
 
         if (item.localData == null) {
           _dropCollectionId = collectionId;
@@ -205,7 +242,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget> {
           await _performDropsFromExternal(event);
         } else {
           final seryId = item.localData as int;
-          await BingeDao(Database()).moveSery(
+          await bingeDao.moveSery(
             seryId: seryId,
             collectionId: collectionId,
             priority: priority,
