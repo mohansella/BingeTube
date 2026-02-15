@@ -82,6 +82,18 @@ class IframePlayer extends Player {
     final window = _iframeElement!.contentWindow as IframeWindow;
     window.seekTo(pos.toJS);
   }
+
+  @override
+  void play() {
+    final window = _iframeElement!.contentWindow as IframeWindow;
+    window.playVideo();
+  }
+
+  @override
+  void pause() {
+    final window = _iframeElement!.contentWindow as IframeWindow;
+    window.pauseVideo();
+  }
 }
 
 Player createPlayer(PlayerListener listener) {
@@ -92,6 +104,8 @@ Player createPlayer(PlayerListener listener) {
 extension type IframeWindow(JSObject _) implements JSObject {
   external void startProgressTracking();
   external void seekTo(JSNumber pos);
+  external void playVideo();
+  external void pauseVideo();
   external set appBridge(JSFunction fn);
   external JSBoolean? isPlayerReady;
 }

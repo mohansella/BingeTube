@@ -20,6 +20,9 @@ abstract class Player {
   void startProgressTracking();
   void seekTo(int pos);
 
+  void play();
+  void pause();
+
   Player({required this.listener});
 
   void handleEvent(String eventname, String? payload) {

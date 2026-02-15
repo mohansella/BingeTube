@@ -26,6 +26,16 @@ class EmptyPlayer extends Player {
   void seekTo(int pos) {
     throw UnimplementedError();
   }
+
+  @override
+  void play() {
+    throw UnimplementedError();
+  }
+
+  @override
+  void pause() {
+    throw UnimplementedError();
+  }
 }
 
 Player createPlayer(PlayerListener listener) {

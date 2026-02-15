@@ -79,6 +79,16 @@ class WebviewPlayer extends Player {
   void seekTo(int pos) {
     _controller!.evaluateJavascript(source: 'seekTo($pos)');
   }
+
+  @override
+  void play() {
+    _controller!.evaluateJavascript(source: 'playVideo()');
+  }
+
+  @override
+  void pause() {
+    _controller!.evaluateJavascript(source: 'pauseVideo()');
+  }
 }
 
 Player createPlayer(PlayerListener listener) {
