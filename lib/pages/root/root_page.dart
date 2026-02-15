@@ -12,33 +12,12 @@ class RootPage extends StatefulWidget {
 }
 
 class RootPageState extends State<RootPage> {
-  int _bottomNavBarIndex = 0;
+  int _bottomNavBarIndex = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('BingeTube'),
-        leading: Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Image.asset(Assets.logoPng.path),
-        ),
-        leadingWidth: 45,
-        titleSpacing: 0,
-        actions: [
-          IconButton(
-            onPressed: () => context.pushNamed(Pages.keyConfig.name),
-            icon: Icon(Icons.key),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: IconButton(
-              onPressed: () => context.pushNamed(Pages.search.name),
-              icon: Icon(Icons.search),
-            ),
-          ),
-        ],
-      ),
+      appBar: _buildAppBar(),
       body: widget.body,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _bottomNavBarIndex,
@@ -64,6 +43,46 @@ class RootPageState extends State<RootPage> {
           });
         },
       ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('BingeTube'),
+          Container(
+            padding: const EdgeInsets.only(left: 4, bottom: 12),
+            child: const Text(
+              'beta',
+              style: TextStyle(
+                fontSize: 10,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Image.asset(Assets.logoPng.path),
+      ),
+      leadingWidth: 45,
+      titleSpacing: 0,
+      actions: [
+        IconButton(
+          onPressed: () => context.pushNamed(Pages.keyConfig.name),
+          icon: const Icon(Icons.key),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: IconButton(
+            onPressed: () => context.pushNamed(Pages.search.name),
+            icon: const Icon(Icons.search),
+          ),
+        ),
+      ],
     );
   }
 }

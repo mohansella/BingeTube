@@ -26,7 +26,7 @@ sealed class Routes {
     if (context.canPop()) {
       context.pop();
     } else {
-      context.goNamed(Pages.home.name);
+      context.goNamed(Pages.myShows.name);
     }
   }
 
@@ -48,7 +48,7 @@ final GoRouter _routes = GoRouter(
       return Pages.splash.path;
     }
     if (_initNotifier.value && routeState.uri.path == Pages.splash.path) {
-      return Pages.home.path;
+      return Pages.myShows.path;
     }
     return null;
   },

@@ -83,7 +83,11 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         }
         final collections = snapshot.data!;
         if (collections.isEmpty) {
-          return _buildCollectionEmpty();
+          if (widget.isSystem) {
+            return _buildSystemEmpty();
+          } else {
+            return _buildCollectionEmpty();
+          }
         }
         return LayoutBuilder(
           builder: (context, constraints) {
@@ -99,6 +103,15 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
           },
         );
       },
+    );
+  }
+
+  Widget _buildSystemEmpty() {
+    return const Center(
+      child: Text(
+        'Beta version — predefined collections coming soon.',
+        textAlign: TextAlign.center,
+      ),
     );
   }
 
@@ -129,7 +142,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text(
-                    'No collections found. Add one via search, copy, or import.',
+                    'No collections yet. Search, copy from Home, or drop a binge file to get started.',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -211,6 +224,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         });
       },
       onDropOver: (event) {
+        if (widget.isSystem) {
+          return DropOperation.none;
+        }
         final item = event.session.items.first;
         final isLocalData = item.localData != null;
         if (isLocalData) {
@@ -260,7 +276,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     dropShift = _droppingOnLeft ? dropShift : -dropShift;
 
     return DragItemWidget(
-      allowedOperations: () => [DropOperation.move, DropOperation.copy],
+      allowedOperations: () =>
+          widget.isSystem ? [] : [DropOperation.move, DropOperation.copy],
       dragItemProvider: (request) async {
         final fileBaseName = FileUtils.toSlugFileName(model.sery.name);
         final fileName = '$fileBaseName.binge';
