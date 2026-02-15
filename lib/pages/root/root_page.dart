@@ -56,10 +56,7 @@ class RootPageState extends State<RootPage> {
             padding: const EdgeInsets.only(left: 4, bottom: 12),
             child: const Text(
               'beta',
-              style: TextStyle(
-                fontSize: 10,
-                letterSpacing: 0.5,
-              ),
+              style: TextStyle(fontSize: 10, letterSpacing: 0.5),
             ),
           ),
         ],

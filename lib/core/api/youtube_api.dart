@@ -469,16 +469,21 @@ class YoutubeApi {
       'inserting videos:${videoIdsSet.length} duplicates:${videoIds.length - videoIdsSet.length}',
     );
 
-    final videosToInsert = await videosDao.getVideosById(videoIdsSet);
-    final missedVideosCount = videoIdsSet.length - videosToInsert.length;
+    final validVideosSet = (await videosDao.getVideosById(
+      videoIdsSet,
+    )).map((v) => v.id).toSet();
+    final missedVideosCount = videoIdsSet.length - validVideosSet.length;
     if (missedVideosCount != 0) {
       _logger.warning('video ids missed in sync results: $missedVideosCount');
     }
+    final videoIdsToInsert = <String>[];
+    for (final videoId in videoIds) {
+      if (validVideosSet.contains(videoId)) {
+        videoIdsToInsert.add(videoId);
+      }
+    }
 
-    await playlistDao.upsertVideos(
-      playlistId,
-      videosToInsert.map((v) => v.id).toList(),
-    );
+    await playlistDao.upsertVideos(playlistId, videoIdsToInsert);
 
     return Success(Unit);
   }

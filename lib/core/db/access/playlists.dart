@@ -154,6 +154,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
 
   JoinedSelectStatement<HasResultSet, dynamic> _joinChannelTables({
     JoinedSelectStatement<HasResultSet, dynamic>? selectStatement,
+    bool sortPriority = true,
   }) {
     final sel = selectStatement ?? select(playlists).join([]);
     final query = sel.join([
@@ -167,6 +168,9 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
         playlistContentDetails.id.equalsExp(playlists.id),
       ),
     ]);
+    if (sortPriority) {
+      query.orderBy([OrderingTerm.asc(playlists.priority)]);
+    }
 
     return query;
   }
