@@ -33,14 +33,24 @@ sealed class Routes {
   static void updateInitComplete() {
     _initNotifier.value = true;
   }
+
+  static RouteObserver<ModalRoute<void>> getRouteObserver() {
+    return _routeObserver;
+  }
 }
 
 final _initNotifier = ValueNotifier<bool>(false);
 
+final RouteObserver<ModalRoute<void>> _routeObserver =
+    RouteObserver<ModalRoute<void>>();
+
 final GoRouter _routes = GoRouter(
-  observers: Analytics.isEnabled
-      ? [FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance)]
-      : null,
+  observers: [
+    _routeObserver,
+    if (Analytics.isEnabled) ...[
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ],
+  ],
   initialLocation: Pages.splash.path,
   refreshListenable: _initNotifier,
   redirect: (context, routeState) {

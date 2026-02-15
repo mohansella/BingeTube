@@ -25,12 +25,36 @@ class InternalPlayerWidget extends BasePlayerWidget {
   BasePlayerState createState() => _InternalPlayerState();
 }
 
-class _InternalPlayerState extends BasePlayerState implements PlayerListener {
+class _InternalPlayerState extends BasePlayerState
+    with RouteAware
+    implements PlayerListener {
   late Player player;
 
   _InternalPlayerState() {
     player = Player.create(this);
     InternalPlayerWidget._logger.info('player name: ${player.playerName}');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Routes.getRouteObserver().subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    Routes.getRouteObserver().unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPushNext() {
+    player.pause();
+  }
+
+  @override
+  void didPopNext() {
+    player.play();
   }
 
   @override
