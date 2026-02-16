@@ -19,23 +19,6 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 <Layout 
   title="BingeTube – Turn YouTube Channels into Watchable Series"
   description="Organize YouTube videos into curated series. Track progress, avoid repeats, and binge channels from episode one—free and open source">
-  <main id="main-content" role="main" class="bg-slate-950 text-slate-50">
-    <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <div class="flex items-center gap-2 text-xl font-semibold tracking-tight">
-          <img src="app/assets/assets/images/logo.svg" alt="BingeTube Logo" class="h-10 w-10 -m-2" />
-          <span>BingeTube</span>
-        </div>
-        <div class="flex items-center gap-6">
-          <a href={githubUrl} target="_blank" aria-label="View source code on GitHub" class="hidden text-slate-400 hover:text-white sm:block">
-            <Github size={20} />
-          </a>
-          <a href={appUrl} class="rounded-xl bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-400">
-            Open App
-          </a>
-        </div>
-      </div>
-    </header>
 
     <section class="relative overflow-hidden">
       <div class="absolute -top-24 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[120px]"></div>
@@ -121,23 +104,4 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
       </div>
     </section>
 
-    <footer class="border-t border-slate-800 bg-slate-950">
-      <div class="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-12 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center gap-2 font-semibold text-white">
-          <img src="app/assets/assets/images/logo.svg" alt="BingeTube Logo" class="h-8 w-8 -m-2" />
-            BingeTube
-          </div>
-          <p>© {new Date().getFullYear()} — Built for finishers.</p>
-        </div>
-        <div class="flex items-center gap-8">
-          <a href={githubUrl} target="_blank" class="flex items-center gap-2 transition hover:text-white">
-            <Github size={16} /> GitHub
-          </a>
-          <a href="/privacy" class="hover:text-white">Privacy</a>
-          <a href="/terms" class="hover:text-white">Terms</a>
-        </div>
-      </div>
-    </footer>
-  </main>
 </Layout>
