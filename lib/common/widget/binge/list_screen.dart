@@ -303,7 +303,14 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   }
 
   Hero _buildActualSery(String heroId, String heroImg, SeryModel model) {
-    return Hero(tag: heroId, child: _buildSeryImage(heroImg, model));
+    final ratio = _width / minWidth;
+    return Hero(
+      tag: heroId,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(4 * ratio),
+        child: _buildSeryImage(heroImg, model),
+      ),
+    );
   }
 
   Future<void> _addVirtualFile(DragItem item, SeryModel model) async {

@@ -44,6 +44,7 @@ class _InternalPlayerState extends BasePlayerState
   @override
   void dispose() {
     Routes.getRouteObserver().unsubscribe(this);
+    player.pause();
     super.dispose();
   }
 
@@ -53,9 +54,7 @@ class _InternalPlayerState extends BasePlayerState
   }
 
   @override
-  void didPopNext() {
-    player.play();
-  }
+  void didPopNext() {}
 
   @override
   void didUpdateWidget(covariant InternalPlayerWidget oldWidget) {
