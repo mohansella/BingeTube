@@ -69,6 +69,7 @@ flutter {
 
 if (file("google-services.json").exists()) {
     apply(plugin = "com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 } else {
     println("Google Services JSON not found: Skipping Firebase config.")
 }

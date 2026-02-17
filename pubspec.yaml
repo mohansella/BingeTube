@@ -52,7 +52,7 @@ dependencies:
   freezed_annotation: ^3.1.0
   package_info_plus: ^9.0.0
   firebase_core: ^4.3.0
-  firebase_analytics: ^12.1.0
+  firebase_analytics: ^12.1.2
   readmore: ^3.0.0
   flutter_inappwebview: ^6.1.5
   web: ^1.1.1
@@ -61,6 +61,7 @@ dependencies:
   super_drag_and_drop: ^0.9.1
   path: ^1.9.1
   super_clipboard: ^0.9.1
+  firebase_crashlytics: ^5.0.7
 
 dev_dependencies:
   flutter_test:
