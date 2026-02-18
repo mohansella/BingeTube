@@ -8,12 +8,12 @@ final files = [
 ];
 
 void main(List<String> args) async {
-  if (args.isEmpty || (args[0] != 'enable' && args[0] != 'disable')) {
-    stderr.writeln('Usage: dart git_skip_worktree.dart <enable|disable>');
+  if (args.isEmpty || (args[0] != 'ignore' && args[0] != 'watch')) {
+    stderr.writeln('Usage: dart git_skip_worktree.dart <ignore|watch>');
     exit(1);
   }
 
-  final action = args[0] == 'enable' ? '--skip-worktree' : '--no-skip-worktree';
+  final action = args[0] == 'ignore' ? '--skip-worktree' : '--no-skip-worktree';
 
   for (final file in files) {
     if (!File(file).existsSync()) {

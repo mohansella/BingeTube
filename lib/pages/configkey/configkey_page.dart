@@ -44,24 +44,29 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Configure API Key')),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildInput(),
-            Padding(padding: EdgeInsets.only(top: 8)),
-            if (_isConfigured && !_isEditMode) ...[
-              _buildEditDelete(context),
-            ] else ...[
-              _buildCancelValidate(context),
-            ],
-            Padding(padding: EdgeInsets.only(top: 24)),
-            if (_isConfigured && !_isEditMode) ...[
-              ApiKeyQuotaWidget(),
-            ] else ...[
-              _buildShowHelp(context),
-            ],
-          ],
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildInput(),
+                Padding(padding: EdgeInsets.only(top: 8)),
+                if (_isConfigured && !_isEditMode) ...[
+                  _buildEditDelete(context),
+                ] else ...[
+                  _buildCancelValidate(context),
+                ],
+                Padding(padding: EdgeInsets.only(top: 24)),
+                if (_isConfigured && !_isEditMode) ...[
+                  ApiKeyQuotaWidget(),
+                ] else ...[
+                  _buildShowHelp(context),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -15,6 +15,7 @@ class ApiKeyQuotaWidget extends ConsumerWidget {
     return Column(
       children: [
         ListTile(
+          contentPadding: EdgeInsets.all(0),
           title: const Text('Key Status'),
           subtitle: Text(
             meta.status.label,
@@ -35,6 +36,7 @@ class ApiKeyQuotaWidget extends ConsumerWidget {
     final date = DateTime.fromMillisecondsSinceEpoch(epochMillis);
     final isoStr = date.toIso8601String();
     return ListTile(
+      contentPadding: EdgeInsets.all(0),
       title: Text(title),
       subtitle: isInvalid
           ? Text('-')
@@ -56,6 +58,7 @@ class ApiKeyQuotaWidget extends ConsumerWidget {
 
   Widget _buildQuotaUsed(ApiKeyMeta meta) {
     return ListTile(
+      contentPadding: EdgeInsets.all(0),
       title: Text('Quota Used'),
       subtitle: Text('${meta.quotaUsed}'),
     );
