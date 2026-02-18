@@ -110,6 +110,7 @@ jobs:
         run: |
           dart pub global activate flutterfire_cli
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+      - run: echo "${{ secrets.FIREBASE_JSON_FILE }}" | base64 --decode > firebase.json
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
       - run: flutter pub get
@@ -168,6 +169,7 @@ jobs:
         run: |
           dart pub global activate flutterfire_cli
           echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+      - run: echo "${{ secrets.FIREBASE_JSON_FILE }}" | base64 --decode > firebase.json
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > macos/Runner/GoogleService-Info.plist
       - run: flutter pub get
