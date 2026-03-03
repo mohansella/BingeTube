@@ -1,0 +1,160 @@
+---
+import Layout from "../layout/layout.astro";
+import { 
+  Smartphone, 
+  Monitor, 
+  Apple, 
+  Terminal, 
+  ExternalLink,
+  Download,
+  Github
+} from '@lucide/astro';
+
+const githubLatestReleaseUrl = "https://github.com/mohansella/BingeTube/releases/latest";
+const playStoreUrl = "https://play.google.com/store/apps/details?id=me.msella.bingetube";
+---
+
+<Layout 
+  title="Download BingeTube – Available on all platforms"
+  description="Get the native BingeTube app for Android, Windows, macOS, and Linux."
+>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute -top-24 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[120px]"></div>
+
+    <div class="mx-auto max-w-7xl px-6 py-28 text-center">
+      <div class="mx-auto mb-6 w-fit rounded-full border border-indigo-500/20 bg-indigo-500/5 px-4 py-1 text-sm text-indigo-400">
+        <span class="flex items-center gap-2"><Download size={14} /> Official Releases</span>
+      </div>
+      <h1 class="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-7xl">
+        Binge on <br />
+        <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">every device.</span>
+      </h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
+        Native apps for Android, Windows, macOS, and Linux. Pick up where you left off, on any screen.
+      </p>
+    </div>
+  </section>
+
+  <!-- Download Cards -->
+  <section class="border-t border-slate-800 py-20">
+    <div class="mx-auto max-w-5xl px-6">
+      <div class="grid gap-4 md:grid-cols-2">
+
+        <!-- Android — featured -->
+        <a
+          href={playStoreUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex flex-col rounded-3xl border border-slate-800 bg-slate-900/50 p-8 transition hover:border-emerald-500/40 hover:bg-slate-900 md:row-span-2"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">
+              <Smartphone size={24} />
+            </div>
+            <span class="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
+              Play Store
+            </span>
+          </div>
+
+          <div class="mt-6 flex-1">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-100">Android</h2>
+            <p class="mt-1 text-sm text-slate-500">Mobile &amp; Tablet</p>
+            <p class="mt-5 text-slate-400 leading-relaxed">
+              The full BingeTube experience in your pocket. Track your series, pick up where you left off, and binge on the go.
+            </p>
+          </div>
+
+          <div class="mt-10 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 py-3.5 text-sm font-medium text-slate-200 transition group-hover:border-emerald-500/50 group-hover:bg-emerald-500 group-hover:text-white">
+            Get it on Google Play
+          </div>
+        </a>
+
+        <!-- Windows -->
+        <a
+          href={githubLatestReleaseUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center justify-between rounded-3xl border border-slate-800 bg-slate-900/50 p-6 transition hover:border-blue-500/40 hover:bg-slate-900"
+        >
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400">
+              <Monitor size={22} />
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-100">Windows</h2>
+              <p class="text-sm text-slate-500">Windows 10 / 11 — .exe</p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 text-slate-400 transition group-hover:border-blue-500/50 group-hover:bg-blue-500 group-hover:text-white">
+            <Download size={15} />
+          </div>
+        </a>
+
+        <!-- macOS -->
+        <a
+          href={githubLatestReleaseUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center justify-between rounded-3xl border border-slate-800 bg-slate-900/50 p-6 transition hover:border-slate-400/30 hover:bg-slate-900"
+        >
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-700/40 text-slate-300">
+              <Apple size={22} />
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-100">macOS</h2>
+              <p class="text-sm text-slate-500">Apple Silicon &amp; Intel — .dmg</p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 text-slate-400 transition group-hover:border-slate-300/50 group-hover:bg-slate-200 group-hover:text-slate-900">
+            <Download size={15} />
+          </div>
+        </a>
+
+        <!-- Linux -->
+        <a
+          href={githubLatestReleaseUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center justify-between rounded-3xl border border-slate-800 bg-slate-900/50 p-6 transition hover:border-amber-500/40 hover:bg-slate-900"
+        >
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+              <Terminal size={22} />
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-100">Linux</h2>
+              <p class="text-sm text-slate-500">Universal — .bin</p>
+            </div>
+          </div>
+          <div class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-700 text-slate-400 transition group-hover:border-amber-500/50 group-hover:bg-amber-500 group-hover:text-white">
+            <Download size={15} />
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- GitHub footer strip -->
+  <section class="border-t border-slate-800 bg-slate-950 py-16">
+    <div class="mx-auto max-w-3xl px-6 text-center">
+      <p class="text-slate-400">
+        Looking for release notes or want to build from source?
+      </p>
+      <a
+        href={githubLatestReleaseUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-4 inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+      >
+        <Github size={16} />
+        View releases on GitHub
+        <ExternalLink size={14} class="text-slate-500" />
+      </a>
+    </div>
+  </section>
+
+</Layout>
