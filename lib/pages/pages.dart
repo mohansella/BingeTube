@@ -1,9 +1,9 @@
 enum Pages {
   splash('/splash', 'Splash'),
 
-  home('/home', 'Home'),
-  myShows('/myshows', 'My Shows'),
-  settings('/settings', 'Settings'),
+  discover('/discover', 'Discover'),
+  library('/library', 'Library'),
+  profile('/profile', 'Profile'),
 
   keyConfig('/keyconfig', 'Key Config'),
   search('/search', 'Search'),

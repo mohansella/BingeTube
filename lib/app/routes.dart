@@ -26,7 +26,7 @@ sealed class Routes {
     if (context.canPop()) {
       context.pop();
     } else {
-      context.goNamed(Pages.myShows.name);
+      context.goNamed(Pages.library.name);
     }
   }
 
@@ -58,7 +58,7 @@ final GoRouter _routes = GoRouter(
       return Pages.splash.path;
     }
     if (_initNotifier.value && routeState.uri.path == Pages.splash.path) {
-      return Pages.myShows.path;
+      return Pages.library.path;
     }
     return null;
   },
@@ -70,17 +70,17 @@ final GoRouter _routes = GoRouter(
     ShellRoute(
       routes: [
         CustomGoRoute(
-          page: Pages.home,
+          page: Pages.discover,
           transistionType: .none,
           customBuilder: (context, state) => const HomePage(),
         ),
         CustomGoRoute(
-          page: Pages.myShows,
+          page: Pages.library,
           transistionType: .none,
           customBuilder: (context, state) => const MyShowsPage(),
         ),
         CustomGoRoute(
-          page: Pages.settings,
+          page: Pages.profile,
           transistionType: .none,
           customBuilder: (context, state) => const SettingsPage(),
         ),

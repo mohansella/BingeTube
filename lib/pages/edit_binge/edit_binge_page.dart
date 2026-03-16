@@ -629,7 +629,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       while (localContext.canPop()) {
         localContext.pop();
       }
-      localContext.goNamed(Pages.myShows.name);
+      localContext.goNamed(Pages.library.name);
     }
   }
 
@@ -666,7 +666,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       while (localContext.canPop()) {
         localContext.pop();
       }
-      localContext.goNamed(Pages.myShows.name);
+      localContext.goNamed(Pages.library.name);
     }
   }
 }

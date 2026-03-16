@@ -23,20 +23,20 @@ class RootPageState extends State<RootPage> {
         currentIndex: _bottomNavBarIndex,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: Pages.home.text,
+            icon: Icon(Icons.explore_outlined),
+            label: Pages.discover.text,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.movie),
-            label: Pages.myShows.text,
+            icon: Icon(Icons.video_library_outlined),
+            label: Pages.library.text,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: Pages.settings.text,
+            icon: Icon(Icons.person_outline),
+            label: Pages.profile.text,
           ),
         ],
         onTap: (index) {
-          List<Pages> navPages = [Pages.home, Pages.myShows, Pages.settings];
+          List<Pages> navPages = [Pages.discover, Pages.library, Pages.profile];
           context.goNamed(navPages[index].name);
           setState(() {
             _bottomNavBarIndex = index;
