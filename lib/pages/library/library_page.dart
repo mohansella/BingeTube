@@ -1,8 +1,8 @@
 import 'package:bingetube/common/widget/binge/list_screen.dart';
 import 'package:flutter/material.dart';
 
-class MyShowsPage extends StatelessWidget {
-  const MyShowsPage({super.key});
+class LibraryPage extends StatelessWidget {
+  const LibraryPage({super.key});
 
   @override
   Widget build(BuildContext context) {

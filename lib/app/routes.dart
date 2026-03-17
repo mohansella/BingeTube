@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 
 import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/root/root_page.dart';
-import 'package:bingetube/pages/home/home_page.dart';
-import 'package:bingetube/pages/myshows/myshows_page.dart';
-import 'package:bingetube/pages/settings/settings_page.dart';
+import 'package:bingetube/pages/discover/discover_page.dart';
+import 'package:bingetube/pages/library/library_page.dart';
+import 'package:bingetube/pages/profile/profile_page.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -72,17 +72,17 @@ final GoRouter _routes = GoRouter(
         CustomGoRoute(
           page: Pages.discover,
           transistionType: .none,
-          customBuilder: (context, state) => const HomePage(),
+          customBuilder: (context, state) => const DiscoverPage(),
         ),
         CustomGoRoute(
           page: Pages.library,
           transistionType: .none,
-          customBuilder: (context, state) => const MyShowsPage(),
+          customBuilder: (context, state) => const LibraryPage(),
         ),
         CustomGoRoute(
           page: Pages.profile,
           transistionType: .none,
-          customBuilder: (context, state) => const SettingsPage(),
+          customBuilder: (context, state) => const ProfilePage(),
         ),
       ],
       builder: (context, state, child) => RootPage(body: child),
