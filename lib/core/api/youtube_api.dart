@@ -480,6 +480,7 @@ class YoutubeApi {
     for (final videoId in videoIds) {
       if (validVideosSet.contains(videoId)) {
         videoIdsToInsert.add(videoId);
+        validVideosSet.remove(videoId);
       }
     }
 

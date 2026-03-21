@@ -432,7 +432,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
                   setLocalState(() {
                     isSync = s;
                     progress = p;
-                    end = e;
+                    end = e <= 0 ? 1 : e;
                   });
                 });
                 return localContext.mounted;
