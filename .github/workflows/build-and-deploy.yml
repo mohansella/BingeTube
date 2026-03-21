@@ -70,8 +70,7 @@ jobs:
       - if: needs.version-check.outputs.is_bump == 'true'
         run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
-      - run: flutter build web --release --base-href=/app/ \
-              --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build web --release --base-href=/app/ --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - uses: actions/upload-artifact@v4
         with:
           name: flutter-web
@@ -90,8 +89,7 @@ jobs:
           cache: true
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
-      - run: flutter build apk --debug \
-              --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build apk --debug --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: |
           mv build/app/outputs/flutter-apk/app-debug.apk \
              "android-debug-v${{ needs.version-check.outputs.version }}.apk"
@@ -119,8 +117,7 @@ jobs:
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
       - run: flutter pub get
-      - run: flutter build ipa --release --no-codesign \
-              --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build ipa --release --no-codesign --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - name: Package iOS IPA
         run: |
           # Create IPA from xcarchive (unsigned)
@@ -149,8 +146,7 @@ jobs:
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
         shell: bash
       - run: flutter pub get
-      - run: flutter build windows --release \
-              --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build windows --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - name: Package Windows
         shell: pwsh
         run: |
@@ -180,8 +176,7 @@ jobs:
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > macos/Runner/GoogleService-Info.plist
       - run: flutter pub get
-      - run: flutter build macos --release \
-              --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build macos --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - name: Package macOS
         shell: bash
         run: |
@@ -210,8 +205,7 @@ jobs:
           sudo apt-get install -y libgtk-3-dev libblkid-dev liblzma-dev libsecret-1-dev pkg-config
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
-      - run: flutter build linux --release \
-              --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build linux --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - name: Package Linux
         shell: bash
         run: |
