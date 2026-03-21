@@ -83,38 +83,29 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   }
 
   Future<VideoModel> getFirstVideoModel(String playlistId) async {
-    final models = await getVideoModels(playlistId, limit: 1);
-    return models[0];
-  }
-
-  Future<List<VideoModel>> getVideoModels(
-    String playlistId, {
-    int? limit,
-  }) async {
     final videoDao = VideosDao(db);
-    final query =
-        videoDao.joinVideoAndChannelTables(
-            selectStatement: select(playlistVsVideos).join([
-              innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId)),
-            ]),
-          )
-          ..where(playlistVsVideos.playlistId.equals(playlistId))
-          ..orderBy([OrderingTerm.asc(playlistVsVideos.priority)]);
-    if (limit != null) {
-      query.limit(limit);
-    }
-    final results = await query.get();
-    return results.map((r) => videoDao.mapRowToModel(r)).toList();
+    final query = _joinVideoAndChannelTables(playlistId)..limit(1);
+    final result = await query.getSingle();
+    return videoDao.mapRowToModel(result);
   }
 
-  Future<BingeModel> getBingeModel(String playlistId) async {
+  Stream<List<VideoModel>> streamVideoModels(String playlistId) {
+    final videoDao = VideosDao(db);
+    final query = _joinVideoAndChannelTables(playlistId);
+    return query.watch().map((results) {
+      return results.map((r) => videoDao.mapRowToModel(r)).toList();
+    });
+  }
+
+  Stream<BingeModel> streamBingeModel(String playlistId) async* {
     final playlist = await getPlaylistModel(playlistId);
-    final videos = await getVideoModels(playlistId);
-    return BingeModel(
-      title: playlist.snippet.title,
-      description: playlist.snippet.description,
-      videos: videos,
-    );
+    await for (final videos in streamVideoModels(playlistId)) {
+      yield BingeModel(
+        title: playlist.snippet.title,
+        description: playlist.snippet.description,
+        videos: videos,
+      );
+    }
   }
 
   Future<DateTime?> getPlaylistItemsUpdateTime(String playlistId) async {
@@ -173,6 +164,19 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     }
 
     return query;
+  }
+
+  JoinedSelectStatement<HasResultSet, dynamic> _joinVideoAndChannelTables(
+    String playlistId,
+  ) {
+    final videoDao = VideosDao(db);
+    return videoDao.joinVideoAndChannelTables(
+        selectStatement: select(playlistVsVideos).join([
+          innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId)),
+        ]),
+      )
+      ..where(playlistVsVideos.playlistId.equals(playlistId))
+      ..orderBy([OrderingTerm.asc(playlistVsVideos.priority)]);
   }
 
   PlaylistModel _mapRowToModel(TypedResult result) {

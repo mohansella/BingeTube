@@ -16,6 +16,6 @@ class PlaylistBingeController extends BaseBingeController {
 
   @override
   Stream<BingeModel> get dbStream {
-    return PlaylistsDao(Database()).getBingeModel(playlistId).asStream();
+    return PlaylistsDao(Database()).streamBingeModel(playlistId);
   }
 }
