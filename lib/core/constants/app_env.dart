@@ -8,8 +8,7 @@ enum AppEnv {
   const AppEnv(this.baseUrl);
 
   static AppEnv get instance {
-    final appEnvVal = String.fromEnvironment('APP_ENV');
-    switch (appEnvVal) {
+    switch (_appEnvVal) {
       case 'production':
         return production;
       case 'preview':
@@ -18,4 +17,6 @@ enum AppEnv {
         return development;
     }
   }
+
+  static const _appEnvVal = String.fromEnvironment('APP_ENV');
 }
