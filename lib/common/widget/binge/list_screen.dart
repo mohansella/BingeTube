@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -425,13 +424,11 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       'Dropped file: $fileName Size:$fileSize bytes',
     );
 
-    final bytes = await file.readAll();
-    final value = utf8.decode(bytes);
-    final json = jsonDecode(value);
     if (_dropCollectionId == -1 || _dropPriority == -1) {
       throw Exception('invalid state');
     }
-    await SeryPort.importAsJson(json, _dropCollectionId, _dropPriority);
+    final zipBytes = await file.readAll();
+    await SeryPort.import(zipBytes, _dropCollectionId, _dropPriority);
   }
 
   void _importError(Object error) {

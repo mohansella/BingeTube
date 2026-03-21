@@ -9,12 +9,13 @@ import 'package:bingetube/core/db/models/binge_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/core/utils/file_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 
 sealed class SeryPort {
   static final _logger = LogManager.getLogger('SeryPort');
 
   static Future<String?> exportWithOSMenu(BingeModel model) async {
-    final bytes = buildJsonBytes(model);
+    final bytes = _buildJsonBytes(model);
     final filePath = await FilePicker.platform.saveFile(
       dialogTitle: 'Select where to save your export:',
       fileName: buildFileName(model.title),
@@ -28,7 +29,7 @@ sealed class SeryPort {
 
   static Future<File> exportToTempDirectory(int seryId) async {
     final model = await BingeDao(Database()).streamBingeModel(seryId).first;
-    final bytes = buildJsonBytes(model);
+    final bytes = _buildJsonBytes(model);
     final fileName = buildFileName(model.title, bytes: bytes);
     final file = FileUtils.writeToTempFile(fileName, bytes);
     return file;
@@ -46,7 +47,7 @@ sealed class SeryPort {
     return fileName;
   }
 
-  static Uint8List buildJsonBytes(BingeModel model) {
+  static Uint8List _buildJsonBytes(BingeModel model) {
     final json = model.toJson();
     final videosJson = json['videos'] as List<Map<String, dynamic>>;
     final channelJsons = <String, dynamic>{};
@@ -62,10 +63,27 @@ sealed class SeryPort {
     }
     json['channels'] = channelJsons;
     final jsonString = jsonEncode(json);
-    return utf8.encode(jsonString);
+    final rawBytes = utf8.encode(jsonString);
+    final zipBytes = GZipCodec().encode(rawBytes);
+    return Uint8List.fromList(zipBytes);
   }
 
-  static Future<void> importAsJson(json, int collectionId, int priority) async {
+  static Future<void> import(
+    Uint8List data,
+    int collectionId,
+    int priority,
+  ) async {
+    final dataBytes = GZipCodec().decode(data);
+    final value = utf8.decode(dataBytes);
+    final json = jsonDecode(value);
+    await _importAsJson(json, collectionId, priority);
+  }
+
+  static Future<void> _importAsJson(
+    json,
+    int collectionId,
+    int priority,
+  ) async {
     final videosJson = json['videos'] as List<dynamic>;
     final channelJsons = json['channels'];
     final createdAt = DateTime.now().millisecondsSinceEpoch;
