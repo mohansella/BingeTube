@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "prebuild": "tsx src/scripts/process-binge.ts",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -14,5 +15,8 @@
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.10",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "p-limit": "^7.3.0"
   }
 }
