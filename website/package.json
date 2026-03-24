@@ -17,6 +17,8 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.1.1",
     "p-limit": "^7.3.0"
   }
 }
