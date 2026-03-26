@@ -1,4 +1,4 @@
 collections:
   - name: Sketch Comedy Universe
     series:
-      - data: series/comedy/key_and_peele.binge
+      - data: comedy/key_and_peele.binge

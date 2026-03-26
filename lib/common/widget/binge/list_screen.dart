@@ -270,7 +270,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   }
 
   DragItemWidget _buildDragItem(SeryModel model) {
-    final heroId = model.sery.id.toString();
+    final heroId = widget.isSystem ? model.dataPath! : model.sery.id.toString();
     final heroImg = model.thumbnail.mediumUrl;
     double dropShift = model.sery.id == _droppingOnSeryId ? 20 : 0;
     dropShift = _droppingOnLeft ? dropShift : -dropShift;
