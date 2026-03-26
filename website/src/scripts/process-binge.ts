@@ -8,6 +8,11 @@ import { readdir, readFile, writeFile } from "fs/promises"
 import pLimit from "p-limit"
 import * as yaml from 'js-yaml'
 
+import { createHash } from "crypto";
+
+const shortHash = (buf: Buffer, length = 12) =>
+  createHash("sha256").update(buf).digest("hex").slice(0, length);
+
 const gunzipAsync = promisify(gunzip)
 
 class ProcessBinge {
@@ -29,6 +34,7 @@ class ProcessBinge {
     console.log(`processing ${file.name}`)
     const filePath = path.resolve(file.parentPath, file.name)
     const zipBuffer = await readFile(filePath)
+    const zipHash = shortHash(zipBuffer)
     const fileBuffer = await gunzipAsync(zipBuffer)
     const fileContent = fileBuffer.toString('utf-8')
     const model = JSON.parse(fileContent) as BingeModel
@@ -36,6 +42,8 @@ class ProcessBinge {
     const series: SeriesInfo = {
       title: model.title,
       description: model.description,
+      dataPath: relativePath,
+      dataHash: zipHash,
       cover: model.videos[0].thumbnails
     }
     this.bingeInfoMap.set(relativePath, series)
@@ -85,6 +93,8 @@ interface DiscoverSeries {
 interface SeriesInfo {
   title: String
   description: String
+  dataPath: String
+  dataHash: String
   cover: VideoThumbnail
 }
 

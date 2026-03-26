@@ -53,6 +53,9 @@ class CollectionsRepo {
         final standardUrl = jCover['standardUrl'] as String?;
         final maxresUrl = jCover['maxresUrl'] as String?;
 
+        final dataPath = jSery['dataPath'] as String;
+        final dataHash = jSery['dataHash'] as String;
+
         final sery = Sery(
           createdAt: now,
           updatedAt: now,
@@ -73,7 +76,12 @@ class CollectionsRepo {
           maxresUrl: maxresUrl,
         );
 
-        final seryModel = SeryModel(sery: sery, thumbnail: thumbnail);
+        final seryModel = SeryModel(
+          sery: sery,
+          thumbnail: thumbnail,
+          dataPath: dataPath,
+          dataHash: dataHash,
+        );
         seryModels.add(seryModel);
 
         final collection = Collection(

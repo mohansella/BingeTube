@@ -78,9 +78,6 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     return StreamBuilder(
       stream: _collectionsRepo.streamCollections(),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          throw snapshot.error!;
-        }
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }

@@ -4,5 +4,13 @@ class SeryModel {
   final Sery sery;
   final VideoThumbnail thumbnail;
 
-  SeryModel({required this.sery, required this.thumbnail});
+  final String? dataPath;
+  final String? dataHash;
+
+  SeryModel({
+    required this.sery,
+    required this.thumbnail,
+    this.dataPath,
+    this.dataHash,
+  });
 }
