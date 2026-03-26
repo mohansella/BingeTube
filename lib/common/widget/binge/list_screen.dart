@@ -16,6 +16,7 @@ import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/collection_model.dart';
 import 'package:bingetube/core/db/models/sery_model.dart';
 import 'package:bingetube/core/db/port/sery_port.dart';
+import 'package:bingetube/core/db/repo/collections_repo.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/pages.dart';
 
@@ -33,7 +34,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     with SingleTickerProviderStateMixin {
   static const double minWidth = 160;
 
-  late BingeDao _bingeDao;
+  late CollectionsRepo _collectionsRepo;
   late AnimationController _lottieController;
   double _width = 0;
   double _height = 0;
@@ -47,7 +48,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   @override
   void initState() {
     super.initState();
-    _bingeDao = BingeDao(Database());
+    _collectionsRepo = CollectionsRepo(isSystem: widget.isSystem);
     _lottieController = AnimationController(vsync: this);
     _initDropState();
   }
@@ -75,8 +76,11 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: _bingeDao.streamCollectionModels(isSystem: widget.isSystem),
+      stream: _collectionsRepo.streamCollections(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          throw snapshot.error!;
+        }
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
