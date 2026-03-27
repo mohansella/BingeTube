@@ -58,18 +58,13 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
                     heroId: channel.channel.id,
                     heroImg: channel.thumbnails.defaultUrl,
                   );
-                  context.pushNamed(
-                    Pages.channel.name,
-                    queryParameters: params,
-                  );
+                  context.pushNamed(Pages.channel.name, queryParameters: params);
                 },
                 child: ListTile(
                   leading: Hero(
                     tag: channel.channel.id,
                     child: CircleAvatar(
-                      foregroundImage: NetworkImage(
-                        channel.thumbnails.defaultUrl,
-                      ),
+                      foregroundImage: NetworkImage(channel.thumbnails.defaultUrl),
                     ),
                   ),
                   title: Text(channel.snippet.title),
@@ -95,10 +90,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
           children: [
             Text('Loading...'),
             SizedBox(height: 16),
-            FractionallySizedBox(
-              widthFactor: 0.4,
-              child: LinearProgressIndicator(),
-            ),
+            FractionallySizedBox(widthFactor: 0.4, child: LinearProgressIndicator()),
           ],
         ),
       );
@@ -133,9 +125,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(
-      () => widget.scrollListener(_scrollController),
-    );
+    _scrollController.addListener(() => widget.scrollListener(_scrollController));
     processRequest(widget.query);
   }
 
@@ -148,9 +138,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
       _isValidQuery = true;
     });
 
-    SearchChannelWidget._logger.info(
-      'Initiating channel search for query: $query',
-    );
+    SearchChannelWidget._logger.info('Initiating channel search for query: $query');
     final channelsResult = await YoutubeApi.searchChannels(ref, query);
     if (query == widget.query) {
       final channels = channelsResult.fold((l) => l, (e) => null);

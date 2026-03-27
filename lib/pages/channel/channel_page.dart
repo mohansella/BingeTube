@@ -83,11 +83,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: .stretch,
-            children: [
-              _buildChannelInfo(),
-              ..._buildProgress(),
-              _buildPlaylistStream(),
-            ],
+            children: [_buildChannelInfo(), ..._buildProgress(), _buildPlaylistStream()],
           ),
         ),
       ),
@@ -311,15 +307,10 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
                 crossAxisAlignment: .start,
                 children: [
                   if (!_isModelLoading) ...[
-                    Text(
-                      _model.snippet.title,
-                      style: theme.textTheme.titleLarge,
-                    ),
+                    Text(_model.snippet.title, style: theme.textTheme.titleLarge),
                     Text(
                       _buildSubsAndVideosText(),
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: Colors.grey,
-                      ),
+                      style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
                     ),
                   ],
                 ],
@@ -406,11 +397,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
 
     bool Function(bool, int, int) callback = (s, p, e) => true;
     bool callbackWrapper(s, p, e) => callback(s, p, e);
-    final future = YoutubeApi.syncPlaylistVideos(
-      ref,
-      model.playlist.id,
-      callbackWrapper,
-    );
+    final future = YoutubeApi.syncPlaylistVideos(ref, model.playlist.id, callbackWrapper);
 
     final isCancelled = await CustomDialog.show(
       context,
@@ -440,9 +427,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
               return Column(
                 mainAxisSize: .min,
                 children: [
-                  Text(
-                    '$progress of $end items ${isSync ? "synchronized" : "fetched"}',
-                  ),
+                  Text('$progress of $end items ${isSync ? "synchronized" : "fetched"}'),
                   SizedBox(height: 8),
                   LinearProgressIndicator(value: progress / end),
                 ],
@@ -452,9 +437,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
         },
       ),
     );
-    ChannelPage._logger.info(
-      'playlist sync dialog closed. isCancelled:$isCancelled',
-    );
+    ChannelPage._logger.info('playlist sync dialog closed. isCancelled:$isCancelled');
     return !isCancelled;
   }
 

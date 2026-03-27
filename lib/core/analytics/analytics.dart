@@ -37,8 +37,7 @@ sealed class Analytics {
     await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
     if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
-      FlutterError.onError =
-          FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
@@ -49,14 +48,8 @@ sealed class Analytics {
     _isInited = true;
   }
 
-  static Future<void> logEvent(
-    String name, {
-    Map<String, Object>? parameters,
-  }) async {
+  static Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
     if (!_isEnabled) return;
-    await FirebaseAnalytics.instance.logEvent(
-      name: name,
-      parameters: parameters,
-    );
+    await FirebaseAnalytics.instance.logEvent(name: name, parameters: parameters);
   }
 }

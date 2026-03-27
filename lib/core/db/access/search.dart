@@ -23,12 +23,7 @@ class VideoSearchModel {
 }
 
 @DriftAccessor(
-  tables: [
-    ChannelSearches,
-    ChannelSearchVsChannels,
-    VideoSearches,
-    VideoSearchVsVideos,
-  ],
+  tables: [ChannelSearches, ChannelSearchVsChannels, VideoSearches, VideoSearchVsVideos],
 )
 class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
   late ChannelsDao _channelsDao;
@@ -38,10 +33,7 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
     _videosDao = VideosDao(attachedDatabase);
   }
 
-  Future<void> insertChannelSearch(
-    String searchValue,
-    List<String> channelIds,
-  ) async {
+  Future<void> insertChannelSearch(String searchValue, List<String> channelIds) async {
     await transaction(() async {
       final prevEntryQuery = select(channelSearches)
         ..where((q) => channelSearches.query.equals(searchValue));
@@ -75,10 +67,7 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
     });
   }
 
-  Future<void> insertVideoSearch(
-    String searchValue,
-    List<String> videoIds,
-  ) async {
+  Future<void> insertVideoSearch(String searchValue, List<String> videoIds) async {
     await transaction(() async {
       final prevEntryQuery = select(videoSearches)
         ..where((q) => videoSearches.query.equals(searchValue));
@@ -112,9 +101,7 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
     });
   }
 
-  JoinedSelectStatement<HasResultSet, dynamic> queryChannelModels(
-    String searchValue,
-  ) {
+  JoinedSelectStatement<HasResultSet, dynamic> queryChannelModels(String searchValue) {
     final cs = channelSearches;
     final svc = channelSearchVsChannels;
     final c = channels;
@@ -122,10 +109,9 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
       innerJoin(svc, svc.searchId.equalsExp(cs.id)),
       innerJoin(c, c.id.equalsExp(svc.channelId)),
     ]);
-    final query =
-        _channelsDao.joinChannelTables(selectStatement: selectStatement)
-          ..where(cs.query.equals(searchValue))
-          ..orderBy([OrderingTerm.asc(svc.priority)]);
+    final query = _channelsDao.joinChannelTables(selectStatement: selectStatement)
+      ..where(cs.query.equals(searchValue))
+      ..orderBy([OrderingTerm.asc(svc.priority)]);
     return query;
   }
 
@@ -137,9 +123,8 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
       innerJoin(vvv, vvv.searchId.equalsExp(vs.id)),
       innerJoin(v, v.id.equalsExp(vvv.videoId)),
     ]);
-    final query = _videosDao.joinVideoAndChannelTables(
-      selectStatement: selectStatement,
-    )..orderBy([OrderingTerm.asc(vvv.priority)]);
+    final query = _videosDao.joinVideoAndChannelTables(selectStatement: selectStatement)
+      ..orderBy([OrderingTerm.asc(vvv.priority)]);
     return query;
   }
 
@@ -151,15 +136,11 @@ class SearchDao extends DatabaseAccessor<Database> with _$SearchDaoMixin {
     }
 
     final channelModels = results.map(_channelsDao.mapRowToModel).toList();
-    return ChannelSearchModel(
-      results[0].readTable(channelSearches),
-      channelModels,
-    );
+    return ChannelSearchModel(results[0].readTable(channelSearches), channelModels);
   }
 
   Future<VideoSearchModel?> getVideoSearchModel(String searchValue) async {
-    final query = queryVideoModels()
-      ..where(videoSearches.query.equals(searchValue));
+    final query = queryVideoModels()..where(videoSearches.query.equals(searchValue));
     final results = await query.get();
     if (results.isEmpty) {
       return null;

@@ -12,11 +12,7 @@ class PlaylistModels {
   final PlaylistModel? likes;
   final List<PlaylistModel> normals;
 
-  PlaylistModels({
-    required this.uploads,
-    required this.likes,
-    required this.normals,
-  });
+  PlaylistModels({required this.uploads, required this.likes, required this.normals});
 }
 
 class PlaylistModel {
@@ -46,8 +42,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   PlaylistsDao(super.attachedDatabase);
 
   Future<PlaylistModels> getPlaylistModels(String channelId) async {
-    final query = _joinChannelTables()
-      ..where(playlists.channelId.equals(channelId));
+    final query = _joinChannelTables()..where(playlists.channelId.equals(channelId));
     final results = await query.get();
     return _mapRowsToModels(results);
   }
@@ -59,8 +54,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   }
 
   Stream<PlaylistModels> streamPlaylistModels(String channelId) {
-    final query = _joinChannelTables()
-      ..where(playlists.channelId.equals(channelId));
+    final query = _joinChannelTables()..where(playlists.channelId.equals(channelId));
     return query.watch().map((r) => _mapRowsToModels(r));
   }
 
@@ -110,9 +104,9 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
 
   Future<DateTime?> getPlaylistItemsUpdateTime(String playlistId) async {
     final query =
-        select(playlistVsVideos).join([
-            innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId)),
-          ])
+        select(
+            playlistVsVideos,
+          ).join([innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId))])
           ..where(playlistVsVideos.playlistId.equals(playlistId))
           ..orderBy([OrderingTerm.asc(videos.updatedAt)])
           ..limit(1);
@@ -134,11 +128,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
       }
       var priority = 1;
       for (final normalItem in normalItems) {
-        await _upsertPlaylistJson(
-          normalItem,
-          priority: priority++,
-          type: .normal,
-        );
+        await _upsertPlaylistJson(normalItem, priority: priority++, type: .normal);
       }
     });
   }
@@ -150,10 +140,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     final sel = selectStatement ?? select(playlists).join([]);
     final query = sel.join([
       innerJoin(playlistSnippets, playlistSnippets.id.equalsExp(playlists.id)),
-      innerJoin(
-        playlistThumbnails,
-        playlistThumbnails.id.equalsExp(playlists.id),
-      ),
+      innerJoin(playlistThumbnails, playlistThumbnails.id.equalsExp(playlists.id)),
       innerJoin(
         playlistContentDetails,
         playlistContentDetails.id.equalsExp(playlists.id),
@@ -171,9 +158,9 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   ) {
     final videoDao = VideosDao(db);
     return videoDao.joinVideoAndChannelTables(
-        selectStatement: select(playlistVsVideos).join([
-          innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId)),
-        ]),
+        selectStatement: select(
+          playlistVsVideos,
+        ).join([innerJoin(videos, videos.id.equalsExp(playlistVsVideos.videoId))]),
       )
       ..where(playlistVsVideos.playlistId.equals(playlistId))
       ..orderBy([OrderingTerm.asc(playlistVsVideos.priority)]);
@@ -217,9 +204,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
       await into(playlists).insert(playlist, mode: .insertOrReplace);
       await into(playlistSnippets).insert(snippet, mode: .insertOrReplace);
       await into(playlistThumbnails).insert(thumbnails, mode: .insertOrReplace);
-      await into(
-        playlistContentDetails,
-      ).insert(details, mode: .insertOrReplace);
+      await into(playlistContentDetails).insert(details, mode: .insertOrReplace);
     });
   }
 

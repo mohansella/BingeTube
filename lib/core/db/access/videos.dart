@@ -41,20 +41,14 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
       await into(videos).insert(video, mode: .insertOrReplace);
       await into(videoSnippets).insert(snippet, mode: .insertOrReplace);
       await into(videoThumbnails).insert(thumbnails, mode: .insertOrReplace);
-      await into(
-        videoContentDetails,
-      ).insert(contentDetails, mode: .insertOrReplace);
+      await into(videoContentDetails).insert(contentDetails, mode: .insertOrReplace);
       await into(videoStatuses).insert(status, mode: .insertOrReplace);
       await into(videoStatistics).insert(statistics, mode: .insertOrReplace);
       await into(videoProgress).insert(progress, mode: .insertOrIgnore);
     });
   }
 
-  Future<void> upsertVideoProgress(
-    String id,
-    bool isFinished, {
-    double? pos,
-  }) async {
+  Future<void> upsertVideoProgress(String id, bool isFinished, {double? pos}) async {
     final comp = VideoProgressCompanion.insert(
       id: id,
       isFinished: Value(isFinished),

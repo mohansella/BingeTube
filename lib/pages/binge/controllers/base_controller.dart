@@ -28,10 +28,7 @@ abstract class BaseBingeController implements BingeController {
   final videoDao = VideosDao(Database());
   final bingeDao = BingeDao(Database());
 
-  BaseBingeController({
-    required this.initialHeroId,
-    required this.initialHeroImg,
-  });
+  BaseBingeController({required this.initialHeroId, required this.initialHeroImg});
 
   @override
   void dispose() {
@@ -195,11 +192,7 @@ abstract class BaseBingeController implements BingeController {
     if (action != .add) {
       throw StateError('Unsupported action: $action');
     }
-    return bingeDao.saveBingeModel(
-      model!,
-      collection!.id,
-      coverVideo!.video.id,
-    );
+    return bingeDao.saveBingeModel(model!, collection!.id, coverVideo!.video.id);
   }
 
   void onModel(BingeModel event) {

@@ -11,9 +11,7 @@ import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/binge.g.dart';
 
-@DriftAccessor(
-  tables: [Collections, Series, SeriesVsVideos, VideoThumbnails, Videos],
-)
+@DriftAccessor(tables: [Collections, Series, SeriesVsVideos, VideoThumbnails, Videos])
 class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   static final _logger = LogManager.getLogger('BingeDao');
 
@@ -61,15 +59,10 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return query.get();
   }
 
-  Stream<List<CollectionModel>> streamCollectionModels({
-    bool isSystem = false,
-  }) {
+  Stream<List<CollectionModel>> streamCollectionModels({bool isSystem = false}) {
     final query = select(collections).join([
       innerJoin(series, series.collectionId.equalsExp(collections.id)),
-      innerJoin(
-        videoThumbnails,
-        videoThumbnails.id.equalsExp(series.coverVideoId),
-      ),
+      innerJoin(videoThumbnails, videoThumbnails.id.equalsExp(series.coverVideoId)),
     ])..where(collections.isSystem.equals(isSystem));
     final toReturn = query.watch().map((result) {
       Map<int, Collection> idVsCollection = {};
@@ -102,11 +95,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     int priority,
   ) async {
     final sery = await saveBingeModel(model, collectionId, coverId);
-    await moveSery(
-      seryId: sery.id,
-      collectionId: collectionId,
-      priority: priority,
-    );
+    await moveSery(seryId: sery.id, collectionId: collectionId, priority: priority);
   }
 
   Future<Sery> saveBingeModel(
@@ -146,27 +135,20 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     ])..where(series.id.equals(seryId));
     baseQuery.orderBy([OrderingTerm.asc(seriesVsVideos.priority)]);
     final videosDao = VideosDao(attachedDatabase);
-    final fullQuery = videosDao.joinVideoAndChannelTables(
-      selectStatement: baseQuery,
-    );
+    final fullQuery = videosDao.joinVideoAndChannelTables(selectStatement: baseQuery);
     return fullQuery.watch().map((result) {
       if (result.isEmpty) {
         return BingeModel(title: '', description: '', videos: []);
       }
       final sery = result[0].readTable(series);
       final videos = result.map(videosDao.mapRowToModel).toList();
-      return BingeModel(
-        title: sery.name,
-        description: sery.description,
-        videos: videos,
-      );
+      return BingeModel(title: sery.name, description: sery.description, videos: videos);
     });
   }
 
   Future<void> deleteSery(int seryId) async {
     await transaction(() async {
-      final deleteMap = delete(seriesVsVideos)
-        ..where((sv) => sv.seriesId.equals(seryId));
+      final deleteMap = delete(seriesVsVideos)..where((sv) => sv.seriesId.equals(seryId));
       await deleteMap.go();
       final deleteSery = delete(series)..where((s) => s.id.equals(seryId));
       await deleteSery.go();
@@ -222,8 +204,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     VideoModel coverVideo,
   ) async {
     return await transaction(() async {
-      final deleteMap = delete(seriesVsVideos)
-        ..where((sv) => sv.seriesId.equals(seryId));
+      final deleteMap = delete(seriesVsVideos)..where((sv) => sv.seriesId.equals(seryId));
       await deleteMap.go();
       final writeQuery = update(series)..where((s) => s.id.equals(seryId));
       await writeQuery.write(
@@ -251,14 +232,8 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     });
   }
 
-  Future<void> updateSeryCover({
-    required int seryId,
-    required String videoId,
-  }) async {
-    final comp = SeriesCompanion(
-      id: Value(seryId),
-      coverVideoId: Value(videoId),
-    );
+  Future<void> updateSeryCover({required int seryId, required String videoId}) async {
+    final comp = SeriesCompanion(id: Value(seryId), coverVideoId: Value(videoId));
     final query = update(series)..where((s) => s.id.equals(seryId));
     await query.write(comp);
   }
@@ -271,11 +246,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return result.map((r) => r.readTable(series)).toList();
   }
 
-  Future<void> addVideos(
-    int seryId,
-    List<String> videoIds,
-    int fromPriority,
-  ) async {
+  Future<void> addVideos(int seryId, List<String> videoIds, int fromPriority) async {
     await transaction(() async {
       for (var i = 0; i < videoIds.length; i++) {
         await into(seriesVsVideos).insert(

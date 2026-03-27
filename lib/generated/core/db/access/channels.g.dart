@@ -6,11 +6,9 @@ part of '../../../../core/db/access/channels.dart';
 mixin _$ChannelsDaoMixin on DatabaseAccessor<Database> {
   $ChannelsTable get channels => attachedDatabase.channels;
   $ChannelSnippetsTable get channelSnippets => attachedDatabase.channelSnippets;
-  $ChannelThumbnailsTable get channelThumbnails =>
-      attachedDatabase.channelThumbnails;
+  $ChannelThumbnailsTable get channelThumbnails => attachedDatabase.channelThumbnails;
   $ChannelContentDetailsTable get channelContentDetails =>
       attachedDatabase.channelContentDetails;
-  $ChannelStatisticsTable get channelStatistics =>
-      attachedDatabase.channelStatistics;
+  $ChannelStatisticsTable get channelStatistics => attachedDatabase.channelStatistics;
   $ChannelStatusesTable get channelStatuses => attachedDatabase.channelStatuses;
 }

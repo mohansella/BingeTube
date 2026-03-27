@@ -90,9 +90,7 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
           Icon(
             icon,
             size: 16,
-            color: isModified
-                ? theme.colorScheme.primary
-                : theme.iconTheme.color,
+            color: isModified ? theme.colorScheme.primary : theme.iconTheme.color,
           ),
           Text(
             text,
@@ -136,8 +134,7 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
   }
 
   Widget _buildDateRange(BuildContext context) {
-    final isDefault =
-        widget.filter.fromRange == null && widget.filter.toRange == null;
+    final isDefault = widget.filter.fromRange == null && widget.filter.toRange == null;
     return _buildChip(
       context,
       Icons.date_range,
@@ -182,23 +179,17 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
         },
         onChanged: (value) {
           final searchValue = value.trim().isNotEmpty ? value.trim() : null;
-          widget.onFilterUpdate(
-            widget.filter.copyWith(searchValue: searchValue),
-          );
+          widget.onFilterUpdate(widget.filter.copyWith(searchValue: searchValue));
         },
         onSubmitted: (value) {
           final searchValue = value.trim().isNotEmpty ? value.trim() : null;
-          widget.onFilterUpdate(
-            widget.filter.copyWith(searchValue: searchValue),
-          );
+          widget.onFilterUpdate(widget.filter.copyWith(searchValue: searchValue));
           _textController.text = searchValue ?? '';
           setState(() {
             _isShowSearchInput = false;
           });
         },
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(bottom: 10.0),
-        ),
+        decoration: InputDecoration(contentPadding: EdgeInsets.only(bottom: 10.0)),
       ),
     );
   }
@@ -336,8 +327,7 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
 
       RadioGroup<BingeFilterWatchType>(
         groupValue: filter.watchType,
-        onChanged: (watchType) =>
-            setFilter(filter.copyWith(watchType: watchType!)),
+        onChanged: (watchType) => setFilter(filter.copyWith(watchType: watchType!)),
         child: Column(
           children: BingeFilterWatchType.values.map((watchType) {
             return RadioListTile(

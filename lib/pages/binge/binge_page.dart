@@ -80,8 +80,7 @@ class _BingePageState extends ConsumerState<BingePage> {
               controller: _controller,
               parentScroll: _parentScroll,
               childScroll: _childScroll,
-              onEvent: (event, {data}) =>
-                  _onPlayerEvent(context, event, data: data),
+              onEvent: (event, {data}) => _onPlayerEvent(context, event, data: data),
               slivers: [
                 _buildPlaylistHeader(context, snapshot),
                 _buildPlaylist(context, snapshot),
@@ -94,10 +93,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Widget _buildPlaylist(
-    BuildContext context,
-    AsyncSnapshot<BingeModel> snapshot,
-  ) {
+  Widget _buildPlaylist(BuildContext context, AsyncSnapshot<BingeModel> snapshot) {
     if (snapshot.hasData) {
       final videos = snapshot.data!.videos;
       return SliverList.builder(
@@ -113,10 +109,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Widget _buildPlaylistHeader(
-    BuildContext context,
-    AsyncSnapshot<BingeModel> snapshot,
-  ) {
+  Widget _buildPlaylistHeader(BuildContext context, AsyncSnapshot<BingeModel> snapshot) {
     double headerHeight = _calcHeaderHeight();
     return SliverPersistentHeader(
       pinned: true,
@@ -282,18 +275,12 @@ class _BingePageState extends ConsumerState<BingePage> {
               ),
             ),
             IconButton(
-              tooltip: video.progressData.isFinished
-                  ? 'Mark Unwatched'
-                  : 'Mark Watched',
+              tooltip: video.progressData.isFinished ? 'Mark Unwatched' : 'Mark Watched',
               icon: Icon(
-                video.progressData.isFinished
-                    ? Icons.visibility_off
-                    : Icons.visibility,
+                video.progressData.isFinished ? Icons.visibility_off : Icons.visibility,
               ),
-              onPressed: () => _controller.setVideoWatched(
-                video,
-                !video.progressData.isFinished,
-              ),
+              onPressed: () =>
+                  _controller.setVideoWatched(video, !video.progressData.isFinished),
             ),
             const SizedBox(width: 12),
           ],
@@ -383,11 +370,7 @@ class _BingePageState extends ConsumerState<BingePage> {
     });
   }
 
-  void _onPlayerEvent(
-    BuildContext context,
-    PlayerEventType eventType, {
-    Object? data,
-  }) {
+  void _onPlayerEvent(BuildContext context, PlayerEventType eventType, {Object? data}) {
     switch (eventType) {
       case .onBack:
         Routes.popOrHome(context);
@@ -518,9 +501,7 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onActionMoveTo() async {
-    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
-      context,
-    );
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(context);
     if (chosenCollection == null) {
       return;
     }
@@ -532,16 +513,11 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onActionDuplicate() async {
-    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
-      context,
-    );
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(context);
     if (chosenCollection == null) {
       return;
     }
-    await _controller.executeBingeAction(
-      .duplicate,
-      collection: chosenCollection,
-    );
+    await _controller.executeBingeAction(.duplicate, collection: chosenCollection);
     final localContext = context;
     if (localContext.mounted) {
       Routes.popOrHome(localContext);
@@ -605,11 +581,7 @@ class _BingeTitleDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => minHeight;
 
   @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return SizedBox.expand(child: child);
   }
 

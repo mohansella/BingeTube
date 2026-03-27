@@ -39,8 +39,7 @@ class ApiKeyMeta {
   final Map<ApiKeyQuotaType, int> _quotaSections;
 
   int get quotaUsed => _quotaSections.values.fold(0, (a, b) => a + b);
-  bool get isQuotaUsedInvalid =>
-      ApiKeyMeta.nextQuotaReset() != nextQuotaResetMillis;
+  bool get isQuotaUsedInvalid => ApiKeyMeta.nextQuotaReset() != nextQuotaResetMillis;
   Map<ApiKeyQuotaType, int> get quotaSections => {..._quotaSections};
 
   static const int quotaLimit = 10000;
@@ -85,10 +84,8 @@ class ApiKeyMeta {
       apiKey: json['apikey'] ?? '',
       configuredAtMillis: (json['configuredAtMillis'] as num?)?.toInt() ?? 0,
       lastUsedAtMillis: (json['lastUsedAtMillis'] as num?)?.toInt() ?? 0,
-      lastQuotaResetMillis:
-          (json['lastQuotaResetMillis'] as num?)?.toInt() ?? 0,
-      nextQuotaResetMillis:
-          (json['nextQuotaResetMillis'] as num?)?.toInt() ?? 0,
+      lastQuotaResetMillis: (json['lastQuotaResetMillis'] as num?)?.toInt() ?? 0,
+      nextQuotaResetMillis: (json['nextQuotaResetMillis'] as num?)?.toInt() ?? 0,
       quotaSections: {
         for (final qsEntry in qsMap.entries)
           if (ApiKeyQuotaType.values.any((e) => e.name == qsEntry.key))

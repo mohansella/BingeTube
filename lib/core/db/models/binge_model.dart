@@ -5,11 +5,7 @@ class BingeModel {
   final String description;
   final List<VideoModel> videos;
 
-  BingeModel({
-    required this.title,
-    required this.description,
-    required this.videos,
-  });
+  BingeModel({required this.title, required this.description, required this.videos});
 
   Map<String, dynamic> toJson() {
     return {

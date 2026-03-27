@@ -41,8 +41,7 @@ sealed class Routes {
 
 final _initNotifier = ValueNotifier<bool>(false);
 
-final RouteObserver<ModalRoute<void>> _routeObserver =
-    RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> _routeObserver = RouteObserver<ModalRoute<void>>();
 
 final GoRouter _routes = GoRouter(
   observers: [
@@ -105,8 +104,7 @@ final GoRouter _routes = GoRouter(
     ),
     CustomGoRoute(
       page: Pages.editBinge,
-      customBuilder: (context, state) =>
-          EditBingePage(state.uri.queryParameters),
+      customBuilder: (context, state) => EditBingePage(state.uri.queryParameters),
     ),
   ],
 );

@@ -170,10 +170,7 @@ class ConfigKeyHelpWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: text.titleMedium!.copyWith(fontWeight: FontWeight.w600),
-              ),
+              Text(title, style: text.titleMedium!.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
               Text(
                 description,

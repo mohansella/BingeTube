@@ -80,9 +80,7 @@ class _ChooseSeryWidgetState extends State<ChooseSeryWidget> {
             const SizedBox(height: 8),
 
             Expanded(
-              child: _filteredCollection.isEmpty
-                  ? _buildListEmpty()
-                  : _buildList(scroll),
+              child: _filteredCollection.isEmpty ? _buildListEmpty() : _buildList(scroll),
             ),
           ],
         );
@@ -107,8 +105,6 @@ class _ChooseSeryWidgetState extends State<ChooseSeryWidget> {
   }
 
   Widget _buildListEmpty() {
-    return Center(
-      child: const Text('No series found for the given search value'),
-    );
+    return Center(child: const Text('No series found for the given search value'));
   }
 }

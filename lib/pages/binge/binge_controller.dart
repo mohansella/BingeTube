@@ -8,13 +8,7 @@ import 'package:bingetube/pages/binge/controllers/search_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/sery_video_controller.dart';
 import 'package:bingetube/pages/binge/controllers/single_video_controller.dart';
 
-enum BingeType {
-  singleVideo,
-  searchVideos,
-  channelVideos,
-  seryVideos,
-  playlistVideos,
-}
+enum BingeType { singleVideo, searchVideos, channelVideos, seryVideos, playlistVideos }
 
 enum BingeParams { type, id, heroId, heroImg, videoId }
 

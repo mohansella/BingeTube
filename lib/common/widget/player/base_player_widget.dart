@@ -67,18 +67,15 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
           onNotification: _scrollEndListener,
           child: NestedScrollView(
             controller: _parentScroll,
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-                  return [
-                    SliverAppBar(
-                      automaticallyImplyLeading: false,
-                      expandedHeight: _height,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: _buildPlayerStack(),
-                      ),
-                    ),
-                  ];
-                },
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  automaticallyImplyLeading: false,
+                  expandedHeight: _height,
+                  flexibleSpace: FlexibleSpaceBar(background: _buildPlayerStack()),
+                ),
+              ];
+            },
             body: NotificationListener<ScrollNotification>(
               onNotification: _onChildScroll,
               child: CustomScrollView(
@@ -170,17 +167,13 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
                     children: [
                       Text(
                         _model?.snippet.title ?? '',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontSize: w / 30,
-                        ),
+                        style: theme.textTheme.bodyMedium?.copyWith(fontSize: w / 30),
                         maxLines: 1,
                         overflow: .ellipsis,
                       ),
                       Text(
                         _model?.snippet.channelTitle ?? '',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontSize: w / 40,
-                        ),
+                        style: theme.textTheme.labelSmall?.copyWith(fontSize: w / 40),
                       ),
                     ],
                   ),

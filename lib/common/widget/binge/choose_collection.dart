@@ -86,12 +86,11 @@ class _ChooseCollectionWidgetState extends State<ChooseCollectionWidget> {
                       decoration: InputDecoration(
                         isDense: true,
                         hintText: 'Search or create collection',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant.withAlpha(150),
-                            ),
+                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurfaceVariant.withAlpha(150),
+                        ),
                       ),
                       onChanged: (v) => setState(() {
                         _inputValue = v;
@@ -100,8 +99,7 @@ class _ChooseCollectionWidgetState extends State<ChooseCollectionWidget> {
                   ),
                   const SizedBox(width: 8),
                   TextButton(
-                    onPressed:
-                        (_inputValue == null || _inputValue!.trim().isEmpty)
+                    onPressed: (_inputValue == null || _inputValue!.trim().isEmpty)
                         ? null
                         : () async {
                             final collection = await _bingeDao.createCollection(
@@ -127,9 +125,7 @@ class _ChooseCollectionWidgetState extends State<ChooseCollectionWidget> {
 
             // Collection list (scrolls)
             Expanded(
-              child: _filteredCollection.isEmpty
-                  ? _buildListEmpty()
-                  : _buildList(scroll),
+              child: _filteredCollection.isEmpty ? _buildListEmpty() : _buildList(scroll),
             ),
           ],
         );
@@ -154,8 +150,6 @@ class _ChooseCollectionWidgetState extends State<ChooseCollectionWidget> {
   }
 
   Widget _buildListEmpty() {
-    return Center(
-      child: const Text('No collections found for the given search value'),
-    );
+    return Center(child: const Text('No collections found for the given search value'));
   }
 }

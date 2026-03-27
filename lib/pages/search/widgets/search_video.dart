@@ -50,9 +50,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
           controller: _scrollController,
           child: Padding(
             padding: const EdgeInsets.only(top: 16),
-            child: Column(
-              children: [...videos.map((video) => _buildVideoCard(video))],
-            ),
+            child: Column(children: [...videos.map((video) => _buildVideoCard(video))]),
           ),
         );
       }
@@ -65,10 +63,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
           children: [
             Text('Loading...'),
             SizedBox(height: 16),
-            FractionallySizedBox(
-              widthFactor: 0.4,
-              child: LinearProgressIndicator(),
-            ),
+            FractionallySizedBox(widthFactor: 0.4, child: LinearProgressIndicator()),
           ],
         ),
       );
@@ -97,9 +92,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(
-      () => widget.scrollListener(_scrollController),
-    );
+    _scrollController.addListener(() => widget.scrollListener(_scrollController));
     _processRequest(widget.query);
   }
 
@@ -130,12 +123,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
           children: [
             Hero(
               tag: video.video.id,
-              child: Image.network(
-                thumbnailUrl,
-                width: 160,
-                height: 90,
-                fit: .cover,
-              ),
+              child: Image.network(thumbnailUrl, width: 160, height: 90, fit: .cover),
             ),
             const SizedBox(width: 12),
             Expanded(

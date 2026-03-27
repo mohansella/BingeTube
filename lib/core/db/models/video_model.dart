@@ -74,16 +74,12 @@ class VideoModel {
     return VideoModel(
       video: Video.fromJson(json['video'] as Map<String, dynamic>),
       snippet: VideoSnippet.fromJson(json['snippet'] as Map<String, dynamic>),
-      thumbnails: VideoThumbnail.fromJson(
-        json['thumbnails'] as Map<String, dynamic>,
-      ),
+      thumbnails: VideoThumbnail.fromJson(json['thumbnails'] as Map<String, dynamic>),
       contentDetails: VideoContentDetail.fromJson(
         json['contentDetails'] as Map<String, dynamic>,
       ),
       status: VideoStatuse.fromJson(json['status'] as Map<String, dynamic>),
-      statistics: VideoStatistic.fromJson(
-        json['statistics'] as Map<String, dynamic>,
-      ),
+      statistics: VideoStatistic.fromJson(json['statistics'] as Map<String, dynamic>),
       progressData: VideoProgressData.fromJson(
         json['progressData'] as Map<String, dynamic>,
       ),

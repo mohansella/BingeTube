@@ -15,10 +15,7 @@ class BingeApi {
     );
   }
 
-  static Future<Result<dynamic>> _getJsonResponse(
-    String taskName,
-    String uri,
-  ) async {
+  static Future<Result<dynamic>> _getJsonResponse(String taskName, String uri) async {
     _logger.info('[$taskName] initiating http request');
     try {
       final url = Uri.parse(uri);

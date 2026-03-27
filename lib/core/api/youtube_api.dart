@@ -21,16 +21,12 @@ const _searchBaseUrl = 'https://www.googleapis.com/youtube/v3/search';
 const _channelsBaseUrl = 'https://www.googleapis.com/youtube/v3/channels';
 const _videosBaseUrl = 'https://www.googleapis.com/youtube/v3/videos';
 const _playlistBaseUrl = 'https://www.googleapis.com/youtube/v3/playlists';
-const _playlistItemsBaseurl =
-    'https://www.googleapis.com/youtube/v3/playlistItems';
+const _playlistItemsBaseurl = 'https://www.googleapis.com/youtube/v3/playlistItems';
 
 class YoutubeApi {
   static final Logger _logger = LogManager.getLogger('YoutubeApi');
 
-  static Future<Result<void>> validateKey(
-    WidgetRef ref,
-    String newApiKey,
-  ) async {
+  static Future<Result<void>> validateKey(WidgetRef ref, String newApiKey) async {
     final jsonResult = await _getJsonResponse(
       ref,
       'ValidateApiKey',
@@ -105,9 +101,7 @@ class YoutubeApi {
     final channelsInDb = await channelsDao.getChannelsById(
       channelIdVsSEtag.keys.toList(),
     );
-    final channelsInDbMap = Map.fromEntries(
-      channelsInDb.map((c) => MapEntry(c.id, c)),
-    );
+    final channelsInDbMap = Map.fromEntries(channelsInDb.map((c) => MapEntry(c.id, c)));
     _logger.info('channels in db found: ${channelsInDbMap.length}');
     final channelsNeedUpdate = {...channelIdVsSEtag}
       ..removeWhere((id, setag) {
@@ -116,12 +110,8 @@ class YoutubeApi {
           return false;
         }
         final channel = channelsInDbMap[id];
-        final expiresAt = channel?.updatedAt.add(
-          CacheConstants.syncChannelAfter,
-        );
-        if (channel == null ||
-            channel.setag != setag ||
-            expiresAt!.isBefore(nowTime)) {
+        final expiresAt = channel?.updatedAt.add(CacheConstants.syncChannelAfter);
+        if (channel == null || channel.setag != setag || expiresAt!.isBefore(nowTime)) {
           //no setag in db or new update found or cache invalid
           return false;
         }
@@ -130,10 +120,7 @@ class YoutubeApi {
 
     _logger.info('need to update ${channelsNeedUpdate.length} channels');
     if (channelsNeedUpdate.isNotEmpty) {
-      final syncResult = await _forceSyncChannelsWithSETag(
-        ref,
-        channelsNeedUpdate,
-      );
+      final syncResult = await _forceSyncChannelsWithSETag(ref, channelsNeedUpdate);
       if (syncResult.isError()) {
         return Failure(syncResult.exceptionOrNull()!);
       }
@@ -236,12 +223,8 @@ class YoutubeApi {
 
     //2. find videoIds that needs update
     final videosDao = VideosDao(database);
-    final videosInDb = await videosDao.getVideosById(
-      videoIdVsSETag.keys.toSet(),
-    );
-    final videosInDbMap = Map.fromEntries(
-      videosInDb.map((v) => MapEntry(v.id, v)),
-    );
+    final videosInDb = await videosDao.getVideosById(videoIdVsSETag.keys.toSet());
+    final videosInDbMap = Map.fromEntries(videosInDb.map((v) => MapEntry(v.id, v)));
     _logger.info('videos in db found: ${videosInDbMap.length}');
     final videosNeedUpdate = {...videoIdVsSETag}
       ..removeWhere((id, setag) {
@@ -251,9 +234,7 @@ class YoutubeApi {
         }
         final video = videosInDbMap[id];
         final expiresAt = video?.updatedAt.add(CacheConstants.syncVideosAfter);
-        if (video == null ||
-            video.setag != setag ||
-            expiresAt!.isBefore(nowTime)) {
+        if (video == null || video.setag != setag || expiresAt!.isBefore(nowTime)) {
           //no etag in db or new upate found or cache invalid
           return false;
         }
@@ -379,12 +360,8 @@ class YoutubeApi {
     final playlistDao = PlaylistsDao(Database());
     if (!updateProgress(false, 0, 1)) return failure;
 
-    final lastUpdateTime = await playlistDao.getPlaylistItemsUpdateTime(
-      playlistId,
-    );
-    final isAfter = DateTime.now().subtract(
-      CacheConstants.syncPlaylistItemsAfter,
-    );
+    final lastUpdateTime = await playlistDao.getPlaylistItemsUpdateTime(playlistId);
+    final isAfter = DateTime.now().subtract(CacheConstants.syncPlaylistItemsAfter);
     _logger.info('lastUpdateTime:$lastUpdateTime isAfter:$isAfter');
     if (lastUpdateTime == null) {
       _logger.info('no entries found in db for playlist:$playlistId');
@@ -591,10 +568,7 @@ class YoutubeApi {
     final apiKey = CoreUtils.readApiKey(ref);
     try {
       final url = Uri.parse(
-        uri.replaceAll(
-          'key=API_KEY',
-          'key=${Uri.encodeQueryComponent(apiKey)}',
-        ),
+        uri.replaceAll('key=API_KEY', 'key=${Uri.encodeQueryComponent(apiKey)}'),
       );
       final response = await CoreClient.get(url);
       _logger.info('[$taskName] succeeded with status: ${response.statusCode}');
@@ -607,9 +581,7 @@ class YoutubeApi {
       return Success(data);
     } catch (e) {
       var message = e.toString();
-      message = apiKey.length < 10
-          ? message
-          : message.replaceAll(apiKey, '*****');
+      message = apiKey.length < 10 ? message : message.replaceAll(apiKey, '*****');
       _logger.info('[$taskName] failed with error: $message');
       return Failure(Exception(message));
     }
@@ -634,8 +606,7 @@ class YoutubeApi {
     } else if (response.statusCode != 200) {
       _logger.info('found error response during analyze: ${response.body}');
     }
-    if (response.statusCode == 400 &&
-        response.body.indexOf('API_KEY_INVALID') != 1) {
+    if (response.statusCode == 400 && response.body.indexOf('API_KEY_INVALID') != 1) {
       _logger.info('changing key status from:${meta.status} to keyInvalid');
       return CoreUtils.writeApiKeyMeta(ref, meta.copyWith(status: .keyInvalid));
     }

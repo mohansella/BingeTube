@@ -38,9 +38,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
       await into(channels).insert(channel, mode: .insertOrReplace);
       await into(channelSnippets).insert(snippet, mode: .insertOrReplace);
       await into(channelThumbnails).insert(thumbnails, mode: .insertOrReplace);
-      await into(
-        channelContentDetails,
-      ).insert(contentDetails, mode: .insertOrReplace);
+      await into(channelContentDetails).insert(contentDetails, mode: .insertOrReplace);
       await into(channelStatistics).insert(statistics, mode: .insertOrReplace);
       await into(channelStatuses).insert(status, mode: .insertOrReplace);
     });
@@ -53,10 +51,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     final query = sel.join([
       innerJoin(channelSnippets, channelSnippets.id.equalsExp(channels.id)),
       innerJoin(channelThumbnails, channelThumbnails.id.equalsExp(channels.id)),
-      innerJoin(
-        channelContentDetails,
-        channelContentDetails.id.equalsExp(channels.id),
-      ),
+      innerJoin(channelContentDetails, channelContentDetails.id.equalsExp(channels.id)),
       innerJoin(channelStatistics, channelStatistics.id.equalsExp(channels.id)),
       innerJoin(channelStatuses, channelStatuses.id.equalsExp(channels.id)),
     ]);
@@ -83,9 +78,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     return mapRowToModel(result);
   }
 
-  Future<List<ChannelModel>> getChannelModelByIds(
-    Set<String> channelIds,
-  ) async {
+  Future<List<ChannelModel>> getChannelModelByIds(Set<String> channelIds) async {
     final query = joinChannelTables(selectStatement: select(channels).join([]))
       ..where(channels.id.isIn(channelIds));
 
@@ -132,12 +125,8 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     final uploadPlaylist = playlists['uploads'];
     final contentComp = ChannelContentDetailsCompanion.insert(
       id: id,
-      likesPlaylist: likePlaylist == null
-          ? Value.absent()
-          : Value(likePlaylist),
-      uploadPlaylist: uploadPlaylist == null
-          ? Value.absent()
-          : Value(uploadPlaylist),
+      likesPlaylist: likePlaylist == null ? Value.absent() : Value(likePlaylist),
+      uploadPlaylist: uploadPlaylist == null ? Value.absent() : Value(uploadPlaylist),
     );
 
     final statistics = item['statistics'];
@@ -169,9 +158,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     );
   }
 
-  Future<void> importChannelModels(
-    Map<String, ChannelModel> idVsChannel,
-  ) async {
+  Future<void> importChannelModels(Map<String, ChannelModel> idVsChannel) async {
     final existingIdVsChannel = <String, ChannelModel>{};
     final expiredChannelId = <String>{};
     final nowTime = DateTime.now();

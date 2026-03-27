@@ -29,10 +29,7 @@ class EditBingePage extends ConsumerStatefulWidget {
 
   static Map<String, String> buildParams(Map<String, String> params) {
     return Map.fromEntries(
-      [
-        BingeParams.type,
-        BingeParams.id,
-      ].map((v) => MapEntry(v.name, params[v.name]!)),
+      [BingeParams.type, BingeParams.id].map((v) => MapEntry(v.name, params[v.name]!)),
     );
   }
 }
@@ -165,9 +162,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   Widget _buildEditTitle() {
     final model = _unfilteredModel;
     _editTitleController ??= TextEditingController(text: model.title);
-    _editDescriptionController ??= TextEditingController(
-      text: model.description,
-    );
+    _editDescriptionController ??= TextEditingController(text: model.description);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Column(
@@ -184,9 +179,9 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                   SizedBox(width: 8),
                   Text(
                     _collection.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
                   ),
                   Icon(Icons.chevron_right),
                 ],
@@ -209,12 +204,10 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                     maxLines: 1,
                     autofocus: true,
                     controller: _editTitleController,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                    decoration: const InputDecoration.collapsed(
-                      hintText: 'Binge title',
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+                    decoration: const InputDecoration.collapsed(hintText: 'Binge title'),
                   ),
                 ),
               ],
@@ -236,9 +229,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                     maxLines: 1,
                     controller: _editDescriptionController,
                     style: Theme.of(context).textTheme.bodySmall,
-                    decoration: const InputDecoration.collapsed(
-                      hintText: 'Description',
-                    ),
+                    decoration: const InputDecoration.collapsed(hintText: 'Description'),
                   ),
                 ),
               ],
@@ -258,8 +249,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     if (_controller.filter == BingeFilter.defaultValue) {
       subtitle = '${model.videos.length} videos';
     } else {
-      subtitle =
-          'showing ${filteredVideos.length} of ${model.videos.length} videos';
+      subtitle = 'showing ${filteredVideos.length} of ${model.videos.length} videos';
     }
     if (_checkMarked.isEmpty) {
       prefix = '';
@@ -290,9 +280,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   Widget _buildAppBarBottom(List<VideoModel> filteredVideos) {
-    final isAllSelected = filteredVideos.every(
-      (v) => _checkMarked.contains(v.video.id),
-    );
+    final isAllSelected = filteredVideos.every((v) => _checkMarked.contains(v.video.id));
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -308,9 +296,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                   _checkMarked.addAll(videoIds);
                 }
               }),
-              icon: Icon(
-                isAllSelected ? Icons.check_box_outline_blank : Icons.done_all,
-              ),
+              icon: Icon(isAllSelected ? Icons.check_box_outline_blank : Icons.done_all),
               tooltip: isAllSelected ? 'Deselect All' : 'Select All',
             ),
           ),
@@ -368,8 +354,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                           }
                           return _buildCoverFallback(c, video.video.id);
                         },
-                        errorBuilder: (c, _, _) =>
-                            _buildCoverFallback(c, video.video.id),
+                        errorBuilder: (c, _, _) => _buildCoverFallback(c, video.video.id),
                       ),
                       Container(color: Colors.black.withAlpha(50)),
                       LinearProgressIndicator(value: video.progressPercent),
@@ -386,9 +371,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
                         left: 4.0,
                         top: 4.0,
                         child: Icon(
-                          isChecked
-                              ? Icons.check_box
-                              : Icons.check_box_outline_blank,
+                          isChecked ? Icons.check_box : Icons.check_box_outline_blank,
                         ),
                       ),
                     ],
@@ -498,9 +481,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   void _chooseCollection() async {
-    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
-      context,
-    );
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(context);
     if (chosenCollection == null) {
       return;
     }
@@ -548,11 +529,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     }
 
     final sourceList = _sortOrder.where((v) => sourceSet.contains(v)).toList();
-    await _bingeDao.addVideos(
-      chosenSery.id,
-      sourceList,
-      targetModel.videos.length,
-    );
+    await _bingeDao.addVideos(chosenSery.id, sourceList, targetModel.videos.length);
     if (localContext.mounted) {
       Routes.popOrHome(localContext);
     }
@@ -572,19 +549,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     }
 
     final title = _editTitleController?.text ?? _unfilteredModel.title;
-    final description =
-        _editDescriptionController?.text ?? _unfilteredModel.description;
-    final idVsVideoEntries = _unfilteredModel.videos.map(
-      (v) => MapEntry(v.video.id, v),
-    );
+    final description = _editDescriptionController?.text ?? _unfilteredModel.description;
+    final idVsVideoEntries = _unfilteredModel.videos.map((v) => MapEntry(v.video.id, v));
     final idVsVideos = Map.fromEntries(idVsVideoEntries);
     final videos = _sortOrder.map((id) => idVsVideos[id]!).toList();
     videos.removeWhere((v) => !_checkMarked.contains(v.video.id));
-    final newModel = BingeModel(
-      title: title,
-      description: description,
-      videos: videos,
-    );
+    final newModel = BingeModel(title: title, description: description, videos: videos);
 
     final actions = _controller.supportedActions();
     if (actions.length == 1 && actions[0] == .add) {

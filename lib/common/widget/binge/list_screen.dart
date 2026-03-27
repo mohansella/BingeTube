@@ -249,8 +249,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
 
         final bingeDao = BingeDao(Database());
         final collectionId =
-            model?.sery.collectionId ??
-            (await bingeDao.getDefaultCollection()).id;
+            model?.sery.collectionId ?? (await bingeDao.getDefaultCollection()).id;
 
         if (item.localData == null) {
           _dropCollectionId = collectionId;
@@ -281,10 +280,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       dragItemProvider: (request) async {
         final fileBaseName = FileUtils.toSlugFileName(model.sery.name);
         final fileName = '$fileBaseName.binge';
-        final item = DragItem(
-          suggestedName: fileName,
-          localData: model.sery.id,
-        );
+        final item = DragItem(suggestedName: fileName, localData: model.sery.id);
         await _addVirtualFile(item, model);
         return item;
       },
@@ -350,24 +346,14 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         if (frame != null || wasSyncLoaded) {
           return child;
         }
-        return _buildSeryImageFallback(
-          c,
-          model,
-          height: _height,
-          width: _width,
-        );
+        return _buildSeryImageFallback(c, model, height: _height, width: _width);
       },
       errorBuilder: (c, _, _) =>
           _buildSeryImageFallback(c, model, height: _height, width: _width),
     );
   }
 
-  void _onTapSery(
-    BuildContext context,
-    SeryModel model,
-    String heroId,
-    String heroImg,
-  ) {
+  void _onTapSery(BuildContext context, SeryModel model, String heroId, String heroImg) {
     context.pushNamed(
       Pages.binge.name,
       queryParameters: BingePage.buildParams(
@@ -421,9 +407,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     final fileName = file.fileName;
     final fileSize = file.fileSize;
 
-    ListScreenWidget._logger.info(
-      'Dropped file: $fileName Size:$fileSize bytes',
-    );
+    ListScreenWidget._logger.info('Dropped file: $fileName Size:$fileSize bytes');
 
     if (_dropCollectionId == -1 || _dropPriority == -1) {
       throw Exception('invalid state');

@@ -17,10 +17,7 @@ class ApiKeyQuotaWidget extends ConsumerWidget {
         ListTile(
           contentPadding: EdgeInsets.all(0),
           title: const Text('Key Status'),
-          subtitle: Text(
-            meta.status.label,
-            style: TextStyle(color: meta.status.color),
-          ),
+          subtitle: Text(meta.status.label, style: TextStyle(color: meta.status.color)),
         ),
         _buildQuotaUsed(meta),
         _buildTimeList('Configured On', meta.configuredAtMillis),
@@ -49,9 +46,7 @@ class ApiKeyQuotaWidget extends ConsumerWidget {
               },
             ),
       trailing: Text(
-        isInvalid
-            ? ''
-            : isoStr.substring(0, isoStr.length - 4).replaceAll('T', ' '),
+        isInvalid ? '' : isoStr.substring(0, isoStr.length - 4).replaceAll('T', ' '),
       ),
     );
   }

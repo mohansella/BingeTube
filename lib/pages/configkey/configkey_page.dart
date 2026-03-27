@@ -98,10 +98,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OutlinedButton(
-            onPressed: () => _onEdit(context),
-            child: const Text('Edit'),
-          ),
+          OutlinedButton(onPressed: () => _onEdit(context), child: const Text('Edit')),
           SizedBox(width: 10),
           TextButton(
             onPressed: () => _onDelete(context),
@@ -211,8 +208,7 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
         'existing key configured with quota:${oldMeta.quotaSections}',
       );
       final quotaSection = oldMeta.quotaSections;
-      quotaSection[.validateKey] =
-          1 + (quotaSection[ApiKeyQuotaType.validateKey] ?? 0);
+      quotaSection[.validateKey] = 1 + (quotaSection[ApiKeyQuotaType.validateKey] ?? 0);
       newMeta = oldMeta.copyWith(
         apiKey: newKey,
         status: ApiKeyStatus.keyValid,

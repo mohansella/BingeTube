@@ -21,17 +21,9 @@ enum ConfigKey<T> {
     ApiKeyMeta.fromJsonString,
   ),
 
-  appFontSize<AppFontSize>(
-    AppFontSize.medium,
-    AppFontSize.fromEnum,
-    AppFontSize.toEnum,
-  ),
+  appFontSize<AppFontSize>(AppFontSize.medium, AppFontSize.fromEnum, AppFontSize.toEnum),
 
-  playerType<PlayerType>(
-    PlayerType.external,
-    PlayerType.fromEnum,
-    PlayerType.toEnum,
-  );
+  playerType<PlayerType>(PlayerType.external, PlayerType.fromEnum, PlayerType.toEnum);
 
   final T defaultValue;
   final String Function(T) serializer;

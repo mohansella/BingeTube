@@ -146,21 +146,13 @@ class SearchPageState extends ConsumerState<SearchPage>
         Tab(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.person),
-              SizedBox(width: 8),
-              Text('Channels'),
-            ],
+            children: [Icon(Icons.person), SizedBox(width: 8), Text('Channels')],
           ),
         ),
         Tab(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.ondemand_video),
-              SizedBox(width: 8),
-              Text('Videos'),
-            ],
+            children: [Icon(Icons.ondemand_video), SizedBox(width: 8), Text('Videos')],
           ),
         ),
       ],

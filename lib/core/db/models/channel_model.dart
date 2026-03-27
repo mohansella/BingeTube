@@ -32,15 +32,11 @@ class ChannelModel {
     return ChannelModel(
       channel: Channel.fromJson(json['channel'] as Map<String, dynamic>),
       snippet: ChannelSnippet.fromJson(json['snippet'] as Map<String, dynamic>),
-      thumbnails: ChannelThumbnail.fromJson(
-        json['thumbnails'] as Map<String, dynamic>,
-      ),
+      thumbnails: ChannelThumbnail.fromJson(json['thumbnails'] as Map<String, dynamic>),
       contentDetails: ChannelContentDetail.fromJson(
         json['contentDetails'] as Map<String, dynamic>,
       ),
-      statistics: ChannelStatistic.fromJson(
-        json['statistics'] as Map<String, dynamic>,
-      ),
+      statistics: ChannelStatistic.fromJson(json['statistics'] as Map<String, dynamic>),
       status: ChannelStatuse.fromJson(json['status'] as Map<String, dynamic>),
     );
   }

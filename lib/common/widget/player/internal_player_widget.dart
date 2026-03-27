@@ -137,9 +137,7 @@ class _InternalPlayerState extends BasePlayerState
 
   @override
   void onPlayerError(String payload) {
-    InternalPlayerWidget._logger.warning(
-      'unexpected error in player: $payload',
-    );
+    InternalPlayerWidget._logger.warning('unexpected error in player: $payload');
   }
 
   String _progId = '';
@@ -151,9 +149,7 @@ class _InternalPlayerState extends BasePlayerState
     final pos = double.parse(splits[0]);
     final duration = double.parse(splits[1]);
     final progress = splits[2];
-    InternalPlayerWidget._logger.finer(
-      'pos:$pos duration:$duration progress:$progress',
-    );
+    InternalPlayerWidget._logger.finer('pos:$pos duration:$duration progress:$progress');
     final id = model!.video.id;
     final dao = VideosDao(Database());
 

@@ -40,9 +40,7 @@ class ProfilePage extends ConsumerWidget {
           builder: (_, snapshot) {
             if (snapshot.hasData) {
               final info = snapshot.data!;
-              return Text(
-                'Version: ${info.version} Build: ${info.buildNumber}',
-              );
+              return Text('Version: ${info.version} Build: ${info.buildNumber}');
             } else {
               return SizedBox();
             }
@@ -61,9 +59,7 @@ class ProfilePage extends ConsumerWidget {
         children: [
           Icon(Icons.color_lens_outlined, size: 24),
           SizedBox(width: 8),
-          Expanded(
-            child: Text('Theme', style: Theme.of(context).textTheme.bodyLarge),
-          ),
+          Expanded(child: Text('Theme', style: Theme.of(context).textTheme.bodyLarge)),
           SegmentedButton(
             segments: ThemeMode.values
                 .map(
@@ -94,10 +90,7 @@ class ProfilePage extends ConsumerWidget {
           Icon(Icons.text_fields, size: 24),
           SizedBox(width: 8),
           Expanded(
-            child: Text(
-              'Font Size',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            child: Text('Font Size', style: Theme.of(context).textTheme.bodyLarge),
           ),
           SegmentedButton(
             segments: AppFontSize.values
@@ -128,9 +121,7 @@ class ProfilePage extends ConsumerWidget {
         children: [
           Icon(Icons.ondemand_video, size: 24),
           SizedBox(width: 8),
-          Expanded(
-            child: Text('Player', style: Theme.of(context).textTheme.bodyLarge),
-          ),
+          Expanded(child: Text('Player', style: Theme.of(context).textTheme.bodyLarge)),
           SegmentedButton(
             segments: PlayerType.values
                 .map(

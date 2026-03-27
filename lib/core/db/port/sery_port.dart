@@ -68,22 +68,14 @@ sealed class SeryPort {
     return Uint8List.fromList(zipBytes);
   }
 
-  static Future<void> import(
-    Uint8List data,
-    int collectionId,
-    int priority,
-  ) async {
+  static Future<void> import(Uint8List data, int collectionId, int priority) async {
     final dataBytes = GZipCodec().decode(data);
     final value = utf8.decode(dataBytes);
     final json = jsonDecode(value);
     await _importAsJson(json, collectionId, priority);
   }
 
-  static Future<void> _importAsJson(
-    json,
-    int collectionId,
-    int priority,
-  ) async {
+  static Future<void> _importAsJson(json, int collectionId, int priority) async {
     final videosJson = json['videos'] as List<dynamic>;
     final channelJsons = json['channels'];
     final createdAt = DateTime.now().millisecondsSinceEpoch;
