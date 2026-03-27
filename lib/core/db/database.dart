@@ -76,13 +76,13 @@ class Database extends _$Database {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     beforeOpen: _listenOpen,
     onCreate: _listenFirstTimeOpen,
-    onUpgrade: stepByStep(from1To2: _from1To2),
+    onUpgrade: stepByStep(from1To2: _from1To2, from2To3: _from2To3),
   );
 
   Future<void> _listenFirstTimeOpen(Migrator m) async {
@@ -98,8 +98,38 @@ class Database extends _$Database {
   }
 
   Future<void> _from1To2(Migrator m, Schema2 schema) async {
-    _logger.info('migrating databse from 1 to 2');
+    _logger.info('migrating database from 1 to 2');
     await m.addColumn(schema.series, schema.series.dataHash);
-    _logger.info('migrated databse from 1 to 2');
+    _logger.info('migrated database from 1 to 2');
+  }
+
+  Future<void> _from2To3(Migrator m, Schema3 schema) async {
+    _logger.info('migrating database from 2 to 3');
+    final tables = <TableInfo<Table, dynamic>>[
+      schema.channelSnippets,
+      schema.channelThumbnails,
+      schema.channelContentDetails,
+      schema.channelStatistics,
+      schema.channelStatuses,
+      schema.videoSnippets,
+      schema.videoThumbnails,
+      schema.videoContentDetails,
+      schema.videoStatuses,
+      schema.videoStatistics,
+      schema.videoProgress,
+      schema.playlists,
+      schema.playlistSnippets,
+      schema.playlistThumbnails,
+      schema.playlistContentDetails,
+      schema.playlistVsVideos,
+      schema.channelSearchVsChannels,
+      schema.videoSearchVsVideos,
+      schema.series,
+      schema.seriesVsVideos,
+    ];
+    for (final table in tables) {
+      await m.alterTable(TableMigration(table));
+    }
+    _logger.info('migrated database from 2 to 3');
   }
 }

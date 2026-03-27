@@ -8,7 +8,7 @@ enum PlaylistType { uploads, likes, normal }
 @TableIndex(name: 'PlaylistIndexETag', columns: {#etag})
 class Playlists extends Table with TableTimedMixin {
   late final id = text()();
-  late final channelId = text().references(Channels, #id)();
+  late final channelId = text().references(Channels, #id, onDelete: .cascade)();
   late final type = intEnum<PlaylistType>()();
   late final priority = integer()();
   late final etag = text()();
@@ -18,7 +18,7 @@ class Playlists extends Table with TableTimedMixin {
 }
 
 class PlaylistSnippets extends Table with TableTimedMixin {
-  late final id = text().references(Playlists, #id)();
+  late final id = text().references(Playlists, #id, onDelete: .cascade)();
   late final publishedAt = dateTime()();
   late final title = text()();
   late final description = text()();
@@ -29,7 +29,7 @@ class PlaylistSnippets extends Table with TableTimedMixin {
 }
 
 class PlaylistThumbnails extends Table with TableTimedMixin {
-  late final id = text().references(Playlists, #id)();
+  late final id = text().references(Playlists, #id, onDelete: .cascade)();
   late final defaultUrl = text()();
   late final mediumUrl = text()();
   late final highUrl = text()();
@@ -41,7 +41,7 @@ class PlaylistThumbnails extends Table with TableTimedMixin {
 }
 
 class PlaylistContentDetails extends Table with TableTimedMixin {
-  late final id = text().references(Playlists, #id)();
+  late final id = text().references(Playlists, #id, onDelete: .cascade)();
   late final itemCount = integer()();
 
   @override
@@ -49,7 +49,7 @@ class PlaylistContentDetails extends Table with TableTimedMixin {
 }
 
 class PlaylistVsVideos extends Table {
-  late final playlistId = text().references(Playlists, #id)();
+  late final playlistId = text().references(Playlists, #id, onDelete: .cascade)();
   late final videoId = text().references(Videos, #id)();
   late final priority = integer()();
 

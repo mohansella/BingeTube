@@ -365,7 +365,7 @@ class $ChannelSnippetsTable extends ChannelSnippets
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
+      'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
@@ -632,7 +632,7 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
+      'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _defaultUrlMeta = const VerificationMeta(
@@ -948,7 +948,7 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
+      'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _likesPlaylistMeta = const VerificationMeta(
@@ -1233,7 +1233,7 @@ class $ChannelStatisticsTable extends ChannelStatistics
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
+      'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _viewCountMeta = const VerificationMeta(
@@ -1626,7 +1626,7 @@ class $ChannelStatusesTable extends ChannelStatuses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
+      'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _privacyStatusMeta = const VerificationMeta(
@@ -2419,7 +2419,7 @@ class $VideoSnippetsTable extends VideoSnippets
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES videos (id)',
+      'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _publishedAtMeta = const VerificationMeta(
@@ -2798,7 +2798,7 @@ class $VideoThumbnailsTable extends VideoThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES videos (id)',
+      'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _defaultUrlMeta = const VerificationMeta(
@@ -3220,7 +3220,7 @@ class $VideoContentDetailsTable extends VideoContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES videos (id)',
+      'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _durationMeta = const VerificationMeta(
@@ -3700,7 +3700,7 @@ class $VideoStatusesTable extends VideoStatuses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES videos (id)',
+      'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _uploadStatusMeta = const VerificationMeta(
@@ -4200,7 +4200,7 @@ class $VideoStatisticsTable extends VideoStatistics
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES videos (id)',
+      'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _viewCountMeta = const VerificationMeta(
@@ -4636,9 +4636,6 @@ class $VideoProgressTable extends VideoProgress
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES videos (id)',
-    ),
   );
   static const VerificationMeta _watchPositionMeta = const VerificationMeta(
     'watchPosition',
@@ -4946,7 +4943,7 @@ class $PlaylistsTable extends Playlists
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channels (id)',
+      'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
   @override
@@ -5392,7 +5389,7 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES playlists (id)',
+      'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _publishedAtMeta = const VerificationMeta(
@@ -5868,7 +5865,7 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES playlists (id)',
+      'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _defaultUrlMeta = const VerificationMeta(
@@ -6389,7 +6386,7 @@ class $PlaylistContentDetailsTable extends PlaylistContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES playlists (id)',
+      'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _itemCountMeta = const VerificationMeta(
@@ -6680,7 +6677,7 @@ class $PlaylistVsVideosTable extends PlaylistVsVideos
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES playlists (id)',
+      'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _videoIdMeta = const VerificationMeta(
@@ -7251,7 +7248,7 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES channel_searches (id)',
+      'REFERENCES channel_searches (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _channelIdMeta = const VerificationMeta(
@@ -7824,7 +7821,7 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES video_searches (id)',
+      'REFERENCES video_searches (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _videoIdMeta = const VerificationMeta(
@@ -8592,7 +8589,7 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES collections (id)',
+      'REFERENCES collections (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _coverVideoIdMeta = const VerificationMeta(
@@ -8629,6 +8626,17 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _dataHashMeta = const VerificationMeta(
+    'dataHash',
+  );
+  @override
+  late final GeneratedColumn<String> dataHash = GeneratedColumn<String>(
+    'data_hash',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _priorityMeta = const VerificationMeta(
     'priority',
   );
@@ -8649,6 +8657,7 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     coverVideoId,
     name,
     description,
+    dataHash,
     priority,
   ];
   @override
@@ -8719,6 +8728,12 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
+    if (data.containsKey('data_hash')) {
+      context.handle(
+        _dataHashMeta,
+        dataHash.isAcceptableOrUnknown(data['data_hash']!, _dataHashMeta),
+      );
+    }
     if (data.containsKey('priority')) {
       context.handle(
         _priorityMeta,
@@ -8764,6 +8779,10 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
         DriftSqlType.string,
         data['${effectivePrefix}description'],
       )!,
+      dataHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}data_hash'],
+      ),
       priority: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}priority'],
@@ -8785,6 +8804,7 @@ class Sery extends DataClass implements Insertable<Sery> {
   final String coverVideoId;
   final String name;
   final String description;
+  final String? dataHash;
   final int priority;
   const Sery({
     required this.createdAt,
@@ -8794,6 +8814,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     required this.coverVideoId,
     required this.name,
     required this.description,
+    this.dataHash,
     required this.priority,
   });
   @override
@@ -8806,6 +8827,9 @@ class Sery extends DataClass implements Insertable<Sery> {
     map['cover_video_id'] = Variable<String>(coverVideoId);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
+    if (!nullToAbsent || dataHash != null) {
+      map['data_hash'] = Variable<String>(dataHash);
+    }
     map['priority'] = Variable<int>(priority);
     return map;
   }
@@ -8819,6 +8843,9 @@ class Sery extends DataClass implements Insertable<Sery> {
       coverVideoId: Value(coverVideoId),
       name: Value(name),
       description: Value(description),
+      dataHash: dataHash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dataHash),
       priority: Value(priority),
     );
   }
@@ -8836,6 +8863,7 @@ class Sery extends DataClass implements Insertable<Sery> {
       coverVideoId: serializer.fromJson<String>(json['coverVideoId']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
+      dataHash: serializer.fromJson<String?>(json['dataHash']),
       priority: serializer.fromJson<int>(json['priority']),
     );
   }
@@ -8850,6 +8878,7 @@ class Sery extends DataClass implements Insertable<Sery> {
       'coverVideoId': serializer.toJson<String>(coverVideoId),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
+      'dataHash': serializer.toJson<String?>(dataHash),
       'priority': serializer.toJson<int>(priority),
     };
   }
@@ -8862,6 +8891,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     String? coverVideoId,
     String? name,
     String? description,
+    Value<String?> dataHash = const Value.absent(),
     int? priority,
   }) => Sery(
     createdAt: createdAt ?? this.createdAt,
@@ -8871,6 +8901,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     coverVideoId: coverVideoId ?? this.coverVideoId,
     name: name ?? this.name,
     description: description ?? this.description,
+    dataHash: dataHash.present ? dataHash.value : this.dataHash,
     priority: priority ?? this.priority,
   );
   Sery copyWithCompanion(SeriesCompanion data) {
@@ -8888,6 +8919,7 @@ class Sery extends DataClass implements Insertable<Sery> {
       description: data.description.present
           ? data.description.value
           : this.description,
+      dataHash: data.dataHash.present ? data.dataHash.value : this.dataHash,
       priority: data.priority.present ? data.priority.value : this.priority,
     );
   }
@@ -8902,6 +8934,7 @@ class Sery extends DataClass implements Insertable<Sery> {
           ..write('coverVideoId: $coverVideoId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
+          ..write('dataHash: $dataHash, ')
           ..write('priority: $priority')
           ..write(')'))
         .toString();
@@ -8916,6 +8949,7 @@ class Sery extends DataClass implements Insertable<Sery> {
     coverVideoId,
     name,
     description,
+    dataHash,
     priority,
   );
   @override
@@ -8929,6 +8963,7 @@ class Sery extends DataClass implements Insertable<Sery> {
           other.coverVideoId == this.coverVideoId &&
           other.name == this.name &&
           other.description == this.description &&
+          other.dataHash == this.dataHash &&
           other.priority == this.priority);
 }
 
@@ -8940,6 +8975,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
   final Value<String> coverVideoId;
   final Value<String> name;
   final Value<String> description;
+  final Value<String?> dataHash;
   final Value<int> priority;
   const SeriesCompanion({
     this.createdAt = const Value.absent(),
@@ -8949,6 +8985,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     this.coverVideoId = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
+    this.dataHash = const Value.absent(),
     this.priority = const Value.absent(),
   });
   SeriesCompanion.insert({
@@ -8959,6 +8996,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     required String coverVideoId,
     required String name,
     required String description,
+    this.dataHash = const Value.absent(),
     required int priority,
   }) : collectionId = Value(collectionId),
        coverVideoId = Value(coverVideoId),
@@ -8973,6 +9011,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     Expression<String>? coverVideoId,
     Expression<String>? name,
     Expression<String>? description,
+    Expression<String>? dataHash,
     Expression<int>? priority,
   }) {
     return RawValuesInsertable({
@@ -8983,6 +9022,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
       if (coverVideoId != null) 'cover_video_id': coverVideoId,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (dataHash != null) 'data_hash': dataHash,
       if (priority != null) 'priority': priority,
     });
   }
@@ -8995,6 +9035,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     Value<String>? coverVideoId,
     Value<String>? name,
     Value<String>? description,
+    Value<String?>? dataHash,
     Value<int>? priority,
   }) {
     return SeriesCompanion(
@@ -9005,6 +9046,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
       coverVideoId: coverVideoId ?? this.coverVideoId,
       name: name ?? this.name,
       description: description ?? this.description,
+      dataHash: dataHash ?? this.dataHash,
       priority: priority ?? this.priority,
     );
   }
@@ -9033,6 +9075,9 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
+    if (dataHash.present) {
+      map['data_hash'] = Variable<String>(dataHash.value);
+    }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
     }
@@ -9049,6 +9094,7 @@ class SeriesCompanion extends UpdateCompanion<Sery> {
           ..write('coverVideoId: $coverVideoId, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
+          ..write('dataHash: $dataHash, ')
           ..write('priority: $priority')
           ..write(')'))
         .toString();
@@ -9072,7 +9118,7 @@ class $SeriesVsVideosTable extends SeriesVsVideos
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES series (id)',
+      'REFERENCES series (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _videoIdMeta = const VerificationMeta(
@@ -9434,6 +9480,146 @@ abstract class _$Database extends GeneratedDatabase {
     channelSearchesIndexQuery,
     videoSearchesIndexQuery,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('channel_snippets', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('channel_thumbnails', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('channel_content_details', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('channel_statistics', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('channel_statuses', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('video_snippets', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('video_thumbnails', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('video_content_details', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('video_statuses', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('video_statistics', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('playlists', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('playlist_snippets', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('playlist_thumbnails', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('playlist_content_details', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('playlist_vs_videos', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'channel_searches',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('channel_search_vs_channels', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'video_searches',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('video_search_vs_videos', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'collections',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('series', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'series',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('series_vs_videos', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$ChannelsTableCreateCompanionBuilder =
@@ -12148,24 +12334,6 @@ final class $$VideosTableReferences
     );
   }
 
-  static MultiTypedResultKey<$VideoProgressTable, List<VideoProgressData>>
-  _videoProgressRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.videoProgress,
-    aliasName: $_aliasNameGenerator(db.videos.id, db.videoProgress.id),
-  );
-
-  $$VideoProgressTableProcessedTableManager get videoProgressRefs {
-    final manager = $$VideoProgressTableTableManager(
-      $_db,
-      $_db.videoProgress,
-    ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_videoProgressRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
   static MultiTypedResultKey<$PlaylistVsVideosTable, List<PlaylistVsVideo>>
   _playlistVsVideosRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.playlistVsVideos,
@@ -12422,31 +12590,6 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
           }) => $$VideoStatisticsTableFilterComposer(
             $db: $db,
             $table: $db.videoStatistics,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> videoProgressRefs(
-    Expression<bool> Function($$VideoProgressTableFilterComposer f) f,
-  ) {
-    final $$VideoProgressTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videoProgress,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideoProgressTableFilterComposer(
-            $db: $db,
-            $table: $db.videoProgress,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -12787,31 +12930,6 @@ class $$VideosTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> videoProgressRefs<T extends Object>(
-    Expression<T> Function($$VideoProgressTableAnnotationComposer a) f,
-  ) {
-    final $$VideoProgressTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videoProgress,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideoProgressTableAnnotationComposer(
-            $db: $db,
-            $table: $db.videoProgress,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> playlistVsVideosRefs<T extends Object>(
     Expression<T> Function($$PlaylistVsVideosTableAnnotationComposer a) f,
   ) {
@@ -12934,7 +13052,6 @@ class $$VideosTableTableManager
             bool videoContentDetailsRefs,
             bool videoStatusesRefs,
             bool videoStatisticsRefs,
-            bool videoProgressRefs,
             bool playlistVsVideosRefs,
             bool videoSearchVsVideosRefs,
             bool seriesRefs,
@@ -13002,7 +13119,6 @@ class $$VideosTableTableManager
                 videoContentDetailsRefs = false,
                 videoStatusesRefs = false,
                 videoStatisticsRefs = false,
-                videoProgressRefs = false,
                 playlistVsVideosRefs = false,
                 videoSearchVsVideosRefs = false,
                 seriesRefs = false,
@@ -13016,7 +13132,6 @@ class $$VideosTableTableManager
                     if (videoContentDetailsRefs) db.videoContentDetails,
                     if (videoStatusesRefs) db.videoStatuses,
                     if (videoStatisticsRefs) db.videoStatistics,
-                    if (videoProgressRefs) db.videoProgress,
                     if (playlistVsVideosRefs) db.playlistVsVideos,
                     if (videoSearchVsVideosRefs) db.videoSearchVsVideos,
                     if (seriesRefs) db.series,
@@ -13156,26 +13271,6 @@ class $$VideosTableTableManager
                                   referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
-                      if (videoProgressRefs)
-                        await $_getPrefetchedData<
-                          Video,
-                          $VideosTable,
-                          VideoProgressData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$VideosTableReferences
-                              ._videoProgressRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).videoProgressRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) =>
-                                  referencedItems.where((e) => e.id == item.id),
-                          typedResults: items,
-                        ),
                       if (playlistVsVideosRefs)
                         await $_getPrefetchedData<
                           Video,
@@ -13279,7 +13374,6 @@ typedef $$VideosTableProcessedTableManager =
         bool videoContentDetailsRefs,
         bool videoStatusesRefs,
         bool videoStatisticsRefs,
-        bool videoProgressRefs,
         bool playlistVsVideosRefs,
         bool videoSearchVsVideosRefs,
         bool seriesRefs,
@@ -15078,33 +15172,6 @@ typedef $$VideoProgressTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$VideoProgressTableReferences
-    extends BaseReferences<_$Database, $VideoProgressTable, VideoProgressData> {
-  $$VideoProgressTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $VideosTable _idTable(_$Database db) => db.videos.createAlias(
-    $_aliasNameGenerator(db.videoProgress.id, db.videos.id),
-  );
-
-  $$VideosTableProcessedTableManager get id {
-    final $_column = $_itemColumn<String>('id')!;
-
-    final manager = $$VideosTableTableManager(
-      $_db,
-      $_db.videos,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_idTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
 class $$VideoProgressTableFilterComposer
     extends Composer<_$Database, $VideoProgressTable> {
   $$VideoProgressTableFilterComposer({
@@ -15114,6 +15181,11 @@ class $$VideoProgressTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
     builder: (column) => ColumnFilters(column),
@@ -15123,29 +15195,6 @@ class $$VideoProgressTableFilterComposer
     column: $table.isFinished,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$VideosTableFilterComposer get id {
-    final $$VideosTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videos,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideosTableFilterComposer(
-            $db: $db,
-            $table: $db.videos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$VideoProgressTableOrderingComposer
@@ -15157,6 +15206,11 @@ class $$VideoProgressTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
     builder: (column) => ColumnOrderings(column),
@@ -15166,29 +15220,6 @@ class $$VideoProgressTableOrderingComposer
     column: $table.isFinished,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$VideosTableOrderingComposer get id {
-    final $$VideosTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videos,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideosTableOrderingComposer(
-            $db: $db,
-            $table: $db.videos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$VideoProgressTableAnnotationComposer
@@ -15200,6 +15231,9 @@ class $$VideoProgressTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
   GeneratedColumn<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
     builder: (column) => column,
@@ -15209,29 +15243,6 @@ class $$VideoProgressTableAnnotationComposer
     column: $table.isFinished,
     builder: (column) => column,
   );
-
-  $$VideosTableAnnotationComposer get id {
-    final $$VideosTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videos,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideosTableAnnotationComposer(
-            $db: $db,
-            $table: $db.videos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$VideoProgressTableTableManager
@@ -15245,9 +15256,12 @@ class $$VideoProgressTableTableManager
           $$VideoProgressTableAnnotationComposer,
           $$VideoProgressTableCreateCompanionBuilder,
           $$VideoProgressTableUpdateCompanionBuilder,
-          (VideoProgressData, $$VideoProgressTableReferences),
+          (
+            VideoProgressData,
+            BaseReferences<_$Database, $VideoProgressTable, VideoProgressData>,
+          ),
           VideoProgressData,
-          PrefetchHooks Function({bool id})
+          PrefetchHooks Function()
         > {
   $$VideoProgressTableTableManager(_$Database db, $VideoProgressTable table)
     : super(
@@ -15285,54 +15299,9 @@ class $$VideoProgressTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$VideoProgressTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({id = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (id) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.id,
-                                referencedTable: $$VideoProgressTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$VideoProgressTableReferences
-                                    ._idTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -15347,9 +15316,12 @@ typedef $$VideoProgressTableProcessedTableManager =
       $$VideoProgressTableAnnotationComposer,
       $$VideoProgressTableCreateCompanionBuilder,
       $$VideoProgressTableUpdateCompanionBuilder,
-      (VideoProgressData, $$VideoProgressTableReferences),
+      (
+        VideoProgressData,
+        BaseReferences<_$Database, $VideoProgressTable, VideoProgressData>,
+      ),
       VideoProgressData,
-      PrefetchHooks Function({bool id})
+      PrefetchHooks Function()
     >;
 typedef $$PlaylistsTableCreateCompanionBuilder =
     PlaylistsCompanion Function({
@@ -19300,6 +19272,7 @@ typedef $$SeriesTableCreateCompanionBuilder =
       required String coverVideoId,
       required String name,
       required String description,
+      Value<String?> dataHash,
       required int priority,
     });
 typedef $$SeriesTableUpdateCompanionBuilder =
@@ -19311,6 +19284,7 @@ typedef $$SeriesTableUpdateCompanionBuilder =
       Value<String> coverVideoId,
       Value<String> name,
       Value<String> description,
+      Value<String?> dataHash,
       Value<int> priority,
     });
 
@@ -19403,6 +19377,11 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dataHash => $composableBuilder(
+    column: $table.dataHash,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -19516,6 +19495,11 @@ class $$SeriesTableOrderingComposer extends Composer<_$Database, $SeriesTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get dataHash => $composableBuilder(
+    column: $table.dataHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get priority => $composableBuilder(
     column: $table.priority,
     builder: (column) => ColumnOrderings(column),
@@ -19593,6 +19577,9 @@ class $$SeriesTableAnnotationComposer
     column: $table.description,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get dataHash =>
+      $composableBuilder(column: $table.dataHash, builder: (column) => column);
 
   GeneratedColumn<int> get priority =>
       $composableBuilder(column: $table.priority, builder: (column) => column);
@@ -19708,6 +19695,7 @@ class $$SeriesTableTableManager
                 Value<String> coverVideoId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> description = const Value.absent(),
+                Value<String?> dataHash = const Value.absent(),
                 Value<int> priority = const Value.absent(),
               }) => SeriesCompanion(
                 createdAt: createdAt,
@@ -19717,6 +19705,7 @@ class $$SeriesTableTableManager
                 coverVideoId: coverVideoId,
                 name: name,
                 description: description,
+                dataHash: dataHash,
                 priority: priority,
               ),
           createCompanionCallback:
@@ -19728,6 +19717,7 @@ class $$SeriesTableTableManager
                 required String coverVideoId,
                 required String name,
                 required String description,
+                Value<String?> dataHash = const Value.absent(),
                 required int priority,
               }) => SeriesCompanion.insert(
                 createdAt: createdAt,
@@ -19737,6 +19727,7 @@ class $$SeriesTableTableManager
                 coverVideoId: coverVideoId,
                 name: name,
                 description: description,
+                dataHash: dataHash,
                 priority: priority,
               ),
           withReferenceMapper: (p0) => p0

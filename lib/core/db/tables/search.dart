@@ -10,7 +10,7 @@ class ChannelSearches extends Table with TableTimedMixin {
 }
 
 class ChannelSearchVsChannels extends Table {
-  late final searchId = integer().references(ChannelSearches, #id)();
+  late final searchId = integer().references(ChannelSearches, #id, onDelete: .cascade)();
   late final channelId = text().references(Channels, #id)();
   late final priority = integer()();
 
@@ -25,7 +25,7 @@ class VideoSearches extends Table with TableTimedMixin {
 }
 
 class VideoSearchVsVideos extends Table {
-  late final searchId = integer().references(VideoSearches, #id)();
+  late final searchId = integer().references(VideoSearches, #id, onDelete: .cascade)();
   late final videoId = text().references(Videos, #id)();
   late final priority = integer()();
 

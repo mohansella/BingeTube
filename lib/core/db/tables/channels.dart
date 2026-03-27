@@ -12,7 +12,7 @@ class Channels extends Table with TableTimedMixin {
 }
 
 class ChannelSnippets extends Table {
-  late final id = text().references(Channels, #id)();
+  late final id = text().references(Channels, #id, onDelete: .cascade)();
   late final title = text()();
   late final description = text()();
 
@@ -21,7 +21,7 @@ class ChannelSnippets extends Table {
 }
 
 class ChannelThumbnails extends Table {
-  late final id = text().references(Channels, #id)();
+  late final id = text().references(Channels, #id, onDelete: .cascade)();
   late final defaultUrl = text()();
   late final mediumUrl = text()();
   late final highUrl = text()();
@@ -31,7 +31,7 @@ class ChannelThumbnails extends Table {
 }
 
 class ChannelContentDetails extends Table {
-  late final id = text().references(Channels, #id)();
+  late final id = text().references(Channels, #id, onDelete: .cascade)();
   late final likesPlaylist = text().nullable()();
   late final uploadPlaylist = text().nullable()();
 
@@ -40,7 +40,7 @@ class ChannelContentDetails extends Table {
 }
 
 class ChannelStatistics extends Table {
-  late final id = text().references(Channels, #id)();
+  late final id = text().references(Channels, #id, onDelete: .cascade)();
   late final viewCount = integer()();
   late final subscriberCount = integer()();
   late final hiddenSubscriberCount = boolean()();
@@ -51,7 +51,7 @@ class ChannelStatistics extends Table {
 }
 
 class ChannelStatuses extends Table {
-  late final id = text().references(Channels, #id)();
+  late final id = text().references(Channels, #id, onDelete: .cascade)();
   late final privacyStatus = text()();
   late final isLinked = boolean()();
   late final longUploadsStatus = text()();

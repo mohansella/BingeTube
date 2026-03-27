@@ -14,7 +14,7 @@ class Videos extends Table with TableTimedMixin {
 }
 
 class VideoSnippets extends Table {
-  late final id = text().references(Videos, #id)();
+  late final id = text().references(Videos, #id, onDelete: .cascade)();
   late final publishedAt = dateTime()();
   late final title = text()();
   late final description = text()();
@@ -25,7 +25,7 @@ class VideoSnippets extends Table {
 }
 
 class VideoThumbnails extends Table {
-  late final id = text().references(Videos, #id)();
+  late final id = text().references(Videos, #id, onDelete: .cascade)();
   late final defaultUrl = text()();
   late final mediumUrl = text()();
   late final highUrl = text()();
@@ -37,7 +37,7 @@ class VideoThumbnails extends Table {
 }
 
 class VideoContentDetails extends Table {
-  late final id = text().references(Videos, #id)();
+  late final id = text().references(Videos, #id, onDelete: .cascade)();
   late final duration = text()();
   late final dimension = text()();
   late final definition = text()();
@@ -50,7 +50,7 @@ class VideoContentDetails extends Table {
 }
 
 class VideoStatuses extends Table {
-  late final id = text().references(Videos, #id)();
+  late final id = text().references(Videos, #id, onDelete: .cascade)();
   late final uploadStatus = text()();
   late final privacyStatus = text()();
   late final license = text()();
@@ -63,7 +63,7 @@ class VideoStatuses extends Table {
 }
 
 class VideoStatistics extends Table {
-  late final id = text().references(Videos, #id)();
+  late final id = text().references(Videos, #id, onDelete: .cascade)();
   late final viewCount = integer()();
   late final likeCount = integer().nullable()();
   late final dislikeCount = integer().nullable()();
@@ -75,7 +75,7 @@ class VideoStatistics extends Table {
 }
 
 class VideoProgress extends Table {
-  late final id = text().references(Videos, #id)();
+  late final id = text()();
   late final watchPosition = integer().withDefault(const Constant(0))();
   late final isFinished = boolean().withDefault(const Constant(false))();
 
