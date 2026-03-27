@@ -26,23 +26,24 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     if (result.isEmpty) {
       _logger.info('User Binge collection is empty. so will create one');
       await createCollection(
-        'Default Collection',
-        'Default collection created by system',
-        false,
+        name: 'Default Collection',
+        description: 'Default collection created by system',
+        isSystem: false,
       );
       result = await query.get();
     }
     return result[0];
   }
 
-  Future<Collection> createCollection(
-    String name,
-    String description,
-    bool isSystem,
-  ) async {
+  Future<Collection> createCollection({
+    required String name,
+    required String description,
+    required bool isSystem,
+    int priority = 0,
+  }) async {
     final rowId = await into(collections).insert(
       CollectionsCompanion.insert(
-        priority: 0,
+        priority: priority,
         name: name,
         description: description,
         isSystem: isSystem,
@@ -50,6 +51,22 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     );
     final query = select(collections)..where((c) => c.id.equals(rowId));
     return query.getSingle();
+  }
+
+  Future<void> updateCollection(
+    int collectionId, {
+    required int priority,
+    required String description,
+  }) async {
+    final query = update(collections)..where((c) => c.id.equals(collectionId));
+    await query.write(
+      CollectionsCompanion(priority: Value(priority), description: Value(description)),
+    );
+  }
+
+  Future<void> deleteCollection(int collectionId) async {
+    final query = delete(collections)..where((c)=>c.id.equals(collectionId));
+    await query.go();
   }
 
   Future<List<Collection>> getCollections({bool isSystem = false}) {

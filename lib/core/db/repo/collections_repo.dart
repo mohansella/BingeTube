@@ -5,20 +5,90 @@ import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/collection_model.dart';
 import 'package:bingetube/core/db/models/sery_model.dart';
+import 'package:bingetube/core/log/log_manager.dart';
 
 class CollectionsRepo {
   final bool isSystem;
   final BingeDao _bingeDao = BingeDao(Database());
 
+  static final _logger = LogManager.getLogger('CollectionsRepo');
+
   CollectionsRepo({required this.isSystem});
 
   Stream<List<CollectionModel>> streamCollections() async* {
+    final dbStream = _bingeDao.streamCollectionModels(isSystem: isSystem);
     if (isSystem) {
-      yield await _getDiscoverCollection();
-      await Future.delayed(Duration(days: 3650));
+      final discover = await _getDiscoverCollection();
+      await for (final system in dbStream) {
+        yield await _mergeDiscoverIntoSystem(system: system, discover: discover);
+      }
     } else {
-      yield* _bingeDao.streamCollectionModels();
+      yield* dbStream;
     }
+  }
+
+  Future<List<CollectionModel>> _mergeDiscoverIntoSystem({
+    required List<CollectionModel> system,
+    required List<CollectionModel> discover,
+  }) async {
+    await _mergeFirstTime(system: system, discover: discover);
+    return discover;
+  }
+
+  bool _firstUpdated = false;
+  Future<void> _mergeFirstTime({
+    required List<CollectionModel> system,
+    required List<CollectionModel> discover,
+  }) async {
+    if (_firstUpdated) {
+      return;
+    }
+
+    //1. find CUD collections on top of system from discovered
+    final allSystem = await _bingeDao.getCollections(isSystem: isSystem);
+    final systemMap = Map.fromEntries(allSystem.map((c) => MapEntry(c.name, c)));
+    final discoverMap = Map.fromEntries(
+      discover.map((c) => MapEntry(c.collection.name, c.collection)),
+    );
+    _logger.info('system collections: ${allSystem.length}');
+    final newCols = {...discoverMap}..removeWhere((k, v) => systemMap.containsKey(k));
+    final delCols = {...systemMap}..removeWhere((k, v) => discoverMap.containsKey(k));
+    final updCols = {...systemMap}
+      ..removeWhere((k, systemCol) {
+        if (discoverMap.containsKey(k)) {
+          final discoverCol = discoverMap[k]!;
+          return systemCol.priority == discoverCol.priority &&
+              systemCol.description == discoverCol.description;
+        }
+        return true;
+      });
+    _logger.info(
+      'discovered collection new:${newCols.keys} delete:${delCols.keys} update:${updCols.keys}',
+    );
+
+    //2.apply CU on system
+    for (final newCol in newCols.values) {
+      await _bingeDao.createCollection(
+        priority: newCol.priority,
+        name: newCol.name,
+        description: newCol.description,
+        isSystem: isSystem,
+      );
+    }
+    for (final updCol in updCols.values) {
+      final col = discoverMap[updCol.name]!;
+      await _bingeDao.updateCollection(
+        updCol.id,
+        priority: col.priority,
+        description: col.description,
+      );
+    }
+
+    //cleanup
+    for (final delCol in delCols.values) {
+      await _bingeDao.deleteCollection(delCol.id);
+    }
+    _firstUpdated = true;
   }
 
   Future<List<CollectionModel>> _getDiscoverCollection() async {

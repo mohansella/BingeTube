@@ -103,9 +103,9 @@ class _ChooseCollectionWidgetState extends State<ChooseCollectionWidget> {
                         ? null
                         : () async {
                             final collection = await _bingeDao.createCollection(
-                              _inputValue!,
-                              '',
-                              false,
+                              name: _inputValue!,
+                              description: '',
+                              isSystem: false,
                             );
                             widget.onChoose(collection);
                             if (context.mounted) {
