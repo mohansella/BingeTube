@@ -13,3 +13,7 @@ targets:
         options:
           build_extensions:
             '^lib/{{}}.dart': 'lib/generated/{{}}.freezed.dart'
+      drift_dev:
+        options:
+          databases:
+            app_db: lib/core/db/database.dart

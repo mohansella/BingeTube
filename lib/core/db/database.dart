@@ -1,3 +1,4 @@
+import 'package:bingetube/core/db/database.steps.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:logging/logging.dart';
@@ -54,34 +55,51 @@ class Database extends _$Database {
   static final Logger _logger = LogManager.getLogger('Database');
 
   static final _database = Database._internal();
-  factory Database() => _database;
-  Database._internal()
-    : super(
-        driftDatabase(
-          name: 'database',
-          web: DriftWebOptions(
-            sqlite3Wasm: Uri.parse('sqlite3.wasm'),
-            driftWorker: Uri.parse('drift_worker.js'),
-          ),
-        ),
-      );
+
+  factory Database([QueryExecutor? e]) {
+    if (e == null) {
+      return _database;
+    }
+    return Database._internal(e);
+  }
+
+  Database._internal([QueryExecutor? e]) : super(e ?? _openConnection());
+
+  static QueryExecutor _openConnection() {
+    return driftDatabase(
+      name: 'database',
+      web: DriftWebOptions(
+        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+        driftWorker: Uri.parse('drift_worker.js'),
+      ),
+    );
+  }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration =>
-      MigrationStrategy(beforeOpen: listenOpen, onCreate: listenFirstTimeOpen);
+  MigrationStrategy get migration => MigrationStrategy(
+    beforeOpen: _listenOpen,
+    onCreate: _listenFirstTimeOpen,
+    onUpgrade: stepByStep(from1To2: _from1To2),
+  );
 
-  Future<void> listenFirstTimeOpen(Migrator m) async {
+  Future<void> _listenFirstTimeOpen(Migrator m) async {
     _logger.info('creating tables');
     await m.createAll();
   }
 
-  Future<void> listenOpen(OpeningDetails openDetails) async {
+  Future<void> _listenOpen(OpeningDetails openDetails) async {
     await customStatement('PRAGMA foreign_keys = ON');
     _logger.info(
       'opened database. version:${openDetails.versionNow} before:${openDetails.versionBefore}',
     );
+  }
+
+  Future<void> _from1To2(Migrator m, Schema2 schema) async {
+    _logger.info('migrating databse from 1 to 2');
+    await m.addColumn(schema.series, schema.series.dataHash);
+    _logger.info('migrated databse from 1 to 2');
   }
 }

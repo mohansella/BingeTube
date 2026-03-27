@@ -10,6 +10,8 @@ class Series extends Table with TableTimedMixin {
   late final name = text()();
   late final description = text()();
 
+  late final dataHash = text().nullable()();
+
   late final priority = integer()();
 }
 
