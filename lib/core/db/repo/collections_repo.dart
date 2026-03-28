@@ -46,10 +46,8 @@ class CollectionsRepo {
 
     //1. find CUD collections on top of system from discovered
     final allSystem = await _bingeDao.getCollections(isSystem: isSystem);
-    final systemMap = Map.fromEntries(allSystem.map((c) => MapEntry(c.name, c)));
-    final discoverMap = Map.fromEntries(
-      discover.map((c) => MapEntry(c.collection.name, c.collection)),
-    );
+    final systemMap = {for (final c in allSystem) c.name: c};
+    final discoverMap = {for (final c in discover) c.collection.name: c.collection};
     _logger.info('system collections: ${allSystem.length}');
     final newCols = {...discoverMap}..removeWhere((k, v) => systemMap.containsKey(k));
     final delCols = {...systemMap}..removeWhere((k, v) => discoverMap.containsKey(k));
@@ -66,14 +64,15 @@ class CollectionsRepo {
       'discovered collection new:${newCols.keys} delete:${delCols.keys} update:${updCols.keys}',
     );
 
-    //2.apply CU on system
+    //2.apply collection CU operations on system
     for (final newCol in newCols.values) {
-      await _bingeDao.createCollection(
+      final newSysCol = await _bingeDao.createCollection(
         priority: newCol.priority,
         name: newCol.name,
         description: newCol.description,
         isSystem: isSystem,
       );
+      systemMap[newSysCol.name] = newSysCol;
     }
     for (final updCol in updCols.values) {
       final col = discoverMap[updCol.name]!;
@@ -84,7 +83,54 @@ class CollectionsRepo {
       );
     }
 
-    //cleanup
+    //3. move collection to user's default collection
+    final systemSMap = {for (final s in system.expand((c) => c.series)) s.sery.name: s};
+    final discoverSMap = {
+      for (final s in discover.expand((c) => c.series)) s.sery.name: s,
+    };
+    final newSeries = {...discoverSMap}..removeWhere((k, s) => systemSMap.containsKey(k));
+    final delSeries = {...systemSMap}..removeWhere((k, s) => discoverSMap.containsKey(k));
+    _logger.info('discovered series new_count:${newSeries.length} del:${delSeries.keys}');
+    final defColId = await _bingeDao.getDefaultCollection();
+    for (final delSery in delSeries.values) {
+      await _bingeDao.updateSery(delSery.sery.id, collectionId: defColId.id);
+    }
+
+    //4. find series need update
+    final disColIdVsName = {for (final c in discover) c.collection.id: c.collection.name};
+    final updSeryIdVsColId = <int, int>{};
+    final updSeries = {...systemSMap}
+      ..removeWhere((k, sysSeries) {
+        if (discoverSMap.containsKey(k)) {
+          final disSeries = discoverSMap[k]!;
+          final disColName = disColIdVsName[disSeries.sery.collectionId]!;
+          final sysCol = systemMap[disColName]!;
+          if (sysSeries.sery.collectionId != sysCol.id) {
+            _logger.info('series:$k collection name updated to $disColName');
+            updSeryIdVsColId[sysSeries.sery.id] = sysCol.id;
+            return false;
+          }
+          final disSery = disSeries.sery;
+          final sysSery = sysSeries.sery;
+          return sysSery.description == disSery.description &&
+              sysSery.priority == sysSery.priority;
+        }
+        return true;
+      });
+    _logger.info('series: ${updSeries.keys} needs update');
+    for (final entry in updSeryIdVsColId.entries) {
+      await _bingeDao.updateSery(entry.key, collectionId: entry.value);
+    }
+    for (final updSery in updSeries.values) {
+      final disSery = discoverSMap[updSery.sery.name]!;
+      await _bingeDao.updateSery(
+        updSery.sery.id,
+        description: disSery.sery.description,
+        priority: disSery.sery.priority,
+      );
+    }
+
+    //4. delete collections
     for (final delCol in delCols.values) {
       await _bingeDao.deleteCollection(delCol.id);
     }
@@ -108,13 +154,23 @@ class CollectionsRepo {
     final now = DateTime.now();
     for (final jCollection in jCollections) {
       final collectionName = jCollection['name'] as String;
+      final collection = Collection(
+        createdAt: now,
+        updatedAt: now,
+        id: -1,
+        isSystem: isSystem,
+        priority: ++collectionPriority,
+        name: collectionName,
+        description: '',
+      );
+
       final seryModels = <SeryModel>[];
       final jSeries = jCollection['series'] as List;
       int seryPriority = 0;
+
       for (final jSery in jSeries) {
         final title = jSery['title'] as String;
         final description = jSery['description'] as String;
-
         final jCover = jSery['cover'];
         final coverId = jCover['id'] as String;
         final defaultUrl = jCover['defaultUrl'] as String;
@@ -122,7 +178,6 @@ class CollectionsRepo {
         final highUrl = jCover['highUrl'] as String;
         final standardUrl = jCover['standardUrl'] as String?;
         final maxresUrl = jCover['maxresUrl'] as String?;
-
         final dataPath = jSery['dataPath'] as String;
         final dataHash = jSery['dataHash'] as String;
 
@@ -130,7 +185,7 @@ class CollectionsRepo {
           createdAt: now,
           updatedAt: now,
           id: -1,
-          collectionId: -1,
+          collectionId: collectionPriority,
           coverVideoId: coverId,
           name: title,
           description: description,
@@ -153,23 +208,10 @@ class CollectionsRepo {
           dataHash: dataHash,
         );
         seryModels.add(seryModel);
-
-        final collection = Collection(
-          createdAt: now,
-          updatedAt: now,
-          id: -1,
-          isSystem: isSystem,
-          priority: ++collectionPriority,
-          name: collectionName,
-          description: '',
-        );
-
-        final collectionModel = CollectionModel(
-          collection: collection,
-          series: seryModels,
-        );
-        toReturn.add(collectionModel);
       }
+
+      final collectionModel = CollectionModel(collection: collection, series: seryModels);
+      toReturn.add(collectionModel);
     }
     return toReturn;
   }

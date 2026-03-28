@@ -65,7 +65,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }
 
   Future<void> deleteCollection(int collectionId) async {
-    final query = delete(collections)..where((c)=>c.id.equals(collectionId));
+    final query = delete(collections)..where((c) => c.id.equals(collectionId));
     await query.go();
   }
 
@@ -249,8 +249,20 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     });
   }
 
-  Future<void> updateSeryCover({required int seryId, required String videoId}) async {
-    final comp = SeriesCompanion(id: Value(seryId), coverVideoId: Value(videoId));
+  Future<void> updateSery(
+    int seryId, {
+    String? coverId,
+    String? description,
+    int? priority,
+    int? collectionId,
+  }) async {
+    final comp = SeriesCompanion(
+      id: Value(seryId),
+      coverVideoId: coverId == null ? Value.absent() : Value(coverId),
+      description: description == null ? Value.absent() : Value(description),
+      priority: priority == null ? Value.absent() : Value(priority),
+      collectionId: collectionId == null ? Value.absent() : Value(collectionId),
+    );
     final query = update(series)..where((s) => s.id.equals(seryId));
     await query.write(comp);
   }

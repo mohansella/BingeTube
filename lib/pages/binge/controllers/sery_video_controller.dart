@@ -25,7 +25,7 @@ class SeryVideoBingeController extends BaseBingeController {
   @override
   void setActiveVideoId(String videoId) {
     super.setActiveVideoId(videoId);
-    _bingeDao.updateSeryCover(seryId: seryId, videoId: videoId);
+    _bingeDao.updateSery(seryId, coverId: videoId);
   }
 
   @override
