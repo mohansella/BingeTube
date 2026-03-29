@@ -68,14 +68,14 @@ sealed class SeryPort {
     return Uint8List.fromList(zipBytes);
   }
 
-  static Future<void> import(Uint8List data, int collectionId, int priority) async {
+  static Future<Sery> import(Uint8List data, int collectionId, int priority) async {
     final dataBytes = GZipCodec().decode(data);
     final value = utf8.decode(dataBytes);
     final json = jsonDecode(value);
-    await _importAsJson(json, collectionId, priority);
+    return await _importAsJson(json, collectionId, priority);
   }
 
-  static Future<void> _importAsJson(json, int collectionId, int priority) async {
+  static Future<Sery> _importAsJson(json, int collectionId, int priority) async {
     final videosJson = json['videos'] as List<dynamic>;
     final channelJsons = json['channels'];
     final createdAt = DateTime.now().millisecondsSinceEpoch;
@@ -100,6 +100,6 @@ sealed class SeryPort {
     final bingeDao = BingeDao(db);
     final coverId = videosJson[0]['video']['id'];
     await videosDao.importVideoModels(model.videos);
-    await bingeDao.importBingeModel(model, collectionId, coverId, priority);
+    return await bingeDao.importBingeModel(model, collectionId, coverId, priority);
   }
 }

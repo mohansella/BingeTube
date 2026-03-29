@@ -6,6 +6,13 @@ class SeryModel {
 
   final String? dataPath;
   final String? dataHash;
+  final bool isSaved;
 
-  SeryModel({required this.sery, required this.thumbnail, this.dataPath, this.dataHash});
+  SeryModel({
+    required this.sery,
+    required this.thumbnail,
+    this.dataPath,
+    this.dataHash,
+    this.isSaved = true,
+  });
 }

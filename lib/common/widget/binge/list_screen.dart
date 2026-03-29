@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:bingetube/common/widget/custom_dialog.dart';
+import 'package:bingetube/core/db/repo/series_repo.dart';
+import 'package:bingetube/core/lang/mutable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +38,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   static const double minWidth = 160;
 
   late CollectionsRepo _collectionsRepo;
+  late SeriesRepo _seriesRepo;
   late AnimationController _lottieController;
   double _width = 0;
   double _height = 0;
@@ -49,6 +53,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   void initState() {
     super.initState();
     _collectionsRepo = CollectionsRepo(isSystem: widget.isSystem);
+    _seriesRepo = SeriesRepo(isSystem: widget.isSystem);
     _lottieController = AnimationController(vsync: this);
     _initDropState();
   }
@@ -185,7 +190,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             child: ListView.separated(
               scrollDirection: .horizontal,
               itemCount: model.series.length,
-              itemBuilder: (_, i) => _buildSery(model.series[i]),
+              itemBuilder: (_, i) => _buildSery(model, model.series[i]),
               separatorBuilder: (_, _) => SizedBox(width: 4 * ratio),
             ),
           ),
@@ -194,8 +199,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Widget _buildSery(SeryModel model) {
-    return _buildDropRegion(model: model, child: _buildDragItem(model));
+  Widget _buildSery(CollectionModel collection, SeryModel model) {
+    return _buildDropRegion(model: model, child: _buildDragItem(collection, model));
   }
 
   DropRegion _buildDropRegion({SeryModel? model, required Widget child}) {
@@ -262,7 +267,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
           await _performDropsFromExternal(event);
         } else {
           final seryId = item.localData as int;
-          await bingeDao.moveSery(
+          await bingeDao.shiftSery(
             seryId: seryId,
             collectionId: collectionId,
             priority: priority,
@@ -273,7 +278,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  DragItemWidget _buildDragItem(SeryModel model) {
+  DragItemWidget _buildDragItem(CollectionModel collection, SeryModel model) {
     final heroId = widget.isSystem ? model.dataPath! : model.sery.id.toString();
     final heroImg = model.thumbnail.mediumUrl;
     double dropShift = model.sery.id == _droppingOnSeryId ? 20 : 0;
@@ -292,7 +297,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       child: DraggableWidget(
         child: Material(
           child: InkWell(
-            onTap: () => _onTapSery(context, model, heroId, heroImg),
+            onTap: () => _onTapSery(context, collection, model, heroId, heroImg),
             child: Transform.translate(
               offset: Offset(dropShift, 0.0),
               child: _buildActualSery(heroId, heroImg, model),
@@ -358,17 +363,57 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  void _onTapSery(BuildContext context, SeryModel model, String heroId, String heroImg) {
+  Future<void> _onTapSery(
+    BuildContext context,
+    CollectionModel collection,
+    SeryModel model,
+    String heroId,
+    String heroImg,
+  ) async {
+    var id = model.sery.id.toString();
+    if (widget.isSystem) {
+      if (!model.isSaved) {
+        final sery = await _downloadSery(collection, model);
+        if (sery == null) return;
+        id = sery.id.toString();
+      } else if (model.dataHash != model.sery.dataHash) {
+        ListScreenWidget._logger.info('updating sery:${model.sery.name}');
+        return;
+      } else {
+        ListScreenWidget._logger.info('opening sery:${model.sery.name}');
+      }
+    }
+    if (!context.mounted) return;
     context.pushNamed(
       Pages.binge.name,
       queryParameters: BingePage.buildParams(
         type: .seryVideos,
-        id: model.sery.id.toString(),
+        id: id,
         videoId: model.thumbnail.id,
         heroId: heroId,
         heroImg: heroImg,
       ),
     );
+  }
+
+  Future<Sery?> _downloadSery(CollectionModel collection, SeryModel model) async {
+    ListScreenWidget._logger.info('saving sery:${model.sery.name}');
+    final isCancelled = Mutable(false);
+    CustomDialog.show(
+      context,
+      'Downloading ${model.sery.name}',
+      'Cancel',
+      Row(mainAxisAlignment: .center, children: [CircularProgressIndicator()]),
+    ).then((v) {
+      isCancelled.value = true;
+    });
+
+    final toReturn = await _seriesRepo.downloadSery(isCancelled, collection, model);
+    final lContext = context;
+    if (lContext.mounted && !isCancelled.value) {
+      lContext.pop();
+    }
+    return toReturn;
   }
 
   Widget _buildSeryImageFallback(

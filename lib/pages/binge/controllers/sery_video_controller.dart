@@ -45,7 +45,7 @@ class SeryVideoBingeController extends BaseBingeController {
       return null;
     }
     if (action == .moveTo) {
-      await bingeDao.moveSery(seryId: seryId, collectionId: collection!.id);
+      await bingeDao.shiftSery(seryId: seryId, collectionId: collection!.id);
       return null;
     }
     if (action == .duplicate) {

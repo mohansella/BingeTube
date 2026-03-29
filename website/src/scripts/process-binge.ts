@@ -64,7 +64,7 @@ class ProcessBinge {
     })
     console.log(`writing discover.json file`)
     const jsonFilePath = path.resolve(this.discoverFolder, 'discover.json')
-    await writeFile(jsonFilePath, JSON.stringify(discover))
+    await writeFile(jsonFilePath, JSON.stringify(discover, null, 2))
   }
 
   static async main() {

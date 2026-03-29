@@ -32,7 +32,24 @@ class CollectionsRepo {
     required List<CollectionModel> discover,
   }) async {
     await _mergeFirstTime(system: system, discover: discover);
-    return discover;
+    final systemSMap = {for (final s in system.expand((c) => c.series)) s.sery.name: s};
+    return discover.map((d) {
+      return CollectionModel(
+        collection: d.collection,
+        series: d.series.map((ds) {
+          if (systemSMap.containsKey(ds.sery.name)) {
+            final sSery = systemSMap[ds.sery.name]!;
+            return SeryModel(
+              sery: sSery.sery,
+              thumbnail: sSery.thumbnail,
+              dataPath: ds.dataPath,
+              dataHash: ds.dataHash,
+            );
+          }
+          return ds;
+        }).toList(),
+      );
+    }).toList();
   }
 
   bool _firstUpdated = false;
@@ -150,25 +167,33 @@ class CollectionsRepo {
     final toReturn = <CollectionModel>[];
     final jCollections = response['collections'] as List;
 
-    int collectionPriority = 0;
+    int currCollectionId = 0;
+    int currCollectionPriority = 0;
+    int currSeriesId = 0;
+    int currSeriesPriority = 0;
     final now = DateTime.now();
     for (final jCollection in jCollections) {
+      currCollectionId++;
+      currCollectionPriority++;
+      currSeriesPriority = 0;
+
       final collectionName = jCollection['name'] as String;
       final collection = Collection(
         createdAt: now,
         updatedAt: now,
-        id: -1,
+        id: currCollectionId,
         isSystem: isSystem,
-        priority: ++collectionPriority,
+        priority: currCollectionPriority,
         name: collectionName,
         description: '',
       );
 
       final seryModels = <SeryModel>[];
       final jSeries = jCollection['series'] as List;
-      int seryPriority = 0;
 
       for (final jSery in jSeries) {
+        currSeriesId++;
+        currSeriesPriority++;
         final title = jSery['title'] as String;
         final description = jSery['description'] as String;
         final jCover = jSery['cover'];
@@ -184,12 +209,12 @@ class CollectionsRepo {
         final sery = Sery(
           createdAt: now,
           updatedAt: now,
-          id: -1,
-          collectionId: collectionPriority,
+          id: currSeriesId,
+          collectionId: currCollectionId,
           coverVideoId: coverId,
           name: title,
           description: description,
-          priority: ++seryPriority,
+          priority: currSeriesPriority,
         );
 
         final thumbnail = VideoThumbnail(
@@ -206,6 +231,7 @@ class CollectionsRepo {
           thumbnail: thumbnail,
           dataPath: dataPath,
           dataHash: dataHash,
+          isSaved: false,
         );
         seryModels.add(seryModel);
       }

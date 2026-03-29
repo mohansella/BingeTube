@@ -105,14 +105,15 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return toReturn;
   }
 
-  Future<void> importBingeModel(
+  Future<Sery> importBingeModel(
     BingeModel model,
     int collectionId,
     String coverId,
     int priority,
   ) async {
     final sery = await saveBingeModel(model, collectionId, coverId);
-    await moveSery(seryId: sery.id, collectionId: collectionId, priority: priority);
+    await shiftSery(seryId: sery.id, collectionId: collectionId, priority: priority);
+    return sery;
   }
 
   Future<Sery> saveBingeModel(
@@ -172,7 +173,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     });
   }
 
-  Future<void> moveSery({
+  Future<void> shiftSery({
     required int seryId,
     required int collectionId,
     int priority = 1,
@@ -253,6 +254,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     int seryId, {
     String? coverId,
     String? description,
+    String? dataHash,
     int? priority,
     int? collectionId,
   }) async {
@@ -262,6 +264,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       description: description == null ? Value.absent() : Value(description),
       priority: priority == null ? Value.absent() : Value(priority),
       collectionId: collectionId == null ? Value.absent() : Value(collectionId),
+      dataHash: dataHash == null ? Value.absent() : Value(dataHash),
     );
     final query = update(series)..where((s) => s.id.equals(seryId));
     await query.write(comp);
