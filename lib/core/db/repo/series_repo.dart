@@ -33,8 +33,36 @@ class SeriesRepo {
     final response = result.getOrThrow();
     final newSery = await SeryPort.import(
       response,
-      collection.collection.id,
-      model.sery.priority,
+      collectionId: collection.collection.id,
+      priority: model.sery.priority,
+    );
+    SeriesRepo._logger.info('saved sery:${model.sery.name} in id:${newSery.id}');
+
+    await _bingeDao.updateSery(newSery.id, dataHash: model.dataHash);
+    return newSery;
+  }
+
+  Future<Sery?> updateSery(
+    Mutable<bool> isCancelled,
+    CollectionModel collection,
+    SeryModel model,
+  ) async {
+    SeriesRepo._logger.info('updating sery:${model.sery.name}');
+
+    final result = await BingeApi.getBingeBlob(model.dataPath!);
+    if (result.isError()) {
+      throw result.exceptionOrNull()!;
+    }
+    if (isCancelled.value) {
+      SeriesRepo._logger.info('update sery cancelled');
+      return null;
+    }
+    final response = result.getOrThrow();
+    final newSery = await SeryPort.import(
+      response,
+      collectionId: collection.collection.id,
+      priority: model.sery.priority,
+      seryId: model.sery.id,
     );
     SeriesRepo._logger.info('saved sery:${model.sery.name} in id:${newSery.id}');
 

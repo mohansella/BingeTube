@@ -106,25 +106,36 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }
 
   Future<Sery> importBingeModel(
-    BingeModel model,
-    int collectionId,
-    String coverId,
-    int priority,
-  ) async {
-    final sery = await saveBingeModel(model, collectionId, coverId);
+    BingeModel model, {
+    required int collectionId,
+    required String coverId,
+    required int priority,
+    int? seryId,
+  }) async {
+    final sery = await saveBingeModel(
+      model,
+      collectionId: collectionId,
+      coverVideoId: coverId,
+      seryId: seryId,
+    );
     await shiftSery(seryId: sery.id, collectionId: collectionId, priority: priority);
     return sery;
   }
 
   Future<Sery> saveBingeModel(
-    BingeModel model,
-    int collectionId,
-    String coverVideoId, {
+    BingeModel model, {
+    required int collectionId,
+    required String coverVideoId,
     int? seryId,
   }) async {
     return await transaction(() async {
+      if (seryId != null) {
+        final deleteQuery = delete(series)..where((s) => s.id.equals(seryId));
+        await deleteQuery.go();
+      }
       final seriesId = await into(series).insert(
         SeriesCompanion.insert(
+          id: seryId == null ? Value.absent() : Value(seryId),
           collectionId: collectionId,
           coverVideoId: coverVideoId,
           name: model.title,
@@ -212,7 +223,11 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
 
   Future<void> duplicateSery(int seryId, int collectionId) async {
     final model = await streamBingeModel(seryId).first;
-    await saveBingeModel(model, collectionId, model.videos[0].video.id);
+    await saveBingeModel(
+      model,
+      collectionId: collectionId,
+      coverVideoId: model.videos[0].video.id,
+    );
   }
 
   Future<Sery> editSery(

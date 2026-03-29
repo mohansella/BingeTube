@@ -378,7 +378,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         id = sery.id.toString();
       } else if (model.dataHash != model.sery.dataHash) {
         ListScreenWidget._logger.info('updating sery:${model.sery.name}');
-        return;
+        final sery = await _updateSery(collection, model);
+        if (sery == null) return;
+        id = sery.id.toString();
       } else {
         ListScreenWidget._logger.info('opening sery:${model.sery.name}');
       }
@@ -409,6 +411,26 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     });
 
     final toReturn = await _seriesRepo.downloadSery(isCancelled, collection, model);
+    final lContext = context;
+    if (lContext.mounted && !isCancelled.value) {
+      lContext.pop();
+    }
+    return toReturn;
+  }
+
+  Future<Sery?> _updateSery(CollectionModel collection, SeryModel model) async {
+    ListScreenWidget._logger.info('updating sery:${model.sery.name}');
+    final isCancelled = Mutable(false);
+    CustomDialog.show(
+      context,
+      'Updating ${model.sery.name}',
+      'Cancel',
+      Row(mainAxisAlignment: .center, children: [CircularProgressIndicator()]),
+    ).then((v) {
+      isCancelled.value = true;
+    });
+
+    final toReturn = await _seriesRepo.updateSery(isCancelled, collection, model);
     final lContext = context;
     if (lContext.mounted && !isCancelled.value) {
       lContext.pop();
@@ -463,7 +485,11 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       throw Exception('invalid state');
     }
     final zipBytes = await file.readAll();
-    await SeryPort.import(zipBytes, _dropCollectionId, _dropPriority);
+    await SeryPort.import(
+      zipBytes,
+      collectionId: _dropCollectionId,
+      priority: _dropPriority,
+    );
   }
 
   void _importError(Object error) {

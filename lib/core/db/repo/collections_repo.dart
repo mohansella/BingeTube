@@ -41,7 +41,9 @@ class CollectionsRepo {
             final sSery = systemSMap[ds.sery.name]!;
             return SeryModel(
               sery: sSery.sery,
-              thumbnail: sSery.thumbnail,
+              thumbnail: sSery.sery.dataHash == ds.dataHash
+                  ? sSery.thumbnail
+                  : ds.thumbnail,
               dataPath: ds.dataPath,
               dataHash: ds.dataHash,
             );

@@ -192,7 +192,11 @@ abstract class BaseBingeController implements BingeController {
     if (action != .add) {
       throw StateError('Unsupported action: $action');
     }
-    return bingeDao.saveBingeModel(model!, collection!.id, coverVideo!.video.id);
+    return bingeDao.saveBingeModel(
+      model!,
+      collectionId: collection!.id,
+      coverVideoId: coverVideo!.video.id,
+    );
   }
 
   void onModel(BingeModel event) {
