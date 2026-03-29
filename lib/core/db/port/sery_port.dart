@@ -11,6 +11,8 @@ import 'package:bingetube/core/utils/file_utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 
+import 'package:archive/archive.dart';
+
 sealed class SeryPort {
   static final _logger = LogManager.getLogger('SeryPort');
 
@@ -64,7 +66,7 @@ sealed class SeryPort {
     json['channels'] = channelJsons;
     final jsonString = jsonEncode(json);
     final rawBytes = utf8.encode(jsonString);
-    final zipBytes = GZipCodec().encode(rawBytes);
+    final zipBytes = GZipEncoder().encode(rawBytes);
     return Uint8List.fromList(zipBytes);
   }
 
@@ -74,7 +76,7 @@ sealed class SeryPort {
     required int priority,
     int? seryId,
   }) async {
-    final dataBytes = GZipCodec().decode(data);
+    final dataBytes = GZipDecoder().decodeBytes(data);
     final value = utf8.decode(dataBytes);
     final json = jsonDecode(value);
     return await _importAsJson(
@@ -120,7 +122,7 @@ sealed class SeryPort {
       collectionId: collectionId,
       coverId: coverId,
       priority: priority,
-      seryId: seryId
+      seryId: seryId,
     );
   }
 }
