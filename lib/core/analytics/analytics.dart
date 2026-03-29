@@ -6,7 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart'
-    show FlutterError, PlatformDispatcher, kReleaseMode;
+    show FlutterError, PlatformDispatcher, kIsWeb, kReleaseMode;
 
 sealed class Analytics {
   static final _logger = LogManager.getLogger('Analytics');
@@ -36,7 +36,9 @@ sealed class Analytics {
     await Firebase.initializeApp(options: firebaseOptions);
     await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
-    if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
+    if (kIsWeb) {
+      _logger.info('crashlytics skipped on web build');
+    } else if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
