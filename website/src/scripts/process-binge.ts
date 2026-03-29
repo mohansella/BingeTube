@@ -56,9 +56,11 @@ class ProcessBinge {
     discover.collections.forEach((f) => {
       f.series = (f.series as DiscoverSeries[]).map((s) => {
         if (!this.bingeInfoMap.has(s.data)) {
-          throw Error(`binge defined in discover.yml missing: ${s.data}`)
+          throw Error(`binge defined in discover.yml missing/duplicate: ${s.data}`)
         } else {
-          return this.bingeInfoMap.get(s.data)!
+          const toReturn = this.bingeInfoMap.get(s.data)!
+          this.bingeInfoMap.delete(s.data)
+          return toReturn
         }
       })
     })
