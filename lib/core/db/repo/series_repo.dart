@@ -38,7 +38,11 @@ class SeriesRepo {
     );
     SeriesRepo._logger.info('saved sery:${model.sery.name} in id:${newSery.id}');
 
-    await _bingeDao.updateSery(newSery.id, dataHash: model.dataHash);
+    await _bingeDao.updateSery(
+      newSery.id,
+      dataHash: model.dataHash,
+      dataPath: model.dataPath,
+    );
     return newSery;
   }
 
@@ -66,7 +70,11 @@ class SeriesRepo {
     );
     SeriesRepo._logger.info('saved sery:${model.sery.name} in id:${newSery.id}');
 
-    await _bingeDao.updateSery(newSery.id, dataHash: model.dataHash);
+    await _bingeDao.updateSery(
+      newSery.id,
+      dataHash: model.dataHash,
+      dataPath: model.dataPath,
+    );
     return newSery;
   }
 }

@@ -269,6 +269,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     int seryId, {
     String? coverId,
     String? description,
+    String? dataPath,
     String? dataHash,
     int? priority,
     int? collectionId,
@@ -279,6 +280,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       description: description == null ? Value.absent() : Value(description),
       priority: priority == null ? Value.absent() : Value(priority),
       collectionId: collectionId == null ? Value.absent() : Value(collectionId),
+      dataPath: dataPath == null ? Value.absent() : Value(dataPath),
       dataHash: dataHash == null ? Value.absent() : Value(dataHash),
     );
     final query = update(series)..where((s) => s.id.equals(seryId));

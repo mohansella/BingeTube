@@ -103,9 +103,14 @@ class CollectionsRepo {
     }
 
     //3. move collection to user's default collection
-    final systemSMap = {for (final s in system.expand((c) => c.series)) s.sery.name: s};
+    for (final s in system.expand((c) => c.series)) {
+      print(s.sery.toJsonString());
+    }
+    final systemSMap = {
+      for (final s in system.expand((c) => c.series)) s.sery.dataPath!: s,
+    };
     final discoverSMap = {
-      for (final s in discover.expand((c) => c.series)) s.sery.name: s,
+      for (final s in discover.expand((c) => c.series)) s.dataPath!: s,
     };
     final newSeries = {...discoverSMap}..removeWhere((k, s) => systemSMap.containsKey(k));
     final delSeries = {...systemSMap}..removeWhere((k, s) => discoverSMap.containsKey(k));
@@ -141,7 +146,7 @@ class CollectionsRepo {
       await _bingeDao.updateSery(entry.key, collectionId: entry.value);
     }
     for (final updSery in updSeries.values) {
-      final disSery = discoverSMap[updSery.sery.name]!;
+      final disSery = discoverSMap[updSery.sery.dataPath!]!;
       await _bingeDao.updateSery(
         updSery.sery.id,
         description: disSery.sery.description,
