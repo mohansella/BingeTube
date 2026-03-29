@@ -108,7 +108,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             _height = _width * 9.0 / 16.0;
             return ListView.builder(
               itemCount: collections.length,
-              itemBuilder: (c, i) => _buildCollection(c, collections[i]),
+              itemBuilder: (c, i) => _buildCollection(collections[i]),
             );
           },
         );
@@ -164,7 +164,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Widget _buildCollection(BuildContext context, CollectionModel model) {
+  Widget _buildCollection(CollectionModel model) {
     final titleStyle = Theme.of(context).textTheme.bodyMedium;
     final ratio = _width / minWidth;
     final oFontSize = (titleStyle?.fontSize ?? 0);

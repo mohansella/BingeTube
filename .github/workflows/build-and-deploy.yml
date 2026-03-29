@@ -70,7 +70,7 @@ jobs:
       - if: needs.version-check.outputs.is_bump == 'true'
         run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
-      - run: flutter build web --release --base-href=/app/ --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build web --release --base-href=/app/ --source-maps --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - uses: actions/upload-artifact@v4
         with:
           name: flutter-web

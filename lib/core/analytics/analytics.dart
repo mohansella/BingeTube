@@ -44,6 +44,8 @@ sealed class Analytics {
       };
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
     }
+
+    _logger.info('analytics initialized');
     _isEnabled = true;
     _isInited = true;
   }
