@@ -1,0 +1,86 @@
+---
+import Layout from "../layout/layout.astro";
+import { SiteContants } from "../constants";
+import { 
+  Home,
+  Play,
+  Search,
+  Zap
+} from '@lucide/astro';
+
+const appUrl = SiteContants.APP_URL;
+---
+
+<Layout 
+  title="Page Not Found – BingeTube"
+  description="Looks like this page got lost. Get back to bingeing your favorite YouTube series with BingeTube.">
+
+  <section class="relative overflow-hidden">
+    <div class="absolute -top-24 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[120px]"></div>
+
+    <div class="mx-auto mb-6 max-w-5xl px-6 py-32 text-center">
+      
+      <div class="mx-auto mt-6 mb-6 w-fit rounded-full border border-indigo-500/20 bg-indigo-500/5 px-4 py-1 text-sm text-indigo-400">
+        <span class="flex items-center gap-2">
+          <Zap size={14} /> Lost in the feed?
+        </span>
+      </div>
+
+      <h1 class="text-6xl font-bold tracking-tight sm:text-8xl">
+        404
+      </h1>
+
+      <h2 class="mt-6 text-3xl font-bold tracking-tight sm:text-5xl">
+        This page doesn’t exist.
+      </h2>
+
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
+        Looks like you followed a broken path.  
+        Don’t worry — even YouTube gets messy sometimes.
+      </p>
+
+      <p class="mx-auto mt-2 max-w-2xl text-lg text-slate-400">
+        Let’s get you back to something worth watching.
+      </p>
+
+      <div class="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+        <a href="/" class="flex items-center justify-center gap-2 rounded-xl border border-slate-700 px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800">
+          <Home size={18} />
+          Go Home
+        </a>
+
+        <a href={appUrl} class="flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-8 py-4 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
+          <Play size={18} fill="currentColor" />
+          Start Binging
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-slate-800 py-20">
+    <div class="mx-auto max-w-3xl px-6 text-center">
+      
+      <div class="mx-auto mb-6 w-fit rounded-full border border-slate-700 bg-slate-900 px-4 py-1 text-sm text-slate-400">
+        <span class="flex items-center gap-2">
+          <Search size={14} /> What happened?
+        </span>
+      </div>
+
+      <h3 class="text-2xl font-semibold text-slate-200">
+        Probably one of these:
+      </h3>
+
+      <ul class="mt-6 space-y-3 text-slate-400">
+        <li>• The link is outdated or mistyped</li>
+        <li>• The page was removed or renamed</li>
+        <li>• You wandered too far into the void 😄</li>
+      </ul>
+
+      <p class="mt-8 text-slate-500">
+        Either way, your binge journey doesn’t have to stop here.
+      </p>
+
+    </div>
+  </section>
+
+</Layout>

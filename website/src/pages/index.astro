@@ -17,23 +17,27 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 ---
 
 <Layout 
-  title="BingeTube – Turn YouTube Channels into Watchable Series"
-  description="Organize YouTube videos into curated series. Track progress, avoid repeats, and binge channels from episode one—free and open source">
+  title="BingeTube – Watch YouTube Like a Series (No Repeats)"
+  description="Stop getting lost on YouTube. Watch videos in order, skip repeats, and finally finish series with BingeTube.">
 
     <section class="relative overflow-hidden">
       <div class="absolute -top-24 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[120px]"></div>
       
       <div class="mx-auto max-w-7xl px-6 py-28 text-center">
         <div class="mx-auto mb-6 w-fit rounded-full border border-indigo-500/20 bg-indigo-500/5 px-4 py-1 text-sm text-indigo-400">
-          <span class="flex items-center gap-2"><Zap size={14} /> Custom series creation now live</span>
+          <span class="flex items-center gap-2"><Zap size={14} /> Watch YouTube like a series</span>
         </div>
+
         <h1 class="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-7xl">
-          YouTube, organized as <br />
-          <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">premium series.</span>
+          Stop scrolling. <br />
+          <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Start finishing.</span>
         </h1>
+
         <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-          Access thousands of prepared series for free. Track your progress and turn chaotic channels into curated box sets.
+          No repeats. No distractions. No getting lost.  
+          Turn chaotic YouTube channels into structured, bingeable series you can actually finish.
         </p>
+
         <div class="mt-10 flex justify-center gap-4">
           <a href={appUrl} class="flex items-center gap-2 rounded-xl bg-indigo-500 px-8 py-4 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
             <Play size={18} fill="currentColor" />
@@ -55,39 +59,56 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
             <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-500">
               <Library size={24} />
             </div>
-            <h2 class="text-3xl font-bold tracking-tight">Thousands of series, <br/>ready to stream</h2>
-            <p class="text-slate-400 text-lg">Dive into a massive library of already prepared series from top YouTube creators. No setup required—just pick a series and start from Episode 1.</p>
+
+            <h2 class="text-3xl font-bold tracking-tight">
+              Curated series, <br/>ready to binge
+            </h2>
+
+            <p class="text-slate-400 text-lg">
+              Explore structured collections built from real YouTube channels.  
+              Watch in order, skip what you've already seen, and finally complete entire series without getting lost.
+            </p>
+
             <ul class="space-y-3">
               <li class="flex items-center gap-3 text-slate-300">
-                <CheckCircle2 size={18} class="text-indigo-500" /> Watch for free, forever
+                <CheckCircle2 size={18} class="text-indigo-500" /> Watch videos in the right order
               </li>
               <li class="flex items-center gap-3 text-slate-300">
-                <CheckCircle2 size={18} class="text-indigo-500" /> Track progress as you watch
+                <CheckCircle2 size={18} class="text-indigo-500" /> Automatically skip repeats
               </li>
               <li class="flex items-center gap-3 text-slate-300">
-                <CheckCircle2 size={18} class="text-indigo-500" /> Clean, ad-free focus
+                <CheckCircle2 size={18} class="text-indigo-500" /> Continue exactly where you left off
               </li>
             </ul>
           </div>
 
           <div class="rounded-3xl border border-slate-800 bg-slate-900/50 p-8 lg:p-12">
             <Settings2 class="mb-6 text-cyan-400" size={32} />
-            <h3 class="text-2xl font-bold">Be your own curator</h3>
-            <p class="mt-4 text-slate-400">Convert any channel or playlist into a custom series. Take full control of what you watch and how you watch it.</p>
+            <h3 class="text-2xl font-bold">Create your own series</h3>
+
+            <p class="mt-4 text-slate-400">
+              Turn any YouTube channel or playlist into a clean, structured series.  
+              Take control of your viewing experience and watch the way you want.
+            </p>
             
             <div class="mt-8 space-y-4">
               <div class="flex items-start gap-4 rounded-xl bg-slate-950 p-4 border border-slate-800">
                 <PlusCircle class="mt-1 text-indigo-400" size={20} />
                 <div>
-                  <p class="font-medium text-white">Reorder & Remix</p>
-                  <p class="text-sm text-slate-400">Change orders or reorder videos to create the perfect chronological flow.</p>
+                  <p class="font-medium text-white">Reorder for perfect flow</p>
+                  <p class="text-sm text-slate-400">
+                    Arrange videos into a logical sequence that actually makes sense.
+                  </p>
                 </div>
               </div>
+
               <div class="flex items-start gap-4 rounded-xl bg-slate-950 p-4 border border-slate-800">
                 <LayoutList class="mt-1 text-indigo-400" size={20} />
                 <div>
-                  <p class="font-medium text-white">Selective Binging</p>
-                  <p class="text-sm text-slate-400">Copy selected videos to custom series or only watch specific highlights from a channel.</p>
+                  <p class="font-medium text-white">Watch only what matters</p>
+                  <p class="text-sm text-slate-400">
+                    Pick the best parts of a channel and turn them into a focused binge experience.
+                  </p>
                 </div>
               </div>
             </div>
@@ -99,8 +120,14 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 
     <section class="border-t border-slate-800 bg-slate-950 py-20">
       <div class="mx-auto max-w-3xl px-6 text-center">
-        <h2 class="text-3xl font-semibold italic text-slate-200">"Turn scrolling into completing."</h2>
-        <p class="mt-4 text-slate-400 text-lg">BingeTube is an open-source tool designed to help you actually finish the educational and entertaining content you find on YouTube.</p>
+        <h2 class="text-3xl font-semibold italic text-slate-200">
+          "Stop browsing. Start completing."
+        </h2>
+
+        <p class="mt-4 text-slate-400 text-lg">
+          BingeTube helps you turn endless YouTube scrolling into a structured, satisfying experience — 
+          where you actually finish what you start.
+        </p>
       </div>
     </section>
 
