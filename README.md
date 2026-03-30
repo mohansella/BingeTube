@@ -5,7 +5,7 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-blue?logo=flutter)](https://flutter.dev)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-**BingeTube** is a cross-platform Flutter application that lets you watch YouTube channels sequentially — from oldest to newest — without re-watching videos you’ve already seen. It organizes YouTube content into curated collections with intelligent tracking, turning endless scrolling into a focused, series-like viewing experience.
+**BingeTube** is a cross-platform Flutter application that lets you watch YouTube channels sequentially — from first to last — without re-watching videos you’ve already seen. It organizes YouTube content into curated collections with intelligent tracking, turning endless scrolling into a focused, series-like viewing experience.
 
 ---
 
@@ -19,15 +19,13 @@ YouTube is powerful but unorganized. BingeTube solves this:
 | Skip already-watched videos | ❌ Manual, tedious | ✅ Automatic tracking |
 | Progress tracking | ❌ No sense of completion | ✅ Visual progress & stats |
 | Collections | ❌ Basic playlists | ✅ Curated, organized binges |
-| API dependency | ❌ Required for features | ✅ Optional (works offline) |
-| Cross-platform | ⚠️ Limited | ✅ Mobile, Desktop, Web |
 
 ---
 
 ## ✨ Key Features
 
 ### 🎬 Smart Binge-Watching
-- **Sequential playback** — Watch channels from first to latest video
+- **Sequential playback** — Watch channels from first to last video
 - **Watch tracking** — Mark videos as watched/unwatched; never lose your place
 - **Auto-skip** — Automatically skip previously watched videos
 - **Progress insight** — See how much of a series you’ve watched
