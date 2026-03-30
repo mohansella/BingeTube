@@ -4,6 +4,7 @@ import 'package:bingetube/pages/channel/channel_page.dart';
 import 'package:bingetube/pages/configkey/configkey_page.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/search/search_page.dart';
+import 'package:bingetube/pages/series/series_page.dart';
 import 'package:bingetube/pages/splash/splash_page.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -104,6 +105,10 @@ final GoRouter _routes = GoRouter(
     CustomGoRoute(
       page: Pages.binge,
       customBuilder: (context, state) => BingePage(state.uri.queryParameters),
+    ),
+    CustomGoRoute(
+      page: Pages.series,
+      customBuilder: (context, state) => SeriesPage(state.pathParameters['slug']!),
     ),
     CustomGoRoute(
       page: Pages.editBinge,

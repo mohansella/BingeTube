@@ -10,6 +10,7 @@ enum Pages {
   channel('/channel', 'Channel'),
 
   binge('/binge', 'Binge'),
+  series('/series:slug(.*)', 'Series'),
   editBinge('/edit_binge', 'Edit Binge');
 
   final String path;
