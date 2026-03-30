@@ -16,7 +16,8 @@ enum BingeSortType {
   system('Default'),
   name('Name'),
   date('Date'),
-  viewCount('ViewCount');
+  viewCount('ViewCount'),
+  duration('Duration');
 
   final String lable;
 
@@ -44,7 +45,10 @@ abstract class BingeSort with _$BingeSort {
         result = left.snippet.publishedAt.compareTo(right.snippet.publishedAt);
         break;
       case .viewCount:
-        result = left.statistics.viewCount - left.statistics.viewCount;
+        result = left.statistics.viewCount - right.statistics.viewCount;
+        break;
+      case .duration:
+        result = left.duration - right.duration;
         break;
       default:
         result = 0;

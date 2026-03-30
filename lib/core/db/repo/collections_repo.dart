@@ -103,9 +103,6 @@ class CollectionsRepo {
     }
 
     //3. move collection to user's default collection
-    for (final s in system.expand((c) => c.series)) {
-      print(s.sery.toJsonString());
-    }
     final systemSMap = {
       for (final s in system.expand((c) => c.series)) s.sery.dataPath!: s,
     };

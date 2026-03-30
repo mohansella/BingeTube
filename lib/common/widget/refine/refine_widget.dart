@@ -281,6 +281,34 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
     Function(BingeSort) setSort,
   ) {
     return [
+      ..._buildOrderWidgets(sort, setSort),
+      const SizedBox(height: 8),
+      const Divider(),
+      const SizedBox(height: 8),
+      ..._buildSortWidgets(sort, setSort),
+    ];
+  }
+
+  List<Widget> _buildOrderWidgets(BingeSort sort, Function(BingeSort) setSort) {
+    return [
+      const Text('Order', style: TextStyle(fontWeight: FontWeight.w600)),
+      RadioGroup<BingeSortOrder>(
+        groupValue: sort.sortOrder,
+        onChanged: (sortOrder) => setSort(sort.copyWith(sortOrder: sortOrder!)),
+        child: Column(
+          children: BingeSortOrder.values.map((sortOrder) {
+            return RadioListTile(
+              value: sortOrder,
+              title: Center(child: Text(sortOrder.lable)),
+            );
+          }).toList(),
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _buildSortWidgets(BingeSort sort, Function(BingeSort) setSort) {
+    return [
       const Text('Sort by', style: TextStyle(fontWeight: FontWeight.w600)),
 
       RadioGroup<BingeSortType>(
@@ -291,24 +319,6 @@ class _BingeRefineWidgetState extends State<BingeRefineWidget> {
             return RadioListTile(
               value: sortType,
               title: Center(child: Text(sortType.lable)),
-            );
-          }).toList(),
-        ),
-      ),
-
-      const SizedBox(height: 8),
-      const Divider(),
-      const SizedBox(height: 8),
-
-      const Text('Order', style: TextStyle(fontWeight: FontWeight.w600)),
-      RadioGroup<BingeSortOrder>(
-        groupValue: sort.sortOrder,
-        onChanged: (sortOrder) => setSort(sort.copyWith(sortOrder: sortOrder!)),
-        child: Column(
-          children: BingeSortOrder.values.map((sortOrder) {
-            return RadioListTile(
-              value: sortOrder,
-              title: Center(child: Text(sortOrder.lable)),
             );
           }).toList(),
         ),

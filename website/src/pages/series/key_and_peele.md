@@ -1,7 +1,7 @@
 ---
 layout: ../../layout/layout.astro
-title: "Key & Peele — 230+ Sketches in Order (No Repeats)"
-description: "Watch Key & Peele like a series. 230+ sketches in order. No repeats. Track progress and continue where you left off."
+title: "Key & Peele — 280+ Sketches in Order (No Repeats)"
+description: "Watch Key & Peele like a series. 280+ sketches in order. No repeats. Track progress and continue where you left off."
 ---
 
 <div class="content">
@@ -31,7 +31,7 @@ This fixes that.
 
 ## A better way to watch
 
-This is a curated collection of 230+ Key & Peele sketches, arranged to feel like a continuous series.
+This is a curated collection of 280+ Key & Peele sketches, arranged to feel like a continuous series.
 
 - Clear, structured order  
 - No repeated videos  
@@ -63,7 +63,7 @@ Key & Peele is a sketch comedy show by Keegan-Michael Key and Jordan Peele.
 It’s known for sharp writing, recurring characters, and highly rewatchable sketches.  
 Many of their clips have been viewed millions of times.
 
-This collection brings together 230+ sketches into a single, consistent flow.
+This collection brings together 280+ sketches into a single, consistent flow.
 
 ## Note
 

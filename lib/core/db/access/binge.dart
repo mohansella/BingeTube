@@ -130,8 +130,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }) async {
     return await transaction(() async {
       if (seryId != null) {
-        final deleteQuery = delete(series)..where((s) => s.id.equals(seryId));
-        await deleteQuery.go();
+        await deleteSery(seryId);
       }
       final seriesId = await into(series).insert(
         SeriesCompanion.insert(
