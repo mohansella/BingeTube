@@ -63,6 +63,7 @@ dependencies:
   super_clipboard: ^0.9.1
   firebase_crashlytics: ^5.0.7
   archive: ^4.0.9
+  url_strategy: ^0.3.0
 
 dev_dependencies:
   flutter_test:
