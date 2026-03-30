@@ -43,6 +43,8 @@ final _initNotifier = ValueNotifier<bool>(false);
 
 final RouteObserver<ModalRoute<void>> _routeObserver = RouteObserver<ModalRoute<void>>();
 
+String? _pathAfterSplash;
+
 final GoRouter _routes = GoRouter(
   observers: [
     _routeObserver,
@@ -54,10 +56,11 @@ final GoRouter _routes = GoRouter(
   refreshListenable: _initNotifier,
   redirect: (context, routeState) {
     if (!_initNotifier.value && routeState.uri.path != Pages.splash.path) {
+      _pathAfterSplash = routeState.uri.path;
       return Pages.splash.path;
     }
     if (_initNotifier.value && routeState.uri.path == Pages.splash.path) {
-      return Pages.library.path;
+      return _pathAfterSplash ?? Pages.library.path;
     }
     return null;
   },

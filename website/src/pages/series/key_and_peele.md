@@ -7,6 +7,12 @@ description: "Watch Key & Peele like a series. 230+ sketches in order. No repeat
 <div class="content">
 
 # Key & Peele — watch it like a series
+<div>
+    <img
+      src="https://img.youtube.com/vi/Dd7FixvoKBw/maxresdefault.jpg"
+      alt="Watch Key & Peele complete collection in order"
+    />
+</div>
 
 <div class="cta">
   <a href="/app" class="btn">Start watching</a>
