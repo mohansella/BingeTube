@@ -16,7 +16,7 @@ android {
 
     // --- Load key.properties from secure folder ---
     val keystoreProperties = Properties()
-    val keystorePropertiesFile = File(System.getProperty("user.home"), "secrets/android/key.properties")
+    val keystorePropertiesFile = file("key.properties")
     if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
     } else {
