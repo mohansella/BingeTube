@@ -87,18 +87,21 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
+      - if: needs.version-check.outputs.is_bump == 'true'
+        run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.ANDROID_SIGN_PROPERTIES_FILE }}" | base64 --decode > android/app/key.properties
       - run: echo "${{ secrets.ANDROID_SIGN_JKS_FILE }}" | base64 --decode > android/app/upload-keystore.jks
       - run: flutter pub get
       - run: flutter build appbundle --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: flutter build apk --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: mv build/app/outputs/bundle/release/app-release.aab android-release-v${{ needs.version-check.outputs.version }}.aab
-      - run: mv build/app/outputs/flutter-apk/app-release.apk "android-release-v${{ needs.version-check.outputs.version }}.apk"
+      - run: mv build/app/outputs/flutter-apk/app-release.apk android-release-v${{ needs.version-check.outputs.version }}.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-builds
-          path: android-release-*.aab android-release-*.apk
+          path: |
+            android-release-*.aab
+            android-release-*.apk
 
   flutter-ios:
     runs-on: macos-latest
