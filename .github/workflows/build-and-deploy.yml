@@ -95,14 +95,14 @@ jobs:
       - if: needs.version-check.outputs.is_bump == 'true'
         run: flutter build appbundle --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: flutter build apk --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
-      - run: mv build/app/outputs/bundle/release/app-release.aab android-release-v${{ needs.version-check.outputs.version }}.aab
-      - run: mv build/app/outputs/flutter-apk/app-release.apk android-release-v${{ needs.version-check.outputs.version }}.apk
+      - run: mv build/app/outputs/bundle/release/app-release.aab android-v${{ needs.version-check.outputs.version }}.aab
+      - run: mv build/app/outputs/flutter-apk/app-release.apk android-v${{ needs.version-check.outputs.version }}.apk
       - uses: actions/upload-artifact@v4
         with:
           name: android-builds
           path: |
-            android-release-*.aab
-            android-release-*.apk
+            android-*.aab
+            android-*.apk
 
   flutter-ios:
     runs-on: macos-latest
@@ -253,5 +253,6 @@ jobs:
           files: |
             artifacts/**/*.zip
             artifacts/**/*.apk
+            artifacts/**/*.aab
             artifacts/**/*.ipa
           generate_release_notes: true
