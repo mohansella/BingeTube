@@ -87,8 +87,8 @@ jobs:
         with:
           channel: stable
           cache: true
-      - if: needs.version-check.outputs.is_bump == 'true'
-        run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
+      - run: echo "${{ secrets.FIREBASE_JSON_FILE }}" | base64 --decode > firebase.json
+      - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.ANDROID_SIGN_PROPERTIES_FILE }}" | base64 --decode > android/app/key.properties
       - run: echo "${{ secrets.ANDROID_SIGN_JKS_FILE }}" | base64 --decode > android/app/upload-keystore.jks
       - run: flutter pub get
