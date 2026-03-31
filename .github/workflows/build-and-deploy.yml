@@ -92,7 +92,8 @@ jobs:
       - run: echo "${{ secrets.ANDROID_SIGN_PROPERTIES_FILE }}" | base64 --decode > android/app/key.properties
       - run: echo "${{ secrets.ANDROID_SIGN_JKS_FILE }}" | base64 --decode > android/app/upload-keystore.jks
       - run: flutter pub get
-      - run: flutter build appbundle --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - if: needs.version-check.outputs.is_bump == 'true'
+        run: flutter build appbundle --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: flutter build apk --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: mv build/app/outputs/bundle/release/app-release.aab android-release-v${{ needs.version-check.outputs.version }}.aab
       - run: mv build/app/outputs/flutter-apk/app-release.apk android-release-v${{ needs.version-check.outputs.version }}.apk
