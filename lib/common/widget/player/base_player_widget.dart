@@ -214,19 +214,17 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
         margin: EdgeInsets.only(top: 8),
         message: tooltip,
         child: Container(
+          padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: colorDecoration ? Colors.black.withAlpha(140) : null,
-            shape: .circle,
+            color: onTap == null
+                ? Colors.white.withAlpha(10)
+                : Colors.black.withAlpha(100),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Row(
-            children: [
-              Icon(
-                icon,
-                size: size,
-                color: onTap == null ? Colors.white30 : Colors.white,
-              ),
-              if (text != null) ...[Text(text, style: textStyle)],
-            ],
+          child: Icon(
+            icon,
+            size: size,
+            color: onTap == null ? Colors.white30 : Colors.white,
           ),
         ),
       ),

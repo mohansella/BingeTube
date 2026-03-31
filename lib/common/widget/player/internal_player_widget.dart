@@ -85,45 +85,40 @@ class _InternalPlayerState extends BasePlayerState
       return null;
     }
     final iconSize = 28.0;
-    final style = TextStyle(fontSize: 14);
     return AppBar(
       automaticallyImplyLeading: false,
       title: Row(
-        mainAxisAlignment: .spaceBetween,
         children: [
           buildIconControl(
             () => Routes.popOrHome(context),
             Icons.arrow_back,
             iconSize,
             'Back',
-            colorDecoration: false,
           ),
-          buildIconControl(
-            controller.isPrevVideoExists ? () => widget.onEvent(.onPrev) : null,
-            Icons.skip_previous,
-            iconSize,
-            'Skip Previous',
-            colorDecoration: false,
-            text: 'Previous Ep.',
-            textStyle: style,
+          Spacer(),
+          Row(
+            children: [
+              buildIconControl(
+                controller.isPrevVideoExists ? () => widget.onEvent(.onPrev) : null,
+                Icons.skip_previous,
+                iconSize,
+                'Previous Episode',
+              ),
+              SizedBox(width: 12),
+              buildIconControl(
+                controller.isNextVideoExists ? () => widget.onEvent(.onNext) : null,
+                Icons.skip_next,
+                iconSize,
+                'Next Episode',
+              ),
+            ],
           ),
-          buildIconControl(
-            controller.isNextVideoExists ? () => widget.onEvent(.onNext) : null,
-            Icons.skip_next,
-            iconSize,
-            'Skip Next',
-            colorDecoration: false,
-            text: 'Next Ep.',
-            textStyle: style,
-          ),
+          Spacer(),
           buildIconControl(
             () => widget.onEvent(.onListToggle),
-            Icons.video_library_outlined,
-            iconSize - 5,
-            'Episodes',
-            text: 'All Ep.',
-            colorDecoration: false,
-            textStyle: style,
+            Icons.format_list_bulleted,
+            iconSize - 2,
+            'All Episodes',
           ),
         ],
       ),
@@ -149,12 +144,12 @@ class _InternalPlayerState extends BasePlayerState
     final pos = double.parse(splits[0]);
     final duration = double.parse(splits[1]);
     final progress = splits[2];
-    InternalPlayerWidget._logger.finer('pos:$pos duration:$duration progress:$progress');
+    InternalPlayerWidget._logger.info('pos:$pos duration:$duration progress:$progress');
     final id = model!.video.id;
     final dao = VideosDao(Database());
 
     bool isFinished = false;
-    if (duration - pos < 0) {
+    if (duration - pos <= 0) {
       isFinished = true;
       if (controller.isNextVideoExists) {
         widget.onEvent(.onNext);
