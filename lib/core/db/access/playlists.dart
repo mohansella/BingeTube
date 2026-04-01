@@ -238,9 +238,9 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
     final thumbnails = snippet['thumbnails'];
     final thumbComp = PlaylistThumbnailsCompanion.insert(
       id: id,
-      defaultUrl: thumbnails['default']['url'],
-      mediumUrl: thumbnails['medium']['url'],
-      highUrl: thumbnails['high']['url'],
+      defaultUrl: thumbnails['default']?['url'] ?? '',
+      mediumUrl: thumbnails['medium']?['url'] ?? '',
+      highUrl: thumbnails['high']?['url'] ?? '',
       updatedAt: updatedAt,
     );
 
