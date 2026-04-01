@@ -61,7 +61,7 @@ final GoRouter _routes = GoRouter(
       return Pages.splash.path;
     }
     if (_initNotifier.value && routeState.uri.path == Pages.splash.path) {
-      return _pathAfterSplash ?? Pages.library.path;
+      return _pathAfterSplash ?? Pages.discover.path;
     }
     return null;
   },
