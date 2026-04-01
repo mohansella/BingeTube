@@ -149,7 +149,7 @@ class _InternalPlayerState extends BasePlayerState
     final dao = VideosDao(Database());
 
     bool isFinished = false;
-    if (duration - pos <= 0) {
+    if (duration - pos <= 2) { //skip last 2 seconds
       isFinished = true;
       if (controller.isNextVideoExists) {
         widget.onEvent(.onNext);
