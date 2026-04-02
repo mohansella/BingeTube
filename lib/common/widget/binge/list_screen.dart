@@ -308,25 +308,22 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Hero _buildActualSery(String heroId, String heroImg, SeryModel model) {
+  Widget _buildActualSery(String heroId, String heroImg, SeryModel model) {
     final ratio = _width / minWidth;
     final totalCount = model.totalVideos;
     final viewedCount = model.watchedVideos;
     final channelUrl = model.iconUrl;
 
-    return Hero(
-      tag: heroId,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(4 * ratio),
-        child: Stack(
-          children: [
-            _buildSeryImage(heroImg, model),
-            _buildSeryBottomGradient(ratio),
-            _buildSeryTopRightCount(ratio, totalCount),
-            _buildSeryIconTitle(ratio, channelUrl, model),
-            if (viewedCount > 0) _buildSeryProgress(viewedCount, totalCount, ratio),
-          ],
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4 * ratio),
+      child: Stack(
+        children: [
+          Hero(tag: heroId, child: _buildSeryImage(heroImg, model)),
+          _buildSeryBottomGradient(ratio),
+          _buildSeryTopRightCount(ratio, totalCount),
+          _buildSeryIconTitle(ratio, channelUrl, model),
+          if (viewedCount > 0) _buildSeryProgress(viewedCount, totalCount, ratio),
+        ],
       ),
     );
   }

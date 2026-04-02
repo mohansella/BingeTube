@@ -72,7 +72,16 @@ class _InternalPlayerState extends BasePlayerState
 
   @override
   Widget buildMedia() {
-    return player.build(widget.videoId);
+    return Hero(
+      tag: widget.controller.heroId,
+      child: Stack(
+        fit: .expand,
+        children: [
+          Image.network(widget.controller.heroImg, fit: BoxFit.contain),
+          player.build(widget.videoId),
+        ],
+      ),
+    );
   }
 
   @override
@@ -149,7 +158,8 @@ class _InternalPlayerState extends BasePlayerState
     final dao = VideosDao(Database());
 
     bool isFinished = false;
-    if (duration - pos <= 2) { //skip last 2 seconds
+    if (duration - pos <= 2) {
+      //skip last 2 seconds
       isFinished = true;
       if (controller.isNextVideoExists) {
         widget.onEvent(.onNext);
