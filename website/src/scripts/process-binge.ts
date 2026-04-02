@@ -17,7 +17,7 @@ const gunzipAsync = promisify(gunzip)
 
 class ProcessBinge {
 
-  bingeInfoMap = new Map<String, SeriesInfo>();
+  bingeInfoMap = new Map<string, SeryModel>();
   discoverFolder = ''
 
   async processFiles() {
@@ -39,12 +39,15 @@ class ProcessBinge {
     const fileContent = fileBuffer.toString('utf-8')
     const model = JSON.parse(fileContent) as BingeModel
     const relativePath = filePath.slice(this.discoverFolder.length + 1)
-    const series: SeriesInfo = {
+    const videoModel = model.videos[0]
+    const series: SeryModel = {
       title: model.title,
       description: model.description,
       dataPath: relativePath,
       dataHash: zipHash,
-      cover: model.videos[0].thumbnails
+      coverUrl: videoModel.thumbnails.highUrl,
+      iconUrl: model.channels[videoModel.video.channelId]!.thumbnails.mediumUrl,
+      totalVideos: model.videos.length,
     }
     this.bingeInfoMap.set(relativePath, series)
   }
@@ -84,39 +87,38 @@ interface Discover {
 }
 
 interface DiscoverCollection {
-  name: String
-  series: DiscoverSeries[] | SeriesInfo[]
+  name: string
+  series: DiscoverSeries[] | SeryModel[]
 }
 
 interface DiscoverSeries {
-  data: String
+  data: string
 }
 
-interface SeriesInfo {
-  title: String
-  description: String
-  dataPath: String
-  dataHash: String
-  cover: VideoThumbnail
+interface SeryModel {
+  title: string
+  description: string
+  coverUrl: string
+  iconUrl: string
+  totalVideos: Number
+  dataPath: string
+  dataHash: string
 }
 
 interface BingeModel {
-  title: String
-  description: String
+  title: string
+  description: string
   videos: VideoModel[]
+  channels: Record<string, ChannelModel>
+}
+
+interface ChannelModel {
+  thumbnails: { mediumUrl: string }
 }
 
 interface VideoModel {
-  thumbnails: VideoThumbnail
-}
-
-interface VideoThumbnail {
-  id: String
-  defaultUrl: String
-  mediumUrl: String
-  highUrl: String
-  standardUrl?: String
-  maxresUrl?: String
+  video: { channelId: string }
+  thumbnails: { highUrl: string }
 }
 
 const isMain = process.argv[1] === fileURLToPath(import.meta.url)

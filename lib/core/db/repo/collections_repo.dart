@@ -41,9 +41,10 @@ class CollectionsRepo {
             final sSery = systemSMap[ds.sery.name]!;
             return SeryModel(
               sery: sSery.sery,
-              thumbnail: sSery.sery.dataHash == ds.dataHash
-                  ? sSery.thumbnail
-                  : ds.thumbnail,
+              coverUrl: sSery.coverUrl,
+              iconUrl: sSery.iconUrl,
+              watchedVideos: sSery.watchedVideos,
+              totalVideos: sSery.totalVideos,
               dataPath: ds.dataPath,
               dataHash: ds.dataHash,
             );
@@ -200,13 +201,9 @@ class CollectionsRepo {
         currSeriesPriority++;
         final title = jSery['title'] as String;
         final description = jSery['description'] as String;
-        final jCover = jSery['cover'];
-        final coverId = jCover['id'] as String;
-        final defaultUrl = jCover['defaultUrl'] as String;
-        final mediumUrl = jCover['mediumUrl'] as String;
-        final highUrl = jCover['highUrl'] as String;
-        final standardUrl = jCover['standardUrl'] as String?;
-        final maxresUrl = jCover['maxresUrl'] as String?;
+        final coverUrl = jSery['coverUrl'] as String;
+        final iconUrl = jSery['iconUrl'] as String;
+        final totalVideos = jSery['totalVideos'] as int;
         final dataPath = jSery['dataPath'] as String;
         final dataHash = jSery['dataHash'] as String;
 
@@ -215,24 +212,18 @@ class CollectionsRepo {
           updatedAt: now,
           id: currSeriesId,
           collectionId: currCollectionId,
-          coverVideoId: coverId,
+          coverVideoId: 'coverVideoId',
           name: title,
           description: description,
           priority: currSeriesPriority,
         );
 
-        final thumbnail = VideoThumbnail(
-          id: coverId,
-          defaultUrl: defaultUrl,
-          mediumUrl: mediumUrl,
-          highUrl: highUrl,
-          standardUrl: standardUrl,
-          maxresUrl: maxresUrl,
-        );
-
         final seryModel = SeryModel(
           sery: sery,
-          thumbnail: thumbnail,
+          coverUrl: coverUrl,
+          iconUrl: iconUrl,
+          watchedVideos: 0,
+          totalVideos: totalVideos,
           dataPath: dataPath,
           dataHash: dataHash,
           isSaved: false,

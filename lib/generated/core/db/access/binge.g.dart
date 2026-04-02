@@ -10,4 +10,7 @@ mixin _$BingeDaoMixin on DatabaseAccessor<Database> {
   $SeriesTable get series => attachedDatabase.series;
   $SeriesVsVideosTable get seriesVsVideos => attachedDatabase.seriesVsVideos;
   $VideoThumbnailsTable get videoThumbnails => attachedDatabase.videoThumbnails;
+  $VideoProgressTable get videoProgress => attachedDatabase.videoProgress;
+  $ChannelThumbnailsTable get channelThumbnails =>
+      attachedDatabase.channelThumbnails;
 }

@@ -280,7 +280,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
 
   DragItemWidget _buildDragItem(CollectionModel collection, SeryModel model) {
     final heroId = widget.isSystem ? model.dataPath! : model.sery.id.toString();
-    final heroImg = model.thumbnail.mediumUrl;
+    final heroImg = model.coverUrl;
     double dropShift = model.sery.id == _droppingOnSeryId ? 20 : 0;
     dropShift = _droppingOnLeft ? dropShift : -dropShift;
 
@@ -310,11 +310,120 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
 
   Hero _buildActualSery(String heroId, String heroImg, SeryModel model) {
     final ratio = _width / minWidth;
+    final totalCount = model.totalVideos;
+    final viewedCount = model.watchedVideos;
+    final channelUrl = model.iconUrl;
+
     return Hero(
       tag: heroId,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(4 * ratio),
-        child: _buildSeryImage(heroImg, model),
+        child: Stack(
+          children: [
+            _buildSeryImage(heroImg, model),
+            _buildSeryBottomGradient(ratio),
+            _buildSeryTopRightCount(ratio, totalCount),
+            _buildSeryIconTitle(ratio, channelUrl, model),
+            if (viewedCount > 0) _buildSeryProgress(viewedCount, totalCount, ratio),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Positioned _buildSeryProgress(int viewedCount, int totalCount, double ratio) {
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+      child: LinearProgressIndicator(
+        value: viewedCount / totalCount,
+        minHeight: 3 * ratio,
+        backgroundColor: Colors.white.withAlpha(50),
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+      ),
+    );
+  }
+
+  Positioned _buildSeryIconTitle(double ratio, String channelUrl, SeryModel model) {
+    return Positioned(
+      left: 8 * ratio,
+      bottom: 10 * ratio,
+      right: 8 * ratio,
+      child: Row(
+        children: [
+          Container(
+            width: 18 * ratio,
+            height: 18 * ratio,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 1),
+            ),
+            child: ClipOval(child: Image.network(channelUrl, fit: BoxFit.cover)),
+          ),
+          SizedBox(width: 6 * ratio),
+
+          Expanded(
+            child: Text(
+              model.sery.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12 * ratio,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Positioned _buildSeryTopRightCount(double ratio, int totalCount) {
+    return Positioned(
+      top: 6 * ratio,
+      right: 6 * ratio,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 4 * ratio, vertical: 2 * ratio),
+        decoration: BoxDecoration(
+          color: Colors.black.withAlpha(190),
+          borderRadius: BorderRadius.circular(3 * ratio),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.play_arrow, size: 10 * ratio, color: Colors.white),
+            SizedBox(width: 2 * ratio),
+            Text(
+              '$totalCount',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 8 * ratio,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Positioned _buildSeryBottomGradient(double ratio) {
+    return Positioned.fill(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: 80 * ratio,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              stops: const [0.0, 0.5],
+              colors: [Colors.black.withAlpha(210), Colors.transparent],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -391,7 +500,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       queryParameters: BingePage.buildParams(
         type: .seryVideos,
         id: id,
-        videoId: model.thumbnail.id,
+        videoId: model.sery.coverVideoId,
         heroId: heroId,
         heroImg: heroImg,
       ),

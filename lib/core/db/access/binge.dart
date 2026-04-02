@@ -5,13 +5,25 @@ import 'package:bingetube/core/db/models/collection_model.dart';
 import 'package:bingetube/core/db/models/sery_model.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/db/tables/binge.dart';
+import 'package:bingetube/core/db/tables/channels.dart';
 import 'package:bingetube/core/db/tables/videos.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:drift/drift.dart';
 
 part '../../../generated/core/db/access/binge.g.dart';
 
-@DriftAccessor(tables: [Collections, Series, SeriesVsVideos, VideoThumbnails, Videos])
+@DriftAccessor(
+  tables: [
+    Collections,
+    Series,
+    SeriesVsVideos,
+    Videos,
+    VideoThumbnails,
+    VideoProgress,
+    Channels,
+    ChannelThumbnails,
+  ],
+)
 class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   static final _logger = LogManager.getLogger('BingeDao');
 
@@ -77,21 +89,48 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }
 
   Stream<List<CollectionModel>> streamCollectionModels({bool isSystem = false}) {
-    final query = select(collections).join([
-      innerJoin(series, series.collectionId.equalsExp(collections.id)),
-      innerJoin(videoThumbnails, videoThumbnails.id.equalsExp(series.coverVideoId)),
-    ])..where(collections.isSystem.equals(isSystem));
+    final colTotalCount = countAll();
+    final colCompleteCount = countAll(filter: videoProgress.isFinished.equals(true));
+    final query =
+        select(collections).join([
+            innerJoin(series, series.collectionId.equalsExp(collections.id)),
+            innerJoin(videos, videos.id.equalsExp(series.coverVideoId)),
+            innerJoin(videoThumbnails, videoThumbnails.id.equalsExp(series.coverVideoId)),
+            innerJoin(
+              channelThumbnails,
+              channelThumbnails.id.equalsExp(videos.channelId),
+            ),
+            leftOuterJoin(seriesVsVideos, seriesVsVideos.seriesId.equalsExp(series.id)),
+            leftOuterJoin(
+              videoProgress,
+              videoProgress.id.equalsExp(seriesVsVideos.videoId),
+            ),
+          ])
+          ..groupBy([seriesVsVideos.seriesId])
+          ..addColumns([colTotalCount, colCompleteCount])
+          ..where(collections.isSystem.equals(isSystem));
     final toReturn = query.watch().map((result) {
       Map<int, Collection> idVsCollection = {};
       Map<int, List<SeryModel>> idVsSeries = {};
       for (var row in result) {
         final collection = row.readTable(collections);
         final sery = row.readTable(series);
-        final thumbnail = row.readTable(videoThumbnails);
+        final coverUrl = row.readTable(videoThumbnails).mediumUrl;
+        final iconUrl = row.readTable(channelThumbnails).defaultUrl;
+        final totalVideos = row.read(colTotalCount)!;
+        final completeVideos = row.read(colCompleteCount)!;
         idVsCollection[collection.id] = collection;
         idVsSeries
             .putIfAbsent(collection.id, () => <SeryModel>[])
-            .add(SeryModel(sery: sery, thumbnail: thumbnail));
+            .add(
+              SeryModel(
+                sery: sery,
+                coverUrl: coverUrl,
+                iconUrl: iconUrl,
+                totalVideos: totalVideos,
+                watchedVideos: completeVideos,
+              ),
+            );
       }
       for (final seryies in idVsSeries.values) {
         seryies.sort((a, b) => a.sery.priority - b.sery.priority);
