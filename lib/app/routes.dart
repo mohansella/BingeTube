@@ -27,7 +27,7 @@ sealed class Routes {
     if (context.canPop()) {
       context.pop();
     } else {
-      context.goNamed(Pages.library.name);
+      context.goNamed(Pages.discover.name);
     }
   }
 
