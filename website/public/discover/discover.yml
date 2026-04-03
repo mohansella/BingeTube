@@ -4,5 +4,6 @@ collections:
       - data: comedy/key_and_peele.binge
   - name: Curiosity Bites
     series:
-      - data: curious/kurzgesagt_in_a_nutshell.binge
+      - data: curious/epic_spaceman.binge
+      - data: curious/kurzgesagt.binge
       - data: curious/veritasium.binge

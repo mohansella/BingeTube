@@ -17,26 +17,30 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 ---
 
 <Layout 
-  title="BingeTube – Watch YouTube Like a Series (No Repeats)"
-  description="Stop getting lost on YouTube. Watch videos in order, skip repeats, and finally finish series with BingeTube.">
+  title="Binge YouTube Videos in Order | BingeTube"
+  description="Binge YouTube the right way with BingeTube. Watch videos in order, skip repeats, and finally finish series without getting lost.">
 
     <section class="relative overflow-hidden">
       <div class="absolute -top-24 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-indigo-500/10 blur-[120px]"></div>
       
       <div class="mx-auto max-w-7xl px-6 py-28 text-center">
         <div class="mx-auto mb-6 w-fit rounded-full border border-indigo-500/20 bg-indigo-500/5 px-4 py-1 text-sm text-indigo-400">
-          <span class="flex items-center gap-2"><Zap size={14} /> Watch YouTube like a series</span>
+          <span class="flex items-center gap-2"><Zap size={14} />Curated YouTube series ready to binge</span>
         </div>
 
         <h1 class="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-7xl">
-          Stop scrolling. <br />
-          <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Start finishing.</span>
+          Stop Scrolling.
+          <br/>
+          <span class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+            Start finishing.
+          </span>
         </h1>
 
-        <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-          No repeats. No distractions. No getting lost.  
-          Turn chaotic YouTube channels into structured, bingeable series you can actually finish.
-        </p>
+        <h2 class="mx-auto mt-6 max-w-2xl text-xl sm:text-2xl font-medium text-slate-300 leading-relaxed">
+          Binge watch YouTube videos in order, skip repeats, and track your progress like a series.
+          <br class="hidden sm:block" />
+          No repeats. No distractions. No getting lost.
+        </h2>
 
         <div class="mt-10 flex justify-center gap-4">
           <a href={appUrl} class="flex items-center gap-2 rounded-xl bg-indigo-500 px-8 py-4 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
@@ -66,7 +70,7 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 
             <p class="text-slate-400 text-lg">
               Explore structured collections built from real YouTube channels.  
-              Watch in order, skip what you've already seen, and finally complete entire series without getting lost.
+              Watch videos in order, skip what you've already seen, and finally complete entire YouTube series without getting lost.
             </p>
 
             <ul class="space-y-3">
@@ -88,7 +92,7 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 
             <p class="mt-4 text-slate-400">
               Turn any YouTube channel or playlist into a clean, structured series.  
-              Take control of your viewing experience and watch the way you want.
+              Take control of your viewing experience and binge watch YouTube the way you want.
             </p>
             
             <div class="mt-8 space-y-4">
@@ -130,5 +134,37 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
         </p>
       </div>
     </section>
+
+
+    <section class="border-t border-slate-800 py-20">
+  <div class="mx-auto max-w-5xl px-6 text-center">
+
+    <h2 class="text-3xl font-bold tracking-tight">
+      Start a series
+    </h2>
+
+    <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-400">
+      Explore curated YouTube channels organized like series. Watch in order, skip repeats, and track your progress.
+    </p>
+
+    <div class="mt-8 flex justify-center">
+      <a href="/series" class="rounded-xl bg-indigo-500 px-8 py-4 font-medium text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">
+        Browse all series
+      </a>
+    </div>
+
+    <div class="mt-10 flex flex-wrap justify-center gap-4 text-sm text-slate-400">
+      <a href="/series/comedy/key_and_peele" class="hover:text-indigo-400">Key & Peele</a>
+      <a href="/series/science/veritasium" class="hover:text-indigo-400">Veritasium</a>
+      <a href="/series/science/kurzgesagt" class="hover:text-indigo-400">Kurzgesagt</a>
+    </div>
+
+  </div>
+</section>
+
+    <p class="sr-only">
+      BingeTube lets you binge watch YouTube videos in order, skip already watched videos,
+      and track your progress across playlists and channels without repeats.
+    </p>
 
 </Layout>

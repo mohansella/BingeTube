@@ -1,5 +1,5 @@
 name: bingetube
-description: "BingeTube is the ultimate way to watch YouTube channels in order — like episodes in a series."
+description: "Binge YouTube the right way with BingeTube. Watch videos in order, skip repeats, and finally finish series without getting lost."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

@@ -8,6 +8,17 @@
   font-size: 18px;
 }
 
+.content a {
+  color: #818cf8; /* indigo-400 */
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.content a:hover {
+  color: #a5b4fc; /* indigo-300 */
+  text-decoration: underline;
+}
+
 .content h1 {
   font-size: 2.4rem;
   margin-bottom: 16px;

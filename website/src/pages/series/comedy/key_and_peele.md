@@ -1,5 +1,5 @@
 ---
-layout: ../../layout/layout.astro
+layout: ../../../layout/layout.astro
 title: "Key & Peele — 280+ Sketches in Order (No Repeats)"
 description: "Watch Key & Peele like a series. 280+ sketches in order. No repeats. Track progress and continue where you left off."
 ---
