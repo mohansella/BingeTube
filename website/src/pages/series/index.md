@@ -34,6 +34,12 @@ Watch in order, avoid repeats, and pick up exactly where you left off.
 
 ---
 
+## Toons
+
+- [Grizzy & Les Lemmings - watch in order](/series/toon/grizzy_lemmings)
+
+---
+
 ## Why this exists
 
 YouTube is great for discovery, but not for continuity.
