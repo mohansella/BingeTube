@@ -4,6 +4,9 @@ collections:
       - data: comedy/key_and_peele.binge
   - name: Curiosity Bites
     series:
-      - data: curious/epic_spaceman.binge
       - data: curious/kurzgesagt.binge
       - data: curious/veritasium.binge
+      - data: curious/epic_spaceman.binge
+  - name: Short Film Vault
+    series:
+      - data: shortfilms/dust_scifi.binge

@@ -8,13 +8,13 @@
   font-size: 18px;
 }
 
-.content a {
+.content a:not(.btn) {
   color: #818cf8; /* indigo-400 */
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
-.content a:hover {
+.content a:not(.btn):hover {
   color: #a5b4fc; /* indigo-300 */
   text-decoration: underline;
 }
