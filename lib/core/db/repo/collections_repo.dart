@@ -203,6 +203,7 @@ class CollectionsRepo {
         final description = jSery['description'] as String;
         final coverUrl = jSery['coverUrl'] as String;
         final iconUrl = jSery['iconUrl'] as String;
+        final coverId = jSery['coverId'] as String;
         final totalVideos = jSery['totalVideos'] as int;
         final dataPath = jSery['dataPath'] as String;
         final dataHash = jSery['dataHash'] as String;
@@ -212,7 +213,7 @@ class CollectionsRepo {
           updatedAt: now,
           id: currSeriesId,
           collectionId: currCollectionId,
-          coverVideoId: 'coverVideoId',
+          coverVideoId: coverId,
           name: title,
           description: description,
           priority: currSeriesPriority,

@@ -48,7 +48,7 @@ class WebviewPlayer extends Player {
   }
 
   void _initController(InAppWebViewController webController) {
-    if (_controller != null) return;
+    if (_controller == webController) return;
     _controller = webController;
     _controller!.addJavaScriptHandler(
       handlerName: 'appBridge',

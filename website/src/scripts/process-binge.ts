@@ -45,6 +45,7 @@ class ProcessBinge {
       description: model.description,
       dataPath: relativePath,
       dataHash: zipHash,
+      coverId: videoModel.video.id,
       coverUrl: videoModel.thumbnails.highUrl,
       iconUrl: model.channels[videoModel.video.channelId]!.thumbnails.mediumUrl,
       totalVideos: model.videos.length,
@@ -98,6 +99,7 @@ interface DiscoverSeries {
 interface SeryModel {
   title: string
   description: string
+  coverId: string
   coverUrl: string
   iconUrl: string
   totalVideos: Number
@@ -117,7 +119,7 @@ interface ChannelModel {
 }
 
 interface VideoModel {
-  video: { channelId: string }
+  video: { id: string, channelId: string }
   thumbnails: { highUrl: string }
 }
 

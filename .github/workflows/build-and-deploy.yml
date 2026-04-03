@@ -95,7 +95,8 @@ jobs:
       - if: needs.version-check.outputs.is_bump == 'true'
         run: flutter build appbundle --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - run: flutter build apk --release --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
-      - run: mv build/app/outputs/bundle/release/app-release.aab android-v${{ needs.version-check.outputs.version }}.aab
+      - if: needs.version-check.outputs.is_bump == 'true'
+        run: mv build/app/outputs/bundle/release/app-release.aab android-v${{ needs.version-check.outputs.version }}.aab
       - run: mv build/app/outputs/flutter-apk/app-release.apk android-v${{ needs.version-check.outputs.version }}.apk
       - uses: actions/upload-artifact@v4
         with:
