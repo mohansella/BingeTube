@@ -47,7 +47,7 @@ abstract class BingeController {
 
   void setVideoWatched(VideoModel model, bool isFinished);
 
-  List<BingeActions> supportedActions();
+  Future<List<BingeActions>> supportedActions();
   Future<Sery?> executeBingeAction(
     BingeActions action, {
     Collection? collection,

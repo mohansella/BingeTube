@@ -168,7 +168,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     final titleStyle = Theme.of(context).textTheme.bodyMedium;
     final ratio = _width / minWidth;
     final oFontSize = (titleStyle?.fontSize ?? 0);
-    var fontSize = oFontSize * ratio * 0.85;
+    var fontSize = oFontSize * ratio * 0.90;
     if (fontSize < oFontSize) {
       fontSize = oFontSize;
     }
@@ -181,7 +181,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             alignment: .centerLeft,
             child: Text(
               model.collection.name,
-              style: titleStyle?.copyWith(fontSize: fontSize),
+              style: titleStyle?.copyWith(fontSize: fontSize, fontWeight: .w500),
             ),
           ),
           SizedBox(height: 4 * ratio),

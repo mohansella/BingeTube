@@ -199,30 +199,37 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildFilterAndModify(AsyncSnapshot<BingeModel> snapshot) {
-    final actions = _controller.supportedActions();
-
-    return Row(
-      mainAxisAlignment: .end,
-      children: [
-        IconButton(
-          tooltip: 'Filter & Sort',
-          onPressed: _onFilterPressed,
-          icon: Icon(Icons.tune),
-        ),
-        if (actions.length == 1 && actions[0] == .add) ...[
-          IconButton(
-            tooltip: 'Add',
-            onPressed: () => _onActionAdd(),
-            icon: Icon(Icons.add),
-          ),
-        ] else ...[
-          PopupMenuButton(
-            tooltip: 'Actions',
-            icon: Icon(Icons.more_vert),
-            itemBuilder: (_) => _buildMenuItems(snapshot, actions),
-          ),
-        ],
-      ],
+    return FutureBuilder(
+      future: _controller.supportedActions(),
+      builder: (_, actionSnap) {
+        if (!actionSnap.hasData) {
+          return Row(mainAxisAlignment: .end);
+        }
+        final actions = actionSnap.data!;
+        return Row(
+          mainAxisAlignment: .end,
+          children: [
+            IconButton(
+              tooltip: 'Filter & Sort',
+              onPressed: _onFilterPressed,
+              icon: Icon(Icons.tune),
+            ),
+            if (actions.length == 1 && actions[0] == .add) ...[
+              IconButton(
+                tooltip: 'Add',
+                onPressed: () => _onActionAdd(),
+                icon: Icon(Icons.add),
+              ),
+            ] else ...[
+              PopupMenuButton(
+                tooltip: 'Actions',
+                icon: Icon(Icons.more_vert),
+                itemBuilder: (_) => _buildMenuItems(snapshot, actions),
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 

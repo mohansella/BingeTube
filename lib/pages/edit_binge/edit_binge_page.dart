@@ -580,7 +580,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     videos.removeWhere((v) => !_checkMarked.contains(v.video.id));
     final newModel = BingeModel(title: title, description: description, videos: videos);
 
-    final actions = _controller.supportedActions();
+    final actions = await _controller.supportedActions();
     if (actions.length == 1 && actions[0] == .add) {
       _saveNewModel(newModel);
     } else {

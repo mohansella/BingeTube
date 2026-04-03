@@ -178,7 +178,7 @@ abstract class BaseBingeController implements BingeController {
   }
 
   @override
-  List<BingeActions> supportedActions() {
+  Future<List<BingeActions>> supportedActions() async {
     return [.add];
   }
 

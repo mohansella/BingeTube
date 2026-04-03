@@ -29,8 +29,13 @@ class SeryVideoBingeController extends BaseBingeController {
   }
 
   @override
-  List<BingeActions> supportedActions() {
-    return [.edit, .moveTo, .duplicate, .delete, .export];
+  Future<List<BingeActions>> supportedActions() async {
+    final isSystem = await _bingeDao.isSystemSery(seryId);
+    if (isSystem) {
+      return [.duplicate, .export];
+    } else {
+      return [.edit, .moveTo, .duplicate, .delete, .export];
+    }
   }
 
   @override

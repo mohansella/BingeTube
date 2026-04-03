@@ -333,6 +333,17 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return result.map((r) => r.readTable(series)).toList();
   }
 
+  Future<bool> isSystemSery(int seryId) async {
+    final query =
+        select(
+            series,
+          ).join([innerJoin(collections, collections.id.equalsExp(series.collectionId))])
+          ..where(collections.isSystem.equals(true))
+          ..where(series.id.equals(seryId));
+    final result = await query.get();
+    return result.isNotEmpty;
+  }
+
   Future<void> addVideos(int seryId, List<String> videoIds, int fromPriority) async {
     await transaction(() async {
       for (var i = 0; i < videoIds.length; i++) {
