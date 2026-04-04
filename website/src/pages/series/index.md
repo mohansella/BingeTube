@@ -31,6 +31,7 @@ Watch in order, avoid repeats, and pick up exactly where you left off.
 ## ShortFilms
 
 - [Dust SciFi — watch in order](/series/shortfilms/dust_scifi)
+- [Omeleto — watch in order](/series/shortfilms/omeleto)
 
 ---
 

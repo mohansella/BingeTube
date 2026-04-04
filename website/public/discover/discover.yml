@@ -5,6 +5,7 @@ collections:
   - name: Short Film Vault
     series:
       - data: shortfilms/dust_scifi.binge
+      - data: shortfilms/omeleto.binge
   - name: Toon Chaos Club
     series:
       - data: toon/grizzy_lemmings.binge
