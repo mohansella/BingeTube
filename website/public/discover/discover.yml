@@ -2,14 +2,15 @@ collections:
   - name: Sketch Comedy Universe
     series:
       - data: comedy/key_and_peele.binge
-  - name: Curiosity Bites
-    series:
-      - data: curious/kurzgesagt.binge
-      - data: curious/veritasium.binge
-      - data: curious/epic_spaceman.binge
   - name: Short Film Vault
     series:
       - data: shortfilms/dust_scifi.binge
   - name: Toon Chaos Club
     series:
       - data: toon/grizzy_lemmings.binge
+  - name: Curiosity Bites
+    series:
+      - data: curious/kurzgesagt.binge
+      - data: curious/veritasium.binge
+      - data: curious/nilered.binge
+      - data: curious/epic_spaceman.binge

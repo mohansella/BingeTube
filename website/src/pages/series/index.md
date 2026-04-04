@@ -18,7 +18,7 @@ Watch in order, avoid repeats, and pick up exactly where you left off.
 - [Veritasium — watch in order](/series/curious/veritasium)  
 - [Kurzgesagt — watch in order](/series/curious/kurzgesagt)  
 - [Epic Spaceman — watch in order](/series/curious/epic_spaceman)  
-
+- [NileRed — watch in order](/series/curious/nilered)  
 ---
 
 ## Comedy
