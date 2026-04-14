@@ -57,12 +57,12 @@ class IframePlayer extends Player {
 
   @override
   void startProgressTracking() {
-    final window = _iframeElement!.contentWindow as IframeWindow;
-    window.startProgressTracking();
+    final window = _iframeElement?.contentWindow as IframeWindow?;
+    window?.startProgressTracking();
   }
 
   void _onIFrameLoad(web.Event event) {
-    final window = _iframeElement!.contentWindow! as IframeWindow;
+    final window = _iframeElement?.contentWindow as IframeWindow?;
     final appBridge = (JSObject data) {
       final eventname = data.getProperty('eventname'.toJS) as JSString;
       final payloadObj = data.has('payload')
@@ -71,8 +71,8 @@ class IframePlayer extends Player {
       final payload = payloadObj?.toString();
       handleEvent(eventname.toString(), payload);
     }.toJS;
-    window.appBridge = appBridge;
-    if (window.isPlayerReady == true.toJS) {
+    window?.appBridge = appBridge;
+    if (window?.isPlayerReady == true.toJS) {
       listener.onPlayerReady();
     }
   }
