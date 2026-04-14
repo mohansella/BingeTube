@@ -46,13 +46,21 @@ sealed class Analytics {
   }
 
   static String? _prevPageView;
-  static Future<void> logPageView(String? name) async {
+  static Future<void> logPageView(String? path) async {
     if (!_isEnabled) return;
-    if (name == null) return;
-    if (_prevPageView == name) return;
-    _prevPageView = name;
-    _logger.info('navigating to $name');
-    await FirebaseAnalytics.instance.logScreenView(screenName: name, screenClass: name);
+    if (path == null) return;
+    if (_prevPageView == path) return;
+    _prevPageView = path;
+    _logger.info('navigating to $path');
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+    path = '/app/$path';
+    await FirebaseAnalytics.instance.logScreenView(
+      screenName: path,
+      screenClass: path,
+      parameters: {'page_title': path},
+    );
   }
 
   static Future<void> logVideoWatched(String activeVideoId) async {
