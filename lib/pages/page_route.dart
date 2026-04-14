@@ -1,4 +1,3 @@
-import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
@@ -13,11 +12,7 @@ class PageGoRoute extends GoRoute {
   }) : super(
          name: page.name,
          path: page.path,
-         builder: (c, s) {
-           final path = s.name ?? s.uri.path;
-           //Analytics.logPageView(path);
-           return customBuilder(c, s);
-         },
+         builder: customBuilder,
          pageBuilder: transistionType == .predefined
              ? null
              : (c, s) => buildTransistion(transistionType, customBuilder, c, s),

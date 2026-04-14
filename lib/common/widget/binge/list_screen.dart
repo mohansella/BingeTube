@@ -477,19 +477,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     String heroImg,
   ) async {
     if (widget.isSystem) {
-      Sery? sery = model.sery;
-      if (!model.isSaved) {
-        sery = await _downloadSery(collection, model);
-      } else if (model.dataHash != model.sery.dataHash) {
-        ListScreenWidget._logger.info('updating sery:${model.sery.name}');
-        sery = await _updateSery(collection, model);
-      } else {
-        ListScreenWidget._logger.info('opening sery:${model.sery.name}');
-      }
-      if (sery == null) return;
-      if (!context.mounted) return;
-      final slug = _properDataPath(sery);
-      context.pushNamed(Pages.series.name, pathParameters: {'slug': slug});
+      await _onTapSystemSery(context, collection, model);
     } else {
       context.pushNamed(
         Pages.binge.name,
@@ -502,6 +490,26 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         ),
       );
     }
+  }
+
+  Future<void> _onTapSystemSery(
+    BuildContext context,
+    CollectionModel collection,
+    SeryModel model,
+  ) async {
+    Sery? sery = model.sery;
+    if (!model.isSaved) {
+      sery = await _downloadSery(collection, model);
+    } else if (model.dataHash != model.sery.dataHash) {
+      ListScreenWidget._logger.info('updating sery:${model.sery.name}');
+      sery = await _updateSery(collection, model);
+    } else {
+      ListScreenWidget._logger.info('opening sery:${model.sery.name}');
+    }
+    if (sery == null) return;
+    if (!context.mounted) return;
+    final slug = _properDataPath(sery);
+    context.pushNamed(Pages.series.name, pathParameters: {'slug': slug});
   }
 
   Future<Sery?> _downloadSery(CollectionModel collection, SeryModel model) async {

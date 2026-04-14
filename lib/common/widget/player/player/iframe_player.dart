@@ -79,20 +79,20 @@ class IframePlayer extends Player {
 
   @override
   void seekTo(int pos) {
-    final window = _iframeElement!.contentWindow as IframeWindow;
-    window.seekTo(pos.toJS);
+    final window = _iframeElement?.contentWindow as IframeWindow?;
+    window?.seekTo(pos.toJS);
   }
 
   @override
   void play() {
-    final window = _iframeElement!.contentWindow as IframeWindow;
-    window.playVideo();
+    final window = _iframeElement?.contentWindow as IframeWindow?;
+    window?.playVideo();
   }
 
   @override
   void pause() {
-    final window = _iframeElement!.contentWindow as IframeWindow;
-    window.pauseVideo();
+    final window = _iframeElement?.contentWindow as IframeWindow?;
+    window?.pauseVideo();
   }
 }
 

@@ -49,6 +49,7 @@ sealed class Analytics {
   static Future<void> logPageView(String? path) async {
     if (!_isEnabled) return;
     if (path == null) return;
+    path = path.replaceAll('%2F', '/');
     if (_prevPageView == path) return;
     _prevPageView = path;
     _logger.info('navigating to $path');
