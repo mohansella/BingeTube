@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
+import 'package:dpad/dpad.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -284,6 +285,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     double dropShift = model.sery.id == _droppingOnSeryId ? 20 : 0;
     dropShift = _droppingOnLeft ? dropShift : -dropShift;
 
+    Future<void> onTap() => _onTapSery(context, collection, model, heroId, heroImg);
     return DragItemWidget(
       allowedOperations: () =>
           widget.isSystem ? [] : [DropOperation.move, DropOperation.copy],
@@ -295,12 +297,15 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         return item;
       },
       child: DraggableWidget(
-        child: Material(
-          child: InkWell(
-            onTap: () => _onTapSery(context, collection, model, heroId, heroImg),
-            child: Transform.translate(
-              offset: Offset(dropShift, 0.0),
-              child: _buildActualSery(heroId, heroImg, model),
+        child: DpadFocusable(
+          onSelect: onTap,
+          child: Material(
+            child: InkWell(
+              onTap: onTap,
+              child: Transform.translate(
+                offset: Offset(dropShift, 0.0),
+                child: _buildActualSery(heroId, heroImg, model),
+              ),
             ),
           ),
         ),
