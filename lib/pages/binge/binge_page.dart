@@ -13,6 +13,7 @@ import 'package:bingetube/core/db/port/sery_port.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +42,13 @@ class BingePage extends ConsumerStatefulWidget {
       videoId: videoId,
       heroId: heroId,
       heroImg: heroImg,
+    );
+  }
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(
+      page: .binge,
+      customBuilder: (_, s) => BingePage(s.uri.queryParameters),
     );
   }
 }

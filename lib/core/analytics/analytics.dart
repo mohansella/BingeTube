@@ -5,8 +5,7 @@ import 'package:bingetube/firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart'
-    show FlutterError, PlatformDispatcher, kIsWeb, kReleaseMode;
+import 'package:flutter/foundation.dart' show FlutterError, PlatformDispatcher, kIsWeb;
 
 sealed class Analytics {
   static final _logger = LogManager.getLogger('Analytics');
@@ -18,12 +17,6 @@ sealed class Analytics {
 
   static Future<void> init() async {
     if (_isInited) return;
-
-    if (!kReleaseMode) {
-      _logger.info('Firebase analytics disabled in debug mode');
-      _isInited = true;
-      return;
-    }
 
     final firebaseOptions = DefaultFirebaseOptions.currentPlatform;
     if (firebaseOptions.appId.isEmpty) {
@@ -50,6 +43,16 @@ sealed class Analytics {
     _logger.info('analytics initialized');
     _isEnabled = true;
     _isInited = true;
+  }
+
+  static String? _prevPageView;
+  static Future<void> logPageView(String? name) async {
+    if (!_isEnabled) return;
+    if (name == null) return;
+    if (_prevPageView == name) return;
+    _prevPageView = name;
+    _logger.info('navigating to $name');
+    await FirebaseAnalytics.instance.logScreenView(screenName: name, screenClass: name);
   }
 
   static Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {

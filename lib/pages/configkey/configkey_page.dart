@@ -6,6 +6,7 @@ import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/configkey/widgets/help_widget.dart';
 import 'package:bingetube/pages/configkey/widgets/quota_widget.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -16,6 +17,10 @@ class ConfigKeyPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _KeyConfigState();
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(page: .keyConfig, customBuilder: (_, _) => ConfigKeyPage());
+  }
 }
 
 class _KeyConfigState extends ConsumerState<ConfigKeyPage> {

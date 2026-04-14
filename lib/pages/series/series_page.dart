@@ -4,6 +4,7 @@ import 'package:bingetube/core/db/repo/collections_repo.dart';
 import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,6 +16,13 @@ class SeriesPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<SeriesPage> createState() => _SeriesPageState();
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(
+      page: .series,
+      customBuilder: (_, s) => SeriesPage(s.pathParameters['slug']!),
+    );
+  }
 }
 
 class _SeriesPageState extends ConsumerState<SeriesPage> {

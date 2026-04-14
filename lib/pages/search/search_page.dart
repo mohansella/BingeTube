@@ -1,5 +1,6 @@
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/search/widgets/search_channel.dart';
 import 'package:bingetube/pages/search/widgets/search_video.dart';
@@ -12,6 +13,10 @@ class SearchPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => SearchPageState();
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(page: .search, customBuilder: (_, _) => SearchPage());
+  }
 }
 
 class SearchPageState extends ConsumerState<SearchPage>

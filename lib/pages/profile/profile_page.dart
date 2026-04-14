@@ -1,6 +1,7 @@
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/config/font_size.dart';
 import 'package:bingetube/core/config/player_type.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -139,6 +140,14 @@ class ProfilePage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(
+      page: .profile,
+      transistionType: .none,
+      customBuilder: (_, _) => ProfilePage(),
     );
   }
 }

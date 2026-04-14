@@ -12,6 +12,7 @@ import 'package:bingetube/core/db/models/binge_model.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_controller.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +31,13 @@ class EditBingePage extends ConsumerStatefulWidget {
   static Map<String, String> buildParams(Map<String, String> params) {
     return Map.fromEntries(
       [BingeParams.type, BingeParams.id].map((v) => MapEntry(v.name, params[v.name]!)),
+    );
+  }
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(
+      page: .editBinge,
+      customBuilder: (_, s) => EditBingePage(s.uri.queryParameters),
     );
   }
 }

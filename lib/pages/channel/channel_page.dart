@@ -8,6 +8,7 @@ import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -37,6 +38,13 @@ class ChannelPage extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<ChannelPage> createState() => _ChannelPageState();
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(
+      page: .channel,
+      customBuilder: (_, s) => ChannelPage(s.uri.queryParameters),
+    );
+  }
 }
 
 class _ChannelPageState extends ConsumerState<ChannelPage> {

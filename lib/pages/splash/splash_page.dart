@@ -1,6 +1,7 @@
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/init.dart';
+import 'package:bingetube/pages/page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -9,6 +10,10 @@ class SplashPage extends StatefulWidget {
 
   @override
   State<SplashPage> createState() => SplashPageState();
+
+  static PageGoRoute goRoute() {
+    return PageGoRoute(page: .splash, customBuilder: (_, _) => SplashPage());
+  }
 }
 
 class SplashPageState extends State<SplashPage> {

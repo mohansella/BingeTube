@@ -1,10 +1,13 @@
 import 'dart:io';
 
 final files = [
-  'macos/Runner.xcodeproj/project.pbxproj',
-  'macos/Runner/DebugProfile.entitlements',
-  'macos/Runner/Release.entitlements',
   'ios/Runner.xcodeproj/project.pbxproj',
+  'ios/Runner/GoogleService-Info.plist',
+  'lib/firebase_options.dart',
+  'macos/Runner/DebugProfile.entitlements',
+  'macos/Runner/GoogleService-Info.plist',
+  'macos/Runner/Release.entitlements',
+  'macos/Runner.xcodeproj/project.pbxproj',
 ];
 
 void main(List<String> args) async {

@@ -9,6 +9,17 @@ class RootPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => RootPageState();
+
+  static RouteBase goRoute({
+    required List<RouteBase> routes,
+    List<NavigatorObserver>? observers,
+  }) {
+    return ShellRoute(
+      routes: routes,
+      builder: (_, _, child) => RootPage(body: child),
+      observers: observers,
+    );
+  }
 }
 
 class RootPageState extends State<RootPage> {
