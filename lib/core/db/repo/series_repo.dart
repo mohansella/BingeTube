@@ -43,7 +43,7 @@ class SeriesRepo {
       dataHash: model.dataHash,
       dataPath: model.dataPath,
     );
-    return newSery;
+    return await _bingeDao.getSery(newSery.id);
   }
 
   Future<Sery?> updateSery(

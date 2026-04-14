@@ -476,32 +476,32 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     String heroId,
     String heroImg,
   ) async {
-    var id = model.sery.id.toString();
     if (widget.isSystem) {
+      Sery? sery = model.sery;
       if (!model.isSaved) {
-        final sery = await _downloadSery(collection, model);
-        if (sery == null) return;
-        id = sery.id.toString();
+        sery = await _downloadSery(collection, model);
       } else if (model.dataHash != model.sery.dataHash) {
         ListScreenWidget._logger.info('updating sery:${model.sery.name}');
-        final sery = await _updateSery(collection, model);
-        if (sery == null) return;
-        id = sery.id.toString();
+        sery = await _updateSery(collection, model);
       } else {
         ListScreenWidget._logger.info('opening sery:${model.sery.name}');
       }
+      if (sery == null) return;
+      if (!context.mounted) return;
+      final slug = _properDataPath(sery);
+      context.pushNamed(Pages.series.name, pathParameters: {'slug': slug});
+    } else {
+      context.pushNamed(
+        Pages.binge.name,
+        queryParameters: BingePage.buildParams(
+          type: .seryVideos,
+          id: model.sery.id.toString(),
+          videoId: model.sery.coverVideoId,
+          heroId: heroId,
+          heroImg: heroImg,
+        ),
+      );
     }
-    if (!context.mounted) return;
-    context.pushNamed(
-      Pages.binge.name,
-      queryParameters: BingePage.buildParams(
-        type: .seryVideos,
-        id: id,
-        videoId: model.sery.coverVideoId,
-        heroId: heroId,
-        heroImg: heroImg,
-      ),
-    );
   }
 
   Future<Sery?> _downloadSery(CollectionModel collection, SeryModel model) async {
@@ -600,5 +600,17 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
 
   void _importError(Object error) {
     ListScreenWidget._logger.warning('Error reading file', error);
+  }
+
+  String _properDataPath(Sery sery) {
+    var toReturn = sery.dataPath!;
+    final bingeSuffix = '.binge';
+    if (!toReturn.startsWith('/')) {
+      toReturn = '/$toReturn';
+    }
+    if (toReturn.endsWith(bingeSuffix)) {
+      toReturn = toReturn.substring(0, toReturn.length - bingeSuffix.length);
+    }
+    return toReturn;
   }
 }

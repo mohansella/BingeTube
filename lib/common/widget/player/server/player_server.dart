@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 class PlayerServer {
@@ -20,6 +21,7 @@ class PlayerServer {
   bool get isRunning => _server != null;
 
   Future<void> start() async {
+    if (kIsWeb) return;
     if (_server != null) return;
 
     try {

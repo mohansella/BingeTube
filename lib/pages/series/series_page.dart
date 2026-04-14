@@ -5,10 +5,8 @@ import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/page_route.dart';
-import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class SeriesPage extends ConsumerStatefulWidget {
   final String slug;
@@ -28,6 +26,8 @@ class SeriesPage extends ConsumerStatefulWidget {
 class _SeriesPageState extends ConsumerState<SeriesPage> {
   String _loadingText = 'Loading...';
   final _isCancelled = Mutable(false);
+
+  Map<String, String>? _queryParams;
 
   @override
   void initState() {
@@ -65,21 +65,28 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
     } else {
       final heroId = model.dataPath!;
       final heroImg = model.coverUrl;
-      lContext.replaceNamed(
-        Pages.binge.name,
-        queryParameters: BingePage.buildParams(
+      setState(() {
+        _queryParams = BingePage.buildParams(
           type: .seryVideos,
-          id: sery.id.toString(),
+          id: sery!.id.toString(),
           videoId: model.sery.coverVideoId,
           heroId: heroId,
           heroImg: heroImg,
-        ),
-      );
+        );
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_queryParams == null) {
+      return buildLoading();
+    } else {
+      return BingePage(_queryParams!);
+    }
+  }
+
+  Widget buildLoading() {
     return Scaffold(
       body: Center(
         child: Column(

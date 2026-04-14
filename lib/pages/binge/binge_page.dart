@@ -419,6 +419,10 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void updateQueryParams(BuildContext context) {
+    final location = GoRouterState.of(context).name;
+    if(location != Pages.binge.name) {
+      return;
+    }
     context.replaceNamed(
       Pages.binge.name,
       queryParameters: BingeController.updateParams(
