@@ -55,8 +55,13 @@ sealed class Analytics {
     await FirebaseAnalytics.instance.logScreenView(screenName: name, screenClass: name);
   }
 
+  static Future<void> logVideoWatched(String activeVideoId) async {
+    await logEvent('watch_completed', parameters: {'videoId': activeVideoId});
+  }
+
   static Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
     if (!_isEnabled) return;
+    _logger.info('event: $name');
     await FirebaseAnalytics.instance.logEvent(name: name, parameters: parameters);
   }
 }

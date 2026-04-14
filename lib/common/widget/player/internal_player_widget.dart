@@ -1,4 +1,5 @@
 import 'package:bingetube/common/widget/player/player/player.dart';
+import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/db/access/videos.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:flutter/material.dart';
@@ -161,6 +162,7 @@ class _InternalPlayerState extends BasePlayerState
     if (duration - pos <= 2) {
       //skip last 2 seconds
       isFinished = true;
+      Analytics.logVideoWatched(id);
       if (controller.isNextVideoExists) {
         widget.onEvent(.onNext);
       }
