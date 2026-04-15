@@ -2,6 +2,7 @@ collections:
   - name: Sketch Comedy Universe
     series:
       - data: comedy/key_and_peele.binge
+      - data: comedy/impractical_jokers.binge
   - name: Short Film Vault
     series:
       - data: shortfilms/dust_scifi.binge
