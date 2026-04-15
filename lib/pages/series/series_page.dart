@@ -36,6 +36,7 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
   }
 
   void init() async {
+    final lContext = context;
     final collectionsRepo = CollectionsRepo(isSystem: true);
     final seriesRepo = SeriesRepo(isSystem: true);
     final collections = await collectionsRepo.streamCollections().first;
@@ -56,7 +57,6 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
       });
       sery = await seriesRepo.updateSery(_isCancelled, collection, model);
     }
-    final lContext = context;
     if (!lContext.mounted) {
       return;
     }
