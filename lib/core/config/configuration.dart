@@ -29,7 +29,7 @@ enum ConfigKey<T> {
   final String Function(T) serializer;
   final T Function(String) deserializer;
 
-  static String noOp(s) => s;
+  static String noOp(dynamic s) => s;
 
   const ConfigKey(this.defaultValue, this.serializer, this.deserializer);
 }

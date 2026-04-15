@@ -114,7 +114,7 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     return result.map(mapRowToModel).toList();
   }
 
-  Future<void> upsertVideoJsonData(item, {String? setag}) async {
+  Future<void> upsertVideoJsonData(dynamic item, {String? setag}) async {
     final updatedAt = Value(DateTime.now());
     final id = item['id'];
 

@@ -57,7 +57,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   TextEditingController? _editTitleController;
   TextEditingController? _editDescriptionController;
 
-  get _isDrag => _controller.filter == BingeFilter.defaultValue;
+  dynamic get _isDrag => _controller.filter == BingeFilter.defaultValue;
 
   @override
   void initState() {

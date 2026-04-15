@@ -93,7 +93,7 @@ class ChannelsDao extends DatabaseAccessor<Database> with _$ChannelsDaoMixin {
     return query.get();
   }
 
-  Future<void> upsertChannelJsonData(item, {String? setag}) async {
+  Future<void> upsertChannelJsonData(dynamic item, {String? setag}) async {
     final updatedAt = Value(DateTime.now());
     final id = item['id'];
 

@@ -18,7 +18,7 @@ sealed class SeryPort {
 
   static Future<String?> exportWithOSMenu(BingeModel model) async {
     final bytes = _buildJsonBytes(model);
-    final filePath = await FilePicker.platform.saveFile(
+    final filePath = await FilePicker.saveFile(
       dialogTitle: 'Select where to save your export:',
       fileName: buildFileName(model.title),
       bytes: bytes,
@@ -88,7 +88,7 @@ sealed class SeryPort {
   }
 
   static Future<Sery> _importAsJson(
-    json, {
+    dynamic json, {
     required int collectionId,
     required int priority,
     int? seryId,

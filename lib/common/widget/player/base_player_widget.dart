@@ -284,7 +284,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     );
   }
 
-  bool _scrollEndListener(notification) {
+  bool _scrollEndListener(dynamic notification) {
     BasePlayerWidget._logger.finer(
       'depth:${notification.depth} parent:${_parentScroll.offset} child:${_childScroll.offset}',
     );

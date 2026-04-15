@@ -168,7 +168,7 @@ class CollectionsRepo {
     return _parseDiscoverJson(response);
   }
 
-  List<CollectionModel> _parseDiscoverJson(response) {
+  List<CollectionModel> _parseDiscoverJson(dynamic response) {
     final toReturn = <CollectionModel>[];
     final jCollections = response['collections'] as List;
 

@@ -209,7 +209,7 @@ class PlaylistsDao extends DatabaseAccessor<Database> with _$PlaylistsDaoMixin {
   }
 
   Future<void> _upsertPlaylistJson(
-    item, {
+    dynamic item, {
     int priority = 0,
     required PlaylistType type,
   }) async {
