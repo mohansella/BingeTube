@@ -13,12 +13,14 @@ import 'package:bingetube/pages/root/root_page.dart';
 import 'package:bingetube/pages/discover/discover_page.dart';
 import 'package:bingetube/pages/library/library_page.dart';
 import 'package:bingetube/pages/profile/profile_page.dart';
+import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
 
 class Routes {
   final _initNotifier = ValueNotifier<bool>(false);
   final _routeObserver = RouteObserver<ModalRoute<void>>();
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   String? _pathAfterSplash;
 
   late GoRouter _routes;
@@ -46,6 +48,10 @@ class Routes {
 
   static RouteObserver<ModalRoute<void>> getRouteObserver() {
     return _instance._routeObserver;
+  }
+
+  static GlobalKey<ScaffoldMessengerState> getScaffoldMessengerKey() {
+    return _instance._scaffoldMessengerKey;
   }
 
   GoRouter buildGoRouter() {
@@ -79,5 +85,32 @@ class Routes {
       ],
     );
     return toReturn;
+  }
+
+  static DateTime? _lastBackPressTime;
+
+  static void onBackPressed(BuildContext context) {
+    if (_instance._routes.canPop()) {
+      _instance._routes.pop();
+      return;
+    }
+
+    final now = DateTime.now();
+    final isDuplicatePress =
+        _lastBackPressTime != null &&
+        now.difference(_lastBackPressTime!) < const Duration(seconds: 2);
+
+    if (isDuplicatePress) {
+      SystemNavigator.pop();
+    } else {
+      _lastBackPressTime = now;
+
+      _instance._scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text('Press back again to exit'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 }

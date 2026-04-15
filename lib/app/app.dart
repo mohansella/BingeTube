@@ -12,12 +12,15 @@ class App extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(ConfigProviders.theme);
     final appFontSize = ref.watch(ConfigProviders.appFontSize);
+    final routerConfig = Routes.getRouterConfig();
     return DpadNavigator(
+      onBackPressed: () => Routes.onBackPressed(context),
       child: MaterialApp.router(
         themeMode: themeMode,
         theme: Themes.light(appFontSize),
         darkTheme: Themes.dark(appFontSize),
-        routerConfig: Routes.getRouterConfig(),
+        routerConfig: routerConfig,
+        scaffoldMessengerKey: Routes.getScaffoldMessengerKey(),
         debugShowCheckedModeBanner: true,
       ),
     );
