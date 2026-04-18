@@ -9,13 +9,13 @@
 }
 
 .content a:not(.btn) {
-  color: #818cf8; /* indigo-400 */
+  color: #FF4444; /* red accent */
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
 .content a:not(.btn):hover {
-  color: #a5b4fc; /* indigo-300 */
+  color: #FF7777; /* lighter red */
   text-decoration: underline;
 }
 
@@ -62,7 +62,7 @@
   display: inline-block;
   padding: 12px 20px;
   border-radius: 10px;
-  background: #6366f1;
+  background: #E61819;
   color: white;
   text-decoration: none;
   font-weight: 600;
@@ -71,5 +71,5 @@
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 20px rgba(230, 24, 25, 0.3);
 }

@@ -47,12 +47,12 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
     {isProd && <Analytics />}
   </head>
 
-  <body class="bg-slate-950 text-slate-100 antialiased">
-  <main id="main-content" role="main" class="bg-slate-950 text-slate-50">
-    <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 backdrop-blur">
-      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+  <body class="bg-black text-slate-100 antialiased">
+  <main id="main-content" role="main" class="bg-black text-slate-50">
+    <header class="sticky top-0 z-50 border-b border-slate-800 bg-black/80 backdrop-blur">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-8 md:px-12 lg:px-16">
         <a href="/" class="flex items-center gap-2 text-xl font-semibold tracking-tight transition-opacity hover:opacity-80">
-          <img src="/app/assets/assets/images/logo.svg" alt="BingeTube Logo" class="h-10 w-10 -m-2" />
+          <img src="/logo.svg" alt="BingeTube Logo" class="h-10 w-10 -m-2" />
           <div class="relative">
             <span>BingeTube</span>
             <span class="absolute -right-7 -top-1 text-[10px] font-bold tracking-wider">
@@ -67,18 +67,18 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
           <a href="/download/" class="hidden items-center gap-2 text-slate-400 transition hover:text-white sm:flex">
             <Download size={20} />
           </a>
-          <a href={appUrl} class="rounded-xl bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-400">
+          <a href={appUrl} class="rounded-xl border border-[#E61819] px-5 py-2 text-sm font-medium text-[#E61819] transition hover:bg-[#E61819]/10">
             Start Binging
           </a>
         </div>
       </div>
     </header>
     <slot />
-    <footer class="border-t border-slate-800 bg-slate-950">
+    <footer class="border-t border-slate-800 bg-black">
       <div class="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-12 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex flex-col gap-2">
           <div class="flex items-center gap-2 font-semibold text-white">
-            <img src="/app/assets/assets/images/logo.svg" alt="BingeTube Logo" class="h-8 w-8 -m-2" />
+            <img src="/logo.svg" alt="BingeTube Logo" class="h-8 w-8 -m-2" />
             BingeTube
           </div>
           <p>© {new Date().getFullYear()} — Built for finishers.</p>
