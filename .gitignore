@@ -5,6 +5,9 @@ firebase.json
 /ios/Runner/GoogleService-Info.plist
 /macos/Runner/GoogleService-Info.plist
 
+# Ignore build files
+/website/public/discover/poster.jpg
+
 # Miscellaneous
 *.class
 *.log
