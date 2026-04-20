@@ -10,6 +10,11 @@ import * as yaml from 'js-yaml'
 
 import { createHash } from "crypto"
 
+import ffmpeg from "fluent-ffmpeg"
+import ffmpegPath from "ffmpeg-static"
+
+ffmpeg.setFfmpegPath(ffmpegPath!)
+
 import sharp from "sharp"
 import { MinPriorityQueue } from '@datastructures-js/priority-queue'
 
@@ -90,7 +95,7 @@ class ProcessBinge {
     await writeFile(jsonFilePath, JSON.stringify(discover, null, 2))
   }
 
-  async downloadThumbnails() {
+  async downloadThumbnails(): Promise<Buffer[]> {
     const thumbImages: Buffer[] = []
     const limit = pLimit(8)
     const processes = this.topThumbnails.toArray().map(f => limit(async () => {
@@ -103,14 +108,14 @@ class ProcessBinge {
     console.log(`thumbImages: ${thumbImages.length}`)
 
     if (thumbImages.length === 0) {
-      console.warn('No thumbnails downloaded, skipping poster creation.')
-      return
+      throw Error('No thumbnails downloaded, skipping poster creation.')
     }
 
-    await this.createPoster(thumbImages)
+    return thumbImages
   }
 
-  async createPoster(thumbImages: Buffer[]) {
+  async createPoster() {
+    const thumbImages = await this.downloadThumbnails()
     const cells = 8
     const tileWidth = 480 + 40
     const tileHeight = 360 - 60
@@ -147,8 +152,8 @@ class ProcessBinge {
       }
     }))
 
-    const outputWidth = 2000
-    const outputHeight = 1125
+    const outputWidth = 2000 + 400
+    const outputHeight = 1125 + 200
     const outputQuality = 85
 
     const posterBuffer = await sharp({
@@ -173,15 +178,45 @@ class ProcessBinge {
       })
       .toBuffer()
 
-    const posterPath = path.resolve(this.discoverFolder, 'poster.jpg')
+    const posterPath = path.resolve(this.discoverFolder, 'poster-pre.jpg')
     await writeFile(posterPath, outputBuffer)
     console.log(`wrote poster: ${posterPath}`)
+  }
+
+  async transformPoster() {
+    const inputPath = path.resolve(this.discoverFolder, 'poster-pre.jpg')
+    const outputPath = path.resolve(this.discoverFolder, 'poster.jpg')
+    return new Promise<void>((resolve, reject) => {
+      ffmpeg(inputPath)
+        .videoFilters([
+          // slight rotate (Z axis)
+          "rotate=0.25:fillcolor=black",
+
+          // perspective transform (simulate rotateX + rotateY)
+          "perspective=" +
+          "x0=0:y0=0:" +
+          "x1=W:y1=600:" +          // tilt top edge down
+          "x2=0:y2=H:" +
+          "x3=W:y3=H-100",           // tilt bottom edge slightly up
+
+          "crop=2000:1125:150:0"
+        ])
+        .outputOptions([
+          "-q:v 2" // high quality
+        ])
+        .save(outputPath)
+        .on("end", () => {
+          console.log("Poster transformed")
+          resolve()
+        })
+        .on("error", reject)
+    })
   }
 
   shuffle<T>(array: T[]) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-      ;[array[i], array[j]] = [array[j], array[i]]
+        ;[array[i], array[j]] = [array[j], array[i]]
     }
     return array
   }
@@ -204,8 +239,9 @@ class ProcessBinge {
     console.time('BingeProcess')
     await processBinge.processFiles()
     console.timeEnd('BingeProcess')
-    //await processBinge.merge()
-    await processBinge.downloadThumbnails()
+    await processBinge.merge()
+    await processBinge.createPoster()
+    await processBinge.transformPoster()
   }
 
 }
