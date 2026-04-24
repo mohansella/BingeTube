@@ -1,18 +1,29 @@
 collections:
   - name: Sketch Comedy Universe
     series:
-      - data: comedy/key_and_peele.binge
-      - data: comedy/impractical_jokers.binge
+      - data: comedy/key_and_peele
+      - data: comedy/impractical_jokers
   - name: Short Film Vault
     series:
-      - data: shortfilms/dust_scifi.binge
-      - data: shortfilms/omeleto.binge
+      - data: shortfilms/dust_scifi
+      - data: shortfilms/omeleto
   - name: Toon Chaos Club
     series:
-      - data: toon/grizzy_lemmings.binge
+      - data: toon/grizzy_lemmings
   - name: Curiosity Bites
     series:
-      - data: curious/kurzgesagt.binge
-      - data: curious/veritasium.binge
-      - data: curious/nilered.binge
-      - data: curious/epic_spaceman.binge
+      - data: curious/kurzgesagt
+      - data: curious/veritasium
+      - data: curious/nilered
+      - data: curious/epic_spaceman
+top_picks:
+  - comedy/key_and_peele
+  - curious/epic_spaceman
+  - toon/grizzy_lemmings
+  - shortfilms/dust_scifi
+  - shortfilms/omeleto
+  - curious/kurzgesagt
+  - curious/veritasium
+  - curious/nilered
+  - comedy/impractical_jokers
+  - shortfilms/omeleto

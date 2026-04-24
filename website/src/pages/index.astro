@@ -12,6 +12,9 @@ import {
   LayoutList
 } from '@lucide/astro';
 
+import discover from "../../public/discover/discover.json";
+const topPicks = discover.top_picks.slice(0, 10);
+
 const appUrl = SiteContants.APP_URL;
 const githubUrl = "https://github.com/mohansella/BingeTube";
 ---
@@ -58,6 +61,53 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
             <Github size={18} />
             View Source
           </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="relative z-20 pt-2 pb-16">
+      <div class="mx-auto max-w-7xl">
+        
+        <h2 class="mb-6 px-6 text-2xl font-semibold text-white">
+          Top Picks
+        </h2>
+
+        <div class="flex gap-5 overflow-x-auto py-6 px-6 scrollbar-hide after:content-[''] after:w-1 after:shrink-0">
+          {topPicks.map((item, i) => (
+            <div class="relative ml-4 min-w-[220px] sm:min-w-[240px] md:min-w-[260px] lg:min-w-[280px] hover:z-50">
+              
+              {/* Background Number */}
+              <span
+                class="absolute -left-6 bottom-2 text-[110px] font-extrabold text-white/20 z-10 leading-none pointer-events-none"
+                style="-webkit-text-stroke: 2px rgba(255,255,255,0.4);"
+              >
+                {i + 1}
+              </span>
+
+              {/* Card Container */}
+              <div class="relative ml-4 z-20 overflow-hidden rounded-xl shadow-lg transition duration-300 hover:scale-105">
+                <div class="relative aspect-video w-full">
+                  {/* Cover Image */}
+                  <img src={item.coverUrl} alt={item.title} class="h-full w-full object-cover scale-[1.05]" />
+                  
+                  {/* Gradient Overlay for Text Legibility */}
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none"></div>
+
+                  {/* Bottom Left Content (Icon & Title) */}
+                  <div class="absolute bottom-0 left-0 w-full p-3 flex items-center gap-2.5 pointer-events-none">
+                    <img src={item.iconUrl} alt="Icon" class="w-6 h-6 rounded-full border border-white/20 shadow-sm shrink-0 object-cover" />
+                    
+                    <div class="flex min-w-0 items-center">
+                      <span class="text-white text-sm font-bold truncate drop-shadow-md">
+                        {item.title}
+                      </span>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
