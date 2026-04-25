@@ -15,7 +15,7 @@ description: "Watch Key & Peele like a series. 280+ sketches in order. No repeat
 </div>
 
 <div class="cta">
-  <a href="/app#/series/comedy/key_and_peele" class="btn">Start watching</a>
+  <a href="/app/series/comedy/key_and_peele" class="btn">Start watching</a>
 </div>
 
 Watching Key & Peele on YouTube sounds simple, but it quickly breaks down.

@@ -15,7 +15,7 @@ description: "Watch Kurzgesagt like a series. Explore science, space, and big id
 </div>
 
 <div class="cta">
-  <a href="/app#/series/curious/kurzgesagt" class="btn">Start watching</a>
+  <a href="/app/series/curious/kurzgesagt" class="btn">Start watching</a>
 </div>
 
 Watching Kurzgesagt on YouTube feels amazing at first, but quickly becomes random.

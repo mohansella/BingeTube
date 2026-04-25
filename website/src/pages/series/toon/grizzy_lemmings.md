@@ -15,7 +15,7 @@ description: "Watch Grizzy & the Lemmings like a series. Enjoy episodes in order
 </div>
 
 <div class="cta">
-  <a href="/app#/series/kids/grizzy_and_the_lemmings" class="btn">Start watching</a>
+  <a href="/app/series/kids/grizzy_and_the_lemmings" class="btn">Start watching</a>
 </div>
 
 Watching Grizzy & the Lemmings on YouTube is fun, but quickly becomes repetitive.

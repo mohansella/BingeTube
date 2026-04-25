@@ -15,7 +15,7 @@ description: "Watch NileRed like a series. Explore fascinating chemistry experim
 </div>
 
 <div class="cta">
-  <a href="/app#/series/curious/nilered" class="btn">Start watching</a>
+  <a href="/app/series/curious/nilered" class="btn">Start watching</a>
 </div>
 
 Watching NileRed on YouTube is fascinating at first, but quickly becomes scattered.

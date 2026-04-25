@@ -15,7 +15,7 @@ description: "Watch Dust like a series. Explore sci-fi short films in order. No 
 </div>
 
 <div class="cta">
-  <a href="/app#/series/shortfilms/dust_scifi" class="btn">Start watching</a>
+  <a href="/app/series/shortfilms/dust_scifi" class="btn">Start watching</a>
 </div>
 
 Watching Dust on YouTube is exciting, but quickly becomes unstructured.

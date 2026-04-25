@@ -15,7 +15,7 @@ description: "Watch Omeleto like a series. Explore powerful short films in order
 </div>
 
 <div class="cta">
-  <a href="/app#/series/shortfilms/omeleto" class="btn">Start watching</a>
+  <a href="/app/series/shortfilms/omeleto" class="btn">Start watching</a>
 </div>
 
 Watching Omeleto on YouTube feels immersive at first, but quickly becomes random.

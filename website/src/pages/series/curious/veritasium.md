@@ -15,7 +15,7 @@ description: "Watch Veritasium like a series. Explore physics, science, and curi
 </div>
 
 <div class="cta">
-  <a href="/app#/series/curious/veritasium" class="btn">Start watching</a>
+  <a href="/app/series/curious/veritasium" class="btn">Start watching</a>
 </div>
 
 Watching Veritasium on YouTube sounds simple, but it quickly becomes scattered.

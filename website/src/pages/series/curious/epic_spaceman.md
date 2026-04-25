@@ -15,7 +15,7 @@ description: "Watch Epic Spaceman like a series. Explore space, mysteries, and f
 </div>
 
 <div class="cta">
-  <a href="/app#/series/science/epic_spaceman" class="btn">Start watching</a>
+  <a href="/app/series/science/epic_spaceman" class="btn">Start watching</a>
 </div>
 
 Watching Epic Spaceman on YouTube starts off exciting, but quickly turns chaotic.
