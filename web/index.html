@@ -67,8 +67,13 @@
 <body>
   <!-- Native splash -->
   <div id="native-splash">
-    <lottie-player src="assets/assets/lottie/binge_panda.json" background="transparent" speed="1" loop autoplay />
+    <lottie-player id="splash-lottie" background="transparent" speed="1" loop autoplay></lottie-player>
   </div>
+
+  <script>
+    const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
+    document.getElementById('splash-lottie').setAttribute('src', baseHref + 'assets/assets/lottie/binge_panda.json');
+  </script>
 
   <script src="flutter_bootstrap.js" async></script>
 </body>
