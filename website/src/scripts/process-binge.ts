@@ -80,21 +80,16 @@ class ProcessBinge {
     const fileContent = await readFile(filePath, 'utf-8')
     const discover = yaml.load(fileContent) as Discover
 
-    const topPicks = discover.top_picks as String[]
-    discover.top_picks = topPicks.map((s) => {
-      const bingeFile = `${s}.binge`
-      return this.bingeInfoMap.get(bingeFile)!
-    })
+    discover.models = Object.fromEntries(this.bingeInfoMap)
 
     discover.collections.forEach((f) => {
-      f.series = (f.series as DiscoverSeries[]).map((s) => {
-        const bingeFile = `${s.data}.binge`
+      f.series.map((s) => {
+        const bingeFile = `${s}.binge`
         if (!this.bingeInfoMap.has(bingeFile)) {
-          throw Error(`binge defined in discover.yml missing/duplicate: ${s.data}`)
+          throw Error(`binge defined in discover.yml missing/duplicate: ${s}`)
         } else {
-          const toReturn = this.bingeInfoMap.get(bingeFile)!
-          this.bingeInfoMap.delete(s.data)
-          return toReturn
+          this.bingeInfoMap.get(bingeFile)!
+          this.bingeInfoMap.delete(s)
         }
       })
     })
@@ -257,16 +252,13 @@ class ProcessBinge {
 
 interface Discover {
   collections: DiscoverCollection[]
-  top_picks: string[] | SeryModel[]
+  top_picks: string[]
+  models: Record<string, SeryModel>
 }
 
 interface DiscoverCollection {
   name: string
-  series: DiscoverSeries[] | SeryModel[]
-}
-
-interface DiscoverSeries {
-  data: string
+  series: string[]
 }
 
 interface SeryModel {

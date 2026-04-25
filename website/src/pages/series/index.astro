@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layout/layout.astro";
 import { FlaskConical, Smile, Film, Gamepad2 } from '@lucide/astro';
+import discover from "../../../public/discover/discover.json";
 
 const title = "BingeTube Directory: Watch YouTube Channels Like TV Series";
 const description = "Escape the algorithm. Browse our curated directories to watch your favorite YouTube channels in perfect sequential order without interruptions or repeated videos.";
@@ -23,22 +24,34 @@ const description = "Escape the algorithm. Browse our curated directories to wat
     <h2 class="flex items-center gap-2"><FlaskConical class="text-emerald-400" size={28} /> Science & Exploration</h2>
     <p><em>Feed your curiosity with distraction-free deep dives into physics, chemistry, and the cosmos.</em></p>
     
-    <ul>
-      <li>
-        <strong><a href="/series/curious/veritasium">Veritasium: Mind-Expanding Physics</a></strong><br/>
-        Uncover the counter-intuitive truths of reality, perfectly sequenced for deep learning.
+    <ul class="list-none pl-0 space-y-6">
+      <li class="flex items-start gap-4">
+        <img src={discover.models["curious/veritasium.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="Veritasium" />
+        <div>
+          <strong><a href="/series/curious/veritasium">Veritasium: Mind-Expanding Physics</a></strong><br/>
+          Uncover the counter-intuitive truths of reality, perfectly sequenced for deep learning.
+        </div>
       </li>
-      <li>
-        <strong><a href="/series/curious/kurzgesagt">Kurzgesagt: The Animated Universe</a></strong><br/>
-        Existentialism and beautiful animation, flowing seamlessly from one big idea to the next.
+      <li class="flex items-start gap-4">
+        <img src={discover.models["curious/kurzgesagt.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="Kurzgesagt" />
+        <div>
+          <strong><a href="/series/curious/kurzgesagt">Kurzgesagt: The Animated Universe</a></strong><br/>
+          Existentialism and beautiful animation, flowing seamlessly from one big idea to the next.
+        </div>
       </li>
-      <li>
-        <strong><a href="/series/curious/epic_spaceman">Epic Spaceman: Uninterrupted Cosmos</a></strong><br/>
-        A breathtaking, continuous voyage through the scale and mysteries of deep space.
+      <li class="flex items-start gap-4">
+        <img src={discover.models["curious/epic_spaceman.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="Epic Spaceman" />
+        <div>
+          <strong><a href="/series/curious/epic_spaceman">Epic Spaceman: Uninterrupted Cosmos</a></strong><br/>
+          A breathtaking, continuous voyage through the scale and mysteries of deep space.
+        </div>
       </li>
-      <li>
-        <strong><a href="/series/curious/nilered">NileRed: The Chemistry Lab</a></strong><br/>
-        Fascinating, methodical chemical transformations without the algorithmic chaos.
+      <li class="flex items-start gap-4">
+        <img src={discover.models["curious/nilered.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="NileRed" />
+        <div>
+          <strong><a href="/series/curious/nilered">NileRed: The Chemistry Lab</a></strong><br/>
+          Fascinating, methodical chemical transformations without the algorithmic chaos.
+        </div>
       </li>
     </ul>
     
@@ -47,10 +60,13 @@ const description = "Escape the algorithm. Browse our curated directories to wat
     <h2 class="flex items-center gap-2"><Smile class="text-amber-400" size={28} /> Sketch Comedy</h2>
     <p><em>Because a joke loses its punchline when an algorithm plays it out of order.</em></p>
     
-    <ul>
-      <li>
-        <strong><a href="/series/comedy/key_and_peele">Key & Peele: The Complete Sketch Marathon</a></strong><br/>
-        Stop watching the same five viral clips. Experience all 280+ legendary sketches in a single, flowing binge.
+    <ul class="list-none pl-0 space-y-6">
+      <li class="flex items-start gap-4">
+        <img src={discover.models["comedy/key_and_peele.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="Key and Peele" />
+        <div>
+          <strong><a href="/series/comedy/key_and_peele">Key & Peele: The Complete Sketch Marathon</a></strong><br/>
+          Stop watching the same five viral clips. Experience all 280+ legendary sketches in a single, flowing binge.
+        </div>
       </li>
     </ul>
     
@@ -59,14 +75,20 @@ const description = "Escape the algorithm. Browse our curated directories to wat
     <h2 class="flex items-center gap-2"><Film class="text-rose-400" size={28} /> Indie Cinema & Short Films</h2>
     <p><em>Treat your screen like an indie film festival. Pure cinematic immersion.</em></p>
     
-    <ul>
-      <li>
-        <strong><a href="/series/shortfilms/dust_scifi">DUST: Sci-Fi Anthologies</a></strong><br/>
-        Mind-bending futures, artificial intelligence, and deep space narratives, uninterrupted.
+    <ul class="list-none pl-0 space-y-6">
+      <li class="flex items-start gap-4">
+        <img src={discover.models["shortfilms/dust_scifi.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="DUST" />
+        <div>
+          <strong><a href="/series/shortfilms/dust_scifi">DUST: Sci-Fi Anthologies</a></strong><br/>
+          Mind-bending futures, artificial intelligence, and deep space narratives, uninterrupted.
+        </div>
       </li>
-      <li>
-        <strong><a href="/series/shortfilms/omeleto">Omeleto: Award-Winning Drama</a></strong><br/>
-        Oscar-qualified and Sundance-winning storytelling flowing continuously, like a true cinematic journey.
+      <li class="flex items-start gap-4">
+        <img src={discover.models["shortfilms/omeleto.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="Omeleto" />
+        <div>
+          <strong><a href="/series/shortfilms/omeleto">Omeleto: Award-Winning Drama</a></strong><br/>
+          Oscar-qualified and Sundance-winning storytelling flowing continuously, like a true cinematic journey.
+        </div>
       </li>
     </ul>
     
@@ -75,10 +97,13 @@ const description = "Escape the algorithm. Browse our curated directories to wat
     <h2 class="flex items-center gap-2"><Gamepad2 class="text-blue-400" size={28} /> Kids & Family (Toons)</h2>
     <p><em>End the repetitive loop of doom. Safe, sequential watching for the whole family.</em></p>
     
-    <ul>
-      <li>
-        <strong><a href="/series/toon/grizzy_lemmings">Grizzy & the Lemmings: The Ultimate Chaos Binge</a></strong><br/>
-        A structured, repeat-free marathon of slapstick comedy. Never manually skip a duplicate episode again.
+    <ul class="list-none pl-0 space-y-6">
+      <li class="flex items-start gap-4">
+        <img src={discover.models["toon/grizzy_lemmings.binge"].iconUrl} class="w-10 h-10 rounded-full border border-slate-700 shrink-0 mt-1" alt="Grizzy & Lemmings" />
+        <div>
+          <strong><a href="/series/toon/grizzy_lemmings">Grizzy & the Lemmings: The Ultimate Chaos Binge</a></strong><br/>
+          A structured, repeat-free marathon of slapstick comedy. Never manually skip a duplicate episode again.
+        </div>
       </li>
     </ul>
     

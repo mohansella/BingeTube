@@ -13,7 +13,7 @@ import {
 } from '@lucide/astro';
 
 import discover from "../../public/discover/discover.json";
-const topPicks = discover.top_picks.slice(0, 10);
+const topPicks = discover.top_picks.slice(0, 10).map((id) => discover.models[`${id}.binge` as keyof typeof discover.models]);
 
 const appUrl = SiteContants.APP_URL;
 const githubUrl = "https://github.com/mohansella/BingeTube";
@@ -39,25 +39,25 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
           <span class="flex items-center gap-2"><Zap size={14} class="text-[#E61819]" />Finish entire series, not just videos</span>
         </div>
 
-        <h1 class="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-7xl">
-          Stop Scrolling.
+        <h1 class="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl md:text-7xl">
+          Watch YouTube Series
           <br/>
           <span class="bg-gradient-to-r from-[#E61819] to-[#FF9999] bg-clip-text text-transparent">
-            Start finishing.
+            in Perfect Order.
           </span>
         </h1>
 
         <h2 class="mx-auto mt-6 max-w-2xl text-xl sm:text-2xl font-medium text-slate-300 leading-relaxed">
-          Watch YouTube like a series — in order, without repeats, with real progress tracking.
+          Escape the endless algorithmic feed. Turn your favorite channels into TV seasons with zero repeats and zero distractions.
           <br class="hidden sm:block" />
         </h2>
 
-        <div class="mt-12 flex justify-center gap-6">
-          <a href={appUrl} class="flex items-center gap-2 rounded-xl bg-[#E61819] px-8 py-4 font-medium text-white shadow-lg shadow-[#E61819]/20 transition hover:bg-[#FF4444] hover:shadow-xl hover:shadow-[#E61819]/40">
+        <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 px-4 sm:px-0">
+          <a href={appUrl} class="flex items-center justify-center gap-2 rounded-xl bg-[#E61819] px-8 py-4 font-medium text-white shadow-lg shadow-[#E61819]/20 transition hover:bg-[#FF4444] hover:shadow-xl hover:shadow-[#E61819]/40 w-full sm:w-auto">
             <Play size={18} fill="currentColor" />
-            Start Binging
+            Open BingeTube App
           </a>
-          <a href={githubUrl} target="_blank" class="flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-900/50 backdrop-blur-sm px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800">
+          <a href={githubUrl} target="_blank" class="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/50 backdrop-blur-sm px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800 w-full sm:w-auto">
             <Github size={18} />
             View Source
           </a>
@@ -112,9 +112,9 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
       </div>
     </section>
 
-    <section class="border-t border-slate-800 py-24">
+    <section class="border-t border-slate-800 py-12 md:py-24">
       <div class="mx-auto max-w-7xl px-6">
-        <div class="grid gap-16 md:grid-cols-2">
+        <div class="grid gap-10 md:gap-16 md:grid-cols-2">
           
           <div class="space-y-6">
             <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#E61819]/10 text-[#FF4444]">
@@ -126,8 +126,7 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
             </h2>
 
             <p class="text-slate-400 text-lg">
-              Explore structured collections built from real YouTube channels.  
-              Watch videos in order, skip what you've already seen, and finally complete entire YouTube series without getting lost.
+              Stop letting recommendations dictate your curiosity. Explore structured collections built from real YouTube channels. Watch uninterrupted, automatically skip what you've already seen, and finally complete entire storylines without getting lost.
             </p>
 
             <ul class="space-y-3">
@@ -143,13 +142,13 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
             </ul>
           </div>
 
-          <div class="rounded-3xl border border-slate-800 bg-slate-900/50 p-8 lg:p-12">
+          <div class="rounded-3xl border border-slate-800 bg-slate-900/50 p-6 sm:p-8 lg:p-12">
             <Settings2 class="mb-6 text-[#FF5555]" size={32} />
             <h3 class="text-2xl font-bold">Create your own series</h3>
 
             <p class="mt-4 text-slate-400">
-              Turn any YouTube channel or playlist into a clean, structured series.  
-              Take control of your viewing experience and binge watch YouTube the way you want.
+              Turn any chaotic YouTube channel or playlist into a clean, TV-style season.  
+              Take back control of your screen time and binge watch exactly what you want, distraction-free.
             </p>
             
             <div class="mt-8 space-y-4">
@@ -179,21 +178,21 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
       </div>
     </section>
 
-    <section class="border-t border-slate-800 bg-black py-20">
+    <section class="border-t border-slate-800 bg-black py-12 md:py-20">
       <div class="mx-auto max-w-3xl px-6 text-center">
-        <h2 class="text-3xl font-semibold italic text-slate-200">
+        <h2 class="text-2xl md:text-3xl font-semibold italic text-slate-200">
           "Stop browsing. Start completing."
         </h2>
 
         <p class="mt-4 text-slate-400 text-lg">
-          BingeTube helps you turn endless YouTube scrolling into a structured, satisfying experience — 
+          BingeTube helps you turn the chaotic, distracting algorithmic feed into a structured, cinematic experience — 
           where you actually finish what you start.
         </p>
       </div>
     </section>
 
 
-    <section class="border-t border-slate-800 py-20">
+    <section class="border-t border-slate-800 py-12 md:py-20">
   <div class="mx-auto max-w-5xl px-6 text-center">
 
     <h2 class="text-3xl font-bold tracking-tight">
@@ -201,19 +200,13 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
     </h2>
 
     <p class="mx-auto mt-4 max-w-2xl text-lg text-slate-400">
-      Explore curated YouTube channels organized like series. Watch in order, skip repeats, and track your progress.
+      Escape the endless scroll. Browse our curated directories to watch your favorite YouTube channels in perfect sequential order without interruptions.
     </p>
 
-    <div class="mt-8 flex justify-center">
-      <a href="/series" class="rounded-xl bg-[#E61819] px-8 py-4 font-medium text-white shadow-lg shadow-[#E61819]/20 transition hover:bg-[#FF4444]">
+    <div class="mt-8 flex justify-center px-4 sm:px-0">
+      <a href="/series" class="flex items-center justify-center rounded-xl bg-[#E61819] px-8 py-4 font-medium text-white shadow-lg shadow-[#E61819]/20 transition hover:bg-[#FF4444] w-full sm:w-auto">
         Browse all series
       </a>
-    </div>
-
-    <div class="mt-10 flex flex-wrap justify-center gap-4 text-sm text-slate-400">
-      <a href="/series/comedy/key_and_peele" class="hover:text-[#FF4444]">Key & Peele</a>
-      <a href="/series/science/veritasium" class="hover:text-[#FF4444]">Veritasium</a>
-      <a href="/series/science/kurzgesagt" class="hover:text-[#FF4444]">Kurzgesagt</a>
     </div>
 
   </div>

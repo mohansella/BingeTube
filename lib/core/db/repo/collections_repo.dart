@@ -171,6 +171,7 @@ class CollectionsRepo {
   List<CollectionModel> _parseDiscoverJson(dynamic response) {
     final toReturn = <CollectionModel>[];
     final jCollections = response['collections'] as List;
+    final jModels = response['models'] as Map<String, dynamic>;
 
     int currCollectionId = 0;
     int currCollectionPriority = 0;
@@ -196,7 +197,10 @@ class CollectionsRepo {
       final seryModels = <SeryModel>[];
       final jSeries = jCollection['series'] as List;
 
-      for (final jSery in jSeries) {
+      for (final jSeryId in jSeries) {
+        final jSery = jModels['$jSeryId.binge'];
+        if (jSery == null) continue;
+
         currSeriesId++;
         currSeriesPriority++;
         final title = jSery['title'] as String;
