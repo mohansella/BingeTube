@@ -71,7 +71,6 @@ jobs:
         run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: flutter pub get
       - run: flutter build web --release --base-href=/app/ --source-maps --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
-      - run: cp build/web/index.html build/web/spa.html
       - uses: actions/upload-artifact@v4
         with:
           name: flutter-web
@@ -231,6 +230,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with: { name: flutter-web, path: dist/app }
+      - run: cp dist/app/index.html dist/spa.html
       - uses: actions/download-artifact@v4
         with: { name: astro-site, path: dist }
       - uses: cloudflare/pages-action@v1
