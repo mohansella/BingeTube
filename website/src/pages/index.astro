@@ -34,12 +34,12 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
       </div>
 
       
-      <div class="relative z-10 mx-auto max-w-7xl px-6 py-28 text-center">
+      <div class="relative z-10 mx-auto max-w-7xl px-6 py-16 sm:py-28 text-center">
         <div class="mx-auto mb-6 w-fit rounded-full border border-[#E61819]/40 bg-[#E61819]/10 px-4 py-1 text-sm text-white backdrop-blur-sm">
           <span class="flex items-center gap-2"><Zap size={14} class="text-[#E61819]" />Finish entire series, not just videos</span>
         </div>
 
-        <h1 class="mx-auto max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl md:text-7xl">
+        <h1 class="mx-auto max-w-4xl text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-7xl">
           Watch YouTube Series
           <br/>
           <span class="bg-gradient-to-r from-[#E61819] to-[#FF9999] bg-clip-text text-transparent">
@@ -52,12 +52,12 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
           <br class="hidden sm:block" />
         </h2>
 
-        <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 px-4 sm:px-0">
-          <a href={appUrl} class="flex items-center justify-center gap-2 rounded-xl bg-[#E61819] px-8 py-4 font-medium text-white shadow-lg shadow-[#E61819]/20 transition hover:bg-[#FF4444] hover:shadow-xl hover:shadow-[#E61819]/40 w-full sm:w-auto">
+        <div class="mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-6 px-2 sm:px-0">
+          <a href={appUrl} class="flex items-center justify-center gap-2 rounded-xl bg-[#E61819] px-6 sm:px-8 py-4 font-medium text-white shadow-lg shadow-[#E61819]/20 transition hover:bg-[#FF4444] hover:shadow-xl hover:shadow-[#E61819]/40 w-full sm:w-auto">
             <Play size={18} fill="currentColor" />
             Open BingeTube App
           </a>
-          <a href={githubUrl} target="_blank" class="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/50 backdrop-blur-sm px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800 w-full sm:w-auto">
+          <a href={githubUrl} target="_blank" class="flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-900/50 backdrop-blur-sm px-6 sm:px-8 py-4 font-medium text-slate-200 transition hover:bg-slate-800 w-full sm:w-auto">
             <Github size={18} />
             View Source
           </a>
@@ -74,11 +74,11 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 
         <div class="flex gap-5 overflow-x-auto py-6 px-6 scrollbar-hide after:content-[''] after:w-1 after:shrink-0">
           {topPicks.map((item, i) => (
-            <div class="relative ml-4 min-w-[220px] sm:min-w-[240px] md:min-w-[260px] lg:min-w-[280px] hover:z-50">
+            <div class="relative ml-4 min-w-[260px] sm:min-w-[280px] md:min-w-[320px] lg:min-w-[360px] hover:z-50">
               
               {/* Background Number */}
               <span
-                class="absolute -left-6 bottom-2 text-[110px] font-extrabold text-white/20 z-10 leading-none pointer-events-none"
+                class="absolute -left-2 sm:-left-6 bottom-2 text-[80px] sm:text-[110px] font-extrabold text-white/20 z-10 leading-none pointer-events-none"
                 style="-webkit-text-stroke: 2px rgba(255,255,255,0.4);"
               >
                 {i + 1}
@@ -95,10 +95,10 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
 
                   {/* Bottom Left Content (Icon & Title) */}
                   <div class="absolute bottom-0 left-0 w-full p-3 flex items-center gap-2.5 pointer-events-none">
-                    <img src={item.iconUrl} alt="Icon" class="w-6 h-6 rounded-full border border-white/20 shadow-sm shrink-0 object-cover" />
+                    <img src={item.iconUrl} alt="Icon" class="w-6 h-6 rounded-full border border-white/20 shadow-sm shrink-0 object-cover bg-slate-800" />
                     
                     <div class="flex min-w-0 items-center">
-                      <span class="text-white text-sm font-bold truncate drop-shadow-md">
+                      <span class="text-white text-sm sm:text-base font-bold truncate drop-shadow-md">
                         {item.title}
                       </span>
                     </div>
@@ -129,15 +129,15 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
               Stop letting recommendations dictate your curiosity. Explore structured collections built from real YouTube channels. Watch uninterrupted, automatically skip what you've already seen, and finally complete entire storylines without getting lost.
             </p>
 
-            <ul class="space-y-3">
-              <li class="flex items-center gap-3 text-slate-300">
-                <CheckCircle2 size={18} class="text-[#FF4444]" /> Watch videos in the right order
+            <ul class="space-y-4">
+              <li class="flex items-start sm:items-center gap-3 text-slate-300">
+                <CheckCircle2 size={22} class="text-[#FF4444] shrink-0 mt-0.5 sm:mt-0" /> Watch videos in the right order
               </li>
-              <li class="flex items-center gap-3 text-slate-300">
-                <CheckCircle2 size={18} class="text-[#FF4444]" /> Automatically skip repeats
+              <li class="flex items-start sm:items-center gap-3 text-slate-300">
+                <CheckCircle2 size={22} class="text-[#FF4444] shrink-0 mt-0.5 sm:mt-0" /> Automatically skip repeats
               </li>
-              <li class="flex items-center gap-3 text-slate-300">
-                <CheckCircle2 size={18} class="text-[#FF4444]" /> Continue exactly where you left off
+              <li class="flex items-start sm:items-center gap-3 text-slate-300">
+                <CheckCircle2 size={22} class="text-[#FF4444] shrink-0 mt-0.5 sm:mt-0" /> Continue exactly where you left off
               </li>
             </ul>
           </div>
