@@ -1,75 +1,66 @@
 ---
 layout: ../../../layout/layout.astro
-title: "Omeleto — Watch Short Films in Order (No Repeats)"
-description: "Watch Omeleto like a series. Explore powerful short films in order. No repeats. Track progress and continue where you left off."
+title: "Omeleto Uninterrupted: Award-Winning Short Films in Perfect Flow"
+description: "Experience Omeleto's Oscar-qualified and Sundance-winning short films like a curated film festival. No distractions, no repeated videos—just pure cinema."
 ---
 
 <div class="content">
 
-# Omeleto — watch it like a series
+# Omeleto — Your Personal Indie Film Festival
+
 <div>
     <img
       src="https://img.youtube.com/vi/qFp2-cT7_0k/maxresdefault.jpg"
-      alt="Watch Omeleto short films in order without repeats"
+      alt="Watch Omeleto award winning short films without repeats"
     />
 </div>
 
 <div class="cta">
-  <a href="/app/series/shortfilms/omeleto" class="btn">Start watching</a>
+  <a href="/app/series/shortfilms/omeleto" class="btn">Take Your Seat</a>
 </div>
 
-Watching Omeleto on YouTube feels immersive at first, but quickly becomes random.
+Imagine walking into the Sundance Film Festival, sitting down in a plush theater seat, and right after a breathtaking, tear-jerking drama finishes, the projectionist throws on a loud prank compilation. 
 
-- You jump between completely different stories  
-- Algorithms interrupt emotional continuity  
-- Hidden gems get buried  
-- You lose track of what you’ve already seen  
+That is exactly what it feels like trying to watch **Omeleto** shorts on a standard video platform.
 
-This fixes that.
+## The Problem with the Algorithm
 
----
+Omeleto curates some of the most emotionally resonant, beautifully shot short films on the planet. But the platform you watch them on doesn't care about the *art*—it cares about the *click*. 
 
-## A better way to watch
+If you've ever tried to binge these cinematic masterpieces, you know the struggle:
 
-This is a curated collection of Omeleto short films, arranged to feel like a continuous cinematic experience.
+* **Emotional Whiplash:** Jumping from a devastatingly beautiful romance directly into an unrelated, high-energy vlog.
+* **The Buried Masterpieces:** The algorithm heavily favors new uploads, burying absolute gems from years past that won major festival awards.
+* **Amnesia:** You lose track of which films you've seen, leading to frustrating re-clicks.
+* **The Paradox of Choice:** Spending more time scrolling through thumbnails than actually watching films.
 
-- Carefully ordered films  
-- No repeated videos  
-- Resume where you left off  
-- Track your progress  
-
-It turns isolated short films into a flowing storytelling journey.
+We believe these stories deserve better.
 
 ---
 
-## Why not just use YouTube?
+## Cinema, Uninterrupted
 
-YouTube is optimized for discovery, not storytelling continuity.
+This curated collection transforms isolated Omeleto uploads into a **seamless, curated cinematic journey**. We’ve built a viewing experience that respects the art form.
 
-- No narrative flow between films  
-- Award-winning shorts are easy to miss  
-- No sense of completion  
-- Constant distractions  
+> "A film festival experience, right from your living room, where the only thing that matters is the next great story."
 
-If you want random browsing, it works.  
-If you want a focused film-watching experience, it doesn’t.
+### How We Elevated the Experience:
+- **Curated Pacing:** Films are arranged to create a dynamic, engaging emotional flow.
+- **Never Repeat a Film:** Automatic tracking ensures your journey is always moving forward.
+- **Save Your Seat:** Leave mid-binge? Your progress is saved instantly. Pick up exactly where you left the theater.
 
----
+## What is Omeleto?
 
-## About Omeleto
+**Omeleto** is the world's leading platform for next-generation filmmakers. Showcasing Oscar-qualified, Sundance-selected, and BAFTA-winning short films, it is a goldmine for true cinephiles. 
 
-Omeleto is a platform and YouTube channel that showcases high-quality short films from filmmakers around the world.
+Spanning gripping thrillers, hilarious dark comedies, and profound dramas, Omeleto proves that you don't need a two-hour runtime to tell a story that changes how you see the world. 
 
-The films span multiple genres—drama, thriller, comedy, and more—often delivering powerful stories in just a few minutes.  
-Many featured films have won awards or gone viral for their storytelling and emotional impact.
+Grab some popcorn, dim the lights, and let the films play.
 
-This collection organizes the films into a smooth flow so you can enjoy them like episodes in a series.
+<div class="cta">
+  <a href="/app/series/shortfilms/omeleto" class="btn">Start the Festival</a>
+</div>
 
----
-
-## Note
-
-This is a curated collection, not an official playlist.  
-The goal is to create a smooth, uninterrupted viewing experience.
+<p class="text-sm opacity-70 mt-8"><em>Note: This is a fan-curated viewing experience designed for cinephiles, independent from the official Omeleto channel.</em></p>
 
 </div>

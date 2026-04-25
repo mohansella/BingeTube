@@ -1,0 +1,95 @@
+---
+import Layout from "../../layout/layout.astro";
+import { FlaskConical, Smile, Film, Gamepad2 } from '@lucide/astro';
+
+const title = "BingeTube Directory: Watch YouTube Channels Like TV Series";
+const description = "Escape the algorithm. Browse our curated directories to watch your favorite YouTube channels in perfect sequential order without interruptions or repeated videos.";
+---
+
+<Layout title={title} description={description}>
+  <div class="content">
+    <h1>BingeTube Directory</h1>
+    
+    <p><strong>Welcome to the ultimate sequential viewing hub.</strong></p>
+    
+    <p>Standard video platforms are built to distract you. They serve you the same viral videos on an endless loop, bury incredible older content, and interrupt your viewing with unrelated recommendations.</p>
+    
+    <p>We built <strong>BingeTube</strong> to fix that. Here, you watch YouTube channels exactly how they were meant to be enjoyed: <strong>in perfect order, with zero repeats, picking up exactly where you left off.</strong></p>
+    
+    <p>Choose your binge below and take back control of your screen time.</p>
+    
+    <hr />
+    
+    <h2 class="flex items-center gap-2"><FlaskConical class="text-emerald-400" size={28} /> Science & Exploration</h2>
+    <p><em>Feed your curiosity with distraction-free deep dives into physics, chemistry, and the cosmos.</em></p>
+    
+    <ul>
+      <li>
+        <strong><a href="/series/curious/veritasium">Veritasium: Mind-Expanding Physics</a></strong><br/>
+        Uncover the counter-intuitive truths of reality, perfectly sequenced for deep learning.
+      </li>
+      <li>
+        <strong><a href="/series/curious/kurzgesagt">Kurzgesagt: The Animated Universe</a></strong><br/>
+        Existentialism and beautiful animation, flowing seamlessly from one big idea to the next.
+      </li>
+      <li>
+        <strong><a href="/series/curious/epic_spaceman">Epic Spaceman: Uninterrupted Cosmos</a></strong><br/>
+        A breathtaking, continuous voyage through the scale and mysteries of deep space.
+      </li>
+      <li>
+        <strong><a href="/series/curious/nilered">NileRed: The Chemistry Lab</a></strong><br/>
+        Fascinating, methodical chemical transformations without the algorithmic chaos.
+      </li>
+    </ul>
+    
+    <hr />
+    
+    <h2 class="flex items-center gap-2"><Smile class="text-amber-400" size={28} /> Sketch Comedy</h2>
+    <p><em>Because a joke loses its punchline when an algorithm plays it out of order.</em></p>
+    
+    <ul>
+      <li>
+        <strong><a href="/series/comedy/key_and_peele">Key & Peele: The Complete Sketch Marathon</a></strong><br/>
+        Stop watching the same five viral clips. Experience all 280+ legendary sketches in a single, flowing binge.
+      </li>
+    </ul>
+    
+    <hr />
+    
+    <h2 class="flex items-center gap-2"><Film class="text-rose-400" size={28} /> Indie Cinema & Short Films</h2>
+    <p><em>Treat your screen like an indie film festival. Pure cinematic immersion.</em></p>
+    
+    <ul>
+      <li>
+        <strong><a href="/series/shortfilms/dust_scifi">DUST: Sci-Fi Anthologies</a></strong><br/>
+        Mind-bending futures, artificial intelligence, and deep space narratives, uninterrupted.
+      </li>
+      <li>
+        <strong><a href="/series/shortfilms/omeleto">Omeleto: Award-Winning Drama</a></strong><br/>
+        Oscar-qualified and Sundance-winning storytelling flowing continuously, like a true cinematic journey.
+      </li>
+    </ul>
+    
+    <hr />
+    
+    <h2 class="flex items-center gap-2"><Gamepad2 class="text-blue-400" size={28} /> Kids & Family (Toons)</h2>
+    <p><em>End the repetitive loop of doom. Safe, sequential watching for the whole family.</em></p>
+    
+    <ul>
+      <li>
+        <strong><a href="/series/toon/grizzy_lemmings">Grizzy & the Lemmings: The Ultimate Chaos Binge</a></strong><br/>
+        A structured, repeat-free marathon of slapstick comedy. Never manually skip a duplicate episode again.
+      </li>
+    </ul>
+    
+    <hr />
+    
+    <h2>Why Switch to Binge-Mode?</h2>
+    
+    <p>Standard feeds optimize for endless scrolling. BingeTube optimizes for <strong>completion and immersion</strong>.</p>
+    
+    <p>By stripping away the chaotic recommendation sidebars and aggressive autoplay features, we turn fragmented video clips into cohesive, TV-style seasons.</p>
+    
+    <p>Whether you want to deeply understand quantum mechanics or just want a distraction-free comedy marathon, select a series above and hit <strong>Start Watching</strong>.</p>
+  </div>
+</Layout>
