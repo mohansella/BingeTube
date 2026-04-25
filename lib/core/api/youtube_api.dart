@@ -10,7 +10,6 @@ import 'package:bingetube/core/constants/constants.dart';
 import 'package:bingetube/core/config/apikey_util.dart';
 import 'package:bingetube/core/http/http_client.dart';
 import 'package:bingetube/core/log/log_manager.dart';
-import 'package:bingetube/core/utils/core_utils.dart';
 
 import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/search.dart';
@@ -565,7 +564,7 @@ class YoutubeApi {
     String uri,
   ) async {
     _logger.info('[$taskName] initiating http request');
-    final apiKey = CoreUtils.readApiKey(ref);
+    final apiKey = ApiKeyUtil.readApiKey(ref);
     try {
       final url = Uri.parse(
         uri.replaceAll('key=API_KEY', 'key=${Uri.encodeQueryComponent(apiKey)}'),
@@ -597,18 +596,14 @@ class YoutubeApi {
   }
 
   static void _updateApiKeyStatus(WidgetRef ref, Response response) {
-    final meta = CoreUtils.readApiKeyMeta(ref);
-    if (response.statusCode == 200 &&
-        meta.status != .keyValid &&
-        meta.status != .notConfigured) {
-      _logger.info('changing key status from:${meta.status} to keyValid');
-      return CoreUtils.writeApiKeyMeta(ref, meta.copyWith(status: .keyValid));
+    if (response.statusCode == 200) {
+      return ApiKeyUtil.updateApiKeyStatus(ref, .keyValid);
     } else if (response.statusCode != 200) {
       _logger.info('found error response during analyze: ${response.body}');
     }
     if (response.statusCode == 400 && response.body.indexOf('API_KEY_INVALID') != 1) {
-      _logger.info('changing key status from:${meta.status} to keyInvalid');
-      return CoreUtils.writeApiKeyMeta(ref, meta.copyWith(status: .keyInvalid));
+      _logger.info('changing key status to keyInvalid');
+      return ApiKeyUtil.updateApiKeyStatus(ref, .keyInvalid);
     }
   }
 }

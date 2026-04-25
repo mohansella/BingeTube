@@ -8,7 +8,6 @@ enum ApiKeyStatus {
   notConfigured("Not Configured", Colors.grey),
   keyValid("Valid Key", Colors.green),
   keyInvalid("Invalid Key", Colors.red),
-  limitedScope("Limited Scope", Colors.orange),
   quotaExceeded("Quota Exceeded", Colors.red);
 
   final String label;

@@ -1,5 +1,5 @@
 import 'package:bingetube/app/routes.dart';
-import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/config/apikey_util.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/search/widgets/search_channel.dart';
@@ -37,7 +37,6 @@ class SearchPageState extends ConsumerState<SearchPage>
       animationDuration: Duration(milliseconds: 250),
     );
     _textController = TextEditingController();
-    apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
   }
 
   @override
@@ -49,7 +48,7 @@ class SearchPageState extends ConsumerState<SearchPage>
 
   @override
   Widget build(BuildContext context) {
-    apiKey = ref.read(ConfigProviders.apiKeyMeta).apiKey;
+    apiKey = ApiKeyUtil.readApiKey(ref);
     return Scaffold(
       body: SafeArea(
         child: Column(

@@ -7,6 +7,16 @@ import 'package:logging/logging.dart';
 sealed class ApiKeyUtil {
   static final Logger _logger = LogManager.getLogger('ApiKeyUtil');
 
+  static String readApiKey(WidgetRef ref) {
+    return ref.read(ConfigProviders.apiKeyMeta).apiKey;
+  }
+
+  static void updateApiKeyStatus(WidgetRef ref, ApiKeyStatus status) {
+    final meta = ref.read(ConfigProviders.apiKeyMeta);
+    if (meta.status == status) return;
+    ref.read(ConfigProviders.apiKeyMeta.notifier).save(meta.copyWith(status: status));
+  }
+
   static void adjustQuota(WidgetRef ref) {
     final meta = ref.read(ConfigProviders.apiKeyMeta);
     if (meta.isQuotaUsedInvalid) {
