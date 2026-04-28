@@ -56,8 +56,30 @@ class _KeyConfigState extends ConsumerState<ConfigKeyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                if (!_isConfigured) ...[
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Currently using a shared community key. For uninterrupted access, please configure your own personal API key.',
+                            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 _buildInput(),
-                Padding(padding: EdgeInsets.only(top: 8)),
+                const SizedBox(height: 8),
                 if (_isConfigured && !_isEditMode) ...[
                   _buildEditDelete(context),
                 ] else ...[

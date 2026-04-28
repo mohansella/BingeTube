@@ -8,12 +8,17 @@ sealed class ApiKeyUtil {
   static final Logger _logger = LogManager.getLogger('ApiKeyUtil');
 
   static String readApiKey(WidgetRef ref) {
-    return ref.read(ConfigProviders.apiKeyMeta).apiKey;
+    final meta = ref.read(ConfigProviders.apiKeyMeta);
+    var toReturn = meta.apiKey;
+    if (meta.status == .notConfigured) {
+      toReturn = 'AIzaSyCLVP9XohnlxGCRBh9r0n-FbkRhEWFaIAw';
+    }
+    return toReturn;
   }
 
   static void updateApiKeyStatus(WidgetRef ref, ApiKeyStatus status) {
     final meta = ref.read(ConfigProviders.apiKeyMeta);
-    if (meta.status == status) return;
+    if (meta.status == status || meta.status == .notConfigured) return;
     ref.read(ConfigProviders.apiKeyMeta.notifier).save(meta.copyWith(status: status));
   }
 

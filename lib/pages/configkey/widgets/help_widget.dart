@@ -6,6 +6,7 @@ class ConfigKeyHelpWidget extends StatelessWidget {
   const ConfigKeyHelpWidget({super.key});
 
   final String _googleCloudConsoleUrl = 'https://console.cloud.google.com/';
+  final String _youtubeShortUrl = 'https://www.youtube.com/shorts/MDFHm8tpn4o';
 
   Future<void> _launchUrl(String urlString) async {
     final url = Uri.parse(urlString);
@@ -35,7 +36,6 @@ class ConfigKeyHelpWidget extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Intro with link
           Text.rich(
             TextSpan(
               text: 'Follow these steps in the ',
@@ -58,7 +58,18 @@ class ConfigKeyHelpWidget extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Steps
+          FilledButton.icon(
+            onPressed: () => _launchUrl(_youtubeShortUrl),
+            icon: const Icon(Icons.smart_display_rounded),
+            label: const Text('Watch 1-Min Video Guide'),
+            style: FilledButton.styleFrom(
+              backgroundColor: color.secondaryContainer,
+              foregroundColor: color.onSecondaryContainer,
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           _buildStep(
             context,
             stepNumber: '1',
@@ -82,19 +93,9 @@ class ConfigKeyHelpWidget extends StatelessWidget {
           _buildStep(
             context,
             stepNumber: '3',
-            title: 'Generate an API Key',
+            title: 'Generate & Restrict API Key',
             description:
-                'Go to APIs & Services → Credentials, click Create Credentials, and choose API Key. A key will be generated instantly.',
-          ),
-
-          const Divider(height: 28),
-
-          _buildStep(
-            context,
-            stepNumber: '4',
-            title: 'Restrict Your API Key (Recommended)',
-            description:
-                'Click Restrict Key and apply restrictions such as API restrictions or app restrictions to prevent misuse.',
+                'Go to APIs & Services → Credentials, click Create Credentials, and choose API Key. On the same screen, click Restrict Key and apply restrictions to prevent unauthorized usage.',
           ),
 
           const SizedBox(height: 24),
@@ -107,8 +108,7 @@ class ConfigKeyHelpWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
-              crossAxisAlignment: .center,
-              mainAxisAlignment: .center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.security_rounded, color: color.onErrorContainer),
                 const SizedBox(width: 12),
@@ -123,7 +123,7 @@ class ConfigKeyHelpWidget extends StatelessWidget {
                       children: [
                         TextSpan(
                           text:
-                              'Always restrict your API key to prevent unauthorized use. Never expose unrestricted keys in client apps.',
+                              'Never share your API key with anyone. Always restrict it to ensure that even if exposed, your quota cannot be consumed by others.',
                           style: text.bodySmall!.copyWith(
                             fontWeight: FontWeight.normal,
                             color: color.onErrorContainer,
@@ -141,7 +141,6 @@ class ConfigKeyHelpWidget extends StatelessWidget {
     );
   }
 
-  // --- Step UI Builder ---
   Widget _buildStep(
     BuildContext context, {
     required String stepNumber,
