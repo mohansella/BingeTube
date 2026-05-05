@@ -1,3 +1,4 @@
+import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/api/binge_api.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
@@ -21,6 +22,7 @@ class SeriesRepo {
     SeryModel model,
   ) async {
     SeriesRepo._logger.info('saving sery:${model.sery.name}');
+    Analytics.logBingeDownload(model.dataPath!);
 
     final result = await BingeApi.getBingeBlob(model.dataPath!);
     if (result.isError()) {

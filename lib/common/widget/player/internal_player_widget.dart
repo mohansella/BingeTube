@@ -162,7 +162,7 @@ class _InternalPlayerState extends BasePlayerState
     if (duration - pos <= 2) {
       //skip last 2 seconds
       isFinished = true;
-      Analytics.logVideoWatched(id);
+      Analytics.logVideoWatched();
       if (controller.isNextVideoExists) {
         widget.onEvent(.onNext);
       }
@@ -188,6 +188,7 @@ class _InternalPlayerState extends BasePlayerState
     player.startProgressTracking();
     final pos = model!.progressData.watchPosition;
     player.seekTo(pos);
+    Analytics.logVideoStarted();
   }
 
   @override

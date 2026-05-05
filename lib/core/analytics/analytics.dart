@@ -64,8 +64,16 @@ sealed class Analytics {
     );
   }
 
-  static Future<void> logVideoWatched(String activeVideoId) async {
-    await logEvent('watch_completed', parameters: {'videoId': activeVideoId});
+  static Future<void> logVideoStarted() async {
+    await logEvent('watch_started');
+  }
+
+  static Future<void> logVideoWatched() async {
+    await logEvent('watch_completed');
+  }
+
+  static Future<void> logBingeDownload(String bingePath) async {
+    await logEvent('binge_download', parameters: {'binge_path': bingePath});
   }
 
   static Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
