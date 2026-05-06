@@ -60,7 +60,8 @@ class RootPageState extends State<RootPage> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .max,
+        mainAxisAlignment: .start,
         children: [
           const Text('BingeTube'),
           Container(
@@ -76,17 +77,19 @@ class RootPageState extends State<RootPage> {
       leadingWidth: 45,
       titleSpacing: 0,
       actions: [
-        IconButton(
-          onPressed: () => context.pushNamed(Pages.keyConfig.name),
-          icon: const Icon(Icons.key),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: IconButton(
-            onPressed: () => context.pushNamed(Pages.search.name),
-            icon: const Icon(Icons.search),
+        if (_bottomNavBarIndex != 2) ...[
+          IconButton(
+            onPressed: () => context.pushNamed(Pages.keyConfig.name),
+            icon: const Icon(Icons.key),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: IconButton(
+              onPressed: () => context.pushNamed(Pages.search.name),
+              icon: const Icon(Icons.search),
+            ),
+          ),
+        ],
       ],
     );
   }
