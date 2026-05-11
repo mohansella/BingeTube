@@ -7,6 +7,7 @@ import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/core/utils/model_utils.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
@@ -158,7 +159,12 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   }
 
   Widget _buildPlaylistCard(BuildContext contet, PlaylistModel model) {
-    final imgUrl = model.thumbnails.highUrl;
+    final thumb = model.thumbnails;
+    final imgUrl = ModelUtils.selectImageUrl([
+      thumb.highUrl,
+      thumb.mediumUrl,
+      thumb.defaultUrl,
+    ]);
     return Card(
       clipBehavior: .hardEdge,
       child: InkWell(
