@@ -76,13 +76,18 @@ class Database extends _$Database {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     beforeOpen: _listenOpen,
     onCreate: _listenFirstTimeOpen,
-    onUpgrade: stepByStep(from1To2: _from1To2, from2To3: _from2To3, from3To4: _from3To4),
+    onUpgrade: stepByStep(
+      from1To2: _from1To2,
+      from2To3: _from2To3,
+      from3To4: _from3To4,
+      from4To5: _from4To5,
+    ),
   );
 
   Future<void> _listenFirstTimeOpen(Migrator m) async {
@@ -137,5 +142,11 @@ class Database extends _$Database {
     _logger.info('migrating database from 2 to 3');
     await m.addColumn(series, series.dataPath);
     _logger.info('migrated database from 2 to 3');
+  }
+
+  Future<void> _from4To5(Migrator m, Schema5 schema) async {
+    _logger.info('migrating database from 3 to 4');
+    await m.alterTable(TableMigration(schema.videoStatistics));
+    _logger.info('migrated database from 3 to 4');
   }
 }

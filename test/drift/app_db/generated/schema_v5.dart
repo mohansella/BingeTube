@@ -3555,10 +3555,10 @@ class VideoStatistics extends Table
   late final GeneratedColumn<int> viewCount = GeneratedColumn<int>(
     'view_count',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
   );
   late final GeneratedColumn<int> likeCount = GeneratedColumn<int>(
     'like_count',
@@ -3619,7 +3619,7 @@ class VideoStatistics extends Table
       viewCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}view_count'],
-      )!,
+      ),
       likeCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}like_count'],
@@ -3653,14 +3653,14 @@ class VideoStatistics extends Table
 class VideoStatisticsData extends DataClass
     implements Insertable<VideoStatisticsData> {
   final String id;
-  final int viewCount;
+  final int? viewCount;
   final int? likeCount;
   final int? dislikeCount;
   final int favoriteCount;
   final int? commentCount;
   const VideoStatisticsData({
     required this.id,
-    required this.viewCount,
+    this.viewCount,
     this.likeCount,
     this.dislikeCount,
     required this.favoriteCount,
@@ -3670,7 +3670,9 @@ class VideoStatisticsData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['view_count'] = Variable<int>(viewCount);
+    if (!nullToAbsent || viewCount != null) {
+      map['view_count'] = Variable<int>(viewCount);
+    }
     if (!nullToAbsent || likeCount != null) {
       map['like_count'] = Variable<int>(likeCount);
     }
@@ -3687,7 +3689,9 @@ class VideoStatisticsData extends DataClass
   VideoStatisticsCompanion toCompanion(bool nullToAbsent) {
     return VideoStatisticsCompanion(
       id: Value(id),
-      viewCount: Value(viewCount),
+      viewCount: viewCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(viewCount),
       likeCount: likeCount == null && nullToAbsent
           ? const Value.absent()
           : Value(likeCount),
@@ -3708,7 +3712,7 @@ class VideoStatisticsData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoStatisticsData(
       id: serializer.fromJson<String>(json['id']),
-      viewCount: serializer.fromJson<int>(json['viewCount']),
+      viewCount: serializer.fromJson<int?>(json['viewCount']),
       likeCount: serializer.fromJson<int?>(json['likeCount']),
       dislikeCount: serializer.fromJson<int?>(json['dislikeCount']),
       favoriteCount: serializer.fromJson<int>(json['favoriteCount']),
@@ -3720,7 +3724,7 @@ class VideoStatisticsData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'viewCount': serializer.toJson<int>(viewCount),
+      'viewCount': serializer.toJson<int?>(viewCount),
       'likeCount': serializer.toJson<int?>(likeCount),
       'dislikeCount': serializer.toJson<int?>(dislikeCount),
       'favoriteCount': serializer.toJson<int>(favoriteCount),
@@ -3730,14 +3734,14 @@ class VideoStatisticsData extends DataClass
 
   VideoStatisticsData copyWith({
     String? id,
-    int? viewCount,
+    Value<int?> viewCount = const Value.absent(),
     Value<int?> likeCount = const Value.absent(),
     Value<int?> dislikeCount = const Value.absent(),
     int? favoriteCount,
     Value<int?> commentCount = const Value.absent(),
   }) => VideoStatisticsData(
     id: id ?? this.id,
-    viewCount: viewCount ?? this.viewCount,
+    viewCount: viewCount.present ? viewCount.value : this.viewCount,
     likeCount: likeCount.present ? likeCount.value : this.likeCount,
     dislikeCount: dislikeCount.present ? dislikeCount.value : this.dislikeCount,
     favoriteCount: favoriteCount ?? this.favoriteCount,
@@ -3796,7 +3800,7 @@ class VideoStatisticsData extends DataClass
 
 class VideoStatisticsCompanion extends UpdateCompanion<VideoStatisticsData> {
   final Value<String> id;
-  final Value<int> viewCount;
+  final Value<int?> viewCount;
   final Value<int?> likeCount;
   final Value<int?> dislikeCount;
   final Value<int> favoriteCount;
@@ -3813,14 +3817,13 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatisticsData> {
   });
   VideoStatisticsCompanion.insert({
     required String id,
-    required int viewCount,
+    this.viewCount = const Value.absent(),
     this.likeCount = const Value.absent(),
     this.dislikeCount = const Value.absent(),
     required int favoriteCount,
     this.commentCount = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       viewCount = Value(viewCount),
        favoriteCount = Value(favoriteCount);
   static Insertable<VideoStatisticsData> custom({
     Expression<String>? id,
@@ -3844,7 +3847,7 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatisticsData> {
 
   VideoStatisticsCompanion copyWith({
     Value<String>? id,
-    Value<int>? viewCount,
+    Value<int?>? viewCount,
     Value<int?>? likeCount,
     Value<int?>? dislikeCount,
     Value<int>? favoriteCount,
@@ -7999,8 +8002,8 @@ class SeriesVsVideosCompanion extends UpdateCompanion<SeriesVsVideosData> {
   }
 }
 
-class DatabaseAtV4 extends GeneratedDatabase {
-  DatabaseAtV4(QueryExecutor e) : super(e);
+class DatabaseAtV5 extends GeneratedDatabase {
+  DatabaseAtV5(QueryExecutor e) : super(e);
   late final Channels channels = Channels(this);
   late final ChannelSnippets channelSnippets = ChannelSnippets(this);
   late final ChannelThumbnails channelThumbnails = ChannelThumbnails(this);
@@ -8230,5 +8233,5 @@ class DatabaseAtV4 extends GeneratedDatabase {
     ),
   ]);
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 }

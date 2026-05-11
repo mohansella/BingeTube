@@ -64,7 +64,7 @@ class VideoStatuses extends Table {
 
 class VideoStatistics extends Table {
   late final id = text().references(Videos, #id, onDelete: .cascade)();
-  late final viewCount = integer()();
+  late final viewCount = integer().nullable()();
   late final likeCount = integer().nullable()();
   late final dislikeCount = integer().nullable()();
   late final favoriteCount = integer()();

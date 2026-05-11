@@ -5,7 +5,8 @@ import 'package:bingetube/firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart' show FlutterError, PlatformDispatcher, kIsWeb;
+import 'package:flutter/foundation.dart'
+    show FlutterError, PlatformDispatcher, kDebugMode, kIsWeb;
 
 sealed class Analytics {
   static final _logger = LogManager.getLogger('Analytics');
@@ -32,8 +33,15 @@ sealed class Analytics {
     if (kIsWeb) {
       _logger.info('crashlytics skipped on web build');
     } else if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError = (r) {
+        _logger.severe('uncaught flutter error', [r.exception, r.stack]);
+        FlutterError.dumpErrorToConsole(r);
+        FirebaseCrashlytics.instance.recordFlutterError(r);
+      };
       PlatformDispatcher.instance.onError = (error, stack) {
+        if (kDebugMode) {
+          _logger.severe('uncaught error', [error, stack]);
+        }
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
       };
