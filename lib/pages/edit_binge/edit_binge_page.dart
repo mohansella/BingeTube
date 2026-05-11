@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/app/theme.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
@@ -15,6 +16,7 @@ import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -45,6 +47,8 @@ class EditBingePage extends ConsumerStatefulWidget {
 class _EditBingePageState extends ConsumerState<EditBingePage> {
   final Set<String> _checkMarked = {};
   final List<String> _sortOrder = [];
+  late List<VideoModel> _filteredVideos;
+  String? _lastToggledVideoId;
 
   bool _isLoading = true;
   bool _showTitle = false;
@@ -97,16 +101,16 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
           return Center(child: CircularProgressIndicator());
         }
         final model = snashot.data!;
-        var filteredVideos = model.videos;
+        _filteredVideos = model.videos;
         if (_isDrag) {
           final idVsVideos = Map.fromEntries(
-            filteredVideos.map((v) => MapEntry(v.video.id, v)),
+            _filteredVideos.map((v) => MapEntry(v.video.id, v)),
           );
-          filteredVideos = _sortOrder.map((id) => idVsVideos[id]!).toList();
+          _filteredVideos = _sortOrder.map((id) => idVsVideos[id]!).toList();
         }
         return Scaffold(
-          appBar: _buildAppBar(context, filteredVideos),
-          body: _buildList(filteredVideos),
+          appBar: _buildAppBar(context, _filteredVideos),
+          body: _buildList(_filteredVideos),
         );
       },
     );
@@ -333,13 +337,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       color: isChecked ? theme.colorScheme.primaryContainer : null,
       shape: RoundedRectangleBorder(),
       child: InkWell(
-        onTap: () => setState(() {
-          if (isChecked) {
-            _checkMarked.remove(video.video.id);
-          } else {
-            _checkMarked.add(video.video.id);
-          }
-        }),
+        onTap: () => _onToggleTap(video),
         child: Row(
           children: [
             ReorderableDragStartListener(
@@ -669,6 +667,48 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         localContext.pop();
       }
       localContext.goNamed(Pages.library.name);
+    }
+  }
+
+  void _onToggleTap(VideoModel model) {
+    final id = model.video.id;
+    final isChecked = _checkMarked.contains(id);
+    final isShift =
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.shiftLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.shiftRight,
+        );
+
+    //invalid last id if not in filtered list
+    final ids = _filteredVideos.map((v) => v.video.id).toList();
+    if (_lastToggledVideoId != null) {
+      final lastId = ids.firstWhere((id) => id == _lastToggledVideoId, orElse: () => '');
+      if (lastId.isEmpty) {
+        _lastToggledVideoId = null;
+      }
+    }
+
+    if (isShift && _lastToggledVideoId != null) {
+      final isPrevChecked = _checkMarked.contains(_lastToggledVideoId!);
+      final prevPos = ids.indexOf(_lastToggledVideoId!);
+      final currPos = ids.indexOf(id);
+      final startPos = math.min(prevPos, currPos);
+      final endPos = math.max(prevPos, currPos);
+      ids.sublist(startPos, endPos + 1).forEach((i) => _check(i, isPrevChecked));
+    } else {
+      _check(id, !isChecked);
+    }
+    _lastToggledVideoId = id;
+    setState(() {});
+  }
+
+  void _check(String id, bool isCheck) {
+    if (isCheck) {
+      _checkMarked.add(id);
+    } else {
+      _checkMarked.remove(id);
     }
   }
 }
