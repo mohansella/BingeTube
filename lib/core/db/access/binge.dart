@@ -334,9 +334,12 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }
 
   Future<List<Sery>> getSeries({required bool isSystem}) async {
-    final query = select(series).join([
-      innerJoin(collections, collections.id.equalsExp(series.collectionId)),
-    ])..where(collections.isSystem.equals(isSystem));
+    final query =
+        select(
+            series,
+          ).join([innerJoin(collections, collections.id.equalsExp(series.collectionId))])
+          ..where(collections.isSystem.equals(isSystem))
+          ..orderBy([OrderingTerm.desc(series.updatedAt)]);
     final result = await query.get();
     return result.map((r) => r.readTable(series)).toList();
   }

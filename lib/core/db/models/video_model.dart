@@ -46,7 +46,7 @@ class VideoModel {
 
     final v = parse(r'\bvol(?:\.|umes?)\s*(\d{1,3})\b', 'V', 2);
     final s = parse(r'\bs(?:easons?)?\s*(\d{1,3})\b', 'S', 2);
-    final e = parse(r'\be(?:pisodes?)?\s*(\d{1,3})\b', 'E', 3);
+    final e = parse(r'\be(?:p|pisodes?)?\s*(\d{1,3})\b', 'E', 2);
 
     final allValue = [v, s, e].whereType<String>().join();
     if (allValue.isEmpty) {
