@@ -45,7 +45,7 @@ abstract class BingeSort with _$BingeSort {
         result = left.snippet.publishedAt.compareTo(right.snippet.publishedAt);
         break;
       case .viewCount:
-        result = left.statistics.viewCount - right.statistics.viewCount;
+        result = left.statistics.viewCount ?? 0 - (right.statistics.viewCount ?? 0);
         break;
       case .duration:
         result = left.duration - right.duration;

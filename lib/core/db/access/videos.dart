@@ -175,7 +175,9 @@ class VideosDao extends DatabaseAccessor<Database> with _$VideosDaoMixin {
     final statistics = item['statistics'];
     final statisticsComp = VideoStatisticsCompanion.insert(
       id: id,
-      viewCount: int.parse(statistics['viewCount']),
+      viewCount: statistics['viewCount'] == null
+          ? Value.absent()
+          : Value(int.parse(statistics['viewCount'])),
       likeCount: statistics['likeCount'] == null
           ? Value.absent()
           : Value(int.parse(statistics['likeCount'])),

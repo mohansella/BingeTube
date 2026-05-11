@@ -8,7 +8,9 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -18,7 +20,9 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -87,10 +91,16 @@ class $ChannelsTable extends Channels with TableInfo<$ChannelsTable, Channel> {
       context.missing(_idMeta);
     }
     if (data.containsKey('etag')) {
-      context.handle(_etagMeta, etag.isAcceptableOrUnknown(data['etag']!, _etagMeta));
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
     }
     if (data.containsKey('setag')) {
-      context.handle(_setagMeta, setag.isAcceptableOrUnknown(data['setag']!, _setagMeta));
+      context.handle(
+        _setagMeta,
+        setag.isAcceptableOrUnknown(data['setag']!, _setagMeta),
+      );
     }
     return context;
   }
@@ -164,11 +174,16 @@ class Channel extends DataClass implements Insertable<Channel> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
-      setag: setag == null && nullToAbsent ? const Value.absent() : Value(setag),
+      setag: setag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setag),
     );
   }
 
-  factory Channel.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory Channel.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Channel(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -362,7 +377,9 @@ class $ChannelSnippetsTable extends ChannelSnippets
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta('description');
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
@@ -391,14 +408,20 @@ class $ChannelSnippetsTable extends ChannelSnippets
       context.missing(_idMeta);
     }
     if (data.containsKey('title')) {
-      context.handle(_titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
-        description.isAcceptableOrUnknown(data['description']!, _descriptionMeta),
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_descriptionMeta);
@@ -490,7 +513,9 @@ class ChannelSnippet extends DataClass implements Insertable<ChannelSnippet> {
     return ChannelSnippet(
       id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
-      description: data.description.present ? data.description.value : this.description,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
     );
   }
 
@@ -610,7 +635,9 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
       'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _defaultUrlMeta = const VerificationMeta('defaultUrl');
+  static const VerificationMeta _defaultUrlMeta = const VerificationMeta(
+    'defaultUrl',
+  );
   @override
   late final GeneratedColumn<String> defaultUrl = GeneratedColumn<String>(
     'default_url',
@@ -619,7 +646,9 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mediumUrlMeta = const VerificationMeta('mediumUrl');
+  static const VerificationMeta _mediumUrlMeta = const VerificationMeta(
+    'mediumUrl',
+  );
   @override
   late final GeneratedColumn<String> mediumUrl = GeneratedColumn<String>(
     'medium_url',
@@ -628,7 +657,9 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _highUrlMeta = const VerificationMeta('highUrl');
+  static const VerificationMeta _highUrlMeta = const VerificationMeta(
+    'highUrl',
+  );
   @override
   late final GeneratedColumn<String> highUrl = GeneratedColumn<String>(
     'high_url',
@@ -714,7 +745,8 @@ class $ChannelThumbnailsTable extends ChannelThumbnails
   }
 }
 
-class ChannelThumbnail extends DataClass implements Insertable<ChannelThumbnail> {
+class ChannelThumbnail extends DataClass
+    implements Insertable<ChannelThumbnail> {
   final String id;
   final String defaultUrl;
   final String mediumUrl;
@@ -781,7 +813,9 @@ class ChannelThumbnail extends DataClass implements Insertable<ChannelThumbnail>
   ChannelThumbnail copyWithCompanion(ChannelThumbnailsCompanion data) {
     return ChannelThumbnail(
       id: data.id.present ? data.id.value : this.id,
-      defaultUrl: data.defaultUrl.present ? data.defaultUrl.value : this.defaultUrl,
+      defaultUrl: data.defaultUrl.present
+          ? data.defaultUrl.value
+          : this.defaultUrl,
       mediumUrl: data.mediumUrl.present ? data.mediumUrl.value : this.mediumUrl,
       highUrl: data.highUrl.present ? data.highUrl.value : this.highUrl,
     );
@@ -961,7 +995,10 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
     if (data.containsKey('likes_playlist')) {
       context.handle(
         _likesPlaylistMeta,
-        likesPlaylist.isAcceptableOrUnknown(data['likes_playlist']!, _likesPlaylistMeta),
+        likesPlaylist.isAcceptableOrUnknown(
+          data['likes_playlist']!,
+          _likesPlaylistMeta,
+        ),
       );
     }
     if (data.containsKey('upload_playlist')) {
@@ -1003,11 +1040,16 @@ class $ChannelContentDetailsTable extends ChannelContentDetails
   }
 }
 
-class ChannelContentDetail extends DataClass implements Insertable<ChannelContentDetail> {
+class ChannelContentDetail extends DataClass
+    implements Insertable<ChannelContentDetail> {
   final String id;
   final String? likesPlaylist;
   final String? uploadPlaylist;
-  const ChannelContentDetail({required this.id, this.likesPlaylist, this.uploadPlaylist});
+  const ChannelContentDetail({
+    required this.id,
+    this.likesPlaylist,
+    this.uploadPlaylist,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1060,8 +1102,12 @@ class ChannelContentDetail extends DataClass implements Insertable<ChannelConten
     Value<String?> uploadPlaylist = const Value.absent(),
   }) => ChannelContentDetail(
     id: id ?? this.id,
-    likesPlaylist: likesPlaylist.present ? likesPlaylist.value : this.likesPlaylist,
-    uploadPlaylist: uploadPlaylist.present ? uploadPlaylist.value : this.uploadPlaylist,
+    likesPlaylist: likesPlaylist.present
+        ? likesPlaylist.value
+        : this.likesPlaylist,
+    uploadPlaylist: uploadPlaylist.present
+        ? uploadPlaylist.value
+        : this.uploadPlaylist,
   );
   ChannelContentDetail copyWithCompanion(ChannelContentDetailsCompanion data) {
     return ChannelContentDetail(
@@ -1096,7 +1142,8 @@ class ChannelContentDetail extends DataClass implements Insertable<ChannelConten
           other.uploadPlaylist == this.uploadPlaylist);
 }
 
-class ChannelContentDetailsCompanion extends UpdateCompanion<ChannelContentDetail> {
+class ChannelContentDetailsCompanion
+    extends UpdateCompanion<ChannelContentDetail> {
   final Value<String> id;
   final Value<String?> likesPlaylist;
   final Value<String?> uploadPlaylist;
@@ -1189,7 +1236,9 @@ class $ChannelStatisticsTable extends ChannelStatistics
       'REFERENCES channels (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _viewCountMeta = const VerificationMeta('viewCount');
+  static const VerificationMeta _viewCountMeta = const VerificationMeta(
+    'viewCount',
+  );
   @override
   late final GeneratedColumn<int> viewCount = GeneratedColumn<int>(
     'view_count',
@@ -1209,21 +1258,23 @@ class $ChannelStatisticsTable extends ChannelStatistics
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _hiddenSubscriberCountMeta = const VerificationMeta(
-    'hiddenSubscriberCount',
-  );
+  static const VerificationMeta _hiddenSubscriberCountMeta =
+      const VerificationMeta('hiddenSubscriberCount');
   @override
-  late final GeneratedColumn<bool> hiddenSubscriberCount = GeneratedColumn<bool>(
-    'hidden_subscriber_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("hidden_subscriber_count" IN (0, 1))',
-    ),
+  late final GeneratedColumn<bool> hiddenSubscriberCount =
+      GeneratedColumn<bool>(
+        'hidden_subscriber_count',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: true,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("hidden_subscriber_count" IN (0, 1))',
+        ),
+      );
+  static const VerificationMeta _videoCountMeta = const VerificationMeta(
+    'videoCount',
   );
-  static const VerificationMeta _videoCountMeta = const VerificationMeta('videoCount');
   @override
   late final GeneratedColumn<int> videoCount = GeneratedColumn<int>(
     'video_count',
@@ -1333,7 +1384,8 @@ class $ChannelStatisticsTable extends ChannelStatistics
   }
 }
 
-class ChannelStatistic extends DataClass implements Insertable<ChannelStatistic> {
+class ChannelStatistic extends DataClass
+    implements Insertable<ChannelStatistic> {
   final String id;
   final int viewCount;
   final int subscriberCount;
@@ -1376,7 +1428,9 @@ class ChannelStatistic extends DataClass implements Insertable<ChannelStatistic>
       id: serializer.fromJson<String>(json['id']),
       viewCount: serializer.fromJson<int>(json['viewCount']),
       subscriberCount: serializer.fromJson<int>(json['subscriberCount']),
-      hiddenSubscriberCount: serializer.fromJson<bool>(json['hiddenSubscriberCount']),
+      hiddenSubscriberCount: serializer.fromJson<bool>(
+        json['hiddenSubscriberCount'],
+      ),
       videoCount: serializer.fromJson<int>(json['videoCount']),
     );
   }
@@ -1415,7 +1469,9 @@ class ChannelStatistic extends DataClass implements Insertable<ChannelStatistic>
       hiddenSubscriberCount: data.hiddenSubscriberCount.present
           ? data.hiddenSubscriberCount.value
           : this.hiddenSubscriberCount,
-      videoCount: data.videoCount.present ? data.videoCount.value : this.videoCount,
+      videoCount: data.videoCount.present
+          ? data.videoCount.value
+          : this.videoCount,
     );
   }
 
@@ -1432,8 +1488,13 @@ class ChannelStatistic extends DataClass implements Insertable<ChannelStatistic>
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, viewCount, subscriberCount, hiddenSubscriberCount, videoCount);
+  int get hashCode => Object.hash(
+    id,
+    viewCount,
+    subscriberCount,
+    hiddenSubscriberCount,
+    videoCount,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1484,7 +1545,8 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
       if (id != null) 'id': id,
       if (viewCount != null) 'view_count': viewCount,
       if (subscriberCount != null) 'subscriber_count': subscriberCount,
-      if (hiddenSubscriberCount != null) 'hidden_subscriber_count': hiddenSubscriberCount,
+      if (hiddenSubscriberCount != null)
+        'hidden_subscriber_count': hiddenSubscriberCount,
       if (videoCount != null) 'video_count': videoCount,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1502,7 +1564,8 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
       id: id ?? this.id,
       viewCount: viewCount ?? this.viewCount,
       subscriberCount: subscriberCount ?? this.subscriberCount,
-      hiddenSubscriberCount: hiddenSubscriberCount ?? this.hiddenSubscriberCount,
+      hiddenSubscriberCount:
+          hiddenSubscriberCount ?? this.hiddenSubscriberCount,
       videoCount: videoCount ?? this.videoCount,
       rowid: rowid ?? this.rowid,
     );
@@ -1521,7 +1584,9 @@ class ChannelStatisticsCompanion extends UpdateCompanion<ChannelStatistic> {
       map['subscriber_count'] = Variable<int>(subscriberCount.value);
     }
     if (hiddenSubscriberCount.present) {
-      map['hidden_subscriber_count'] = Variable<bool>(hiddenSubscriberCount.value);
+      map['hidden_subscriber_count'] = Variable<bool>(
+        hiddenSubscriberCount.value,
+      );
     }
     if (videoCount.present) {
       map['video_count'] = Variable<int>(videoCount.value);
@@ -1575,7 +1640,9 @@ class $ChannelStatusesTable extends ChannelStatuses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _isLinkedMeta = const VerificationMeta('isLinked');
+  static const VerificationMeta _isLinkedMeta = const VerificationMeta(
+    'isLinked',
+  );
   @override
   late final GeneratedColumn<bool> isLinked = GeneratedColumn<bool>(
     'is_linked',
@@ -1591,14 +1658,17 @@ class $ChannelStatusesTable extends ChannelStatuses
     'longUploadsStatus',
   );
   @override
-  late final GeneratedColumn<String> longUploadsStatus = GeneratedColumn<String>(
-    'long_uploads_status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+  late final GeneratedColumn<String> longUploadsStatus =
+      GeneratedColumn<String>(
+        'long_uploads_status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _madeForKidsMeta = const VerificationMeta(
+    'madeForKids',
   );
-  static const VerificationMeta _madeForKidsMeta = const VerificationMeta('madeForKids');
   @override
   late final GeneratedColumn<bool> madeForKids = GeneratedColumn<bool>(
     'made_for_kids',
@@ -1638,7 +1708,10 @@ class $ChannelStatusesTable extends ChannelStatuses
     if (data.containsKey('privacy_status')) {
       context.handle(
         _privacyStatusMeta,
-        privacyStatus.isAcceptableOrUnknown(data['privacy_status']!, _privacyStatusMeta),
+        privacyStatus.isAcceptableOrUnknown(
+          data['privacy_status']!,
+          _privacyStatusMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_privacyStatusMeta);
@@ -1665,7 +1738,10 @@ class $ChannelStatusesTable extends ChannelStatuses
     if (data.containsKey('made_for_kids')) {
       context.handle(
         _madeForKidsMeta,
-        madeForKids.isAcceptableOrUnknown(data['made_for_kids']!, _madeForKidsMeta),
+        madeForKids.isAcceptableOrUnknown(
+          data['made_for_kids']!,
+          _madeForKidsMeta,
+        ),
       );
     }
     return context;
@@ -1792,7 +1868,9 @@ class ChannelStatuse extends DataClass implements Insertable<ChannelStatuse> {
       longUploadsStatus: data.longUploadsStatus.present
           ? data.longUploadsStatus.value
           : this.longUploadsStatus,
-      madeForKids: data.madeForKids.present ? data.madeForKids.value : this.madeForKids,
+      madeForKids: data.madeForKids.present
+          ? data.madeForKids.value
+          : this.madeForKids,
     );
   }
 
@@ -1927,7 +2005,9 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideosTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -1937,7 +2017,9 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -1974,7 +2056,9 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _channelIdMeta = const VerificationMeta('channelId');
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
   @override
   late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
     'channel_id',
@@ -1982,7 +2066,9 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES channels (id)'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES channels (id)',
+    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -2023,10 +2109,16 @@ class $VideosTable extends Videos with TableInfo<$VideosTable, Video> {
       context.missing(_idMeta);
     }
     if (data.containsKey('etag')) {
-      context.handle(_etagMeta, etag.isAcceptableOrUnknown(data['etag']!, _etagMeta));
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
     }
     if (data.containsKey('setag')) {
-      context.handle(_setagMeta, setag.isAcceptableOrUnknown(data['setag']!, _setagMeta));
+      context.handle(
+        _setagMeta,
+        setag.isAcceptableOrUnknown(data['setag']!, _setagMeta),
+      );
     }
     if (data.containsKey('channel_id')) {
       context.handle(
@@ -2115,12 +2207,17 @@ class Video extends DataClass implements Insertable<Video> {
       updatedAt: Value(updatedAt),
       id: Value(id),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
-      setag: setag == null && nullToAbsent ? const Value.absent() : Value(setag),
+      setag: setag == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setag),
       channelId: Value(channelId),
     );
   }
 
-  factory Video.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory Video.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Video(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -2184,7 +2281,8 @@ class Video extends DataClass implements Insertable<Video> {
   }
 
   @override
-  int get hashCode => Object.hash(createdAt, updatedAt, id, etag, setag, channelId);
+  int get hashCode =>
+      Object.hash(createdAt, updatedAt, id, etag, setag, channelId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2324,7 +2422,9 @@ class $VideoSnippetsTable extends VideoSnippets
       'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _publishedAtMeta = const VerificationMeta('publishedAt');
+  static const VerificationMeta _publishedAtMeta = const VerificationMeta(
+    'publishedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> publishedAt = GeneratedColumn<DateTime>(
     'published_at',
@@ -2342,7 +2442,9 @@ class $VideoSnippetsTable extends VideoSnippets
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta('description');
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
@@ -2390,20 +2492,29 @@ class $VideoSnippetsTable extends VideoSnippets
     if (data.containsKey('published_at')) {
       context.handle(
         _publishedAtMeta,
-        publishedAt.isAcceptableOrUnknown(data['published_at']!, _publishedAtMeta),
+        publishedAt.isAcceptableOrUnknown(
+          data['published_at']!,
+          _publishedAtMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_publishedAtMeta);
     }
     if (data.containsKey('title')) {
-      context.handle(_titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
-        description.isAcceptableOrUnknown(data['description']!, _descriptionMeta),
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_descriptionMeta);
@@ -2411,7 +2522,10 @@ class $VideoSnippetsTable extends VideoSnippets
     if (data.containsKey('channel_title')) {
       context.handle(
         _channelTitleMeta,
-        channelTitle.isAcceptableOrUnknown(data['channel_title']!, _channelTitleMeta),
+        channelTitle.isAcceptableOrUnknown(
+          data['channel_title']!,
+          _channelTitleMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_channelTitleMeta);
@@ -2529,9 +2643,13 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   VideoSnippet copyWithCompanion(VideoSnippetsCompanion data) {
     return VideoSnippet(
       id: data.id.present ? data.id.value : this.id,
-      publishedAt: data.publishedAt.present ? data.publishedAt.value : this.publishedAt,
+      publishedAt: data.publishedAt.present
+          ? data.publishedAt.value
+          : this.publishedAt,
       title: data.title.present ? data.title.value : this.title,
-      description: data.description.present ? data.description.value : this.description,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       channelTitle: data.channelTitle.present
           ? data.channelTitle.value
           : this.channelTitle,
@@ -2551,7 +2669,8 @@ class VideoSnippet extends DataClass implements Insertable<VideoSnippet> {
   }
 
   @override
-  int get hashCode => Object.hash(id, publishedAt, title, description, channelTitle);
+  int get hashCode =>
+      Object.hash(id, publishedAt, title, description, channelTitle);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2682,7 +2801,9 @@ class $VideoThumbnailsTable extends VideoThumbnails
       'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _defaultUrlMeta = const VerificationMeta('defaultUrl');
+  static const VerificationMeta _defaultUrlMeta = const VerificationMeta(
+    'defaultUrl',
+  );
   @override
   late final GeneratedColumn<String> defaultUrl = GeneratedColumn<String>(
     'default_url',
@@ -2691,7 +2812,9 @@ class $VideoThumbnailsTable extends VideoThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mediumUrlMeta = const VerificationMeta('mediumUrl');
+  static const VerificationMeta _mediumUrlMeta = const VerificationMeta(
+    'mediumUrl',
+  );
   @override
   late final GeneratedColumn<String> mediumUrl = GeneratedColumn<String>(
     'medium_url',
@@ -2700,7 +2823,9 @@ class $VideoThumbnailsTable extends VideoThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _highUrlMeta = const VerificationMeta('highUrl');
+  static const VerificationMeta _highUrlMeta = const VerificationMeta(
+    'highUrl',
+  );
   @override
   late final GeneratedColumn<String> highUrl = GeneratedColumn<String>(
     'high_url',
@@ -2709,7 +2834,9 @@ class $VideoThumbnailsTable extends VideoThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _standardUrlMeta = const VerificationMeta('standardUrl');
+  static const VerificationMeta _standardUrlMeta = const VerificationMeta(
+    'standardUrl',
+  );
   @override
   late final GeneratedColumn<String> standardUrl = GeneratedColumn<String>(
     'standard_url',
@@ -2718,7 +2845,9 @@ class $VideoThumbnailsTable extends VideoThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _maxresUrlMeta = const VerificationMeta('maxresUrl');
+  static const VerificationMeta _maxresUrlMeta = const VerificationMeta(
+    'maxresUrl',
+  );
   @override
   late final GeneratedColumn<String> maxresUrl = GeneratedColumn<String>(
     'maxres_url',
@@ -2780,7 +2909,10 @@ class $VideoThumbnailsTable extends VideoThumbnails
     if (data.containsKey('standard_url')) {
       context.handle(
         _standardUrlMeta,
-        standardUrl.isAcceptableOrUnknown(data['standard_url']!, _standardUrlMeta),
+        standardUrl.isAcceptableOrUnknown(
+          data['standard_url']!,
+          _standardUrlMeta,
+        ),
       );
     }
     if (data.containsKey('maxres_url')) {
@@ -2922,10 +3054,14 @@ class VideoThumbnail extends DataClass implements Insertable<VideoThumbnail> {
   VideoThumbnail copyWithCompanion(VideoThumbnailsCompanion data) {
     return VideoThumbnail(
       id: data.id.present ? data.id.value : this.id,
-      defaultUrl: data.defaultUrl.present ? data.defaultUrl.value : this.defaultUrl,
+      defaultUrl: data.defaultUrl.present
+          ? data.defaultUrl.value
+          : this.defaultUrl,
       mediumUrl: data.mediumUrl.present ? data.mediumUrl.value : this.mediumUrl,
       highUrl: data.highUrl.present ? data.highUrl.value : this.highUrl,
-      standardUrl: data.standardUrl.present ? data.standardUrl.value : this.standardUrl,
+      standardUrl: data.standardUrl.present
+          ? data.standardUrl.value
+          : this.standardUrl,
       maxresUrl: data.maxresUrl.present ? data.maxresUrl.value : this.maxresUrl,
     );
   }
@@ -3087,7 +3223,9 @@ class $VideoContentDetailsTable extends VideoContentDetails
       'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _durationMeta = const VerificationMeta('duration');
+  static const VerificationMeta _durationMeta = const VerificationMeta(
+    'duration',
+  );
   @override
   late final GeneratedColumn<String> duration = GeneratedColumn<String>(
     'duration',
@@ -3096,7 +3234,9 @@ class $VideoContentDetailsTable extends VideoContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dimensionMeta = const VerificationMeta('dimension');
+  static const VerificationMeta _dimensionMeta = const VerificationMeta(
+    'dimension',
+  );
   @override
   late final GeneratedColumn<String> dimension = GeneratedColumn<String>(
     'dimension',
@@ -3105,7 +3245,9 @@ class $VideoContentDetailsTable extends VideoContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _definitionMeta = const VerificationMeta('definition');
+  static const VerificationMeta _definitionMeta = const VerificationMeta(
+    'definition',
+  );
   @override
   late final GeneratedColumn<String> definition = GeneratedColumn<String>(
     'definition',
@@ -3114,7 +3256,9 @@ class $VideoContentDetailsTable extends VideoContentDetails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _captionMeta = const VerificationMeta('caption');
+  static const VerificationMeta _captionMeta = const VerificationMeta(
+    'caption',
+  );
   @override
   late final GeneratedColumn<String> caption = GeneratedColumn<String>(
     'caption',
@@ -3137,7 +3281,9 @@ class $VideoContentDetailsTable extends VideoContentDetails
       'CHECK ("licensed_content" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _projectionMeta = const VerificationMeta('projection');
+  static const VerificationMeta _projectionMeta = const VerificationMeta(
+    'projection',
+  );
   @override
   late final GeneratedColumn<String> projection = GeneratedColumn<String>(
     'projection',
@@ -3270,7 +3416,8 @@ class $VideoContentDetailsTable extends VideoContentDetails
   }
 }
 
-class VideoContentDetail extends DataClass implements Insertable<VideoContentDetail> {
+class VideoContentDetail extends DataClass
+    implements Insertable<VideoContentDetail> {
   final String id;
   final String duration;
   final String dimension;
@@ -3363,12 +3510,16 @@ class VideoContentDetail extends DataClass implements Insertable<VideoContentDet
       id: data.id.present ? data.id.value : this.id,
       duration: data.duration.present ? data.duration.value : this.duration,
       dimension: data.dimension.present ? data.dimension.value : this.dimension,
-      definition: data.definition.present ? data.definition.value : this.definition,
+      definition: data.definition.present
+          ? data.definition.value
+          : this.definition,
       caption: data.caption.present ? data.caption.value : this.caption,
       licensedContent: data.licensedContent.present
           ? data.licensedContent.value
           : this.licensedContent,
-      projection: data.projection.present ? data.projection.value : this.projection,
+      projection: data.projection.present
+          ? data.projection.value
+          : this.projection,
     );
   }
 
@@ -3574,7 +3725,9 @@ class $VideoStatusesTable extends VideoStatuses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _licenseMeta = const VerificationMeta('license');
+  static const VerificationMeta _licenseMeta = const VerificationMeta(
+    'license',
+  );
   @override
   late final GeneratedColumn<String> license = GeneratedColumn<String>(
     'license',
@@ -3583,7 +3736,9 @@ class $VideoStatusesTable extends VideoStatuses
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _embeddableMeta = const VerificationMeta('embeddable');
+  static const VerificationMeta _embeddableMeta = const VerificationMeta(
+    'embeddable',
+  );
   @override
   late final GeneratedColumn<bool> embeddable = GeneratedColumn<bool>(
     'embeddable',
@@ -3595,9 +3750,8 @@ class $VideoStatusesTable extends VideoStatuses
       'CHECK ("embeddable" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _publicStatsViewableMeta = const VerificationMeta(
-    'publicStatsViewable',
-  );
+  static const VerificationMeta _publicStatsViewableMeta =
+      const VerificationMeta('publicStatsViewable');
   @override
   late final GeneratedColumn<bool> publicStatsViewable = GeneratedColumn<bool>(
     'public_stats_viewable',
@@ -3609,7 +3763,9 @@ class $VideoStatusesTable extends VideoStatuses
       'CHECK ("public_stats_viewable" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _madeForKidsMeta = const VerificationMeta('madeForKids');
+  static const VerificationMeta _madeForKidsMeta = const VerificationMeta(
+    'madeForKids',
+  );
   @override
   late final GeneratedColumn<bool> madeForKids = GeneratedColumn<bool>(
     'made_for_kids',
@@ -3651,7 +3807,10 @@ class $VideoStatusesTable extends VideoStatuses
     if (data.containsKey('upload_status')) {
       context.handle(
         _uploadStatusMeta,
-        uploadStatus.isAcceptableOrUnknown(data['upload_status']!, _uploadStatusMeta),
+        uploadStatus.isAcceptableOrUnknown(
+          data['upload_status']!,
+          _uploadStatusMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_uploadStatusMeta);
@@ -3659,7 +3818,10 @@ class $VideoStatusesTable extends VideoStatuses
     if (data.containsKey('privacy_status')) {
       context.handle(
         _privacyStatusMeta,
-        privacyStatus.isAcceptableOrUnknown(data['privacy_status']!, _privacyStatusMeta),
+        privacyStatus.isAcceptableOrUnknown(
+          data['privacy_status']!,
+          _privacyStatusMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_privacyStatusMeta);
@@ -3694,7 +3856,10 @@ class $VideoStatusesTable extends VideoStatuses
     if (data.containsKey('made_for_kids')) {
       context.handle(
         _madeForKidsMeta,
-        madeForKids.isAcceptableOrUnknown(data['made_for_kids']!, _madeForKidsMeta),
+        madeForKids.isAcceptableOrUnknown(
+          data['made_for_kids']!,
+          _madeForKidsMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_madeForKidsMeta);
@@ -3798,7 +3963,9 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
       privacyStatus: serializer.fromJson<String>(json['privacyStatus']),
       license: serializer.fromJson<String>(json['license']),
       embeddable: serializer.fromJson<bool>(json['embeddable']),
-      publicStatsViewable: serializer.fromJson<bool>(json['publicStatsViewable']),
+      publicStatsViewable: serializer.fromJson<bool>(
+        json['publicStatsViewable'],
+      ),
       madeForKids: serializer.fromJson<bool>(json['madeForKids']),
     );
   }
@@ -3843,11 +4010,15 @@ class VideoStatuse extends DataClass implements Insertable<VideoStatuse> {
           ? data.privacyStatus.value
           : this.privacyStatus,
       license: data.license.present ? data.license.value : this.license,
-      embeddable: data.embeddable.present ? data.embeddable.value : this.embeddable,
+      embeddable: data.embeddable.present
+          ? data.embeddable.value
+          : this.embeddable,
       publicStatsViewable: data.publicStatsViewable.present
           ? data.publicStatsViewable.value
           : this.publicStatsViewable,
-      madeForKids: data.madeForKids.present ? data.madeForKids.value : this.madeForKids,
+      madeForKids: data.madeForKids.present
+          ? data.madeForKids.value
+          : this.madeForKids,
     );
   }
 
@@ -3939,7 +4110,8 @@ class VideoStatusesCompanion extends UpdateCompanion<VideoStatuse> {
       if (privacyStatus != null) 'privacy_status': privacyStatus,
       if (license != null) 'license': license,
       if (embeddable != null) 'embeddable': embeddable,
-      if (publicStatsViewable != null) 'public_stats_viewable': publicStatsViewable,
+      if (publicStatsViewable != null)
+        'public_stats_viewable': publicStatsViewable,
       if (madeForKids != null) 'made_for_kids': madeForKids,
       if (rowid != null) 'rowid': rowid,
     });
@@ -4031,16 +4203,20 @@ class $VideoStatisticsTable extends VideoStatistics
       'REFERENCES videos (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _viewCountMeta = const VerificationMeta('viewCount');
+  static const VerificationMeta _viewCountMeta = const VerificationMeta(
+    'viewCount',
+  );
   @override
   late final GeneratedColumn<int> viewCount = GeneratedColumn<int>(
     'view_count',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
-  static const VerificationMeta _likeCountMeta = const VerificationMeta('likeCount');
+  static const VerificationMeta _likeCountMeta = const VerificationMeta(
+    'likeCount',
+  );
   @override
   late final GeneratedColumn<int> likeCount = GeneratedColumn<int>(
     'like_count',
@@ -4113,8 +4289,6 @@ class $VideoStatisticsTable extends VideoStatistics
         _viewCountMeta,
         viewCount.isAcceptableOrUnknown(data['view_count']!, _viewCountMeta),
       );
-    } else if (isInserting) {
-      context.missing(_viewCountMeta);
     }
     if (data.containsKey('like_count')) {
       context.handle(
@@ -4125,13 +4299,19 @@ class $VideoStatisticsTable extends VideoStatistics
     if (data.containsKey('dislike_count')) {
       context.handle(
         _dislikeCountMeta,
-        dislikeCount.isAcceptableOrUnknown(data['dislike_count']!, _dislikeCountMeta),
+        dislikeCount.isAcceptableOrUnknown(
+          data['dislike_count']!,
+          _dislikeCountMeta,
+        ),
       );
     }
     if (data.containsKey('favorite_count')) {
       context.handle(
         _favoriteCountMeta,
-        favoriteCount.isAcceptableOrUnknown(data['favorite_count']!, _favoriteCountMeta),
+        favoriteCount.isAcceptableOrUnknown(
+          data['favorite_count']!,
+          _favoriteCountMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_favoriteCountMeta);
@@ -4139,7 +4319,10 @@ class $VideoStatisticsTable extends VideoStatistics
     if (data.containsKey('comment_count')) {
       context.handle(
         _commentCountMeta,
-        commentCount.isAcceptableOrUnknown(data['comment_count']!, _commentCountMeta),
+        commentCount.isAcceptableOrUnknown(
+          data['comment_count']!,
+          _commentCountMeta,
+        ),
       );
     }
     return context;
@@ -4158,7 +4341,7 @@ class $VideoStatisticsTable extends VideoStatistics
       viewCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}view_count'],
-      )!,
+      ),
       likeCount: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}like_count'],
@@ -4186,14 +4369,14 @@ class $VideoStatisticsTable extends VideoStatistics
 
 class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   final String id;
-  final int viewCount;
+  final int? viewCount;
   final int? likeCount;
   final int? dislikeCount;
   final int favoriteCount;
   final int? commentCount;
   const VideoStatistic({
     required this.id,
-    required this.viewCount,
+    this.viewCount,
     this.likeCount,
     this.dislikeCount,
     required this.favoriteCount,
@@ -4203,7 +4386,9 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['view_count'] = Variable<int>(viewCount);
+    if (!nullToAbsent || viewCount != null) {
+      map['view_count'] = Variable<int>(viewCount);
+    }
     if (!nullToAbsent || likeCount != null) {
       map['like_count'] = Variable<int>(likeCount);
     }
@@ -4220,7 +4405,9 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   VideoStatisticsCompanion toCompanion(bool nullToAbsent) {
     return VideoStatisticsCompanion(
       id: Value(id),
-      viewCount: Value(viewCount),
+      viewCount: viewCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(viewCount),
       likeCount: likeCount == null && nullToAbsent
           ? const Value.absent()
           : Value(likeCount),
@@ -4241,7 +4428,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return VideoStatistic(
       id: serializer.fromJson<String>(json['id']),
-      viewCount: serializer.fromJson<int>(json['viewCount']),
+      viewCount: serializer.fromJson<int?>(json['viewCount']),
       likeCount: serializer.fromJson<int?>(json['likeCount']),
       dislikeCount: serializer.fromJson<int?>(json['dislikeCount']),
       favoriteCount: serializer.fromJson<int>(json['favoriteCount']),
@@ -4253,7 +4440,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'viewCount': serializer.toJson<int>(viewCount),
+      'viewCount': serializer.toJson<int?>(viewCount),
       'likeCount': serializer.toJson<int?>(likeCount),
       'dislikeCount': serializer.toJson<int?>(dislikeCount),
       'favoriteCount': serializer.toJson<int>(favoriteCount),
@@ -4263,14 +4450,14 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
 
   VideoStatistic copyWith({
     String? id,
-    int? viewCount,
+    Value<int?> viewCount = const Value.absent(),
     Value<int?> likeCount = const Value.absent(),
     Value<int?> dislikeCount = const Value.absent(),
     int? favoriteCount,
     Value<int?> commentCount = const Value.absent(),
   }) => VideoStatistic(
     id: id ?? this.id,
-    viewCount: viewCount ?? this.viewCount,
+    viewCount: viewCount.present ? viewCount.value : this.viewCount,
     likeCount: likeCount.present ? likeCount.value : this.likeCount,
     dislikeCount: dislikeCount.present ? dislikeCount.value : this.dislikeCount,
     favoriteCount: favoriteCount ?? this.favoriteCount,
@@ -4307,8 +4494,14 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, viewCount, likeCount, dislikeCount, favoriteCount, commentCount);
+  int get hashCode => Object.hash(
+    id,
+    viewCount,
+    likeCount,
+    dislikeCount,
+    favoriteCount,
+    commentCount,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4323,7 +4516,7 @@ class VideoStatistic extends DataClass implements Insertable<VideoStatistic> {
 
 class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   final Value<String> id;
-  final Value<int> viewCount;
+  final Value<int?> viewCount;
   final Value<int?> likeCount;
   final Value<int?> dislikeCount;
   final Value<int> favoriteCount;
@@ -4340,14 +4533,13 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
   });
   VideoStatisticsCompanion.insert({
     required String id,
-    required int viewCount,
+    this.viewCount = const Value.absent(),
     this.likeCount = const Value.absent(),
     this.dislikeCount = const Value.absent(),
     required int favoriteCount,
     this.commentCount = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       viewCount = Value(viewCount),
        favoriteCount = Value(favoriteCount);
   static Insertable<VideoStatistic> custom({
     Expression<String>? id,
@@ -4371,7 +4563,7 @@ class VideoStatisticsCompanion extends UpdateCompanion<VideoStatistic> {
 
   VideoStatisticsCompanion copyWith({
     Value<String>? id,
-    Value<int>? viewCount,
+    Value<int?>? viewCount,
     Value<int?>? likeCount,
     Value<int?>? dislikeCount,
     Value<int>? favoriteCount,
@@ -4458,7 +4650,9 @@ class $VideoProgressTable extends VideoProgress
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
-  static const VerificationMeta _isFinishedMeta = const VerificationMeta('isFinished');
+  static const VerificationMeta _isFinishedMeta = const VerificationMeta(
+    'isFinished',
+  );
   @override
   late final GeneratedColumn<bool> isFinished = GeneratedColumn<bool>(
     'is_finished',
@@ -4493,7 +4687,10 @@ class $VideoProgressTable extends VideoProgress
     if (data.containsKey('watch_position')) {
       context.handle(
         _watchPositionMeta,
-        watchPosition.isAcceptableOrUnknown(data['watch_position']!, _watchPositionMeta),
+        watchPosition.isAcceptableOrUnknown(
+          data['watch_position']!,
+          _watchPositionMeta,
+        ),
       );
     }
     if (data.containsKey('is_finished')) {
@@ -4532,7 +4729,8 @@ class $VideoProgressTable extends VideoProgress
   }
 }
 
-class VideoProgressData extends DataClass implements Insertable<VideoProgressData> {
+class VideoProgressData extends DataClass
+    implements Insertable<VideoProgressData> {
   final String id;
   final int watchPosition;
   final bool isFinished;
@@ -4579,19 +4777,24 @@ class VideoProgressData extends DataClass implements Insertable<VideoProgressDat
     };
   }
 
-  VideoProgressData copyWith({String? id, int? watchPosition, bool? isFinished}) =>
-      VideoProgressData(
-        id: id ?? this.id,
-        watchPosition: watchPosition ?? this.watchPosition,
-        isFinished: isFinished ?? this.isFinished,
-      );
+  VideoProgressData copyWith({
+    String? id,
+    int? watchPosition,
+    bool? isFinished,
+  }) => VideoProgressData(
+    id: id ?? this.id,
+    watchPosition: watchPosition ?? this.watchPosition,
+    isFinished: isFinished ?? this.isFinished,
+  );
   VideoProgressData copyWithCompanion(VideoProgressCompanion data) {
     return VideoProgressData(
       id: data.id.present ? data.id.value : this.id,
       watchPosition: data.watchPosition.present
           ? data.watchPosition.value
           : this.watchPosition,
-      isFinished: data.isFinished.present ? data.isFinished.value : this.isFinished,
+      isFinished: data.isFinished.present
+          ? data.isFinished.value
+          : this.isFinished,
     );
   }
 
@@ -4691,12 +4894,15 @@ class VideoProgressCompanion extends UpdateCompanion<VideoProgressData> {
   }
 }
 
-class $PlaylistsTable extends Playlists with TableInfo<$PlaylistsTable, Playlist> {
+class $PlaylistsTable extends Playlists
+    with TableInfo<$PlaylistsTable, Playlist> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PlaylistsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -4706,7 +4912,9 @@ class $PlaylistsTable extends Playlists with TableInfo<$PlaylistsTable, Playlist
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -4725,7 +4933,9 @@ class $PlaylistsTable extends Playlists with TableInfo<$PlaylistsTable, Playlist
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _channelIdMeta = const VerificationMeta('channelId');
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
   @override
   late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
     'channel_id',
@@ -4746,7 +4956,9 @@ class $PlaylistsTable extends Playlists with TableInfo<$PlaylistsTable, Playlist
         type: DriftSqlType.int,
         requiredDuringInsert: true,
       ).withConverter<PlaylistType>($PlaylistsTable.$convertertype);
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -4820,7 +5032,10 @@ class $PlaylistsTable extends Playlists with TableInfo<$PlaylistsTable, Playlist
       context.missing(_priorityMeta);
     }
     if (data.containsKey('etag')) {
-      context.handle(_etagMeta, etag.isAcceptableOrUnknown(data['etag']!, _etagMeta));
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
     } else if (isInserting) {
       context.missing(_etagMeta);
     }
@@ -4919,7 +5134,10 @@ class Playlist extends DataClass implements Insertable<Playlist> {
     );
   }
 
-  factory Playlist.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory Playlist.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Playlist(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -4941,7 +5159,9 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'id': serializer.toJson<String>(id),
       'channelId': serializer.toJson<String>(channelId),
-      'type': serializer.toJson<int>($PlaylistsTable.$convertertype.toJson(type)),
+      'type': serializer.toJson<int>(
+        $PlaylistsTable.$convertertype.toJson(type),
+      ),
       'priority': serializer.toJson<int>(priority),
       'etag': serializer.toJson<String>(etag),
     };
@@ -5099,7 +5319,9 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
       map['channel_id'] = Variable<String>(channelId.value);
     }
     if (type.present) {
-      map['type'] = Variable<int>($PlaylistsTable.$convertertype.toSql(type.value));
+      map['type'] = Variable<int>(
+        $PlaylistsTable.$convertertype.toSql(type.value),
+      );
     }
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
@@ -5135,7 +5357,9 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PlaylistSnippetsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -5145,7 +5369,9 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -5167,7 +5393,9 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
       'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _publishedAtMeta = const VerificationMeta('publishedAt');
+  static const VerificationMeta _publishedAtMeta = const VerificationMeta(
+    'publishedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> publishedAt = GeneratedColumn<DateTime>(
     'published_at',
@@ -5185,7 +5413,9 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta('description');
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
@@ -5247,20 +5477,29 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
     if (data.containsKey('published_at')) {
       context.handle(
         _publishedAtMeta,
-        publishedAt.isAcceptableOrUnknown(data['published_at']!, _publishedAtMeta),
+        publishedAt.isAcceptableOrUnknown(
+          data['published_at']!,
+          _publishedAtMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_publishedAtMeta);
     }
     if (data.containsKey('title')) {
-      context.handle(_titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
     } else if (isInserting) {
       context.missing(_titleMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
-        description.isAcceptableOrUnknown(data['description']!, _descriptionMeta),
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_descriptionMeta);
@@ -5268,7 +5507,10 @@ class $PlaylistSnippetsTable extends PlaylistSnippets
     if (data.containsKey('channel_title')) {
       context.handle(
         _channelTitleMeta,
-        channelTitle.isAcceptableOrUnknown(data['channel_title']!, _channelTitleMeta),
+        channelTitle.isAcceptableOrUnknown(
+          data['channel_title']!,
+          _channelTitleMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_channelTitleMeta);
@@ -5412,9 +5654,13 @@ class PlaylistSnippet extends DataClass implements Insertable<PlaylistSnippet> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
-      publishedAt: data.publishedAt.present ? data.publishedAt.value : this.publishedAt,
+      publishedAt: data.publishedAt.present
+          ? data.publishedAt.value
+          : this.publishedAt,
       title: data.title.present ? data.title.value : this.title,
-      description: data.description.present ? data.description.value : this.description,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       channelTitle: data.channelTitle.present
           ? data.channelTitle.value
           : this.channelTitle,
@@ -5587,7 +5833,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PlaylistThumbnailsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -5597,7 +5845,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -5619,7 +5869,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
       'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _defaultUrlMeta = const VerificationMeta('defaultUrl');
+  static const VerificationMeta _defaultUrlMeta = const VerificationMeta(
+    'defaultUrl',
+  );
   @override
   late final GeneratedColumn<String> defaultUrl = GeneratedColumn<String>(
     'default_url',
@@ -5628,7 +5880,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mediumUrlMeta = const VerificationMeta('mediumUrl');
+  static const VerificationMeta _mediumUrlMeta = const VerificationMeta(
+    'mediumUrl',
+  );
   @override
   late final GeneratedColumn<String> mediumUrl = GeneratedColumn<String>(
     'medium_url',
@@ -5637,7 +5891,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _highUrlMeta = const VerificationMeta('highUrl');
+  static const VerificationMeta _highUrlMeta = const VerificationMeta(
+    'highUrl',
+  );
   @override
   late final GeneratedColumn<String> highUrl = GeneratedColumn<String>(
     'high_url',
@@ -5646,7 +5902,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _standardUrlMeta = const VerificationMeta('standardUrl');
+  static const VerificationMeta _standardUrlMeta = const VerificationMeta(
+    'standardUrl',
+  );
   @override
   late final GeneratedColumn<String> standardUrl = GeneratedColumn<String>(
     'standard_url',
@@ -5655,7 +5913,9 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _maxresUrlMeta = const VerificationMeta('maxresUrl');
+  static const VerificationMeta _maxresUrlMeta = const VerificationMeta(
+    'maxresUrl',
+  );
   @override
   late final GeneratedColumn<String> maxresUrl = GeneratedColumn<String>(
     'maxres_url',
@@ -5731,7 +5991,10 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
     if (data.containsKey('standard_url')) {
       context.handle(
         _standardUrlMeta,
-        standardUrl.isAcceptableOrUnknown(data['standard_url']!, _standardUrlMeta),
+        standardUrl.isAcceptableOrUnknown(
+          data['standard_url']!,
+          _standardUrlMeta,
+        ),
       );
     }
     if (data.containsKey('maxres_url')) {
@@ -5790,7 +6053,8 @@ class $PlaylistThumbnailsTable extends PlaylistThumbnails
   }
 }
 
-class PlaylistThumbnail extends DataClass implements Insertable<PlaylistThumbnail> {
+class PlaylistThumbnail extends DataClass
+    implements Insertable<PlaylistThumbnail> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String id;
@@ -5899,10 +6163,14 @@ class PlaylistThumbnail extends DataClass implements Insertable<PlaylistThumbnai
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       id: data.id.present ? data.id.value : this.id,
-      defaultUrl: data.defaultUrl.present ? data.defaultUrl.value : this.defaultUrl,
+      defaultUrl: data.defaultUrl.present
+          ? data.defaultUrl.value
+          : this.defaultUrl,
       mediumUrl: data.mediumUrl.present ? data.mediumUrl.value : this.mediumUrl,
       highUrl: data.highUrl.present ? data.highUrl.value : this.highUrl,
-      standardUrl: data.standardUrl.present ? data.standardUrl.value : this.standardUrl,
+      standardUrl: data.standardUrl.present
+          ? data.standardUrl.value
+          : this.standardUrl,
       maxresUrl: data.maxresUrl.present ? data.maxresUrl.value : this.maxresUrl,
     );
   }
@@ -6086,7 +6354,9 @@ class $PlaylistContentDetailsTable extends PlaylistContentDetails
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PlaylistContentDetailsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -6096,7 +6366,9 @@ class $PlaylistContentDetailsTable extends PlaylistContentDetails
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -6118,7 +6390,9 @@ class $PlaylistContentDetailsTable extends PlaylistContentDetails
       'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _itemCountMeta = const VerificationMeta('itemCount');
+  static const VerificationMeta _itemCountMeta = const VerificationMeta(
+    'itemCount',
+  );
   @override
   late final GeneratedColumn<int> itemCount = GeneratedColumn<int>(
     'item_count',
@@ -6265,7 +6539,9 @@ class PlaylistContentDetail extends DataClass
     id: id ?? this.id,
     itemCount: itemCount ?? this.itemCount,
   );
-  PlaylistContentDetail copyWithCompanion(PlaylistContentDetailsCompanion data) {
+  PlaylistContentDetail copyWithCompanion(
+    PlaylistContentDetailsCompanion data,
+  ) {
     return PlaylistContentDetail(
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -6297,7 +6573,8 @@ class PlaylistContentDetail extends DataClass
           other.itemCount == this.itemCount);
 }
 
-class PlaylistContentDetailsCompanion extends UpdateCompanion<PlaylistContentDetail> {
+class PlaylistContentDetailsCompanion
+    extends UpdateCompanion<PlaylistContentDetail> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<String> id;
@@ -6390,7 +6667,9 @@ class $PlaylistVsVideosTable extends PlaylistVsVideos
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PlaylistVsVideosTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _playlistIdMeta = const VerificationMeta('playlistId');
+  static const VerificationMeta _playlistIdMeta = const VerificationMeta(
+    'playlistId',
+  );
   @override
   late final GeneratedColumn<String> playlistId = GeneratedColumn<String>(
     'playlist_id',
@@ -6402,7 +6681,9 @@ class $PlaylistVsVideosTable extends PlaylistVsVideos
       'REFERENCES playlists (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _videoIdMeta = const VerificationMeta('videoId');
+  static const VerificationMeta _videoIdMeta = const VerificationMeta(
+    'videoId',
+  );
   @override
   late final GeneratedColumn<String> videoId = GeneratedColumn<String>(
     'video_id',
@@ -6410,9 +6691,13 @@ class $PlaylistVsVideosTable extends PlaylistVsVideos
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES videos (id)'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES videos (id)',
+    ),
   );
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -6536,15 +6821,20 @@ class PlaylistVsVideo extends DataClass implements Insertable<PlaylistVsVideo> {
     };
   }
 
-  PlaylistVsVideo copyWith({String? playlistId, String? videoId, int? priority}) =>
-      PlaylistVsVideo(
-        playlistId: playlistId ?? this.playlistId,
-        videoId: videoId ?? this.videoId,
-        priority: priority ?? this.priority,
-      );
+  PlaylistVsVideo copyWith({
+    String? playlistId,
+    String? videoId,
+    int? priority,
+  }) => PlaylistVsVideo(
+    playlistId: playlistId ?? this.playlistId,
+    videoId: videoId ?? this.videoId,
+    priority: priority ?? this.priority,
+  );
   PlaylistVsVideo copyWithCompanion(PlaylistVsVideosCompanion data) {
     return PlaylistVsVideo(
-      playlistId: data.playlistId.present ? data.playlistId.value : this.playlistId,
+      playlistId: data.playlistId.present
+          ? data.playlistId.value
+          : this.playlistId,
       videoId: data.videoId.present ? data.videoId.value : this.videoId,
       priority: data.priority.present ? data.priority.value : this.priority,
     );
@@ -6654,7 +6944,9 @@ class $ChannelSearchesTable extends ChannelSearches
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelSearchesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -6664,7 +6956,9 @@ class $ChannelSearchesTable extends ChannelSearches
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -6683,7 +6977,9 @@ class $ChannelSearchesTable extends ChannelSearches
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
   );
   static const VerificationMeta _queryMeta = const VerificationMeta('query');
   @override
@@ -6724,7 +7020,10 @@ class $ChannelSearchesTable extends ChannelSearches
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('query')) {
-      context.handle(_queryMeta, query.isAcceptableOrUnknown(data['query']!, _queryMeta));
+      context.handle(
+        _queryMeta,
+        query.isAcceptableOrUnknown(data['query']!, _queryMeta),
+      );
     } else if (isInserting) {
       context.missing(_queryMeta);
     }
@@ -6939,7 +7238,9 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $ChannelSearchVsChannelsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _searchIdMeta = const VerificationMeta('searchId');
+  static const VerificationMeta _searchIdMeta = const VerificationMeta(
+    'searchId',
+  );
   @override
   late final GeneratedColumn<int> searchId = GeneratedColumn<int>(
     'search_id',
@@ -6951,7 +7252,9 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
       'REFERENCES channel_searches (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _channelIdMeta = const VerificationMeta('channelId');
+  static const VerificationMeta _channelIdMeta = const VerificationMeta(
+    'channelId',
+  );
   @override
   late final GeneratedColumn<String> channelId = GeneratedColumn<String>(
     'channel_id',
@@ -6959,9 +7262,13 @@ class $ChannelSearchVsChannelsTable extends ChannelSearchVsChannels
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES channels (id)'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES channels (id)',
+    ),
   );
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -7086,13 +7393,18 @@ class ChannelSearchVsChannel extends DataClass
     };
   }
 
-  ChannelSearchVsChannel copyWith({int? searchId, String? channelId, int? priority}) =>
-      ChannelSearchVsChannel(
-        searchId: searchId ?? this.searchId,
-        channelId: channelId ?? this.channelId,
-        priority: priority ?? this.priority,
-      );
-  ChannelSearchVsChannel copyWithCompanion(ChannelSearchVsChannelsCompanion data) {
+  ChannelSearchVsChannel copyWith({
+    int? searchId,
+    String? channelId,
+    int? priority,
+  }) => ChannelSearchVsChannel(
+    searchId: searchId ?? this.searchId,
+    channelId: channelId ?? this.channelId,
+    priority: priority ?? this.priority,
+  );
+  ChannelSearchVsChannel copyWithCompanion(
+    ChannelSearchVsChannelsCompanion data,
+  ) {
     return ChannelSearchVsChannel(
       searchId: data.searchId.present ? data.searchId.value : this.searchId,
       channelId: data.channelId.present ? data.channelId.value : this.channelId,
@@ -7121,7 +7433,8 @@ class ChannelSearchVsChannel extends DataClass
           other.priority == this.priority);
 }
 
-class ChannelSearchVsChannelsCompanion extends UpdateCompanion<ChannelSearchVsChannel> {
+class ChannelSearchVsChannelsCompanion
+    extends UpdateCompanion<ChannelSearchVsChannel> {
   final Value<int> searchId;
   final Value<String> channelId;
   final Value<int> priority;
@@ -7204,7 +7517,9 @@ class $VideoSearchesTable extends VideoSearches
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoSearchesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -7214,7 +7529,9 @@ class $VideoSearchesTable extends VideoSearches
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -7233,7 +7550,9 @@ class $VideoSearchesTable extends VideoSearches
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
   );
   static const VerificationMeta _queryMeta = const VerificationMeta('query');
   @override
@@ -7274,7 +7593,10 @@ class $VideoSearchesTable extends VideoSearches
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('query')) {
-      context.handle(_queryMeta, query.isAcceptableOrUnknown(data['query']!, _queryMeta));
+      context.handle(
+        _queryMeta,
+        query.isAcceptableOrUnknown(data['query']!, _queryMeta),
+      );
     } else if (isInserting) {
       context.missing(_queryMeta);
     }
@@ -7489,7 +7811,9 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $VideoSearchVsVideosTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _searchIdMeta = const VerificationMeta('searchId');
+  static const VerificationMeta _searchIdMeta = const VerificationMeta(
+    'searchId',
+  );
   @override
   late final GeneratedColumn<int> searchId = GeneratedColumn<int>(
     'search_id',
@@ -7501,7 +7825,9 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
       'REFERENCES video_searches (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _videoIdMeta = const VerificationMeta('videoId');
+  static const VerificationMeta _videoIdMeta = const VerificationMeta(
+    'videoId',
+  );
   @override
   late final GeneratedColumn<String> videoId = GeneratedColumn<String>(
     'video_id',
@@ -7509,9 +7835,13 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES videos (id)'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES videos (id)',
+    ),
   );
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -7588,7 +7918,8 @@ class $VideoSearchVsVideosTable extends VideoSearchVsVideos
   }
 }
 
-class VideoSearchVsVideo extends DataClass implements Insertable<VideoSearchVsVideo> {
+class VideoSearchVsVideo extends DataClass
+    implements Insertable<VideoSearchVsVideo> {
   final int searchId;
   final String videoId;
   final int priority;
@@ -7635,12 +7966,15 @@ class VideoSearchVsVideo extends DataClass implements Insertable<VideoSearchVsVi
     };
   }
 
-  VideoSearchVsVideo copyWith({int? searchId, String? videoId, int? priority}) =>
-      VideoSearchVsVideo(
-        searchId: searchId ?? this.searchId,
-        videoId: videoId ?? this.videoId,
-        priority: priority ?? this.priority,
-      );
+  VideoSearchVsVideo copyWith({
+    int? searchId,
+    String? videoId,
+    int? priority,
+  }) => VideoSearchVsVideo(
+    searchId: searchId ?? this.searchId,
+    videoId: videoId ?? this.videoId,
+    priority: priority ?? this.priority,
+  );
   VideoSearchVsVideo copyWithCompanion(VideoSearchVsVideosCompanion data) {
     return VideoSearchVsVideo(
       searchId: data.searchId.present ? data.searchId.value : this.searchId,
@@ -7753,7 +8087,9 @@ class $CollectionsTable extends Collections
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $CollectionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -7763,7 +8099,9 @@ class $CollectionsTable extends Collections
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -7782,9 +8120,13 @@ class $CollectionsTable extends Collections
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
   );
-  static const VerificationMeta _isSystemMeta = const VerificationMeta('isSystem');
+  static const VerificationMeta _isSystemMeta = const VerificationMeta(
+    'isSystem',
+  );
   @override
   late final GeneratedColumn<bool> isSystem = GeneratedColumn<bool>(
     'is_system',
@@ -7796,7 +8138,9 @@ class $CollectionsTable extends Collections
       'CHECK ("is_system" IN (0, 1))',
     ),
   );
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -7814,7 +8158,9 @@ class $CollectionsTable extends Collections
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta('description');
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
@@ -7877,14 +8223,20 @@ class $CollectionsTable extends Collections
       context.missing(_priorityMeta);
     }
     if (data.containsKey('name')) {
-      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
-        description.isAcceptableOrUnknown(data['description']!, _descriptionMeta),
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_descriptionMeta);
@@ -7977,7 +8329,10 @@ class Collection extends DataClass implements Insertable<Collection> {
     );
   }
 
-  factory Collection.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory Collection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Collection(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -8028,7 +8383,9 @@ class Collection extends DataClass implements Insertable<Collection> {
       isSystem: data.isSystem.present ? data.isSystem.value : this.isSystem,
       priority: data.priority.present ? data.priority.value : this.priority,
       name: data.name.present ? data.name.value : this.name,
-      description: data.description.present ? data.description.value : this.description,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
     );
   }
 
@@ -8047,8 +8404,15 @@ class Collection extends DataClass implements Insertable<Collection> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(createdAt, updatedAt, id, isSystem, priority, name, description);
+  int get hashCode => Object.hash(
+    createdAt,
+    updatedAt,
+    id,
+    isSystem,
+    priority,
+    name,
+    description,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -8178,7 +8542,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $SeriesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -8188,7 +8554,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -8207,7 +8575,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     hasAutoIncrement: true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
   );
   static const VerificationMeta _collectionIdMeta = const VerificationMeta(
     'collectionId',
@@ -8233,7 +8603,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES videos (id)'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES videos (id)',
+    ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -8244,7 +8616,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta('description');
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
@@ -8253,7 +8627,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _dataPathMeta = const VerificationMeta('dataPath');
+  static const VerificationMeta _dataPathMeta = const VerificationMeta(
+    'dataPath',
+  );
   @override
   late final GeneratedColumn<String> dataPath = GeneratedColumn<String>(
     'data_path',
@@ -8262,7 +8638,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _dataHashMeta = const VerificationMeta('dataHash');
+  static const VerificationMeta _dataHashMeta = const VerificationMeta(
+    'dataHash',
+  );
   @override
   late final GeneratedColumn<String> dataHash = GeneratedColumn<String>(
     'data_hash',
@@ -8271,7 +8649,9 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -8323,7 +8703,10 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     if (data.containsKey('collection_id')) {
       context.handle(
         _collectionIdMeta,
-        collectionId.isAcceptableOrUnknown(data['collection_id']!, _collectionIdMeta),
+        collectionId.isAcceptableOrUnknown(
+          data['collection_id']!,
+          _collectionIdMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_collectionIdMeta);
@@ -8331,20 +8714,29 @@ class $SeriesTable extends Series with TableInfo<$SeriesTable, Sery> {
     if (data.containsKey('cover_video_id')) {
       context.handle(
         _coverVideoIdMeta,
-        coverVideoId.isAcceptableOrUnknown(data['cover_video_id']!, _coverVideoIdMeta),
+        coverVideoId.isAcceptableOrUnknown(
+          data['cover_video_id']!,
+          _coverVideoIdMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_coverVideoIdMeta);
     }
     if (data.containsKey('name')) {
-      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
-        description.isAcceptableOrUnknown(data['description']!, _descriptionMeta),
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     } else if (isInserting) {
       context.missing(_descriptionMeta);
@@ -8479,13 +8871,20 @@ class Sery extends DataClass implements Insertable<Sery> {
       coverVideoId: Value(coverVideoId),
       name: Value(name),
       description: Value(description),
-      dataPath: dataPath == null && nullToAbsent ? const Value.absent() : Value(dataPath),
-      dataHash: dataHash == null && nullToAbsent ? const Value.absent() : Value(dataHash),
+      dataPath: dataPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dataPath),
+      dataHash: dataHash == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dataHash),
       priority: Value(priority),
     );
   }
 
-  factory Sery.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory Sery.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Sery(
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -8552,7 +8951,9 @@ class Sery extends DataClass implements Insertable<Sery> {
           ? data.coverVideoId.value
           : this.coverVideoId,
       name: data.name.present ? data.name.value : this.name,
-      description: data.description.present ? data.description.value : this.description,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       dataPath: data.dataPath.present ? data.dataPath.value : this.dataPath,
       dataHash: data.dataHash.present ? data.dataHash.value : this.dataHash,
       priority: data.priority.present ? data.priority.value : this.priority,
@@ -8756,7 +9157,9 @@ class $SeriesVsVideosTable extends SeriesVsVideos
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $SeriesVsVideosTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _seriesIdMeta = const VerificationMeta('seriesId');
+  static const VerificationMeta _seriesIdMeta = const VerificationMeta(
+    'seriesId',
+  );
   @override
   late final GeneratedColumn<int> seriesId = GeneratedColumn<int>(
     'series_id',
@@ -8768,7 +9171,9 @@ class $SeriesVsVideosTable extends SeriesVsVideos
       'REFERENCES series (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _videoIdMeta = const VerificationMeta('videoId');
+  static const VerificationMeta _videoIdMeta = const VerificationMeta(
+    'videoId',
+  );
   @override
   late final GeneratedColumn<String> videoId = GeneratedColumn<String>(
     'video_id',
@@ -8776,9 +9181,13 @@ class $SeriesVsVideosTable extends SeriesVsVideos
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES videos (id)'),
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES videos (id)',
+    ),
   );
-  static const VerificationMeta _priorityMeta = const VerificationMeta('priority');
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
   @override
   late final GeneratedColumn<int> priority = GeneratedColumn<int>(
     'priority',
@@ -9018,34 +9427,49 @@ abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   $DatabaseManager get managers => $DatabaseManager(this);
   late final $ChannelsTable channels = $ChannelsTable(this);
-  late final $ChannelSnippetsTable channelSnippets = $ChannelSnippetsTable(this);
-  late final $ChannelThumbnailsTable channelThumbnails = $ChannelThumbnailsTable(this);
-  late final $ChannelContentDetailsTable channelContentDetails =
-      $ChannelContentDetailsTable(this);
-  late final $ChannelStatisticsTable channelStatistics = $ChannelStatisticsTable(this);
-  late final $ChannelStatusesTable channelStatuses = $ChannelStatusesTable(this);
-  late final $VideosTable videos = $VideosTable(this);
-  late final $VideoSnippetsTable videoSnippets = $VideoSnippetsTable(this);
-  late final $VideoThumbnailsTable videoThumbnails = $VideoThumbnailsTable(this);
-  late final $VideoContentDetailsTable videoContentDetails = $VideoContentDetailsTable(
+  late final $ChannelSnippetsTable channelSnippets = $ChannelSnippetsTable(
     this,
   );
+  late final $ChannelThumbnailsTable channelThumbnails =
+      $ChannelThumbnailsTable(this);
+  late final $ChannelContentDetailsTable channelContentDetails =
+      $ChannelContentDetailsTable(this);
+  late final $ChannelStatisticsTable channelStatistics =
+      $ChannelStatisticsTable(this);
+  late final $ChannelStatusesTable channelStatuses = $ChannelStatusesTable(
+    this,
+  );
+  late final $VideosTable videos = $VideosTable(this);
+  late final $VideoSnippetsTable videoSnippets = $VideoSnippetsTable(this);
+  late final $VideoThumbnailsTable videoThumbnails = $VideoThumbnailsTable(
+    this,
+  );
+  late final $VideoContentDetailsTable videoContentDetails =
+      $VideoContentDetailsTable(this);
   late final $VideoStatusesTable videoStatuses = $VideoStatusesTable(this);
-  late final $VideoStatisticsTable videoStatistics = $VideoStatisticsTable(this);
+  late final $VideoStatisticsTable videoStatistics = $VideoStatisticsTable(
+    this,
+  );
   late final $VideoProgressTable videoProgress = $VideoProgressTable(this);
   late final $PlaylistsTable playlists = $PlaylistsTable(this);
-  late final $PlaylistSnippetsTable playlistSnippets = $PlaylistSnippetsTable(this);
-  late final $PlaylistThumbnailsTable playlistThumbnails = $PlaylistThumbnailsTable(this);
+  late final $PlaylistSnippetsTable playlistSnippets = $PlaylistSnippetsTable(
+    this,
+  );
+  late final $PlaylistThumbnailsTable playlistThumbnails =
+      $PlaylistThumbnailsTable(this);
   late final $PlaylistContentDetailsTable playlistContentDetails =
       $PlaylistContentDetailsTable(this);
-  late final $PlaylistVsVideosTable playlistVsVideos = $PlaylistVsVideosTable(this);
-  late final $ChannelSearchesTable channelSearches = $ChannelSearchesTable(this);
+  late final $PlaylistVsVideosTable playlistVsVideos = $PlaylistVsVideosTable(
+    this,
+  );
+  late final $ChannelSearchesTable channelSearches = $ChannelSearchesTable(
+    this,
+  );
   late final $ChannelSearchVsChannelsTable channelSearchVsChannels =
       $ChannelSearchVsChannelsTable(this);
   late final $VideoSearchesTable videoSearches = $VideoSearchesTable(this);
-  late final $VideoSearchVsVideosTable videoSearchVsVideos = $VideoSearchVsVideosTable(
-    this,
-  );
+  late final $VideoSearchVsVideosTable videoSearchVsVideos =
+      $VideoSearchVsVideosTable(this);
   late final $CollectionsTable collections = $CollectionsTable(this);
   late final $SeriesTable series = $SeriesTable(this);
   late final $SeriesVsVideosTable seriesVsVideos = $SeriesVsVideosTable(this);
@@ -9109,63 +9533,110 @@ abstract class _$Database extends GeneratedDatabase {
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
-      on: TableUpdateQuery.onTableName('channels', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('channel_snippets', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('channels', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('channel_thumbnails', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('channels', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('channel_content_details', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('channels', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('channel_statistics', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('channels', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('channel_statuses', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('videos', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('video_snippets', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('videos', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('video_thumbnails', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('videos', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('video_content_details', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('videos', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('video_statuses', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('videos', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'videos',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('video_statistics', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('channels', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'channels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('playlists', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('playlists', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('playlist_snippets', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('playlists', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('playlist_thumbnails', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('playlists', limitUpdateKind: UpdateKind.delete),
-      result: [TableUpdate('playlist_content_details', kind: UpdateKind.delete)],
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('playlist_content_details', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('playlists', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'playlists',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('playlist_vs_videos', kind: UpdateKind.delete)],
     ),
     WritePropagation(
@@ -9173,7 +9644,9 @@ abstract class _$Database extends GeneratedDatabase {
         'channel_searches',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('channel_search_vs_channels', kind: UpdateKind.delete)],
+      result: [
+        TableUpdate('channel_search_vs_channels', kind: UpdateKind.delete),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
@@ -9183,11 +9656,17 @@ abstract class _$Database extends GeneratedDatabase {
       result: [TableUpdate('video_search_vs_videos', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('collections', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'collections',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('series', kind: UpdateKind.delete)],
     ),
     WritePropagation(
-      on: TableUpdateQuery.onTableName('series', limitUpdateKind: UpdateKind.delete),
+      on: TableUpdateQuery.onTableName(
+        'series',
+        limitUpdateKind: UpdateKind.delete,
+      ),
       result: [TableUpdate('series_vs_videos', kind: UpdateKind.delete)],
     ),
   ]);
@@ -9228,8 +9707,12 @@ final class $$ChannelsTableReferences
       $_db.channelSnippets,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelSnippetsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelSnippetsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$ChannelThumbnailsTable, List<ChannelThumbnail>>
@@ -9244,24 +9727,40 @@ final class $$ChannelsTableReferences
       $_db.channelThumbnails,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelThumbnailsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelThumbnailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$ChannelContentDetailsTable, List<ChannelContentDetail>>
-  _channelContentDetailsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.channelContentDetails,
-    aliasName: $_aliasNameGenerator(db.channels.id, db.channelContentDetails.id),
-  );
+  static MultiTypedResultKey<
+    $ChannelContentDetailsTable,
+    List<ChannelContentDetail>
+  >
+  _channelContentDetailsRefsTable(_$Database db) =>
+      MultiTypedResultKey.fromTable(
+        db.channelContentDetails,
+        aliasName: $_aliasNameGenerator(
+          db.channels.id,
+          db.channelContentDetails.id,
+        ),
+      );
 
-  $$ChannelContentDetailsTableProcessedTableManager get channelContentDetailsRefs {
+  $$ChannelContentDetailsTableProcessedTableManager
+  get channelContentDetailsRefs {
     final manager = $$ChannelContentDetailsTableTableManager(
       $_db,
       $_db.channelContentDetails,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelContentDetailsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelContentDetailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$ChannelStatisticsTable, List<ChannelStatistic>>
@@ -9276,8 +9775,12 @@ final class $$ChannelsTableReferences
       $_db.channelStatistics,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelStatisticsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelStatisticsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$ChannelStatusesTable, List<ChannelStatuse>>
@@ -9292,15 +9795,20 @@ final class $$ChannelsTableReferences
       $_db.channelStatuses,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelStatusesRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelStatusesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$VideosTable, List<Video>> _videosRefsTable(_$Database db) =>
-      MultiTypedResultKey.fromTable(
-        db.videos,
-        aliasName: $_aliasNameGenerator(db.channels.id, db.videos.channelId),
-      );
+  static MultiTypedResultKey<$VideosTable, List<Video>> _videosRefsTable(
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.videos,
+    aliasName: $_aliasNameGenerator(db.channels.id, db.videos.channelId),
+  );
 
   $$VideosTableProcessedTableManager get videosRefs {
     final manager = $$VideosTableTableManager(
@@ -9309,12 +9817,13 @@ final class $$ChannelsTableReferences
     ).filter((f) => f.channelId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_videosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$PlaylistsTable, List<Playlist>> _playlistsRefsTable(
-    _$Database db,
-  ) => MultiTypedResultKey.fromTable(
+  static MultiTypedResultKey<$PlaylistsTable, List<Playlist>>
+  _playlistsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.playlists,
     aliasName: $_aliasNameGenerator(db.channels.id, db.playlists.channelId),
   );
@@ -9326,27 +9835,42 @@ final class $$ChannelsTableReferences
     ).filter((f) => f.channelId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_playlistsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$ChannelSearchVsChannelsTable, List<ChannelSearchVsChannel>>
-  _channelSearchVsChannelsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.channelSearchVsChannels,
-    aliasName: $_aliasNameGenerator(db.channels.id, db.channelSearchVsChannels.channelId),
-  );
+  static MultiTypedResultKey<
+    $ChannelSearchVsChannelsTable,
+    List<ChannelSearchVsChannel>
+  >
+  _channelSearchVsChannelsRefsTable(_$Database db) =>
+      MultiTypedResultKey.fromTable(
+        db.channelSearchVsChannels,
+        aliasName: $_aliasNameGenerator(
+          db.channels.id,
+          db.channelSearchVsChannels.channelId,
+        ),
+      );
 
-  $$ChannelSearchVsChannelsTableProcessedTableManager get channelSearchVsChannelsRefs {
+  $$ChannelSearchVsChannelsTableProcessedTableManager
+  get channelSearchVsChannelsRefs {
     final manager = $$ChannelSearchVsChannelsTableTableManager(
       $_db,
       $_db.channelSearchVsChannels,
     ).filter((f) => f.channelId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelSearchVsChannelsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelSearchVsChannelsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
-class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable> {
+class $$ChannelsTableFilterComposer
+    extends Composer<_$Database, $ChannelsTable> {
   $$ChannelsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -9364,11 +9888,15 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get etag =>
-      $composableBuilder(column: $table.etag, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get setag => $composableBuilder(
     column: $table.setag,
@@ -9393,7 +9921,8 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
             $table: $db.channelSnippets,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9417,7 +9946,8 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
             $table: $db.channelThumbnails,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9426,24 +9956,26 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
   Expression<bool> channelContentDetailsRefs(
     Expression<bool> Function($$ChannelContentDetailsTableFilterComposer f) f,
   ) {
-    final $$ChannelContentDetailsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelContentDetails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelContentDetailsTableFilterComposer(
-            $db: $db,
-            $table: $db.channelContentDetails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelContentDetailsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelContentDetails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelContentDetailsTableFilterComposer(
+                $db: $db,
+                $table: $db.channelContentDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -9465,7 +9997,8 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
             $table: $db.channelStatistics,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9489,7 +10022,8 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
             $table: $db.channelStatuses,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9513,7 +10047,8 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9537,7 +10072,8 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9546,29 +10082,32 @@ class $$ChannelsTableFilterComposer extends Composer<_$Database, $ChannelsTable>
   Expression<bool> channelSearchVsChannelsRefs(
     Expression<bool> Function($$ChannelSearchVsChannelsTableFilterComposer f) f,
   ) {
-    final $$ChannelSearchVsChannelsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelSearchVsChannels,
-      getReferencedColumn: (t) => t.channelId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelSearchVsChannelsTableFilterComposer(
-            $db: $db,
-            $table: $db.channelSearchVsChannels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelSearchVsChannelsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelSearchVsChannels,
+          getReferencedColumn: (t) => t.channelId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelSearchVsChannelsTableFilterComposer(
+                $db: $db,
+                $table: $db.channelSearchVsChannels,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
 
-class $$ChannelsTableOrderingComposer extends Composer<_$Database, $ChannelsTable> {
+class $$ChannelsTableOrderingComposer
+    extends Composer<_$Database, $ChannelsTable> {
   $$ChannelsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -9586,8 +10125,10 @@ class $$ChannelsTableOrderingComposer extends Composer<_$Database, $ChannelsTabl
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get etag => $composableBuilder(
     column: $table.etag,
@@ -9600,7 +10141,8 @@ class $$ChannelsTableOrderingComposer extends Composer<_$Database, $ChannelsTabl
   );
 }
 
-class $$ChannelsTableAnnotationComposer extends Composer<_$Database, $ChannelsTable> {
+class $$ChannelsTableAnnotationComposer
+    extends Composer<_$Database, $ChannelsTable> {
   $$ChannelsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -9641,7 +10183,8 @@ class $$ChannelsTableAnnotationComposer extends Composer<_$Database, $ChannelsTa
             $table: $db.channelSnippets,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9650,72 +10193,78 @@ class $$ChannelsTableAnnotationComposer extends Composer<_$Database, $ChannelsTa
   Expression<T> channelThumbnailsRefs<T extends Object>(
     Expression<T> Function($$ChannelThumbnailsTableAnnotationComposer a) f,
   ) {
-    final $$ChannelThumbnailsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelThumbnails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelThumbnailsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.channelThumbnails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelThumbnailsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelThumbnails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelThumbnailsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.channelThumbnails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
   Expression<T> channelContentDetailsRefs<T extends Object>(
     Expression<T> Function($$ChannelContentDetailsTableAnnotationComposer a) f,
   ) {
-    final $$ChannelContentDetailsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelContentDetails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelContentDetailsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.channelContentDetails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelContentDetailsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelContentDetails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelContentDetailsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.channelContentDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
   Expression<T> channelStatisticsRefs<T extends Object>(
     Expression<T> Function($$ChannelStatisticsTableAnnotationComposer a) f,
   ) {
-    final $$ChannelStatisticsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelStatistics,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelStatisticsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.channelStatistics,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelStatisticsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelStatistics,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelStatisticsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.channelStatistics,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -9737,7 +10286,8 @@ class $$ChannelsTableAnnotationComposer extends Composer<_$Database, $ChannelsTa
             $table: $db.channelStatuses,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9761,7 +10311,8 @@ class $$ChannelsTableAnnotationComposer extends Composer<_$Database, $ChannelsTa
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -9785,33 +10336,37 @@ class $$ChannelsTableAnnotationComposer extends Composer<_$Database, $ChannelsTa
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
   }
 
   Expression<T> channelSearchVsChannelsRefs<T extends Object>(
-    Expression<T> Function($$ChannelSearchVsChannelsTableAnnotationComposer a) f,
+    Expression<T> Function($$ChannelSearchVsChannelsTableAnnotationComposer a)
+    f,
   ) {
-    final $$ChannelSearchVsChannelsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelSearchVsChannels,
-      getReferencedColumn: (t) => t.channelId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelSearchVsChannelsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.channelSearchVsChannels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelSearchVsChannelsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelSearchVsChannels,
+          getReferencedColumn: (t) => t.channelId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelSearchVsChannelsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.channelSearchVsChannels,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -9884,7 +10439,12 @@ class $$ChannelsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $$ChannelsTableReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChannelsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback:
               ({
@@ -9921,13 +10481,15 @@ class $$ChannelsTableTableManager
                           currentTable: table,
                           referencedTable: $$ChannelsTableReferences
                               ._channelSnippetsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$ChannelsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).channelSnippetsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).channelSnippetsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (channelThumbnailsRefs)
@@ -9939,13 +10501,15 @@ class $$ChannelsTableTableManager
                           currentTable: table,
                           referencedTable: $$ChannelsTableReferences
                               ._channelThumbnailsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$ChannelsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).channelThumbnailsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).channelThumbnailsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (channelContentDetailsRefs)
@@ -9957,13 +10521,15 @@ class $$ChannelsTableTableManager
                           currentTable: table,
                           referencedTable: $$ChannelsTableReferences
                               ._channelContentDetailsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$ChannelsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).channelContentDetailsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).channelContentDetailsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (channelStatisticsRefs)
@@ -9975,13 +10541,15 @@ class $$ChannelsTableTableManager
                           currentTable: table,
                           referencedTable: $$ChannelsTableReferences
                               ._channelStatisticsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$ChannelsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).channelStatisticsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).channelStatisticsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (channelStatusesRefs)
@@ -9993,35 +10561,57 @@ class $$ChannelsTableTableManager
                           currentTable: table,
                           referencedTable: $$ChannelsTableReferences
                               ._channelStatusesRefsTable(db),
-                          managerFromTypedResult: (p0) => $$ChannelsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).channelStatusesRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).channelStatusesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (videosRefs)
-                        await $_getPrefetchedData<Channel, $ChannelsTable, Video>(
+                        await $_getPrefetchedData<
+                          Channel,
+                          $ChannelsTable,
+                          Video
+                        >(
                           currentTable: table,
-                          referencedTable: $$ChannelsTableReferences._videosRefsTable(db),
+                          referencedTable: $$ChannelsTableReferences
+                              ._videosRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$ChannelsTableReferences(db, table, p0).videosRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.channelId == item.id),
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.channelId == item.id,
+                              ),
                           typedResults: items,
                         ),
                       if (playlistsRefs)
-                        await $_getPrefetchedData<Channel, $ChannelsTable, Playlist>(
+                        await $_getPrefetchedData<
+                          Channel,
+                          $ChannelsTable,
+                          Playlist
+                        >(
                           currentTable: table,
-                          referencedTable: $$ChannelsTableReferences._playlistsRefsTable(
-                            db,
-                          ),
+                          referencedTable: $$ChannelsTableReferences
+                              ._playlistsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$ChannelsTableReferences(db, table, p0).playlistsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.channelId == item.id),
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.channelId == item.id,
+                              ),
                           typedResults: items,
                         ),
                       if (channelSearchVsChannelsRefs)
@@ -10033,13 +10623,16 @@ class $$ChannelsTableTableManager
                           currentTable: table,
                           referencedTable: $$ChannelsTableReferences
                               ._channelSearchVsChannelsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$ChannelsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).channelSearchVsChannelsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.channelId == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$ChannelsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).channelSearchVsChannelsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.channelId == item.id,
+                              ),
                           typedResults: items,
                         ),
                     ];
@@ -10090,7 +10683,11 @@ typedef $$ChannelSnippetsTableUpdateCompanionBuilder =
 
 final class $$ChannelSnippetsTableReferences
     extends BaseReferences<_$Database, $ChannelSnippetsTable, ChannelSnippet> {
-  $$ChannelSnippetsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$ChannelSnippetsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $ChannelsTable _idTable(_$Database db) => db.channels.createAlias(
     $_aliasNameGenerator(db.channelSnippets.id, db.channels.id),
@@ -10105,7 +10702,9 @@ final class $$ChannelSnippetsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -10144,7 +10743,8 @@ class $$ChannelSnippetsTableFilterComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10186,7 +10786,8 @@ class $$ChannelSnippetsTableOrderingComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10205,8 +10806,10 @@ class $$ChannelSnippetsTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get description =>
-      $composableBuilder(column: $table.description, builder: (column) => column);
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
   $$ChannelsTableAnnotationComposer get id {
     final $$ChannelsTableAnnotationComposer composer = $composerBuilder(
@@ -10224,7 +10827,8 @@ class $$ChannelSnippetsTableAnnotationComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10283,8 +10887,10 @@ class $$ChannelSnippetsTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$ChannelSnippetsTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$ChannelSnippetsTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -10312,11 +10918,14 @@ class $$ChannelSnippetsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$ChannelSnippetsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$ChannelSnippetsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelSnippetsTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$ChannelSnippetsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -10364,8 +10973,13 @@ typedef $$ChannelThumbnailsTableUpdateCompanionBuilder =
     });
 
 final class $$ChannelThumbnailsTableReferences
-    extends BaseReferences<_$Database, $ChannelThumbnailsTable, ChannelThumbnail> {
-  $$ChannelThumbnailsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+    extends
+        BaseReferences<_$Database, $ChannelThumbnailsTable, ChannelThumbnail> {
+  $$ChannelThumbnailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $ChannelsTable _idTable(_$Database db) => db.channels.createAlias(
     $_aliasNameGenerator(db.channelThumbnails.id, db.channels.id),
@@ -10380,7 +10994,9 @@ final class $$ChannelThumbnailsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -10424,7 +11040,8 @@ class $$ChannelThumbnailsTableFilterComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10471,7 +11088,8 @@ class $$ChannelThumbnailsTableOrderingComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10487,8 +11105,10 @@ class $$ChannelThumbnailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get defaultUrl =>
-      $composableBuilder(column: $table.defaultUrl, builder: (column) => column);
+  GeneratedColumn<String> get defaultUrl => $composableBuilder(
+    column: $table.defaultUrl,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get mediumUrl =>
       $composableBuilder(column: $table.mediumUrl, builder: (column) => column);
@@ -10512,7 +11132,8 @@ class $$ChannelThumbnailsTableAnnotationComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10534,8 +11155,10 @@ class $$ChannelThumbnailsTableTableManager
           ChannelThumbnail,
           PrefetchHooks Function({bool id})
         > {
-  $$ChannelThumbnailsTableTableManager(_$Database db, $ChannelThumbnailsTable table)
-    : super(
+  $$ChannelThumbnailsTableTableManager(
+    _$Database db,
+    $ChannelThumbnailsTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
@@ -10544,7 +11167,10 @@ class $$ChannelThumbnailsTableTableManager
           createOrderingComposer: () =>
               $$ChannelThumbnailsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$ChannelThumbnailsTableAnnotationComposer($db: db, $table: table),
+              $$ChannelThumbnailsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -10606,11 +11232,14 @@ class $$ChannelThumbnailsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$ChannelThumbnailsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$ChannelThumbnailsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelThumbnailsTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$ChannelThumbnailsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -10657,8 +11286,16 @@ typedef $$ChannelContentDetailsTableUpdateCompanionBuilder =
 
 final class $$ChannelContentDetailsTableReferences
     extends
-        BaseReferences<_$Database, $ChannelContentDetailsTable, ChannelContentDetail> {
-  $$ChannelContentDetailsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+        BaseReferences<
+          _$Database,
+          $ChannelContentDetailsTable,
+          ChannelContentDetail
+        > {
+  $$ChannelContentDetailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $ChannelsTable _idTable(_$Database db) => db.channels.createAlias(
     $_aliasNameGenerator(db.channelContentDetails.id, db.channels.id),
@@ -10673,7 +11310,9 @@ final class $$ChannelContentDetailsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -10712,7 +11351,8 @@ class $$ChannelContentDetailsTableFilterComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10754,7 +11394,8 @@ class $$ChannelContentDetailsTableOrderingComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10770,11 +11411,15 @@ class $$ChannelContentDetailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get likesPlaylist =>
-      $composableBuilder(column: $table.likesPlaylist, builder: (column) => column);
+  GeneratedColumn<String> get likesPlaylist => $composableBuilder(
+    column: $table.likesPlaylist,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get uploadPlaylist =>
-      $composableBuilder(column: $table.uploadPlaylist, builder: (column) => column);
+  GeneratedColumn<String> get uploadPlaylist => $composableBuilder(
+    column: $table.uploadPlaylist,
+    builder: (column) => column,
+  );
 
   $$ChannelsTableAnnotationComposer get id {
     final $$ChannelsTableAnnotationComposer composer = $composerBuilder(
@@ -10792,7 +11437,8 @@ class $$ChannelContentDetailsTableAnnotationComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -10822,11 +11468,20 @@ class $$ChannelContentDetailsTableTableManager
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$ChannelContentDetailsTableFilterComposer($db: db, $table: table),
+              $$ChannelContentDetailsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
           createOrderingComposer: () =>
-              $$ChannelContentDetailsTableOrderingComposer($db: db, $table: table),
+              $$ChannelContentDetailsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
           createComputedFieldComposer: () =>
-              $$ChannelContentDetailsTableAnnotationComposer($db: db, $table: table),
+              $$ChannelContentDetailsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -10884,11 +11539,13 @@ class $$ChannelContentDetailsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$ChannelContentDetailsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$ChannelContentDetailsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelContentDetailsTableReferences
+                                        ._idTable(db),
+                                referencedColumn:
+                                    $$ChannelContentDetailsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -10938,8 +11595,13 @@ typedef $$ChannelStatisticsTableUpdateCompanionBuilder =
     });
 
 final class $$ChannelStatisticsTableReferences
-    extends BaseReferences<_$Database, $ChannelStatisticsTable, ChannelStatistic> {
-  $$ChannelStatisticsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+    extends
+        BaseReferences<_$Database, $ChannelStatisticsTable, ChannelStatistic> {
+  $$ChannelStatisticsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $ChannelsTable _idTable(_$Database db) => db.channels.createAlias(
     $_aliasNameGenerator(db.channelStatistics.id, db.channels.id),
@@ -10954,7 +11616,9 @@ final class $$ChannelStatisticsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -11003,7 +11667,8 @@ class $$ChannelStatisticsTableFilterComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11055,7 +11720,8 @@ class $$ChannelStatisticsTableOrderingComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11074,16 +11740,20 @@ class $$ChannelStatisticsTableAnnotationComposer
   GeneratedColumn<int> get viewCount =>
       $composableBuilder(column: $table.viewCount, builder: (column) => column);
 
-  GeneratedColumn<int> get subscriberCount =>
-      $composableBuilder(column: $table.subscriberCount, builder: (column) => column);
+  GeneratedColumn<int> get subscriberCount => $composableBuilder(
+    column: $table.subscriberCount,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get hiddenSubscriberCount => $composableBuilder(
     column: $table.hiddenSubscriberCount,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get videoCount =>
-      $composableBuilder(column: $table.videoCount, builder: (column) => column);
+  GeneratedColumn<int> get videoCount => $composableBuilder(
+    column: $table.videoCount,
+    builder: (column) => column,
+  );
 
   $$ChannelsTableAnnotationComposer get id {
     final $$ChannelsTableAnnotationComposer composer = $composerBuilder(
@@ -11101,7 +11771,8 @@ class $$ChannelStatisticsTableAnnotationComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11123,8 +11794,10 @@ class $$ChannelStatisticsTableTableManager
           ChannelStatistic,
           PrefetchHooks Function({bool id})
         > {
-  $$ChannelStatisticsTableTableManager(_$Database db, $ChannelStatisticsTable table)
-    : super(
+  $$ChannelStatisticsTableTableManager(
+    _$Database db,
+    $ChannelStatisticsTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
@@ -11133,7 +11806,10 @@ class $$ChannelStatisticsTableTableManager
           createOrderingComposer: () =>
               $$ChannelStatisticsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$ChannelStatisticsTableAnnotationComposer($db: db, $table: table),
+              $$ChannelStatisticsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -11199,11 +11875,14 @@ class $$ChannelStatisticsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$ChannelStatisticsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$ChannelStatisticsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelStatisticsTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$ChannelStatisticsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -11254,7 +11933,11 @@ typedef $$ChannelStatusesTableUpdateCompanionBuilder =
 
 final class $$ChannelStatusesTableReferences
     extends BaseReferences<_$Database, $ChannelStatusesTable, ChannelStatuse> {
-  $$ChannelStatusesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$ChannelStatusesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $ChannelsTable _idTable(_$Database db) => db.channels.createAlias(
     $_aliasNameGenerator(db.channelStatuses.id, db.channels.id),
@@ -11269,7 +11952,9 @@ final class $$ChannelStatusesTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -11318,7 +12003,8 @@ class $$ChannelStatusesTableFilterComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11370,7 +12056,8 @@ class $$ChannelStatusesTableOrderingComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11386,17 +12073,23 @@ class $$ChannelStatusesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get privacyStatus =>
-      $composableBuilder(column: $table.privacyStatus, builder: (column) => column);
+  GeneratedColumn<String> get privacyStatus => $composableBuilder(
+    column: $table.privacyStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<bool> get isLinked =>
       $composableBuilder(column: $table.isLinked, builder: (column) => column);
 
-  GeneratedColumn<String> get longUploadsStatus =>
-      $composableBuilder(column: $table.longUploadsStatus, builder: (column) => column);
+  GeneratedColumn<String> get longUploadsStatus => $composableBuilder(
+    column: $table.longUploadsStatus,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<bool> get madeForKids =>
-      $composableBuilder(column: $table.madeForKids, builder: (column) => column);
+  GeneratedColumn<bool> get madeForKids => $composableBuilder(
+    column: $table.madeForKids,
+    builder: (column) => column,
+  );
 
   $$ChannelsTableAnnotationComposer get id {
     final $$ChannelsTableAnnotationComposer composer = $composerBuilder(
@@ -11414,7 +12107,8 @@ class $$ChannelStatusesTableAnnotationComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11481,8 +12175,10 @@ class $$ChannelStatusesTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$ChannelStatusesTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$ChannelStatusesTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -11510,11 +12206,14 @@ class $$ChannelStatusesTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$ChannelStatusesTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$ChannelStatusesTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelStatusesTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$ChannelStatusesTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -11569,8 +12268,8 @@ final class $$VideosTableReferences
     extends BaseReferences<_$Database, $VideosTable, Video> {
   $$VideosTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ChannelsTable _channelIdTable(_$Database db) =>
-      db.channels.createAlias($_aliasNameGenerator(db.videos.channelId, db.channels.id));
+  static $ChannelsTable _channelIdTable(_$Database db) => db.channels
+      .createAlias($_aliasNameGenerator(db.videos.channelId, db.channels.id));
 
   $$ChannelsTableProcessedTableManager get channelId {
     final $_column = $_itemColumn<String>('channel_id')!;
@@ -11581,7 +12280,9 @@ final class $$VideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_channelIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static MultiTypedResultKey<$VideoSnippetsTable, List<VideoSnippet>>
@@ -11597,7 +12298,9 @@ final class $$VideosTableReferences
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_videoSnippetsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$VideoThumbnailsTable, List<VideoThumbnail>>
@@ -11612,11 +12315,18 @@ final class $$VideosTableReferences
       $_db.videoThumbnails,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_videoThumbnailsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _videoThumbnailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$VideoContentDetailsTable, List<VideoContentDetail>>
+  static MultiTypedResultKey<
+    $VideoContentDetailsTable,
+    List<VideoContentDetail>
+  >
   _videoContentDetailsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.videoContentDetails,
     aliasName: $_aliasNameGenerator(db.videos.id, db.videoContentDetails.id),
@@ -11628,8 +12338,12 @@ final class $$VideosTableReferences
       $_db.videoContentDetails,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_videoContentDetailsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _videoContentDetailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$VideoStatusesTable, List<VideoStatuse>>
@@ -11645,7 +12359,9 @@ final class $$VideosTableReferences
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_videoStatusesRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$VideoStatisticsTable, List<VideoStatistic>>
@@ -11660,8 +12376,12 @@ final class $$VideosTableReferences
       $_db.videoStatistics,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_videoStatisticsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _videoStatisticsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$PlaylistVsVideosTable, List<PlaylistVsVideo>>
@@ -11676,14 +12396,24 @@ final class $$VideosTableReferences
       $_db.playlistVsVideos,
     ).filter((f) => f.videoId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_playlistVsVideosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _playlistVsVideosRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$VideoSearchVsVideosTable, List<VideoSearchVsVideo>>
+  static MultiTypedResultKey<
+    $VideoSearchVsVideosTable,
+    List<VideoSearchVsVideo>
+  >
   _videoSearchVsVideosRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.videoSearchVsVideos,
-    aliasName: $_aliasNameGenerator(db.videos.id, db.videoSearchVsVideos.videoId),
+    aliasName: $_aliasNameGenerator(
+      db.videos.id,
+      db.videoSearchVsVideos.videoId,
+    ),
   );
 
   $$VideoSearchVsVideosTableProcessedTableManager get videoSearchVsVideosRefs {
@@ -11692,15 +12422,20 @@ final class $$VideosTableReferences
       $_db.videoSearchVsVideos,
     ).filter((f) => f.videoId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_videoSearchVsVideosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _videoSearchVsVideosRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$SeriesTable, List<Sery>> _seriesRefsTable(_$Database db) =>
-      MultiTypedResultKey.fromTable(
-        db.series,
-        aliasName: $_aliasNameGenerator(db.videos.id, db.series.coverVideoId),
-      );
+  static MultiTypedResultKey<$SeriesTable, List<Sery>> _seriesRefsTable(
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.series,
+    aliasName: $_aliasNameGenerator(db.videos.id, db.series.coverVideoId),
+  );
 
   $$SeriesTableProcessedTableManager get seriesRefs {
     final manager = $$SeriesTableTableManager(
@@ -11709,7 +12444,9 @@ final class $$VideosTableReferences
     ).filter((f) => f.coverVideoId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_seriesRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$SeriesVsVideosTable, List<SeriesVsVideo>>
@@ -11725,7 +12462,9 @@ final class $$VideosTableReferences
     ).filter((f) => f.videoId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_seriesVsVideosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
@@ -11747,11 +12486,15 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get etag =>
-      $composableBuilder(column: $table.etag, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get setag => $composableBuilder(
     column: $table.setag,
@@ -11774,7 +12517,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -11798,7 +12542,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.videoSnippets,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11822,7 +12567,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.videoThumbnails,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11846,7 +12592,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.videoContentDetails,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11870,7 +12617,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.videoStatuses,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11894,7 +12642,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.videoStatistics,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11918,7 +12667,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.playlistVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11942,7 +12692,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.videoSearchVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11966,7 +12717,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -11990,7 +12742,8 @@ class $$VideosTableFilterComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.seriesVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12015,8 +12768,10 @@ class $$VideosTableOrderingComposer extends Composer<_$Database, $VideosTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get etag => $composableBuilder(
     column: $table.etag,
@@ -12044,14 +12799,16 @@ class $$VideosTableOrderingComposer extends Composer<_$Database, $VideosTable> {
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
   }
 }
 
-class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable> {
+class $$VideosTableAnnotationComposer
+    extends Composer<_$Database, $VideosTable> {
   $$VideosTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -12090,7 +12847,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -12114,7 +12872,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.videoSnippets,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12138,7 +12897,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.videoThumbnails,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12147,24 +12907,26 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
   Expression<T> videoContentDetailsRefs<T extends Object>(
     Expression<T> Function($$VideoContentDetailsTableAnnotationComposer a) f,
   ) {
-    final $$VideoContentDetailsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videoContentDetails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideoContentDetailsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.videoContentDetails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$VideoContentDetailsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.videoContentDetails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$VideoContentDetailsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.videoContentDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -12186,7 +12948,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.videoStatuses,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12210,7 +12973,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.videoStatistics,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12234,7 +12998,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.playlistVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12243,24 +13008,26 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
   Expression<T> videoSearchVsVideosRefs<T extends Object>(
     Expression<T> Function($$VideoSearchVsVideosTableAnnotationComposer a) f,
   ) {
-    final $$VideoSearchVsVideosTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videoSearchVsVideos,
-      getReferencedColumn: (t) => t.videoId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideoSearchVsVideosTableAnnotationComposer(
-            $db: $db,
-            $table: $db.videoSearchVsVideos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$VideoSearchVsVideosTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.videoSearchVsVideos,
+          getReferencedColumn: (t) => t.videoId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$VideoSearchVsVideosTableAnnotationComposer(
+                $db: $db,
+                $table: $db.videoSearchVsVideos,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -12282,7 +13049,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12306,7 +13074,8 @@ class $$VideosTableAnnotationComposer extends Composer<_$Database, $VideosTable>
             $table: $db.seriesVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -12387,7 +13156,10 @@ class $$VideosTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $$VideosTableReferences(db, table, e)))
+              .map(
+                (e) =>
+                    (e.readTable(table), $$VideosTableReferences(db, table, e)),
+              )
               .toList(),
           prefetchHooksCallback:
               ({
@@ -12450,25 +13222,43 @@ class $$VideosTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (videoSnippetsRefs)
-                        await $_getPrefetchedData<Video, $VideosTable, VideoSnippet>(
+                        await $_getPrefetchedData<
+                          Video,
+                          $VideosTable,
+                          VideoSnippet
+                        >(
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._videoSnippetsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(db, table, p0).videoSnippetsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videoSnippetsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (videoThumbnailsRefs)
-                        await $_getPrefetchedData<Video, $VideosTable, VideoThumbnail>(
+                        await $_getPrefetchedData<
+                          Video,
+                          $VideosTable,
+                          VideoThumbnail
+                        >(
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._videoThumbnailsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(db, table, p0).videoThumbnailsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videoThumbnailsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (videoContentDetailsRefs)
@@ -12480,46 +13270,76 @@ class $$VideosTableTableManager
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._videoContentDetailsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$VideosTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).videoContentDetailsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videoContentDetailsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (videoStatusesRefs)
-                        await $_getPrefetchedData<Video, $VideosTable, VideoStatuse>(
+                        await $_getPrefetchedData<
+                          Video,
+                          $VideosTable,
+                          VideoStatuse
+                        >(
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._videoStatusesRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(db, table, p0).videoStatusesRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videoStatusesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (videoStatisticsRefs)
-                        await $_getPrefetchedData<Video, $VideosTable, VideoStatistic>(
+                        await $_getPrefetchedData<
+                          Video,
+                          $VideosTable,
+                          VideoStatistic
+                        >(
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._videoStatisticsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(db, table, p0).videoStatisticsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videoStatisticsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (playlistVsVideosRefs)
-                        await $_getPrefetchedData<Video, $VideosTable, PlaylistVsVideo>(
+                        await $_getPrefetchedData<
+                          Video,
+                          $VideosTable,
+                          PlaylistVsVideo
+                        >(
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._playlistVsVideosRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(db, table, p0).playlistVsVideosRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.videoId == item.id),
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistVsVideosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.videoId == item.id,
+                              ),
                           typedResults: items,
                         ),
                       if (videoSearchVsVideosRefs)
@@ -12531,34 +13351,50 @@ class $$VideosTableTableManager
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._videoSearchVsVideosRefsTable(db),
-                          managerFromTypedResult: (p0) => $$VideosTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).videoSearchVsVideosRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.videoId == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).videoSearchVsVideosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.videoId == item.id,
+                              ),
                           typedResults: items,
                         ),
                       if (seriesRefs)
                         await $_getPrefetchedData<Video, $VideosTable, Sery>(
                           currentTable: table,
-                          referencedTable: $$VideosTableReferences._seriesRefsTable(db),
+                          referencedTable: $$VideosTableReferences
+                              ._seriesRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $$VideosTableReferences(db, table, p0).seriesRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.coverVideoId == item.id),
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.coverVideoId == item.id,
+                              ),
                           typedResults: items,
                         ),
                       if (seriesVsVideosRefs)
-                        await $_getPrefetchedData<Video, $VideosTable, SeriesVsVideo>(
+                        await $_getPrefetchedData<
+                          Video,
+                          $VideosTable,
+                          SeriesVsVideo
+                        >(
                           currentTable: table,
                           referencedTable: $$VideosTableReferences
                               ._seriesVsVideosRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$VideosTableReferences(db, table, p0).seriesVsVideosRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.videoId == item.id),
+                              $$VideosTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).seriesVsVideosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.videoId == item.id,
+                              ),
                           typedResults: items,
                         ),
                     ];
@@ -12615,10 +13451,15 @@ typedef $$VideoSnippetsTableUpdateCompanionBuilder =
 
 final class $$VideoSnippetsTableReferences
     extends BaseReferences<_$Database, $VideoSnippetsTable, VideoSnippet> {
-  $$VideoSnippetsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$VideoSnippetsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
-  static $VideosTable _idTable(_$Database db) =>
-      db.videos.createAlias($_aliasNameGenerator(db.videoSnippets.id, db.videos.id));
+  static $VideosTable _idTable(_$Database db) => db.videos.createAlias(
+    $_aliasNameGenerator(db.videoSnippets.id, db.videos.id),
+  );
 
   $$VideosTableProcessedTableManager get id {
     final $_column = $_itemColumn<String>('id')!;
@@ -12629,7 +13470,9 @@ final class $$VideoSnippetsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -12678,7 +13521,8 @@ class $$VideoSnippetsTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -12730,7 +13574,8 @@ class $$VideoSnippetsTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -12746,17 +13591,23 @@ class $$VideoSnippetsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<DateTime> get publishedAt =>
-      $composableBuilder(column: $table.publishedAt, builder: (column) => column);
+  GeneratedColumn<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get description =>
-      $composableBuilder(column: $table.description, builder: (column) => column);
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get channelTitle =>
-      $composableBuilder(column: $table.channelTitle, builder: (column) => column);
+  GeneratedColumn<String> get channelTitle => $composableBuilder(
+    column: $table.channelTitle,
+    builder: (column) => column,
+  );
 
   $$VideosTableAnnotationComposer get id {
     final $$VideosTableAnnotationComposer composer = $composerBuilder(
@@ -12774,7 +13625,8 @@ class $$VideoSnippetsTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -12841,7 +13693,10 @@ class $$VideoSnippetsTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $$VideoSnippetsTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$VideoSnippetsTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -12869,9 +13724,8 @@ class $$VideoSnippetsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$VideoSnippetsTableReferences._idTable(
-                                  db,
-                                ),
+                                referencedTable: $$VideoSnippetsTableReferences
+                                    ._idTable(db),
                                 referencedColumn: $$VideoSnippetsTableReferences
                                     ._idTable(db)
                                     .id,
@@ -12927,10 +13781,15 @@ typedef $$VideoThumbnailsTableUpdateCompanionBuilder =
 
 final class $$VideoThumbnailsTableReferences
     extends BaseReferences<_$Database, $VideoThumbnailsTable, VideoThumbnail> {
-  $$VideoThumbnailsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$VideoThumbnailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
-  static $VideosTable _idTable(_$Database db) =>
-      db.videos.createAlias($_aliasNameGenerator(db.videoThumbnails.id, db.videos.id));
+  static $VideosTable _idTable(_$Database db) => db.videos.createAlias(
+    $_aliasNameGenerator(db.videoThumbnails.id, db.videos.id),
+  );
 
   $$VideosTableProcessedTableManager get id {
     final $_column = $_itemColumn<String>('id')!;
@@ -12941,7 +13800,9 @@ final class $$VideoThumbnailsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -12995,7 +13856,8 @@ class $$VideoThumbnailsTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13052,7 +13914,8 @@ class $$VideoThumbnailsTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13068,8 +13931,10 @@ class $$VideoThumbnailsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get defaultUrl =>
-      $composableBuilder(column: $table.defaultUrl, builder: (column) => column);
+  GeneratedColumn<String> get defaultUrl => $composableBuilder(
+    column: $table.defaultUrl,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get mediumUrl =>
       $composableBuilder(column: $table.mediumUrl, builder: (column) => column);
@@ -13077,8 +13942,10 @@ class $$VideoThumbnailsTableAnnotationComposer
   GeneratedColumn<String> get highUrl =>
       $composableBuilder(column: $table.highUrl, builder: (column) => column);
 
-  GeneratedColumn<String> get standardUrl =>
-      $composableBuilder(column: $table.standardUrl, builder: (column) => column);
+  GeneratedColumn<String> get standardUrl => $composableBuilder(
+    column: $table.standardUrl,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get maxresUrl =>
       $composableBuilder(column: $table.maxresUrl, builder: (column) => column);
@@ -13099,7 +13966,8 @@ class $$VideoThumbnailsTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13170,8 +14038,10 @@ class $$VideoThumbnailsTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$VideoThumbnailsTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$VideoThumbnailsTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -13199,11 +14069,14 @@ class $$VideoThumbnailsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$VideoThumbnailsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$VideoThumbnailsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$VideoThumbnailsTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$VideoThumbnailsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -13257,8 +14130,17 @@ typedef $$VideoContentDetailsTableUpdateCompanionBuilder =
     });
 
 final class $$VideoContentDetailsTableReferences
-    extends BaseReferences<_$Database, $VideoContentDetailsTable, VideoContentDetail> {
-  $$VideoContentDetailsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+    extends
+        BaseReferences<
+          _$Database,
+          $VideoContentDetailsTable,
+          VideoContentDetail
+        > {
+  $$VideoContentDetailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $VideosTable _idTable(_$Database db) => db.videos.createAlias(
     $_aliasNameGenerator(db.videoContentDetails.id, db.videos.id),
@@ -13273,7 +14155,9 @@ final class $$VideoContentDetailsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -13332,7 +14216,8 @@ class $$VideoContentDetailsTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13394,7 +14279,8 @@ class $$VideoContentDetailsTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13416,17 +14302,23 @@ class $$VideoContentDetailsTableAnnotationComposer
   GeneratedColumn<String> get dimension =>
       $composableBuilder(column: $table.dimension, builder: (column) => column);
 
-  GeneratedColumn<String> get definition =>
-      $composableBuilder(column: $table.definition, builder: (column) => column);
+  GeneratedColumn<String> get definition => $composableBuilder(
+    column: $table.definition,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get caption =>
       $composableBuilder(column: $table.caption, builder: (column) => column);
 
-  GeneratedColumn<bool> get licensedContent =>
-      $composableBuilder(column: $table.licensedContent, builder: (column) => column);
+  GeneratedColumn<bool> get licensedContent => $composableBuilder(
+    column: $table.licensedContent,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get projection =>
-      $composableBuilder(column: $table.projection, builder: (column) => column);
+  GeneratedColumn<String> get projection => $composableBuilder(
+    column: $table.projection,
+    builder: (column) => column,
+  );
 
   $$VideosTableAnnotationComposer get id {
     final $$VideosTableAnnotationComposer composer = $composerBuilder(
@@ -13444,7 +14336,8 @@ class $$VideoContentDetailsTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13466,17 +14359,25 @@ class $$VideoContentDetailsTableTableManager
           VideoContentDetail,
           PrefetchHooks Function({bool id})
         > {
-  $$VideoContentDetailsTableTableManager(_$Database db, $VideoContentDetailsTable table)
-    : super(
+  $$VideoContentDetailsTableTableManager(
+    _$Database db,
+    $VideoContentDetailsTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
               $$VideoContentDetailsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$VideoContentDetailsTableOrderingComposer($db: db, $table: table),
+              $$VideoContentDetailsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
           createComputedFieldComposer: () =>
-              $$VideoContentDetailsTableAnnotationComposer($db: db, $table: table),
+              $$VideoContentDetailsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -13550,11 +14451,13 @@ class $$VideoContentDetailsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$VideoContentDetailsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$VideoContentDetailsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$VideoContentDetailsTableReferences
+                                        ._idTable(db),
+                                referencedColumn:
+                                    $$VideoContentDetailsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -13609,10 +14512,15 @@ typedef $$VideoStatusesTableUpdateCompanionBuilder =
 
 final class $$VideoStatusesTableReferences
     extends BaseReferences<_$Database, $VideoStatusesTable, VideoStatuse> {
-  $$VideoStatusesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$VideoStatusesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
-  static $VideosTable _idTable(_$Database db) =>
-      db.videos.createAlias($_aliasNameGenerator(db.videoStatuses.id, db.videos.id));
+  static $VideosTable _idTable(_$Database db) => db.videos.createAlias(
+    $_aliasNameGenerator(db.videoStatuses.id, db.videos.id),
+  );
 
   $$VideosTableProcessedTableManager get id {
     final $_column = $_itemColumn<String>('id')!;
@@ -13623,7 +14531,9 @@ final class $$VideoStatusesTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -13682,7 +14592,8 @@ class $$VideoStatusesTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13744,7 +14655,8 @@ class $$VideoStatusesTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13760,23 +14672,33 @@ class $$VideoStatusesTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get uploadStatus =>
-      $composableBuilder(column: $table.uploadStatus, builder: (column) => column);
+  GeneratedColumn<String> get uploadStatus => $composableBuilder(
+    column: $table.uploadStatus,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get privacyStatus =>
-      $composableBuilder(column: $table.privacyStatus, builder: (column) => column);
+  GeneratedColumn<String> get privacyStatus => $composableBuilder(
+    column: $table.privacyStatus,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get license =>
       $composableBuilder(column: $table.license, builder: (column) => column);
 
-  GeneratedColumn<bool> get embeddable =>
-      $composableBuilder(column: $table.embeddable, builder: (column) => column);
+  GeneratedColumn<bool> get embeddable => $composableBuilder(
+    column: $table.embeddable,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<bool> get publicStatsViewable =>
-      $composableBuilder(column: $table.publicStatsViewable, builder: (column) => column);
+  GeneratedColumn<bool> get publicStatsViewable => $composableBuilder(
+    column: $table.publicStatsViewable,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<bool> get madeForKids =>
-      $composableBuilder(column: $table.madeForKids, builder: (column) => column);
+  GeneratedColumn<bool> get madeForKids => $composableBuilder(
+    column: $table.madeForKids,
+    builder: (column) => column,
+  );
 
   $$VideosTableAnnotationComposer get id {
     final $$VideosTableAnnotationComposer composer = $composerBuilder(
@@ -13794,7 +14716,8 @@ class $$VideoStatusesTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -13869,7 +14792,10 @@ class $$VideoStatusesTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $$VideoStatusesTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$VideoStatusesTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -13897,9 +14823,8 @@ class $$VideoStatusesTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$VideoStatusesTableReferences._idTable(
-                                  db,
-                                ),
+                                referencedTable: $$VideoStatusesTableReferences
+                                    ._idTable(db),
                                 referencedColumn: $$VideoStatusesTableReferences
                                     ._idTable(db)
                                     .id,
@@ -13935,7 +14860,7 @@ typedef $$VideoStatusesTableProcessedTableManager =
 typedef $$VideoStatisticsTableCreateCompanionBuilder =
     VideoStatisticsCompanion Function({
       required String id,
-      required int viewCount,
+      Value<int?> viewCount,
       Value<int?> likeCount,
       Value<int?> dislikeCount,
       required int favoriteCount,
@@ -13945,7 +14870,7 @@ typedef $$VideoStatisticsTableCreateCompanionBuilder =
 typedef $$VideoStatisticsTableUpdateCompanionBuilder =
     VideoStatisticsCompanion Function({
       Value<String> id,
-      Value<int> viewCount,
+      Value<int?> viewCount,
       Value<int?> likeCount,
       Value<int?> dislikeCount,
       Value<int> favoriteCount,
@@ -13955,10 +14880,15 @@ typedef $$VideoStatisticsTableUpdateCompanionBuilder =
 
 final class $$VideoStatisticsTableReferences
     extends BaseReferences<_$Database, $VideoStatisticsTable, VideoStatistic> {
-  $$VideoStatisticsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$VideoStatisticsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
-  static $VideosTable _idTable(_$Database db) =>
-      db.videos.createAlias($_aliasNameGenerator(db.videoStatistics.id, db.videos.id));
+  static $VideosTable _idTable(_$Database db) => db.videos.createAlias(
+    $_aliasNameGenerator(db.videoStatistics.id, db.videos.id),
+  );
 
   $$VideosTableProcessedTableManager get id {
     final $_column = $_itemColumn<String>('id')!;
@@ -13969,7 +14899,9 @@ final class $$VideoStatisticsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -14023,7 +14955,8 @@ class $$VideoStatisticsTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -14080,7 +15013,8 @@ class $$VideoStatisticsTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -14102,14 +15036,20 @@ class $$VideoStatisticsTableAnnotationComposer
   GeneratedColumn<int> get likeCount =>
       $composableBuilder(column: $table.likeCount, builder: (column) => column);
 
-  GeneratedColumn<int> get dislikeCount =>
-      $composableBuilder(column: $table.dislikeCount, builder: (column) => column);
+  GeneratedColumn<int> get dislikeCount => $composableBuilder(
+    column: $table.dislikeCount,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<int> get favoriteCount =>
-      $composableBuilder(column: $table.favoriteCount, builder: (column) => column);
+  GeneratedColumn<int> get favoriteCount => $composableBuilder(
+    column: $table.favoriteCount,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<int> get commentCount =>
-      $composableBuilder(column: $table.commentCount, builder: (column) => column);
+  GeneratedColumn<int> get commentCount => $composableBuilder(
+    column: $table.commentCount,
+    builder: (column) => column,
+  );
 
   $$VideosTableAnnotationComposer get id {
     final $$VideosTableAnnotationComposer composer = $composerBuilder(
@@ -14127,7 +15067,8 @@ class $$VideoStatisticsTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -14163,7 +15104,7 @@ class $$VideoStatisticsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<int> viewCount = const Value.absent(),
+                Value<int?> viewCount = const Value.absent(),
                 Value<int?> likeCount = const Value.absent(),
                 Value<int?> dislikeCount = const Value.absent(),
                 Value<int> favoriteCount = const Value.absent(),
@@ -14181,7 +15122,7 @@ class $$VideoStatisticsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
-                required int viewCount,
+                Value<int?> viewCount = const Value.absent(),
                 Value<int?> likeCount = const Value.absent(),
                 Value<int?> dislikeCount = const Value.absent(),
                 required int favoriteCount,
@@ -14198,8 +15139,10 @@ class $$VideoStatisticsTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$VideoStatisticsTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$VideoStatisticsTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -14227,11 +15170,14 @@ class $$VideoStatisticsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$VideoStatisticsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$VideoStatisticsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$VideoStatisticsTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$VideoStatisticsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -14285,8 +15231,10 @@ class $$VideoProgressTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
@@ -14308,8 +15256,10 @@ class $$VideoProgressTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get watchPosition => $composableBuilder(
     column: $table.watchPosition,
@@ -14334,11 +15284,15 @@ class $$VideoProgressTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<int> get watchPosition =>
-      $composableBuilder(column: $table.watchPosition, builder: (column) => column);
+  GeneratedColumn<int> get watchPosition => $composableBuilder(
+    column: $table.watchPosition,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<bool> get isFinished =>
-      $composableBuilder(column: $table.isFinished, builder: (column) => column);
+  GeneratedColumn<bool> get isFinished => $composableBuilder(
+    column: $table.isFinished,
+    builder: (column) => column,
+  );
 }
 
 class $$VideoProgressTableTableManager
@@ -14394,8 +15348,9 @@ class $$VideoProgressTableTableManager
                 isFinished: isFinished,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) =>
-              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
           prefetchHooksCallback: null,
         ),
       );
@@ -14445,9 +15400,10 @@ final class $$PlaylistsTableReferences
     extends BaseReferences<_$Database, $PlaylistsTable, Playlist> {
   $$PlaylistsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ChannelsTable _channelIdTable(_$Database db) => db.channels.createAlias(
-    $_aliasNameGenerator(db.playlists.channelId, db.channels.id),
-  );
+  static $ChannelsTable _channelIdTable(_$Database db) =>
+      db.channels.createAlias(
+        $_aliasNameGenerator(db.playlists.channelId, db.channels.id),
+      );
 
   $$ChannelsTableProcessedTableManager get channelId {
     final $_column = $_itemColumn<String>('channel_id')!;
@@ -14458,7 +15414,9 @@ final class $$PlaylistsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_channelIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static MultiTypedResultKey<$PlaylistSnippetsTable, List<PlaylistSnippet>>
@@ -14473,8 +15431,12 @@ final class $$PlaylistsTableReferences
       $_db.playlistSnippets,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_playlistSnippetsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _playlistSnippetsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$PlaylistThumbnailsTable, List<PlaylistThumbnail>>
@@ -14489,30 +15451,49 @@ final class $$PlaylistsTableReferences
       $_db.playlistThumbnails,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_playlistThumbnailsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _playlistThumbnailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
-  static MultiTypedResultKey<$PlaylistContentDetailsTable, List<PlaylistContentDetail>>
-  _playlistContentDetailsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.playlistContentDetails,
-    aliasName: $_aliasNameGenerator(db.playlists.id, db.playlistContentDetails.id),
-  );
+  static MultiTypedResultKey<
+    $PlaylistContentDetailsTable,
+    List<PlaylistContentDetail>
+  >
+  _playlistContentDetailsRefsTable(_$Database db) =>
+      MultiTypedResultKey.fromTable(
+        db.playlistContentDetails,
+        aliasName: $_aliasNameGenerator(
+          db.playlists.id,
+          db.playlistContentDetails.id,
+        ),
+      );
 
-  $$PlaylistContentDetailsTableProcessedTableManager get playlistContentDetailsRefs {
+  $$PlaylistContentDetailsTableProcessedTableManager
+  get playlistContentDetailsRefs {
     final manager = $$PlaylistContentDetailsTableTableManager(
       $_db,
       $_db.playlistContentDetails,
     ).filter((f) => f.id.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_playlistContentDetailsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _playlistContentDetailsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 
   static MultiTypedResultKey<$PlaylistVsVideosTable, List<PlaylistVsVideo>>
   _playlistVsVideosRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.playlistVsVideos,
-    aliasName: $_aliasNameGenerator(db.playlists.id, db.playlistVsVideos.playlistId),
+    aliasName: $_aliasNameGenerator(
+      db.playlists.id,
+      db.playlistVsVideos.playlistId,
+    ),
   );
 
   $$PlaylistVsVideosTableProcessedTableManager get playlistVsVideosRefs {
@@ -14521,12 +15502,17 @@ final class $$PlaylistsTableReferences
       $_db.playlistVsVideos,
     ).filter((f) => f.playlistId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_playlistVsVideosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _playlistVsVideosRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
-class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTable> {
+class $$PlaylistsTableFilterComposer
+    extends Composer<_$Database, $PlaylistsTable> {
   $$PlaylistsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -14544,8 +15530,10 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnWithTypeConverterFilters<PlaylistType, PlaylistType, int> get type =>
       $composableBuilder(
@@ -14558,8 +15546,10 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get etag =>
-      $composableBuilder(column: $table.etag, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
 
   $$ChannelsTableFilterComposer get channelId {
     final $$ChannelsTableFilterComposer composer = $composerBuilder(
@@ -14577,7 +15567,8 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -14601,7 +15592,8 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
             $table: $db.playlistSnippets,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -14625,7 +15617,8 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
             $table: $db.playlistThumbnails,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -14634,24 +15627,26 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
   Expression<bool> playlistContentDetailsRefs(
     Expression<bool> Function($$PlaylistContentDetailsTableFilterComposer f) f,
   ) {
-    final $$PlaylistContentDetailsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.playlistContentDetails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$PlaylistContentDetailsTableFilterComposer(
-            $db: $db,
-            $table: $db.playlistContentDetails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$PlaylistContentDetailsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.playlistContentDetails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PlaylistContentDetailsTableFilterComposer(
+                $db: $db,
+                $table: $db.playlistContentDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -14673,14 +15668,16 @@ class $$PlaylistsTableFilterComposer extends Composer<_$Database, $PlaylistsTabl
             $table: $db.playlistVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
   }
 }
 
-class $$PlaylistsTableOrderingComposer extends Composer<_$Database, $PlaylistsTable> {
+class $$PlaylistsTableOrderingComposer
+    extends Composer<_$Database, $PlaylistsTable> {
   $$PlaylistsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -14698,8 +15695,10 @@ class $$PlaylistsTableOrderingComposer extends Composer<_$Database, $PlaylistsTa
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<int> get type => $composableBuilder(
     column: $table.type,
@@ -14732,14 +15731,16 @@ class $$PlaylistsTableOrderingComposer extends Composer<_$Database, $PlaylistsTa
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
   }
 }
 
-class $$PlaylistsTableAnnotationComposer extends Composer<_$Database, $PlaylistsTable> {
+class $$PlaylistsTableAnnotationComposer
+    extends Composer<_$Database, $PlaylistsTable> {
   $$PlaylistsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -14781,7 +15782,8 @@ class $$PlaylistsTableAnnotationComposer extends Composer<_$Database, $Playlists
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -14805,7 +15807,8 @@ class $$PlaylistsTableAnnotationComposer extends Composer<_$Database, $Playlists
             $table: $db.playlistSnippets,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -14814,48 +15817,52 @@ class $$PlaylistsTableAnnotationComposer extends Composer<_$Database, $Playlists
   Expression<T> playlistThumbnailsRefs<T extends Object>(
     Expression<T> Function($$PlaylistThumbnailsTableAnnotationComposer a) f,
   ) {
-    final $$PlaylistThumbnailsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.playlistThumbnails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$PlaylistThumbnailsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.playlistThumbnails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$PlaylistThumbnailsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.playlistThumbnails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PlaylistThumbnailsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.playlistThumbnails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
   Expression<T> playlistContentDetailsRefs<T extends Object>(
     Expression<T> Function($$PlaylistContentDetailsTableAnnotationComposer a) f,
   ) {
-    final $$PlaylistContentDetailsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.playlistContentDetails,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$PlaylistContentDetailsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.playlistContentDetails,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$PlaylistContentDetailsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.playlistContentDetails,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PlaylistContentDetailsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.playlistContentDetails,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 
@@ -14877,7 +15884,8 @@ class $$PlaylistsTableAnnotationComposer extends Composer<_$Database, $Playlists
             $table: $db.playlistVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -14957,7 +15965,12 @@ class $$PlaylistsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $$PlaylistsTableReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PlaylistsTableReferences(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback:
               ({
@@ -15018,13 +16031,15 @@ class $$PlaylistsTableTableManager
                           currentTable: table,
                           referencedTable: $$PlaylistsTableReferences
                               ._playlistSnippetsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$PlaylistsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).playlistSnippetsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistSnippetsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (playlistThumbnailsRefs)
@@ -15036,13 +16051,15 @@ class $$PlaylistsTableTableManager
                           currentTable: table,
                           referencedTable: $$PlaylistsTableReferences
                               ._playlistThumbnailsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$PlaylistsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).playlistThumbnailsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistThumbnailsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (playlistContentDetailsRefs)
@@ -15054,13 +16071,15 @@ class $$PlaylistsTableTableManager
                           currentTable: table,
                           referencedTable: $$PlaylistsTableReferences
                               ._playlistContentDetailsRefsTable(db),
-                          managerFromTypedResult: (p0) => $$PlaylistsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).playlistContentDetailsRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.id == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistContentDetailsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) =>
+                                  referencedItems.where((e) => e.id == item.id),
                           typedResults: items,
                         ),
                       if (playlistVsVideosRefs)
@@ -15072,13 +16091,16 @@ class $$PlaylistsTableTableManager
                           currentTable: table,
                           referencedTable: $$PlaylistsTableReferences
                               ._playlistVsVideosRefsTable(db),
-                          managerFromTypedResult: (p0) => $$PlaylistsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).playlistVsVideosRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.playlistId == item.id),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistVsVideosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.playlistId == item.id,
+                              ),
                           typedResults: items,
                         ),
                     ];
@@ -15133,8 +16155,13 @@ typedef $$PlaylistSnippetsTableUpdateCompanionBuilder =
     });
 
 final class $$PlaylistSnippetsTableReferences
-    extends BaseReferences<_$Database, $PlaylistSnippetsTable, PlaylistSnippet> {
-  $$PlaylistSnippetsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+    extends
+        BaseReferences<_$Database, $PlaylistSnippetsTable, PlaylistSnippet> {
+  $$PlaylistSnippetsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $PlaylistsTable _idTable(_$Database db) => db.playlists.createAlias(
     $_aliasNameGenerator(db.playlistSnippets.id, db.playlists.id),
@@ -15149,7 +16176,9 @@ final class $$PlaylistSnippetsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -15208,7 +16237,8 @@ class $$PlaylistSnippetsTableFilterComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15270,7 +16300,8 @@ class $$PlaylistSnippetsTableOrderingComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15292,17 +16323,23 @@ class $$PlaylistSnippetsTableAnnotationComposer
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get publishedAt =>
-      $composableBuilder(column: $table.publishedAt, builder: (column) => column);
+  GeneratedColumn<DateTime> get publishedAt => $composableBuilder(
+    column: $table.publishedAt,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
-  GeneratedColumn<String> get description =>
-      $composableBuilder(column: $table.description, builder: (column) => column);
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get channelTitle =>
-      $composableBuilder(column: $table.channelTitle, builder: (column) => column);
+  GeneratedColumn<String> get channelTitle => $composableBuilder(
+    column: $table.channelTitle,
+    builder: (column) => column,
+  );
 
   $$PlaylistsTableAnnotationComposer get id {
     final $$PlaylistsTableAnnotationComposer composer = $composerBuilder(
@@ -15320,7 +16357,8 @@ class $$PlaylistSnippetsTableAnnotationComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15342,8 +16380,10 @@ class $$PlaylistSnippetsTableTableManager
           PlaylistSnippet,
           PrefetchHooks Function({bool id})
         > {
-  $$PlaylistSnippetsTableTableManager(_$Database db, $PlaylistSnippetsTable table)
-    : super(
+  $$PlaylistSnippetsTableTableManager(
+    _$Database db,
+    $PlaylistSnippetsTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
@@ -15395,8 +16435,10 @@ class $$PlaylistSnippetsTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$PlaylistSnippetsTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$PlaylistSnippetsTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({id = false}) {
@@ -15424,11 +16466,14 @@ class $$PlaylistSnippetsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$PlaylistSnippetsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$PlaylistSnippetsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$PlaylistSnippetsTableReferences._idTable(
+                                      db,
+                                    ),
+                                referencedColumn:
+                                    $$PlaylistSnippetsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -15484,8 +16529,17 @@ typedef $$PlaylistThumbnailsTableUpdateCompanionBuilder =
     });
 
 final class $$PlaylistThumbnailsTableReferences
-    extends BaseReferences<_$Database, $PlaylistThumbnailsTable, PlaylistThumbnail> {
-  $$PlaylistThumbnailsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+    extends
+        BaseReferences<
+          _$Database,
+          $PlaylistThumbnailsTable,
+          PlaylistThumbnail
+        > {
+  $$PlaylistThumbnailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $PlaylistsTable _idTable(_$Database db) => db.playlists.createAlias(
     $_aliasNameGenerator(db.playlistThumbnails.id, db.playlists.id),
@@ -15500,7 +16554,9 @@ final class $$PlaylistThumbnailsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -15564,7 +16620,8 @@ class $$PlaylistThumbnailsTableFilterComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15631,7 +16688,8 @@ class $$PlaylistThumbnailsTableOrderingComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15653,8 +16711,10 @@ class $$PlaylistThumbnailsTableAnnotationComposer
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
-  GeneratedColumn<String> get defaultUrl =>
-      $composableBuilder(column: $table.defaultUrl, builder: (column) => column);
+  GeneratedColumn<String> get defaultUrl => $composableBuilder(
+    column: $table.defaultUrl,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get mediumUrl =>
       $composableBuilder(column: $table.mediumUrl, builder: (column) => column);
@@ -15662,8 +16722,10 @@ class $$PlaylistThumbnailsTableAnnotationComposer
   GeneratedColumn<String> get highUrl =>
       $composableBuilder(column: $table.highUrl, builder: (column) => column);
 
-  GeneratedColumn<String> get standardUrl =>
-      $composableBuilder(column: $table.standardUrl, builder: (column) => column);
+  GeneratedColumn<String> get standardUrl => $composableBuilder(
+    column: $table.standardUrl,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get maxresUrl =>
       $composableBuilder(column: $table.maxresUrl, builder: (column) => column);
@@ -15684,7 +16746,8 @@ class $$PlaylistThumbnailsTableAnnotationComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15706,8 +16769,10 @@ class $$PlaylistThumbnailsTableTableManager
           PlaylistThumbnail,
           PrefetchHooks Function({bool id})
         > {
-  $$PlaylistThumbnailsTableTableManager(_$Database db, $PlaylistThumbnailsTable table)
-    : super(
+  $$PlaylistThumbnailsTableTableManager(
+    _$Database db,
+    $PlaylistThumbnailsTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
@@ -15716,7 +16781,10 @@ class $$PlaylistThumbnailsTableTableManager
           createOrderingComposer: () =>
               $$PlaylistThumbnailsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$PlaylistThumbnailsTableAnnotationComposer($db: db, $table: table),
+              $$PlaylistThumbnailsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<DateTime> createdAt = const Value.absent(),
@@ -15794,11 +16862,13 @@ class $$PlaylistThumbnailsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$PlaylistThumbnailsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$PlaylistThumbnailsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$PlaylistThumbnailsTableReferences
+                                        ._idTable(db),
+                                referencedColumn:
+                                    $$PlaylistThumbnailsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -15847,8 +16917,16 @@ typedef $$PlaylistContentDetailsTableUpdateCompanionBuilder =
 
 final class $$PlaylistContentDetailsTableReferences
     extends
-        BaseReferences<_$Database, $PlaylistContentDetailsTable, PlaylistContentDetail> {
-  $$PlaylistContentDetailsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+        BaseReferences<
+          _$Database,
+          $PlaylistContentDetailsTable,
+          PlaylistContentDetail
+        > {
+  $$PlaylistContentDetailsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $PlaylistsTable _idTable(_$Database db) => db.playlists.createAlias(
     $_aliasNameGenerator(db.playlistContentDetails.id, db.playlists.id),
@@ -15863,7 +16941,9 @@ final class $$PlaylistContentDetailsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_idTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -15907,7 +16987,8 @@ class $$PlaylistContentDetailsTableFilterComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15954,7 +17035,8 @@ class $$PlaylistContentDetailsTableOrderingComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -15995,7 +17077,8 @@ class $$PlaylistContentDetailsTableAnnotationComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16025,11 +17108,20 @@ class $$PlaylistContentDetailsTableTableManager
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$PlaylistContentDetailsTableFilterComposer($db: db, $table: table),
+              $$PlaylistContentDetailsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
           createOrderingComposer: () =>
-              $$PlaylistContentDetailsTableOrderingComposer($db: db, $table: table),
+              $$PlaylistContentDetailsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
           createComputedFieldComposer: () =>
-              $$PlaylistContentDetailsTableAnnotationComposer($db: db, $table: table),
+              $$PlaylistContentDetailsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<DateTime> createdAt = const Value.absent(),
@@ -16091,11 +17183,13 @@ class $$PlaylistContentDetailsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.id,
-                                referencedTable: $$PlaylistContentDetailsTableReferences
-                                    ._idTable(db),
-                                referencedColumn: $$PlaylistContentDetailsTableReferences
-                                    ._idTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$PlaylistContentDetailsTableReferences
+                                        ._idTable(db),
+                                referencedColumn:
+                                    $$PlaylistContentDetailsTableReferences
+                                        ._idTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -16141,12 +17235,18 @@ typedef $$PlaylistVsVideosTableUpdateCompanionBuilder =
     });
 
 final class $$PlaylistVsVideosTableReferences
-    extends BaseReferences<_$Database, $PlaylistVsVideosTable, PlaylistVsVideo> {
-  $$PlaylistVsVideosTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $PlaylistsTable _playlistIdTable(_$Database db) => db.playlists.createAlias(
-    $_aliasNameGenerator(db.playlistVsVideos.playlistId, db.playlists.id),
+    extends
+        BaseReferences<_$Database, $PlaylistVsVideosTable, PlaylistVsVideo> {
+  $$PlaylistVsVideosTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
   );
+
+  static $PlaylistsTable _playlistIdTable(_$Database db) =>
+      db.playlists.createAlias(
+        $_aliasNameGenerator(db.playlistVsVideos.playlistId, db.playlists.id),
+      );
 
   $$PlaylistsTableProcessedTableManager get playlistId {
     final $_column = $_itemColumn<String>('playlist_id')!;
@@ -16157,7 +17257,9 @@ final class $$PlaylistVsVideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_playlistIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static $VideosTable _videoIdTable(_$Database db) => db.videos.createAlias(
@@ -16173,7 +17275,9 @@ final class $$PlaylistVsVideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_videoIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -16207,7 +17311,8 @@ class $$PlaylistVsVideosTableFilterComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16229,7 +17334,8 @@ class $$PlaylistVsVideosTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16266,7 +17372,8 @@ class $$PlaylistVsVideosTableOrderingComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16288,7 +17395,8 @@ class $$PlaylistVsVideosTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16323,7 +17431,8 @@ class $$PlaylistVsVideosTableAnnotationComposer
             $table: $db.playlists,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16345,7 +17454,8 @@ class $$PlaylistVsVideosTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16367,8 +17477,10 @@ class $$PlaylistVsVideosTableTableManager
           PlaylistVsVideo,
           PrefetchHooks Function({bool playlistId, bool videoId})
         > {
-  $$PlaylistVsVideosTableTableManager(_$Database db, $PlaylistVsVideosTable table)
-    : super(
+  $$PlaylistVsVideosTableTableManager(
+    _$Database db,
+    $PlaylistVsVideosTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
@@ -16404,8 +17516,10 @@ class $$PlaylistVsVideosTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$PlaylistVsVideosTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$PlaylistVsVideosTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({playlistId = false, videoId = false}) {
@@ -16433,11 +17547,13 @@ class $$PlaylistVsVideosTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.playlistId,
-                                referencedTable: $$PlaylistVsVideosTableReferences
-                                    ._playlistIdTable(db),
-                                referencedColumn: $$PlaylistVsVideosTableReferences
-                                    ._playlistIdTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$PlaylistVsVideosTableReferences
+                                        ._playlistIdTable(db),
+                                referencedColumn:
+                                    $$PlaylistVsVideosTableReferences
+                                        ._playlistIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -16446,11 +17562,13 @@ class $$PlaylistVsVideosTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.videoId,
-                                referencedTable: $$PlaylistVsVideosTableReferences
-                                    ._videoIdTable(db),
-                                referencedColumn: $$PlaylistVsVideosTableReferences
-                                    ._videoIdTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$PlaylistVsVideosTableReferences
+                                        ._videoIdTable(db),
+                                referencedColumn:
+                                    $$PlaylistVsVideosTableReferences
+                                        ._videoIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -16497,25 +17615,38 @@ typedef $$ChannelSearchesTableUpdateCompanionBuilder =
 
 final class $$ChannelSearchesTableReferences
     extends BaseReferences<_$Database, $ChannelSearchesTable, ChannelSearche> {
-  $$ChannelSearchesTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$ChannelSearchVsChannelsTable, List<ChannelSearchVsChannel>>
-  _channelSearchVsChannelsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
-    db.channelSearchVsChannels,
-    aliasName: $_aliasNameGenerator(
-      db.channelSearches.id,
-      db.channelSearchVsChannels.searchId,
-    ),
+  $$ChannelSearchesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
   );
 
-  $$ChannelSearchVsChannelsTableProcessedTableManager get channelSearchVsChannelsRefs {
+  static MultiTypedResultKey<
+    $ChannelSearchVsChannelsTable,
+    List<ChannelSearchVsChannel>
+  >
+  _channelSearchVsChannelsRefsTable(_$Database db) =>
+      MultiTypedResultKey.fromTable(
+        db.channelSearchVsChannels,
+        aliasName: $_aliasNameGenerator(
+          db.channelSearches.id,
+          db.channelSearchVsChannels.searchId,
+        ),
+      );
+
+  $$ChannelSearchVsChannelsTableProcessedTableManager
+  get channelSearchVsChannelsRefs {
     final manager = $$ChannelSearchVsChannelsTableTableManager(
       $_db,
       $_db.channelSearchVsChannels,
     ).filter((f) => f.searchId.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_channelSearchVsChannelsRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _channelSearchVsChannelsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
@@ -16538,8 +17669,10 @@ class $$ChannelSearchesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get query => $composableBuilder(
     column: $table.query,
@@ -16549,24 +17682,26 @@ class $$ChannelSearchesTableFilterComposer
   Expression<bool> channelSearchVsChannelsRefs(
     Expression<bool> Function($$ChannelSearchVsChannelsTableFilterComposer f) f,
   ) {
-    final $$ChannelSearchVsChannelsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelSearchVsChannels,
-      getReferencedColumn: (t) => t.searchId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelSearchVsChannelsTableFilterComposer(
-            $db: $db,
-            $table: $db.channelSearchVsChannels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelSearchVsChannelsTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelSearchVsChannels,
+          getReferencedColumn: (t) => t.searchId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelSearchVsChannelsTableFilterComposer(
+                $db: $db,
+                $table: $db.channelSearchVsChannels,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -16590,8 +17725,10 @@ class $$ChannelSearchesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get query => $composableBuilder(
     column: $table.query,
@@ -16621,26 +17758,29 @@ class $$ChannelSearchesTableAnnotationComposer
       $composableBuilder(column: $table.query, builder: (column) => column);
 
   Expression<T> channelSearchVsChannelsRefs<T extends Object>(
-    Expression<T> Function($$ChannelSearchVsChannelsTableAnnotationComposer a) f,
+    Expression<T> Function($$ChannelSearchVsChannelsTableAnnotationComposer a)
+    f,
   ) {
-    final $$ChannelSearchVsChannelsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.channelSearchVsChannels,
-      getReferencedColumn: (t) => t.searchId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ChannelSearchVsChannelsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.channelSearchVsChannels,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$ChannelSearchVsChannelsTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.channelSearchVsChannels,
+          getReferencedColumn: (t) => t.searchId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ChannelSearchVsChannelsTableAnnotationComposer(
+                $db: $db,
+                $table: $db.channelSearchVsChannels,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -16697,8 +17837,10 @@ class $$ChannelSearchesTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$ChannelSearchesTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$ChannelSearchesTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({channelSearchVsChannelsRefs = false}) {
@@ -16719,11 +17861,12 @@ class $$ChannelSearchesTableTableManager
                       currentTable: table,
                       referencedTable: $$ChannelSearchesTableReferences
                           ._channelSearchVsChannelsRefsTable(db),
-                      managerFromTypedResult: (p0) => $$ChannelSearchesTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).channelSearchVsChannelsRefs,
+                      managerFromTypedResult: (p0) =>
+                          $$ChannelSearchesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).channelSearchVsChannelsRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
                           referencedItems.where((e) => e.searchId == item.id),
                       typedResults: items,
@@ -16780,7 +17923,10 @@ final class $$ChannelSearchVsChannelsTableReferences
 
   static $ChannelSearchesTable _searchIdTable(_$Database db) =>
       db.channelSearches.createAlias(
-        $_aliasNameGenerator(db.channelSearchVsChannels.searchId, db.channelSearches.id),
+        $_aliasNameGenerator(
+          db.channelSearchVsChannels.searchId,
+          db.channelSearches.id,
+        ),
       );
 
   $$ChannelSearchesTableProcessedTableManager get searchId {
@@ -16792,12 +17938,18 @@ final class $$ChannelSearchVsChannelsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_searchIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
-  static $ChannelsTable _channelIdTable(_$Database db) => db.channels.createAlias(
-    $_aliasNameGenerator(db.channelSearchVsChannels.channelId, db.channels.id),
-  );
+  static $ChannelsTable _channelIdTable(_$Database db) =>
+      db.channels.createAlias(
+        $_aliasNameGenerator(
+          db.channelSearchVsChannels.channelId,
+          db.channels.id,
+        ),
+      );
 
   $$ChannelsTableProcessedTableManager get channelId {
     final $_column = $_itemColumn<String>('channel_id')!;
@@ -16808,7 +17960,9 @@ final class $$ChannelSearchVsChannelsTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_channelIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -16842,7 +17996,8 @@ class $$ChannelSearchVsChannelsTableFilterComposer
             $table: $db.channelSearches,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16864,7 +18019,8 @@ class $$ChannelSearchVsChannelsTableFilterComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16901,7 +18057,8 @@ class $$ChannelSearchVsChannelsTableOrderingComposer
             $table: $db.channelSearches,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16923,7 +18080,8 @@ class $$ChannelSearchVsChannelsTableOrderingComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16958,7 +18116,8 @@ class $$ChannelSearchVsChannelsTableAnnotationComposer
             $table: $db.channelSearches,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -16980,7 +18139,8 @@ class $$ChannelSearchVsChannelsTableAnnotationComposer
             $table: $db.channels,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17010,11 +18170,20 @@ class $$ChannelSearchVsChannelsTableTableManager
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$ChannelSearchVsChannelsTableFilterComposer($db: db, $table: table),
+              $$ChannelSearchVsChannelsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
           createOrderingComposer: () =>
-              $$ChannelSearchVsChannelsTableOrderingComposer($db: db, $table: table),
+              $$ChannelSearchVsChannelsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
           createComputedFieldComposer: () =>
-              $$ChannelSearchVsChannelsTableAnnotationComposer($db: db, $table: table),
+              $$ChannelSearchVsChannelsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<int> searchId = const Value.absent(),
@@ -17072,11 +18241,13 @@ class $$ChannelSearchVsChannelsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.searchId,
-                                referencedTable: $$ChannelSearchVsChannelsTableReferences
-                                    ._searchIdTable(db),
-                                referencedColumn: $$ChannelSearchVsChannelsTableReferences
-                                    ._searchIdTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelSearchVsChannelsTableReferences
+                                        ._searchIdTable(db),
+                                referencedColumn:
+                                    $$ChannelSearchVsChannelsTableReferences
+                                        ._searchIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -17085,11 +18256,13 @@ class $$ChannelSearchVsChannelsTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.channelId,
-                                referencedTable: $$ChannelSearchVsChannelsTableReferences
-                                    ._channelIdTable(db),
-                                referencedColumn: $$ChannelSearchVsChannelsTableReferences
-                                    ._channelIdTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$ChannelSearchVsChannelsTableReferences
+                                        ._channelIdTable(db),
+                                referencedColumn:
+                                    $$ChannelSearchVsChannelsTableReferences
+                                        ._channelIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -17136,12 +18309,22 @@ typedef $$VideoSearchesTableUpdateCompanionBuilder =
 
 final class $$VideoSearchesTableReferences
     extends BaseReferences<_$Database, $VideoSearchesTable, VideoSearche> {
-  $$VideoSearchesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$VideoSearchesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
-  static MultiTypedResultKey<$VideoSearchVsVideosTable, List<VideoSearchVsVideo>>
+  static MultiTypedResultKey<
+    $VideoSearchVsVideosTable,
+    List<VideoSearchVsVideo>
+  >
   _videoSearchVsVideosRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
     db.videoSearchVsVideos,
-    aliasName: $_aliasNameGenerator(db.videoSearches.id, db.videoSearchVsVideos.searchId),
+    aliasName: $_aliasNameGenerator(
+      db.videoSearches.id,
+      db.videoSearchVsVideos.searchId,
+    ),
   );
 
   $$VideoSearchVsVideosTableProcessedTableManager get videoSearchVsVideosRefs {
@@ -17150,8 +18333,12 @@ final class $$VideoSearchesTableReferences
       $_db.videoSearchVsVideos,
     ).filter((f) => f.searchId.id.sqlEquals($_itemColumn<int>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_videoSearchVsVideosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    final cache = $_typedResult.readTableOrNull(
+      _videoSearchVsVideosRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
@@ -17174,8 +18361,10 @@ class $$VideoSearchesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get query => $composableBuilder(
     column: $table.query,
@@ -17200,7 +18389,8 @@ class $$VideoSearchesTableFilterComposer
             $table: $db.videoSearchVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -17226,8 +18416,10 @@ class $$VideoSearchesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get query => $composableBuilder(
     column: $table.query,
@@ -17259,24 +18451,26 @@ class $$VideoSearchesTableAnnotationComposer
   Expression<T> videoSearchVsVideosRefs<T extends Object>(
     Expression<T> Function($$VideoSearchVsVideosTableAnnotationComposer a) f,
   ) {
-    final $$VideoSearchVsVideosTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.videoSearchVsVideos,
-      getReferencedColumn: (t) => t.searchId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VideoSearchVsVideosTableAnnotationComposer(
-            $db: $db,
-            $table: $db.videoSearchVsVideos,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
+    final $$VideoSearchVsVideosTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.videoSearchVsVideos,
+          getReferencedColumn: (t) => t.searchId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$VideoSearchVsVideosTableAnnotationComposer(
+                $db: $db,
+                $table: $db.videoSearchVsVideos,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -17333,7 +18527,10 @@ class $$VideoSearchesTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $$VideoSearchesTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$VideoSearchesTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({videoSearchVsVideosRefs = false}) {
@@ -17354,11 +18551,12 @@ class $$VideoSearchesTableTableManager
                       currentTable: table,
                       referencedTable: $$VideoSearchesTableReferences
                           ._videoSearchVsVideosRefsTable(db),
-                      managerFromTypedResult: (p0) => $$VideoSearchesTableReferences(
-                        db,
-                        table,
-                        p0,
-                      ).videoSearchVsVideosRefs,
+                      managerFromTypedResult: (p0) =>
+                          $$VideoSearchesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).videoSearchVsVideosRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
                           referencedItems.where((e) => e.searchId == item.id),
                       typedResults: items,
@@ -17401,12 +18599,24 @@ typedef $$VideoSearchVsVideosTableUpdateCompanionBuilder =
     });
 
 final class $$VideoSearchVsVideosTableReferences
-    extends BaseReferences<_$Database, $VideoSearchVsVideosTable, VideoSearchVsVideo> {
-  $$VideoSearchVsVideosTableReferences(super.$_db, super.$_table, super.$_typedResult);
+    extends
+        BaseReferences<
+          _$Database,
+          $VideoSearchVsVideosTable,
+          VideoSearchVsVideo
+        > {
+  $$VideoSearchVsVideosTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $VideoSearchesTable _searchIdTable(_$Database db) =>
       db.videoSearches.createAlias(
-        $_aliasNameGenerator(db.videoSearchVsVideos.searchId, db.videoSearches.id),
+        $_aliasNameGenerator(
+          db.videoSearchVsVideos.searchId,
+          db.videoSearches.id,
+        ),
       );
 
   $$VideoSearchesTableProcessedTableManager get searchId {
@@ -17418,7 +18628,9 @@ final class $$VideoSearchVsVideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_searchIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static $VideosTable _videoIdTable(_$Database db) => db.videos.createAlias(
@@ -17434,7 +18646,9 @@ final class $$VideoSearchVsVideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_videoIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -17468,7 +18682,8 @@ class $$VideoSearchVsVideosTableFilterComposer
             $table: $db.videoSearches,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17490,7 +18705,8 @@ class $$VideoSearchVsVideosTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17527,7 +18743,8 @@ class $$VideoSearchVsVideosTableOrderingComposer
             $table: $db.videoSearches,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17549,7 +18766,8 @@ class $$VideoSearchVsVideosTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17584,7 +18802,8 @@ class $$VideoSearchVsVideosTableAnnotationComposer
             $table: $db.videoSearches,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17606,7 +18825,8 @@ class $$VideoSearchVsVideosTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -17628,17 +18848,25 @@ class $$VideoSearchVsVideosTableTableManager
           VideoSearchVsVideo,
           PrefetchHooks Function({bool searchId, bool videoId})
         > {
-  $$VideoSearchVsVideosTableTableManager(_$Database db, $VideoSearchVsVideosTable table)
-    : super(
+  $$VideoSearchVsVideosTableTableManager(
+    _$Database db,
+    $VideoSearchVsVideosTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
               $$VideoSearchVsVideosTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$VideoSearchVsVideosTableOrderingComposer($db: db, $table: table),
+              $$VideoSearchVsVideosTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
           createComputedFieldComposer: () =>
-              $$VideoSearchVsVideosTableAnnotationComposer($db: db, $table: table),
+              $$VideoSearchVsVideosTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<int> searchId = const Value.absent(),
@@ -17696,11 +18924,13 @@ class $$VideoSearchVsVideosTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.searchId,
-                                referencedTable: $$VideoSearchVsVideosTableReferences
-                                    ._searchIdTable(db),
-                                referencedColumn: $$VideoSearchVsVideosTableReferences
-                                    ._searchIdTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$VideoSearchVsVideosTableReferences
+                                        ._searchIdTable(db),
+                                referencedColumn:
+                                    $$VideoSearchVsVideosTableReferences
+                                        ._searchIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -17709,11 +18939,13 @@ class $$VideoSearchVsVideosTableTableManager
                           state.withJoin(
                                 currentTable: table,
                                 currentColumn: table.videoId,
-                                referencedTable: $$VideoSearchVsVideosTableReferences
-                                    ._videoIdTable(db),
-                                referencedColumn: $$VideoSearchVsVideosTableReferences
-                                    ._videoIdTable(db)
-                                    .id,
+                                referencedTable:
+                                    $$VideoSearchVsVideosTableReferences
+                                        ._videoIdTable(db),
+                                referencedColumn:
+                                    $$VideoSearchVsVideosTableReferences
+                                        ._videoIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -17768,11 +19000,12 @@ final class $$CollectionsTableReferences
     extends BaseReferences<_$Database, $CollectionsTable, Collection> {
   $$CollectionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$SeriesTable, List<Sery>> _seriesRefsTable(_$Database db) =>
-      MultiTypedResultKey.fromTable(
-        db.series,
-        aliasName: $_aliasNameGenerator(db.collections.id, db.series.collectionId),
-      );
+  static MultiTypedResultKey<$SeriesTable, List<Sery>> _seriesRefsTable(
+    _$Database db,
+  ) => MultiTypedResultKey.fromTable(
+    db.series,
+    aliasName: $_aliasNameGenerator(db.collections.id, db.series.collectionId),
+  );
 
   $$SeriesTableProcessedTableManager get seriesRefs {
     final manager = $$SeriesTableTableManager(
@@ -17781,11 +19014,14 @@ final class $$CollectionsTableReferences
     ).filter((f) => f.collectionId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_seriesRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
-class $$CollectionsTableFilterComposer extends Composer<_$Database, $CollectionsTable> {
+class $$CollectionsTableFilterComposer
+    extends Composer<_$Database, $CollectionsTable> {
   $$CollectionsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -17803,8 +19039,10 @@ class $$CollectionsTableFilterComposer extends Composer<_$Database, $Collections
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<bool> get isSystem => $composableBuilder(
     column: $table.isSystem,
@@ -17816,8 +19054,10 @@ class $$CollectionsTableFilterComposer extends Composer<_$Database, $Collections
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
@@ -17842,14 +19082,16 @@ class $$CollectionsTableFilterComposer extends Composer<_$Database, $Collections
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
   }
 }
 
-class $$CollectionsTableOrderingComposer extends Composer<_$Database, $CollectionsTable> {
+class $$CollectionsTableOrderingComposer
+    extends Composer<_$Database, $CollectionsTable> {
   $$CollectionsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -17867,8 +19109,10 @@ class $$CollectionsTableOrderingComposer extends Composer<_$Database, $Collectio
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<bool> get isSystem => $composableBuilder(
     column: $table.isSystem,
@@ -17918,8 +19162,10 @@ class $$CollectionsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get description =>
-      $composableBuilder(column: $table.description, builder: (column) => column);
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
   Expression<T> seriesRefs<T extends Object>(
     Expression<T> Function($$SeriesTableAnnotationComposer a) f,
@@ -17939,7 +19185,8 @@ class $$CollectionsTableAnnotationComposer
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -18010,7 +19257,10 @@ class $$CollectionsTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $$CollectionsTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$CollectionsTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({seriesRefs = false}) {
@@ -18021,13 +19271,24 @@ class $$CollectionsTableTableManager
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (seriesRefs)
-                    await $_getPrefetchedData<Collection, $CollectionsTable, Sery>(
+                    await $_getPrefetchedData<
+                      Collection,
+                      $CollectionsTable,
+                      Sery
+                    >(
                       currentTable: table,
-                      referencedTable: $$CollectionsTableReferences._seriesRefsTable(db),
+                      referencedTable: $$CollectionsTableReferences
+                          ._seriesRefsTable(db),
                       managerFromTypedResult: (p0) =>
-                          $$CollectionsTableReferences(db, table, p0).seriesRefs,
+                          $$CollectionsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).seriesRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.collectionId == item.id),
+                          referencedItems.where(
+                            (e) => e.collectionId == item.id,
+                          ),
                       typedResults: items,
                     ),
                 ];
@@ -18083,8 +19344,10 @@ final class $$SeriesTableReferences
     extends BaseReferences<_$Database, $SeriesTable, Sery> {
   $$SeriesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $CollectionsTable _collectionIdTable(_$Database db) => db.collections
-      .createAlias($_aliasNameGenerator(db.series.collectionId, db.collections.id));
+  static $CollectionsTable _collectionIdTable(_$Database db) =>
+      db.collections.createAlias(
+        $_aliasNameGenerator(db.series.collectionId, db.collections.id),
+      );
 
   $$CollectionsTableProcessedTableManager get collectionId {
     final $_column = $_itemColumn<int>('collection_id')!;
@@ -18095,11 +19358,13 @@ final class $$SeriesTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_collectionIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
-  static $VideosTable _coverVideoIdTable(_$Database db) =>
-      db.videos.createAlias($_aliasNameGenerator(db.series.coverVideoId, db.videos.id));
+  static $VideosTable _coverVideoIdTable(_$Database db) => db.videos
+      .createAlias($_aliasNameGenerator(db.series.coverVideoId, db.videos.id));
 
   $$VideosTableProcessedTableManager get coverVideoId {
     final $_column = $_itemColumn<String>('cover_video_id')!;
@@ -18110,7 +19375,9 @@ final class $$SeriesTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_coverVideoIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static MultiTypedResultKey<$SeriesVsVideosTable, List<SeriesVsVideo>>
@@ -18126,7 +19393,9 @@ final class $$SeriesTableReferences
     ).filter((f) => f.seriesId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_seriesVsVideosRefsTable($_db));
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
   }
 }
 
@@ -18148,11 +19417,15 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
 
-  ColumnFilters<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
 
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
@@ -18190,7 +19463,8 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
             $table: $db.collections,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18212,7 +19486,8 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18236,7 +19511,8 @@ class $$SeriesTableFilterComposer extends Composer<_$Database, $SeriesTable> {
             $table: $db.seriesVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -18261,8 +19537,10 @@ class $$SeriesTableOrderingComposer extends Composer<_$Database, $SeriesTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
 
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
@@ -18305,7 +19583,8 @@ class $$SeriesTableOrderingComposer extends Composer<_$Database, $SeriesTable> {
             $table: $db.collections,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18327,14 +19606,16 @@ class $$SeriesTableOrderingComposer extends Composer<_$Database, $SeriesTable> {
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
   }
 }
 
-class $$SeriesTableAnnotationComposer extends Composer<_$Database, $SeriesTable> {
+class $$SeriesTableAnnotationComposer
+    extends Composer<_$Database, $SeriesTable> {
   $$SeriesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -18354,8 +19635,10 @@ class $$SeriesTableAnnotationComposer extends Composer<_$Database, $SeriesTable>
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get description =>
-      $composableBuilder(column: $table.description, builder: (column) => column);
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get dataPath =>
       $composableBuilder(column: $table.dataPath, builder: (column) => column);
@@ -18382,7 +19665,8 @@ class $$SeriesTableAnnotationComposer extends Composer<_$Database, $SeriesTable>
             $table: $db.collections,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18404,7 +19688,8 @@ class $$SeriesTableAnnotationComposer extends Composer<_$Database, $SeriesTable>
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18428,7 +19713,8 @@ class $$SeriesTableAnnotationComposer extends Composer<_$Database, $SeriesTable>
             $table: $db.seriesVsVideos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return f(composer);
@@ -18514,13 +19800,22 @@ class $$SeriesTableTableManager
                 priority: priority,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $$SeriesTableReferences(db, table, e)))
+              .map(
+                (e) =>
+                    (e.readTable(table), $$SeriesTableReferences(db, table, e)),
+              )
               .toList(),
           prefetchHooksCallback:
-              ({collectionId = false, coverVideoId = false, seriesVsVideosRefs = false}) {
+              ({
+                collectionId = false,
+                coverVideoId = false,
+                seriesVsVideosRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [if (seriesVsVideosRefs) db.seriesVsVideos],
+                  explicitlyWatchedTables: [
+                    if (seriesVsVideosRefs) db.seriesVsVideos,
+                  ],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -18569,14 +19864,24 @@ class $$SeriesTableTableManager
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (seriesVsVideosRefs)
-                        await $_getPrefetchedData<Sery, $SeriesTable, SeriesVsVideo>(
+                        await $_getPrefetchedData<
+                          Sery,
+                          $SeriesTable,
+                          SeriesVsVideo
+                        >(
                           currentTable: table,
                           referencedTable: $$SeriesTableReferences
                               ._seriesVsVideosRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$SeriesTableReferences(db, table, p0).seriesVsVideosRefs,
-                          referencedItemsForCurrentItem: (item, referencedItems) =>
-                              referencedItems.where((e) => e.seriesId == item.id),
+                              $$SeriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).seriesVsVideosRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.seriesId == item.id,
+                              ),
                           typedResults: items,
                         ),
                     ];
@@ -18622,7 +19927,11 @@ typedef $$SeriesVsVideosTableUpdateCompanionBuilder =
 
 final class $$SeriesVsVideosTableReferences
     extends BaseReferences<_$Database, $SeriesVsVideosTable, SeriesVsVideo> {
-  $$SeriesVsVideosTableReferences(super.$_db, super.$_table, super.$_typedResult);
+  $$SeriesVsVideosTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
 
   static $SeriesTable _seriesIdTable(_$Database db) => db.series.createAlias(
     $_aliasNameGenerator(db.seriesVsVideos.seriesId, db.series.id),
@@ -18637,7 +19946,9 @@ final class $$SeriesVsVideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_seriesIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 
   static $VideosTable _videoIdTable(_$Database db) => db.videos.createAlias(
@@ -18653,7 +19964,9 @@ final class $$SeriesVsVideosTableReferences
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_videoIdTable($_db));
     if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
   }
 }
 
@@ -18687,7 +20000,8 @@ class $$SeriesVsVideosTableFilterComposer
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18709,7 +20023,8 @@ class $$SeriesVsVideosTableFilterComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18746,7 +20061,8 @@ class $$SeriesVsVideosTableOrderingComposer
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18768,7 +20084,8 @@ class $$SeriesVsVideosTableOrderingComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18803,7 +20120,8 @@ class $$SeriesVsVideosTableAnnotationComposer
             $table: $db.series,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18825,7 +20143,8 @@ class $$SeriesVsVideosTableAnnotationComposer
             $table: $db.videos,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
           ),
     );
     return composer;
@@ -18884,8 +20203,10 @@ class $$SeriesVsVideosTableTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $$SeriesVsVideosTableReferences(db, table, e)),
+                (e) => (
+                  e.readTable(table),
+                  $$SeriesVsVideosTableReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback: ({seriesId = false, videoId = false}) {
@@ -18915,9 +20236,10 @@ class $$SeriesVsVideosTableTableManager
                                 currentColumn: table.seriesId,
                                 referencedTable: $$SeriesVsVideosTableReferences
                                     ._seriesIdTable(db),
-                                referencedColumn: $$SeriesVsVideosTableReferences
-                                    ._seriesIdTable(db)
-                                    .id,
+                                referencedColumn:
+                                    $$SeriesVsVideosTableReferences
+                                        ._seriesIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -18928,9 +20250,10 @@ class $$SeriesVsVideosTableTableManager
                                 currentColumn: table.videoId,
                                 referencedTable: $$SeriesVsVideosTableReferences
                                     ._videoIdTable(db),
-                                referencedColumn: $$SeriesVsVideosTableReferences
-                                    ._videoIdTable(db)
-                                    .id,
+                                referencedColumn:
+                                    $$SeriesVsVideosTableReferences
+                                        ._videoIdTable(db)
+                                        .id,
                               )
                               as T;
                     }
@@ -18976,7 +20299,8 @@ class $DatabaseManager {
       $$ChannelStatisticsTableTableManager(_db, _db.channelStatistics);
   $$ChannelStatusesTableTableManager get channelStatuses =>
       $$ChannelStatusesTableTableManager(_db, _db.channelStatuses);
-  $$VideosTableTableManager get videos => $$VideosTableTableManager(_db, _db.videos);
+  $$VideosTableTableManager get videos =>
+      $$VideosTableTableManager(_db, _db.videos);
   $$VideoSnippetsTableTableManager get videoSnippets =>
       $$VideoSnippetsTableTableManager(_db, _db.videoSnippets);
   $$VideoThumbnailsTableTableManager get videoThumbnails =>
@@ -18996,20 +20320,27 @@ class $DatabaseManager {
   $$PlaylistThumbnailsTableTableManager get playlistThumbnails =>
       $$PlaylistThumbnailsTableTableManager(_db, _db.playlistThumbnails);
   $$PlaylistContentDetailsTableTableManager get playlistContentDetails =>
-      $$PlaylistContentDetailsTableTableManager(_db, _db.playlistContentDetails);
+      $$PlaylistContentDetailsTableTableManager(
+        _db,
+        _db.playlistContentDetails,
+      );
   $$PlaylistVsVideosTableTableManager get playlistVsVideos =>
       $$PlaylistVsVideosTableTableManager(_db, _db.playlistVsVideos);
   $$ChannelSearchesTableTableManager get channelSearches =>
       $$ChannelSearchesTableTableManager(_db, _db.channelSearches);
   $$ChannelSearchVsChannelsTableTableManager get channelSearchVsChannels =>
-      $$ChannelSearchVsChannelsTableTableManager(_db, _db.channelSearchVsChannels);
+      $$ChannelSearchVsChannelsTableTableManager(
+        _db,
+        _db.channelSearchVsChannels,
+      );
   $$VideoSearchesTableTableManager get videoSearches =>
       $$VideoSearchesTableTableManager(_db, _db.videoSearches);
   $$VideoSearchVsVideosTableTableManager get videoSearchVsVideos =>
       $$VideoSearchVsVideosTableTableManager(_db, _db.videoSearchVsVideos);
   $$CollectionsTableTableManager get collections =>
       $$CollectionsTableTableManager(_db, _db.collections);
-  $$SeriesTableTableManager get series => $$SeriesTableTableManager(_db, _db.series);
+  $$SeriesTableTableManager get series =>
+      $$SeriesTableTableManager(_db, _db.series);
   $$SeriesVsVideosTableTableManager get seriesVsVideos =>
       $$SeriesVsVideosTableTableManager(_db, _db.seriesVsVideos);
 }

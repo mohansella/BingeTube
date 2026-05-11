@@ -13,4 +13,35 @@ mixin _$VideosDaoMixin on DatabaseAccessor<Database> {
   $VideoStatusesTable get videoStatuses => attachedDatabase.videoStatuses;
   $VideoStatisticsTable get videoStatistics => attachedDatabase.videoStatistics;
   $VideoProgressTable get videoProgress => attachedDatabase.videoProgress;
+  VideosDaoManager get managers => VideosDaoManager(this);
+}
+
+class VideosDaoManager {
+  final _$VideosDaoMixin _db;
+  VideosDaoManager(this._db);
+  $$ChannelsTableTableManager get channels =>
+      $$ChannelsTableTableManager(_db.attachedDatabase, _db.channels);
+  $$VideosTableTableManager get videos =>
+      $$VideosTableTableManager(_db.attachedDatabase, _db.videos);
+  $$VideoSnippetsTableTableManager get videoSnippets =>
+      $$VideoSnippetsTableTableManager(_db.attachedDatabase, _db.videoSnippets);
+  $$VideoThumbnailsTableTableManager get videoThumbnails =>
+      $$VideoThumbnailsTableTableManager(
+        _db.attachedDatabase,
+        _db.videoThumbnails,
+      );
+  $$VideoContentDetailsTableTableManager get videoContentDetails =>
+      $$VideoContentDetailsTableTableManager(
+        _db.attachedDatabase,
+        _db.videoContentDetails,
+      );
+  $$VideoStatusesTableTableManager get videoStatuses =>
+      $$VideoStatusesTableTableManager(_db.attachedDatabase, _db.videoStatuses);
+  $$VideoStatisticsTableTableManager get videoStatistics =>
+      $$VideoStatisticsTableTableManager(
+        _db.attachedDatabase,
+        _db.videoStatistics,
+      );
+  $$VideoProgressTableTableManager get videoProgress =>
+      $$VideoProgressTableTableManager(_db.attachedDatabase, _db.videoProgress);
 }
