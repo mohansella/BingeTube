@@ -31,7 +31,7 @@ class SingleVideoBingeController extends BaseBingeController {
     final videoModel = videoDao.getVideoModelById(videoId);
     return Stream.fromFuture(videoModel).map((m) {
       return BingeModel(
-        title: m.snippet.title,
+        title: m.formattedTitle,
         description: m.snippet.description,
         videos: [m],
       );

@@ -10,6 +10,7 @@ class VideoModel {
   final VideoStatistic statistics;
   final VideoProgressData progressData;
   final ChannelModel channel;
+  late String formattedTitle;
 
   VideoModel({
     required this.video,
@@ -20,13 +21,39 @@ class VideoModel {
     required this.statistics,
     required this.progressData,
     required this.channel,
-  });
+  }) {
+    formattedTitle = formatTitle();
+  }
 
   double get progressPercent {
     if (progressData.isFinished) {
       return 1;
     }
     return progressData.watchPosition / duration;
+  }
+
+  String formatTitle() {
+    final title = snippet.title;
+    String? parse(String pattern, String prefix, int pad) {
+      final match = RegExp(
+        pattern,
+        caseSensitive: false,
+        multiLine: true,
+      ).firstMatch(title);
+      final value = match?.group(1)?.padLeft(pad, '0');
+      return value != null ? '$prefix$value' : null;
+    }
+
+    final v = parse(r'\bvol(?:\.|umes?)\s*(\d{1,3})\b', 'V', 2);
+    final s = parse(r'\bs(?:easons?)?\s*(\d{1,3})\b', 'S', 2);
+    final e = parse(r'\be(?:pisodes?)?\s*(\d{1,3})\b', 'E', 3);
+
+    final allValue = [v, s, e].whereType<String>().join();
+    if (allValue.isEmpty) {
+      return title;
+    } else {
+      return '$allValue - $title';
+    }
   }
 
   int get duration {

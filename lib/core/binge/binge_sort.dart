@@ -39,7 +39,7 @@ abstract class BingeSort with _$BingeSort {
     int result;
     switch (sortType) {
       case .name:
-        result = left.snippet.title.compareTo(right.snippet.title);
+        result = left.formattedTitle.compareTo(right.formattedTitle);
         break;
       case .date:
         result = left.snippet.publishedAt.compareTo(right.snippet.publishedAt);

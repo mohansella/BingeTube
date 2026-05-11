@@ -269,7 +269,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 crossAxisAlignment: .start,
                 children: [
                   Text(
-                    video.snippet.title,
+                    video.formattedTitle,
                     maxLines: 2,
                     overflow: .ellipsis,
                     style: TextStyle(fontWeight: .w500),

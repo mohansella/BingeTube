@@ -166,7 +166,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
                     crossAxisAlignment: .start,
                     children: [
                       Text(
-                        _model?.snippet.title ?? '',
+                        _model?.formattedTitle ?? '',
                         style: theme.textTheme.bodyMedium?.copyWith(fontSize: w / 30),
                         maxLines: 1,
                         overflow: .ellipsis,
