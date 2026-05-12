@@ -512,19 +512,47 @@ class YoutubeApi {
       ApiKeyUtil.addQuota(ref, .updateVideo, 1);
     }
 
-    final jsonData = jsonResult.getOrThrow();
-    final items = jsonData['items'] as List;
+    try {
+      final jsonData = jsonResult.getOrThrow();
+      final items = jsonData['items'] as List;
 
-    final database = Database();
-    final videosDao = VideosDao(database);
+      final database = Database();
+      final videosDao = VideosDao(database);
+      final channelsDao = ChannelsDao(database);
 
-    for (final item in items) {
-      final setag = videosVsSETag[item['id']];
-      await videosDao.upsertVideoJsonData(item, setag: setag);
+      final channelIds = <String>{};
+      for (final item in items) {
+        final snippet = item['snippet'];
+        if (snippet != null && snippet['channelId'] != null) {
+          channelIds.add(snippet['channelId'] as String);
+        }
+      }
+
+      if (channelIds.isNotEmpty) {
+        final existingChannels = await channelsDao.getChannelsById(channelIds.toList());
+        final existingChannelIds = existingChannels.map((c) => c.id).toSet();
+        final missingChannelIds = channelIds.difference(existingChannelIds);
+
+        if (missingChannelIds.isNotEmpty) {
+          _logger.info('syncing ${missingChannelIds.length} missing channels');
+          final syncResult = await _forceSyncChannels(ref, missingChannelIds);
+          if (syncResult.isError()) {
+            return Failure(syncResult.exceptionOrNull()!);
+          }
+        }
+      }
+
+      for (final item in items) {
+        final setag = videosVsSETag[item['id']];
+        await videosDao.upsertVideoJsonData(item, setag: setag);
+      }
+
+      _logger.info('synchronized ${videosVsSETag.length}');
+      return Success(Unit);
+    } catch (e) {
+      _logger.severe('synchronization failure', [e]);
+      return Failure(Exception(e));
     }
-
-    _logger.info('synchronized ${videosVsSETag.length}');
-    return Success(Unit);
   }
 
   static Future<Result<void>> _forceSyncChannels(
