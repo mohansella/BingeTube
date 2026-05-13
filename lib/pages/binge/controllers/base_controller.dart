@@ -216,11 +216,7 @@ abstract class BaseBingeController implements BingeController {
       } else {
         filtered.sort((l, r) => sort.compareModels(l, r));
       }
-      filteredModel = BingeModel(
-        title: model.title,
-        description: model.description,
-        videos: filtered,
-      );
+      filteredModel = model.copyWith(videos: filtered);
       streamController.add(filteredModel!);
     }
   }

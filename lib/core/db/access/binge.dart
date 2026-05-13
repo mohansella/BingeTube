@@ -47,6 +47,11 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return result[0];
   }
 
+  Future<Collection> getCollection(int collectionId) async {
+    final query = select(collections)..where((c) => c.id.equals(collectionId));
+    return await query.getSingle();
+  }
+
   Future<Collection> createCollection({
     required String name,
     required String description,
@@ -209,7 +214,13 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       }
       final sery = result[0].readTable(series);
       final videos = result.map(videosDao.mapRowToModel).toList();
-      return BingeModel(title: sery.name, description: sery.description, videos: videos);
+      return BingeModel(
+        title: sery.name,
+        description: sery.description,
+        videos: videos,
+        priority: sery.priority,
+        collectionId: sery.collectionId,
+      );
     });
   }
 
@@ -274,6 +285,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     BingeModel model,
     VideoModel coverVideo,
   ) async {
+    final priority = model.priority ?? 1;
     return await transaction(() async {
       final deleteMap = delete(seriesVsVideos)..where((sv) => sv.seriesId.equals(seryId));
       await deleteMap.go();
@@ -285,7 +297,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
           coverVideoId: coverVideo.video.id,
           name: model.title,
           description: model.description,
-          priority: 0,
+          priority: priority,
           updatedAt: Value(DateTime.now()),
         ),
       );
@@ -297,6 +309,9 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
             priority: i + 1,
           ),
         );
+      }
+      if (model.priority == null) {
+        await shiftSery(seryId: seryId, collectionId: collection.id, priority: priority);
       }
       final query = select(series)..where((s) => s.id.equals(seryId));
       return await query.getSingle();

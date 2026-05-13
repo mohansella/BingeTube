@@ -1,11 +1,19 @@
 import 'package:bingetube/core/db/models/video_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BingeModel {
-  final String title;
-  final String description;
-  final List<VideoModel> videos;
+part '../../../generated/core/db/models/binge_model.freezed.dart';
 
-  BingeModel({required this.title, required this.description, required this.videos});
+@freezed
+abstract class BingeModel with _$BingeModel {
+  const BingeModel._();
+
+  const factory BingeModel({
+    required String title,
+    required String description,
+    required List<VideoModel> videos,
+    int? priority,
+    int? collectionId,
+  }) = _BingeModel;
 
   Map<String, dynamic> toJson() {
     return {

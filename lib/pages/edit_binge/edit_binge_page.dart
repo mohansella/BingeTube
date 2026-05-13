@@ -72,10 +72,10 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   void initAsync() async {
-    final (model, collection) = await (
-      _controller.stream.first,
-      _bingeDao.getDefaultCollection(),
-    ).wait;
+    final model = await _controller.stream.first;
+    final collection = model.collectionId == null
+        ? await _bingeDao.getDefaultCollection()
+        : await _bingeDao.getCollection(model.collectionId!);
     setState(() {
       _isLoading = false;
       _unfilteredModel = model;
@@ -486,8 +486,12 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     _isOrderModified = false;
     final sort = _controller.sort;
     List<VideoModel> sortedVideos;
-    if (sort.sortType == .system && sort.sortOrder == .desc) {
-      sortedVideos = [..._unfilteredModel.videos].reversed.toList();
+    if (sort.sortType == .system) {
+      if (sort.sortOrder == .asc) {
+        sortedVideos = [..._unfilteredModel.videos];
+      } else {
+        sortedVideos = [..._unfilteredModel.videos].reversed.toList();
+      }
     } else {
       sortedVideos = [..._unfilteredModel.videos]..sort(sort.compareModels);
     }
@@ -584,7 +588,13 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     final idVsVideos = Map.fromEntries(idVsVideoEntries);
     final videos = _sortOrder.map((id) => idVsVideos[id]!).toList();
     videos.removeWhere((v) => !_checkMarked.contains(v.video.id));
-    final newModel = BingeModel(title: title, description: description, videos: videos);
+    final newModel = BingeModel(
+      title: title,
+      description: description,
+      videos: videos,
+      collectionId: _collection.id,
+      priority: _unfilteredModel.priority,
+    );
 
     final actions = await _controller.supportedActions();
     if (actions.length == 1 && actions[0] == .add) {
