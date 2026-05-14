@@ -89,7 +89,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   Future<List<Collection>> getCollections({bool isSystem = false}) {
     final query = select(collections)
       ..where((c) => c.isSystem.equals(isSystem))
-      ..orderBy([(c) => OrderingTerm.asc(c.createdAt)]);
+      ..orderBy([(c) => OrderingTerm.desc(c.createdAt)]);
     return query.get();
   }
 

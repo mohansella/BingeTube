@@ -76,12 +76,14 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     final collection = model.collectionId == null
         ? await _bingeDao.getDefaultCollection()
         : await _bingeDao.getCollection(model.collectionId!);
-    setState(() {
-      _isLoading = false;
-      _unfilteredModel = model;
-      _collection = collection;
-      _resetOrder();
-    });
+    _isLoading = false;
+    _unfilteredModel = model;
+    _collection = collection;
+    _resetOrder();
+    for (var v in _unfilteredModel.videos) {
+      _check(v.video.id, true);
+    }
+    setState(() {});
   }
 
   @override
