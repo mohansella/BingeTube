@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "exportedAt": "2026-05-16T11:46:21.188382Z",
+  "collections": [
+    {
+      "name": "Default Collection",
+      "description": "Default collection created by system",
+      "series": []
+    },
+    {
+      "name": "Action",
+      "description": "",
+      "series": [
+        "action/wayne.binge",
+        "action/nightwing.binge",
+        "action/escape-the-night.binge",
+        "action/tom-clancys-the-division.binge",
+        "action/rush.binge",
+        "action/meta-runner.binge",
+        "action/animator-vs-animation.binge"
+      ]
+    },
+    {
+      "name": "Fun",
+      "description": "",
+      "series": [
+        "fun/tom-and-jerry.binge",
+        "fun/mr-bean.binge",
+        "fun/pingu.binge",
+        "fun/grizzy-lemmings.binge",
+        "fun/masha-bear.binge"
+      ]
+    },
+    {
+      "name": "Comedy",
+      "description": "",
+      "series": [
+        "comedy/key-and-peele.binge",
+        "comedy/weird-city.binge",
+        "comedy/liza-on-demand.binge",
+        "comedy/video-game-high-school.binge",
+        "comedy/carmilla.binge"
+      ]
+    },
+    {
+      "name": "SciFi",
+      "description": "",
+      "series": [
+        "scifi/impulse.binge",
+        "scifi/lifeline.binge",
+        "scifi/h-plus-full-episodes.binge",
+        "scifi/humans.binge",
+        "scifi/who-you-are.binge",
+        "scifi/atropa.binge"
+      ]
+    },
+    {
+      "name": "Horror",
+      "description": "",
+      "series": [
+        "horror/marble-hornets-full-series.binge",
+        "horror/murder-drones.binge",
+        "horror/the-backrooms.binge",
+        "horror/christopher-cox-short-films.binge",
+        "horror/lockdown.binge"
+      ]
+    },
+    {
+      "name": "Creativity",
+      "description": "",
+      "series": [
+        "creativity/design-fx.binge",
+        "creativity/abstract-the-art-of-design.binge",
+        "creativity/building-a-brand.binge",
+        "creativity/design-explained.binge",
+        "creativity/boss-keys.binge"
+      ]
+    },
+    {
+      "name": "Retro Tech",
+      "description": "",
+      "series": [
+        "retro-tech/retro-tech.binge",
+        "retro-tech/1983-the-computer-chronicles.binge",
+        "retro-tech/bbc-history-of-computers.binge",
+        "retro-tech/1987-connections-bbc.binge",
+        "retro-tech/the-secret-life-of-machines.binge",
+        "retro-tech/wings-discovery-channel.binge"
+      ]
+    },
+    {
+      "name": "Science & Tech",
+      "description": "",
+      "series": [
+        "science-tech/space-craft.binge",
+        "science-tech/the-age-of-ai.binge",
+        "science-tech/mind-field.binge",
+        "science-tech/the-basics.binge",
+        "science-tech/the-super-slow-show.binge"
+      ]
+    },
+    {
+      "name": "documentary",
+      "description": "",
+      "series": [
+        "documentary/our-planet.binge",
+        "documentary/babies.binge",
+        "documentary/spy-in-the-wild.binge",
+        "documentary/natures-greatest-talents.binge",
+        "documentary/microcosmos.binge"
+      ]
+    }
+  ]
+}

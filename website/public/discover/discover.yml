@@ -1,29 +1,79 @@
 collections:
-  - name: Sketch Comedy Universe
+  - name: Action & Adventure
     series:
-      - comedy/key_and_peele
-      - comedy/impractical_jokers
-  - name: Short Film Vault
+      - action/wayne
+      - action/animator-vs-animation
+      - action/meta-runner
+      - action/escape-the-night
+      - action/tom-clancys-the-division
+      - action/rush
+      - action/nightwing
+  - name: Sci-Fi Originals
     series:
-      - shortfilms/dust_scifi
-      - shortfilms/omeleto
-  - name: Toon Chaos Club
+      - scifi/impulse
+      - scifi/lifeline
+      - scifi/h-plus-full-episodes
+      - scifi/humans
+      - scifi/who-you-are
+      - scifi/atropa
+  - name: Horror & Mystery
     series:
-      - toon/grizzy_lemmings
-  - name: Curiosity Bites
+      - horror/murder-drones
+      - horror/the-backrooms
+      - horror/marble-hornets-full-series
+      - horror/lockdown
+      - horror/christopher-cox-short-films
+  - name: Comedy & Web Originals
     series:
-      - curious/kurzgesagt
-      - curious/veritasium
-      - curious/nilered
-      - curious/epic_spaceman
+      - comedy/key-and-peele
+      - comedy/video-game-high-school
+      - comedy/liza-on-demand
+      - comedy/weird-city
+      - comedy/carmilla
+  - name: Animation & Family
+    series:
+      - fun/grizzy-lemmings
+      - fun/tom-and-jerry
+      - fun/mr-bean
+      - fun/pingu
+      - fun/masha-bear
+  - name: Design & Creativity
+    series:
+      - creativity/abstract-the-art-of-design
+      - creativity/design-explained
+      - creativity/design-fx
+      - creativity/building-a-brand
+      - creativity/boss-keys
+  - name: Science & Technology
+    series:
+      - science-tech/mind-field
+      - science-tech/the-age-of-ai
+      - science-tech/space-craft
+      - science-tech/the-basics
+      - science-tech/the-super-slow-show
+  - name: Nature & Documentary
+    series:
+      - documentary/our-planet
+      - documentary/spy-in-the-wild
+      - documentary/babies
+      - documentary/natures-greatest-talents
+      - documentary/microcosmos
+  - name: Retro Tech & Machines
+    series:
+      - retro-tech/retro-tech
+      - retro-tech/the-secret-life-of-machines
+      - retro-tech/1983-the-computer-chronicles
+      - retro-tech/bbc-history-of-computers
+      - retro-tech/1987-connections-bbc
+      - retro-tech/wings-discovery-channel
 top_picks:
-  - comedy/key_and_peele
-  - curious/epic_spaceman
-  - toon/grizzy_lemmings
-  - shortfilms/dust_scifi
-  - shortfilms/omeleto
-  - curious/kurzgesagt
-  - curious/veritasium
-  - curious/nilered
-  - comedy/impractical_jokers
-  - shortfilms/omeleto
+  - action/wayne
+  - scifi/impulse
+  - horror/murder-drones
+  - comedy/key-and-peele
+  - documentary/our-planet
+  - science-tech/mind-field
+  - creativity/abstract-the-art-of-design
+  - fun/grizzy-lemmings
+  - retro-tech/retro-tech
+  - action/animator-vs-animation
