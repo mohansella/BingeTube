@@ -1,0 +1,96 @@
+---
+import Layout from "../../layout/layout.astro";
+import { getCollections, getCollectionUrl } from "../../lib/discover";
+
+const collections = getCollections();
+const totalSeries = collections.reduce((total, collection) => total + collection.series.length, 0);
+const totalVideos = collections.reduce((total, collection) => total + collection.totalVideos, 0);
+
+const title = "BingeTube Collections: Curated YouTube Series by Theme";
+const description =
+  "Browse BingeTube collections across action, sci-fi, comedy, animation, design, science, documentary, and retro tech.";
+const collectionsUrl = new URL("/collections/", Astro.site ?? Astro.url);
+const schemaJson = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "BingeTube Collections",
+  description,
+  url: collectionsUrl.href,
+  mainEntity: {
+    "@type": "ItemList",
+    numberOfItems: collections.length,
+    itemListElement: collections.map((collection, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: collection.name,
+      url: new URL(getCollectionUrl(collection), Astro.site ?? Astro.url).href,
+    })),
+  },
+};
+---
+
+<Layout
+  title={title}
+  description={description}
+  canonicalURL={collectionsUrl.href}
+  image="/discover/poster.jpg"
+  schemaJson={schemaJson}
+>
+  <section class="border-b border-slate-800 bg-slate-950/60">
+    <div class="mx-auto max-w-7xl px-6 py-14 sm:py-20">
+      <p class="text-sm font-semibold uppercase tracking-[0.25em] text-[#FF4444]">
+        Curated Directory
+      </p>
+      <h1 class="mt-4 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
+        Browse by Collection
+      </h1>
+      <p class="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
+        Explore {collections.length} hand-organized collections with {totalSeries} YouTube series
+        and {totalVideos.toLocaleString()} videos, grouped by the kind of watching mood they serve.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-7xl px-6 py-12 sm:py-16">
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      {collections.map((collection) => {
+        const hero = collection.series[0];
+        return (
+          <a
+            href={getCollectionUrl(collection)}
+            class="group overflow-hidden rounded-xl border border-slate-800 bg-slate-950 transition hover:-translate-y-1 hover:border-[#E61819]/60 hover:bg-slate-900"
+          >
+            <div class="relative aspect-video overflow-hidden bg-slate-900">
+              <img
+                src={hero.coverUrl}
+                alt=""
+                class="h-full w-full object-cover opacity-80 transition duration-300 group-hover:scale-105 group-hover:opacity-100"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <h2 class="text-2xl font-bold text-white">{collection.name}</h2>
+                <p class="mt-1 text-sm text-slate-300">
+                  {collection.series.length} series · {collection.totalVideos.toLocaleString()} videos
+                </p>
+              </div>
+            </div>
+            <div class="p-5">
+              <p class="line-clamp-3 text-sm leading-6 text-slate-400">
+                {collection.description}
+              </p>
+              <div class="mt-5 flex -space-x-2">
+                {collection.series.slice(0, 5).map((item) => (
+                  <img
+                    src={item.iconUrl}
+                    alt=""
+                    class="h-8 w-8 rounded-full border border-slate-950 object-cover"
+                  />
+                ))}
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</Layout>

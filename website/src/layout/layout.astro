@@ -8,17 +8,22 @@ interface Props {
   title: string;
   description: string;
   canonicalURL?: string;
+  image?: string;
+  schemaJson?: Record<string, unknown>;
 }
 
 const { 
   title, 
   description, 
-  canonicalURL = Astro.url.href 
+  canonicalURL = Astro.url.href,
+  image,
+  schemaJson,
 } = Astro.props;
 
 const isProd = !import.meta.env.DEV;
 const appUrl = SiteContants.APP_URL;
 const githubUrl = "https://github.com/mohansella/BingeTube";
+const absoluteImage = image ? new URL(image, Astro.site ?? Astro.url).href : undefined;
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -38,11 +43,17 @@ const githubUrl = "https://github.com/mohansella/BingeTube";
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    {absoluteImage && <meta property="og:image" content={absoluteImage} />}
 
-    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:card" content={absoluteImage ? "summary_large_image" : "summary"} />
     <meta property="twitter:url" content={Astro.url.href} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
+    {absoluteImage && <meta property="twitter:image" content={absoluteImage} />}
+
+    {schemaJson && (
+      <script type="application/ld+json" set:html={JSON.stringify(schemaJson)} />
+    )}
 
     {isProd && <Analytics />}
   </head>
