@@ -1,3 +1,4 @@
+import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
@@ -167,6 +168,7 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
       _isValidQuery = true;
     });
 
+    Analytics.logSearchVideos();
     SearchVideoWidget._logger.info('Initiating video search for query: $query');
     final videosResult = await YoutubeApi.searchVideos(ref, query);
     final model = videosResult.fold((v) => v, (e) => null);

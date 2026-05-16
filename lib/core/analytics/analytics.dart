@@ -73,18 +73,30 @@ sealed class Analytics {
   }
 
   static Future<void> logVideoStarted() async {
-    await logEvent('watch_started');
+    await _logEvent('watch_started');
   }
 
   static Future<void> logVideoWatched() async {
-    await logEvent('watch_completed');
+    await _logEvent('watch_completed');
   }
 
   static Future<void> logBingeDownload(String bingePath) async {
-    await logEvent('binge_download', parameters: {'binge_path': bingePath});
+    await _logEvent('binge_download', parameters: {'binge_path': bingePath});
   }
 
-  static Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
+  static Future<void> logSearchPlaylists() async {
+    await _logEvent('search_playlists');
+  }
+
+  static Future<void> logSearchChannels() async {
+    await _logEvent('search_channels');
+  }
+
+  static Future<void> logSearchVideos() async {
+    await _logEvent('search_videos');
+  }
+
+  static Future<void> _logEvent(String name, {Map<String, Object>? parameters}) async {
     if (!_isEnabled) return;
     _logger.info('event: $name');
     await FirebaseAnalytics.instance.logEvent(name: name, parameters: parameters);

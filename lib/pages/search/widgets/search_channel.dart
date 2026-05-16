@@ -1,3 +1,4 @@
+import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/log/log_manager.dart';
@@ -112,7 +113,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
         _isLoaded = false;
         _model = null;
       });
-      processRequest(widget.query);
+      _processRequest(widget.query);
     }
   }
 
@@ -126,10 +127,10 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
   void initState() {
     super.initState();
     _scrollController.addListener(() => widget.scrollListener(_scrollController));
-    processRequest(widget.query);
+    _processRequest(widget.query);
   }
 
-  void processRequest(String? query) async {
+  void _processRequest(String? query) async {
     if (query == null) {
       return;
     }
@@ -138,6 +139,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
       _isValidQuery = true;
     });
 
+    Analytics.logSearchChannels();
     SearchChannelWidget._logger.info('Initiating channel search for query: $query');
     final channelsResult = await YoutubeApi.searchChannels(ref, query);
     if (query == widget.query) {
