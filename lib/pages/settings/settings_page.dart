@@ -20,9 +20,13 @@ class SettingsPage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                _buildSectionHeader(context, 'Preferences'),
                 _buildTheme(context, ref),
                 _buildFontSize(context, ref),
                 _buildPlayerType(context, ref),
+                const Divider(height: 32),
+                _buildSectionHeader(context, 'Library data'),
+                _buildDataActions(context),
                 _buildVersionInfo(),
               ],
             ),
@@ -48,6 +52,13 @@ class SettingsPage extends ConsumerWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Text(title, style: Theme.of(context).textTheme.titleSmall),
     );
   }
 
@@ -137,6 +148,31 @@ class SettingsPage extends ConsumerWidget {
               ref.read(ConfigProviders.playerType.notifier).save(s.first);
             },
             showSelectedIcon: false,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDataActions(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.file_upload_outlined),
+              label: const Text('Import library'),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: FilledButton.icon(
+              onPressed: () {},
+              icon: const Icon(Icons.file_download_outlined),
+              label: const Text('Export library'),
+            ),
           ),
         ],
       ),
