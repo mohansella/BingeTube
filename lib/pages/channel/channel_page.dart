@@ -63,6 +63,8 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   bool _isFetchInProgress = false;
   late int _fetchCount;
   late int _fetchTotal;
+
+  String _searchQuery = '';
   double get _progress {
     if (_fetchTotal == 0) return 0;
     return (_fetchCount / _fetchTotal).clamp(0.0, 1.0);
@@ -92,7 +94,7 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: .stretch,
-            children: [_buildChannelInfo(), ..._buildProgress(), _buildPlaylistStream()],
+            children: [_buildChannelInfo(), ..._buildProgress(), _buildSearchField(), _buildPlaylistStream()],
           ),
         ),
       ),
@@ -115,6 +117,30 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     ];
   }
 
+  Widget _buildSearchField() {
+    if (_isFetchInProgress) {
+      return const SizedBox(height: 8);
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 2.0),
+      child: SizedBox(
+        height: 40,
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            suffixIcon: const Icon(Icons.search),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onChanged: (value) => setState(() => _searchQuery = value.trim()),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlaylistStream() {
     return Align(
       alignment: .center,
@@ -132,13 +158,25 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
           if (data.likes != null) {
             list = [data.likes!, ...list];
           }
+          final fullList = list;
 
-          _triggerSyncIfNeeded(list);
+          final query = _searchQuery.toLowerCase();
+          if (query.isNotEmpty) {
+            list = list.where((playlist) {
+              final title = playlist.snippet.title.toLowerCase();
+              final description = playlist.snippet.description.toLowerCase();
+              return title.contains(query) || description.contains(query);
+            }).toList();
+          }
+
+          _triggerSyncIfNeeded(fullList);
 
           if (list.isEmpty && !_isFetchInProgress) {
             return Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text('No playlist available'),
+              child: Text(
+                _searchQuery.isEmpty ? 'No playlist available' : 'No playlist match "$_searchQuery"',
+              ),
             );
           }
           return _buildPlaylistRaw(list);
