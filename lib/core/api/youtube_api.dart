@@ -289,7 +289,7 @@ class YoutubeApi {
       }
       final jsonData = jsonResult.getOrThrow();
       final items = jsonData['items'] as List;
-      uploadItem = items[0];
+      uploadItem = items.isEmpty ? null : items[0];
     }
 
     final likesId = channel.contentDetails.likesPlaylist;
