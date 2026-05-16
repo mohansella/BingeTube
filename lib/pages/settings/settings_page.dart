@@ -163,7 +163,7 @@ class SettingsPage extends ConsumerWidget {
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () => _onImportLibrary(context),
               icon: const Icon(Icons.file_upload_outlined),
               label: const Text('Import library'),
             ),
@@ -179,6 +179,47 @@ class SettingsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onImportLibrary(BuildContext context) async {
+    final directoryPath = await LibraryPort.pickImportDirectory();
+    if (directoryPath == null) {
+      return;
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+
+    final confirm = await CustomDialog.show(
+      context,
+      'Import library?',
+      'Import',
+      const Text('This will add exported collections and series to your library.'),
+      cancelText: 'Cancel',
+    );
+    if (!confirm) {
+      return;
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+
+    try {
+      final importPath = await _showImportProgress(context, directoryPath);
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Library imported from $importPath')));
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      CustomDialog.show(context, 'Import failed', 'Okay', Text('$error'));
+    }
   }
 
   Future<void> _onExportLibrary(BuildContext context) async {
@@ -204,6 +245,72 @@ class SettingsPage extends ConsumerWidget {
         return;
       }
       CustomDialog.show(context, 'Export failed', 'Okay', Text('$error'));
+    }
+  }
+
+  Future<String> _showImportProgress(BuildContext context, String directoryPath) async {
+    final progressNotifier = ValueNotifier(
+      const LibraryImportProgress(imported: 0, total: 1, label: 'Reading library index'),
+    );
+    final importFuture = LibraryPort.importAllFromDirectory(
+      directoryPath,
+      onProgress: (progress) {
+        progressNotifier.value = progress;
+      },
+    );
+
+    try {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          return FutureBuilder(
+            future: importFuture,
+            builder: (futureContext, snapshot) {
+              if ((snapshot.hasData || snapshot.hasError) && futureContext.mounted) {
+                Future.microtask(() {
+                  if (futureContext.mounted) {
+                    Navigator.of(futureContext).pop();
+                  }
+                });
+              }
+
+              return AlertDialog(
+                title: const Text('Importing library'),
+                content: ValueListenableBuilder(
+                  valueListenable: progressNotifier,
+                  builder: (_, progress, _) {
+                    final hasSeries = progress.total > 0;
+                    final progressValue = hasSeries
+                        ? progress.imported / progress.total
+                        : null;
+                    final progressText = hasSeries
+                        ? '${progress.imported}/${progress.total} imported'
+                        : 'No series to import';
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(progressText),
+                        const SizedBox(height: 8),
+                        LinearProgressIndicator(value: progressValue),
+                        if (progress.label.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(progress.label),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      );
+      return await importFuture;
+    } finally {
+      progressNotifier.dispose();
     }
   }
 
