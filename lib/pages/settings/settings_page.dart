@@ -1,6 +1,8 @@
+import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/config/font_size.dart';
 import 'package:bingetube/core/config/player_type.dart';
+import 'package:bingetube/core/db/port/library_port.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -169,7 +171,7 @@ class SettingsPage extends ConsumerWidget {
           const SizedBox(width: 12),
           Expanded(
             child: FilledButton.icon(
-              onPressed: () {},
+              onPressed: () => _onExportLibrary(context),
               icon: const Icon(Icons.file_download_outlined),
               label: const Text('Export library'),
             ),
@@ -177,6 +179,102 @@ class SettingsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onExportLibrary(BuildContext context) async {
+    final directoryPath = await LibraryPort.pickExportDirectory();
+    if (directoryPath == null) {
+      return;
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+
+    try {
+      final exportPath = await _showExportProgress(context, directoryPath);
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Library exported to $exportPath')));
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      CustomDialog.show(context, 'Export failed', 'Okay', Text('$error'));
+    }
+  }
+
+  Future<String> _showExportProgress(BuildContext context, String directoryPath) async {
+    final progressNotifier = ValueNotifier(
+      const LibraryExportProgress(
+        exported: 0,
+        total: 1,
+        label: 'Preparing library export',
+      ),
+    );
+    final exportFuture = LibraryPort.exportAllToDirectory(
+      directoryPath,
+      onProgress: (progress) {
+        progressNotifier.value = progress;
+      },
+    );
+
+    try {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          return FutureBuilder(
+            future: exportFuture,
+            builder: (futureContext, snapshot) {
+              if ((snapshot.hasData || snapshot.hasError) && futureContext.mounted) {
+                Future.microtask(() {
+                  if (futureContext.mounted) {
+                    Navigator.of(futureContext).pop();
+                  }
+                });
+              }
+
+              return AlertDialog(
+                title: const Text('Exporting library'),
+                content: ValueListenableBuilder(
+                  valueListenable: progressNotifier,
+                  builder: (_, progress, _) {
+                    final hasSeries = progress.total > 0;
+                    final progressValue = hasSeries
+                        ? progress.exported / progress.total
+                        : null;
+                    final progressText = hasSeries
+                        ? '${progress.exported}/${progress.total} exported'
+                        : 'No series to export';
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(progressText),
+                        const SizedBox(height: 8),
+                        LinearProgressIndicator(value: progressValue),
+                        if (progress.label.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(progress.label),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        },
+      );
+      return await exportFuture;
+    } finally {
+      progressNotifier.dispose();
+    }
   }
 
   static PageGoRoute goRoute() {

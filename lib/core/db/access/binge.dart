@@ -93,6 +93,20 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     return query.get();
   }
 
+  Future<List<Collection>> getCollectionsByPriority({bool isSystem = false}) {
+    final query = select(collections)
+      ..where((c) => c.isSystem.equals(isSystem))
+      ..orderBy([(c) => OrderingTerm.asc(c.priority)]);
+    return query.get();
+  }
+
+  Future<List<Sery>> getSeriesForCollection(int collectionId) {
+    final query = select(series)
+      ..where((s) => s.collectionId.equals(collectionId))
+      ..orderBy([(s) => OrderingTerm.asc(s.priority)]);
+    return query.get();
+  }
+
   Stream<List<CollectionModel>> streamCollectionModels({bool isSystem = false}) {
     final colTotalCount = countAll();
     final colCompleteCount = countAll(filter: videoProgress.isFinished.equals(true));
