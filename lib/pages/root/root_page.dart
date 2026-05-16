@@ -43,11 +43,11 @@ class RootPageState extends State<RootPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
-            label: Pages.profile.text,
+            label: Pages.settings.text,
           ),
         ],
         onTap: (index) {
-          List<Pages> navPages = [Pages.discover, Pages.library, Pages.profile];
+          List<Pages> navPages = [Pages.discover, Pages.library, Pages.settings];
           context.goNamed(navPages[index].name);
           setState(() {
             _bottomNavBarIndex = index;

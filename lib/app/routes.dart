@@ -12,7 +12,7 @@ import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/root/root_page.dart';
 import 'package:bingetube/pages/discover/discover_page.dart';
 import 'package:bingetube/pages/library/library_page.dart';
-import 'package:bingetube/pages/profile/profile_page.dart';
+import 'package:bingetube/pages/settings/settings_page.dart';
 import 'package:flutter/services.dart';
 
 import 'package:go_router/go_router.dart';
@@ -74,7 +74,7 @@ class Routes {
       routes: [
         SplashPage.goRoute(),
         RootPage.goRoute(
-          routes: [DiscoverPage.goRoute(), LibraryPage.goRoute(), ProfilePage.goRoute()],
+          routes: [DiscoverPage.goRoute(), LibraryPage.goRoute(), SettingsPage.goRoute()],
         ),
         ConfigKeyPage.goRoute(),
         SearchPage.goRoute(),

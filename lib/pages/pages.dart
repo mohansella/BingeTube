@@ -3,7 +3,7 @@ enum Pages {
 
   discover('/discover', 'Discover'),
   library('/library', 'Library'),
-  profile('/profile', 'Profile'),
+  settings('/settings', 'settings'),
 
   keyConfig('/keyconfig', 'Key Config'),
   search('/search', 'Search'),
