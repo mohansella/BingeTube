@@ -96,10 +96,16 @@ sealed class LibraryPort {
     return filePath;
   }
 
-  static Future<String> importAll(
+  static Future<String?> importAll(
     LibraryImportArchive archive, {
     void Function(LibraryImportProgress progress)? onProgress,
+    bool Function()? isCancelled,
   }) async {
+    if (_isCancelled(isCancelled)) {
+      _logger.info('library archive import cancelled');
+      return null;
+    }
+
     final decodedArchive = ZipDecoder().decodeBytes(archive.bytes);
     final masterFile = decodedArchive.findFile(masterFileName);
     if (masterFile == null) {
@@ -107,14 +113,24 @@ sealed class LibraryPort {
     }
 
     final manifest = _readManifestContent(utf8.decode(masterFile.content));
+    if (_isCancelled(isCancelled)) {
+      _logger.info('library archive import cancelled');
+      return null;
+    }
+
     _validateArchiveManifestFiles(decodedArchive, manifest);
-    await _importManifest(
+    final didComplete = await _importManifest(
       manifest,
       onProgress: onProgress,
+      isCancelled: isCancelled,
       readSeriesBytes: (seriesPath) async {
         return _resolveManifestArchiveFile(decodedArchive, seriesPath).content;
       },
     );
+    if (!didComplete || _isCancelled(isCancelled)) {
+      _logger.info('library archive import cancelled');
+      return null;
+    }
 
     _logger.info('imported library from archive ${archive.label}');
     return archive.label;
@@ -266,9 +282,10 @@ sealed class LibraryPort {
     return collections;
   }
 
-  static Future<void> _importManifest(
+  static Future<bool> _importManifest(
     List<_LibraryCollectionManifest> manifest, {
     void Function(LibraryImportProgress progress)? onProgress,
+    bool Function()? isCancelled,
     required Future<Uint8List> Function(String seriesPath) readSeriesBytes,
   }) async {
     final totalSeries = manifest.fold<int>(
@@ -285,36 +302,82 @@ sealed class LibraryPort {
       ),
     );
 
+    if (_isCancelled(isCancelled)) {
+      return false;
+    }
+
     final bingeDao = BingeDao(Database());
     final existingCollections = await bingeDao.getCollectionsByPriority(isSystem: false);
+    if (_isCancelled(isCancelled)) {
+      return false;
+    }
+
+    final createdCollectionIds = <int>[];
     var collectionPriority = existingCollections.fold<int>(
       0,
       (maxPriority, collection) =>
           collection.priority > maxPriority ? collection.priority : maxPriority,
     );
 
-    for (final manifestCollection in manifest) {
-      final collection = await bingeDao.createCollection(
-        name: manifestCollection.name,
-        description: manifestCollection.description,
-        isSystem: false,
-        priority: ++collectionPriority,
-      );
-
-      var seriesPriority = 0;
-      for (final seriesPath in manifestCollection.seriesPaths) {
-        final data = await readSeriesBytes(seriesPath);
-        final sery = await SeryPort.import(
-          data,
-          collectionId: collection.id,
-          priority: ++seriesPriority,
+    try {
+      for (final manifestCollection in manifest) {
+        if (_isCancelled(isCancelled)) {
+          await _deleteImportedCollections(bingeDao, createdCollectionIds);
+          return false;
+        }
+        final collection = await bingeDao.createCollection(
+          name: manifestCollection.name,
+          description: manifestCollection.description,
+          isSystem: false,
+          priority: ++collectionPriority,
         );
+        createdCollectionIds.add(collection.id);
 
-        imported++;
-        onProgress?.call(
-          LibraryImportProgress(imported: imported, total: totalSeries, label: sery.name),
-        );
+        var seriesPriority = 0;
+        for (final seriesPath in manifestCollection.seriesPaths) {
+          if (_isCancelled(isCancelled)) {
+            await _deleteImportedCollections(bingeDao, createdCollectionIds);
+            return false;
+          }
+          final data = await readSeriesBytes(seriesPath);
+          if (_isCancelled(isCancelled)) {
+            await _deleteImportedCollections(bingeDao, createdCollectionIds);
+            return false;
+          }
+          final sery = await SeryPort.import(
+            data,
+            collectionId: collection.id,
+            priority: ++seriesPriority,
+          );
+
+          imported++;
+          onProgress?.call(
+            LibraryImportProgress(
+              imported: imported,
+              total: totalSeries,
+              label: sery.name,
+            ),
+          );
+          if (_isCancelled(isCancelled)) {
+            await _deleteImportedCollections(bingeDao, createdCollectionIds);
+            return false;
+          }
+        }
       }
+    } catch (_) {
+      await _deleteImportedCollections(bingeDao, createdCollectionIds);
+      rethrow;
+    }
+
+    return true;
+  }
+
+  static Future<void> _deleteImportedCollections(
+    BingeDao bingeDao,
+    List<int> collectionIds,
+  ) async {
+    for (final collectionId in collectionIds.reversed) {
+      await bingeDao.deleteCollection(collectionId);
     }
   }
 

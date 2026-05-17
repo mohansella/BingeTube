@@ -208,6 +208,9 @@ class SettingsPage extends ConsumerWidget {
 
     try {
       final importLabel = await _showImportProgress(context, archive);
+      if (importLabel == null) {
+        return;
+      }
       if (!context.mounted) {
         return;
       }
@@ -246,18 +249,20 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
-  Future<String> _showImportProgress(
+  Future<String?> _showImportProgress(
     BuildContext context,
     LibraryImportArchive archive,
   ) async {
     final progressNotifier = ValueNotifier(
       const LibraryImportProgress(imported: 0, total: 1, label: 'Reading library index'),
     );
+    var cancelRequested = false;
     final importFuture = LibraryPort.importAll(
       archive,
       onProgress: (progress) {
         progressNotifier.value = progress;
       },
+      isCancelled: () => cancelRequested,
     );
 
     try {
@@ -305,6 +310,15 @@ class SettingsPage extends ConsumerWidget {
                     );
                   },
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      cancelRequested = true;
+                      Navigator.of(dialogContext).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                ],
               );
             },
           );
