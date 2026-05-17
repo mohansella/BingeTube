@@ -33,6 +33,8 @@ class ListScreenWidget extends StatefulWidget {
   State<ListScreenWidget> createState() => _ListScreenWidgetState();
 }
 
+enum _CollectionAction { moveUp, moveDown, rename, delete }
+
 class _ListScreenWidgetState extends State<ListScreenWidget>
     with SingleTickerProviderStateMixin {
   static const double minWidth = 160;
@@ -44,6 +46,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   double _height = 0;
 
   late bool _droppingOnEmpty;
+  late int _droppingOnCollectionId;
   late int _droppingOnSeryId;
   late bool _droppingOnLeft;
   late int _dropCollectionId;
@@ -72,6 +75,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
 
   void _initDropState() {
     _droppingOnEmpty = false;
+    _droppingOnCollectionId = -1;
     _droppingOnSeryId = -1;
     _droppingOnLeft = false;
     _dropCollectionId = -1;
@@ -108,7 +112,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             _height = _width * 9.0 / 16.0;
             return ListView.builder(
               itemCount: collections.length,
-              itemBuilder: (c, i) => _buildCollection(collections[i]),
+              itemBuilder: (c, i) => _buildCollection(collections, i),
             );
           },
         );
@@ -164,7 +168,8 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Widget _buildCollection(CollectionModel model) {
+  Widget _buildCollection(List<CollectionModel> collections, int index) {
+    final model = collections[index];
     final titleStyle = Theme.of(context).textTheme.bodyMedium;
     final ratio = _width / minWidth;
     final oFontSize = (titleStyle?.fontSize ?? 0);
@@ -174,43 +179,299 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     }
     final padding = 8 * ratio;
     return Padding(
+      key: ValueKey(model.collection.id),
       padding: EdgeInsets.only(top: padding, bottom: padding, left: padding),
       child: Column(
         children: [
-          Align(
-            alignment: .centerLeft,
-            child: Text(
-              model.collection.name,
-              style: titleStyle?.copyWith(fontSize: fontSize, fontWeight: .w500),
+          Padding(
+            padding: EdgeInsets.only(right: padding),
+            child: _buildCollectionHeader(
+              collections: collections,
+              index: index,
+              model: model,
+              titleStyle: titleStyle,
+              fontSize: fontSize,
             ),
           ),
           SizedBox(height: 4 * ratio),
-          SizedBox(
-            height: _height,
-            child: ListView.separated(
-              scrollDirection: .horizontal,
-              itemCount: model.series.length,
-              itemBuilder: (_, i) => _buildSery(model, model.series[i]),
-              separatorBuilder: (_, _) => SizedBox(width: 4 * ratio),
-            ),
-          ),
+          model.series.isEmpty
+              ? _buildEmptyCollectionDropTarget(model, ratio)
+              : SizedBox(
+                  height: _height,
+                  child: ListView.separated(
+                    scrollDirection: .horizontal,
+                    itemCount: model.series.length,
+                    itemBuilder: (_, i) => _buildSery(model, model.series[i]),
+                    separatorBuilder: (_, _) => SizedBox(width: 4 * ratio),
+                  ),
+                ),
         ],
       ),
     );
+  }
+
+  Widget _buildCollectionHeader({
+    required List<CollectionModel> collections,
+    required int index,
+    required CollectionModel model,
+    required TextStyle? titleStyle,
+    required double fontSize,
+  }) {
+    final theme = Theme.of(context);
+    final seriesCount = model.series.length;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            model.collection.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: titleStyle?.copyWith(fontSize: fontSize, fontWeight: .w500),
+          ),
+        ),
+        if (!widget.isSystem) ...[
+          const SizedBox(width: 8),
+          Text(
+            '$seriesCount series',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          PopupMenuButton<_CollectionAction>(
+            tooltip: 'Collection actions',
+            onSelected: (action) => _onCollectionAction(
+              action,
+              collections: collections,
+              index: index,
+              model: model,
+            ),
+            itemBuilder: (context) => [
+              _buildCollectionMenuItem(
+                context,
+                action: _CollectionAction.moveUp,
+                icon: Icons.keyboard_arrow_up,
+                label: 'Move up',
+                enabled: index > 0,
+              ),
+              _buildCollectionMenuItem(
+                context,
+                action: _CollectionAction.moveDown,
+                icon: Icons.keyboard_arrow_down,
+                label: 'Move down',
+                enabled: index < collections.length - 1,
+              ),
+              const PopupMenuDivider(),
+              _buildCollectionMenuItem(
+                context,
+                action: _CollectionAction.rename,
+                icon: Icons.edit_outlined,
+                label: 'Rename',
+              ),
+              _buildCollectionMenuItem(
+                context,
+                action: _CollectionAction.delete,
+                icon: Icons.delete_outline,
+                label: 'Delete',
+                destructive: true,
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
+  PopupMenuEntry<_CollectionAction> _buildCollectionMenuItem(
+    BuildContext context, {
+    required _CollectionAction action,
+    required IconData icon,
+    required String label,
+    bool enabled = true,
+    bool destructive = false,
+  }) {
+    final theme = Theme.of(context);
+    final color = enabled
+        ? destructive
+              ? theme.colorScheme.error
+              : null
+        : theme.disabledColor;
+    return PopupMenuItem<_CollectionAction>(
+      value: action,
+      enabled: enabled,
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 12),
+          Text(label, style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyCollectionDropTarget(CollectionModel model, double ratio) {
+    final theme = Theme.of(context);
+    final isDropping = _droppingOnCollectionId == model.collection.id;
+    final color = isDropping
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        height: _height,
+        child: _buildDropRegion(
+          collection: model,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            width: _width,
+            height: _height,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4 * ratio),
+              border: Border.all(color: color.withAlpha(isDropping ? 210 : 90)),
+              color: isDropping
+                  ? theme.colorScheme.primaryContainer.withAlpha(80)
+                  : theme.colorScheme.surfaceContainerHighest.withAlpha(80),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.playlist_add, color: color),
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'Drop series here',
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(color: color),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onCollectionAction(
+    _CollectionAction action, {
+    required List<CollectionModel> collections,
+    required int index,
+    required CollectionModel model,
+  }) async {
+    switch (action) {
+      case _CollectionAction.moveUp:
+        return _moveCollection(collections, index, index - 1);
+      case _CollectionAction.moveDown:
+        return _moveCollection(collections, index, index + 1);
+      case _CollectionAction.rename:
+        return _renameCollection(model.collection);
+      case _CollectionAction.delete:
+        return _deleteCollection(model);
+    }
+  }
+
+  Future<void> _moveCollection(
+    List<CollectionModel> collections,
+    int oldIndex,
+    int newIndex,
+  ) async {
+    if (newIndex < 0 || newIndex >= collections.length || oldIndex == newIndex) {
+      return;
+    }
+    final orderedIds = collections.map((c) => c.collection.id).toList();
+    final moved = orderedIds.removeAt(oldIndex);
+    orderedIds.insert(newIndex, moved);
+    await BingeDao(Database()).reorderCollections(orderedIds);
+  }
+
+  Future<void> _renameCollection(Collection collection) async {
+    final controller = TextEditingController(text: collection.name);
+    controller.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: controller.text.length,
+    );
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Rename collection'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            textInputAction: TextInputAction.done,
+            decoration: const InputDecoration(labelText: 'Collection name'),
+            onSubmitted: (value) => Navigator.of(dialogContext).pop(value),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+    final trimmedName = newName?.trim();
+    if (trimmedName == null || trimmedName.isEmpty || trimmedName == collection.name) {
+      return;
+    }
+    await BingeDao(Database()).updateCollection(collection.id, name: trimmedName);
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Renamed to $trimmedName')));
+  }
+
+  Future<void> _deleteCollection(CollectionModel model) async {
+    final seriesCount = model.series.length;
+    final confirmed = await CustomDialog.show(
+      context,
+      'Delete ${model.collection.name}?',
+      'Delete',
+      Text('This removes the collection and $seriesCount series from your library.'),
+      cancelText: 'Cancel',
+    );
+    if (!confirmed) {
+      return;
+    }
+    await BingeDao(Database()).deleteCollection(model.collection.id);
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Deleted ${model.collection.name}')));
   }
 
   Widget _buildSery(CollectionModel collection, SeryModel model) {
     return _buildDropRegion(model: model, child: _buildDragItem(collection, model));
   }
 
-  DropRegion _buildDropRegion({SeryModel? model, required Widget child}) {
+  DropRegion _buildDropRegion({
+    CollectionModel? collection,
+    SeryModel? model,
+    required Widget child,
+  }) {
     return DropRegion(
       formats: [Formats.fileUri, Formats.htmlFile],
       onDropEnter: (event) {
         setState(() {
           if (model == null) {
-            _droppingOnEmpty = true;
-            _lottieController.stop(canceled: false);
+            _droppingOnCollectionId = collection?.collection.id ?? -1;
+            _droppingOnEmpty = collection == null;
+            if (_droppingOnEmpty) {
+              _lottieController.stop(canceled: false);
+            }
             return;
           }
           final item = event.session.items.first;
@@ -226,6 +487,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       },
       onDropLeave: (event) {
         setState(() {
+          _droppingOnCollectionId = -1;
           if (_droppingOnEmpty) {
             _droppingOnEmpty = false;
             _lottieController.forward();
@@ -255,11 +517,17 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         final item = event.session.items.first;
         final pos = event.position.local.dx - (_width / 2);
         final targetPriority = model?.sery.priority ?? 1;
-        final priority = pos < 0 ? targetPriority : targetPriority + 1;
+        final priority = model == null
+            ? 1
+            : pos < 0
+            ? targetPriority
+            : targetPriority + 1;
 
         final bingeDao = BingeDao(Database());
         final collectionId =
-            model?.sery.collectionId ?? (await bingeDao.getDefaultCollection()).id;
+            model?.sery.collectionId ??
+            collection?.collection.id ??
+            (await bingeDao.getDefaultCollection()).id;
 
         if (item.localData == null) {
           _dropCollectionId = collectionId;
@@ -273,6 +541,10 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             priority: priority,
           );
         }
+        if (!mounted) {
+          return;
+        }
+        setState(_initDropState);
       },
       child: child,
     );

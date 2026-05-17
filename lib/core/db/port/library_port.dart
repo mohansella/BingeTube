@@ -42,6 +42,93 @@ class LibraryImportArchive {
   const LibraryImportArchive({required this.label, required this.bytes});
 }
 
+class LibraryExportPreview {
+  final List<LibraryExportCollectionPreview> collections;
+
+  const LibraryExportPreview({required this.collections});
+
+  int get totalSeries =>
+      collections.fold(0, (total, collection) => total + collection.series.length);
+}
+
+class LibraryExportCollectionPreview {
+  final Collection collection;
+  final List<Sery> series;
+
+  const LibraryExportCollectionPreview({required this.collection, required this.series});
+}
+
+class LibraryImportPreview {
+  final String label;
+  final List<LibraryImportCollectionPreview> collections;
+
+  const LibraryImportPreview({required this.label, required this.collections});
+
+  int get totalSeries =>
+      collections.fold(0, (total, collection) => total + collection.series.length);
+}
+
+class LibraryImportCollectionPreview {
+  final int index;
+  final String name;
+  final String description;
+  final List<LibraryImportSeriesPreview> series;
+
+  const LibraryImportCollectionPreview({
+    required this.index,
+    required this.name,
+    required this.description,
+    required this.series,
+  });
+}
+
+class LibraryImportSeriesPreview {
+  final String path;
+  final String title;
+
+  const LibraryImportSeriesPreview({required this.path, required this.title});
+}
+
+class LibraryExportSelection {
+  final Map<int, Set<int>> collectionIdVsSeriesIds;
+
+  LibraryExportSelection(Map<int, Set<int>> collectionIdVsSeriesIds)
+    : collectionIdVsSeriesIds = {
+        for (final entry in collectionIdVsSeriesIds.entries)
+          entry.key: Set.unmodifiable(entry.value),
+      };
+
+  bool get isEmpty => collectionIdVsSeriesIds.isEmpty;
+
+  bool includesCollection(int collectionId) {
+    return collectionIdVsSeriesIds.containsKey(collectionId);
+  }
+
+  bool includesSeries(int collectionId, int seriesId) {
+    return collectionIdVsSeriesIds[collectionId]?.contains(seriesId) ?? false;
+  }
+}
+
+class LibraryImportSelection {
+  final Map<int, Set<String>> collectionIndexVsSeriesPaths;
+
+  LibraryImportSelection(Map<int, Set<String>> collectionIndexVsSeriesPaths)
+    : collectionIndexVsSeriesPaths = {
+        for (final entry in collectionIndexVsSeriesPaths.entries)
+          entry.key: Set.unmodifiable(entry.value),
+      };
+
+  bool get isEmpty => collectionIndexVsSeriesPaths.isEmpty;
+
+  bool includesCollection(int collectionIndex) {
+    return collectionIndexVsSeriesPaths.containsKey(collectionIndex);
+  }
+
+  bool includesSeries(int collectionIndex, String seriesPath) {
+    return collectionIndexVsSeriesPaths[collectionIndex]?.contains(seriesPath) ?? false;
+  }
+}
+
 sealed class LibraryPort {
   static const masterFileName = 'library.json';
   static const archiveExtension = 'binges';
@@ -66,11 +153,65 @@ sealed class LibraryPort {
     return LibraryImportArchive(label: file.name, bytes: bytes);
   }
 
+  static Future<LibraryExportPreview> getExportPreview() async {
+    final bingeDao = BingeDao(Database());
+    final collections = await bingeDao.getCollectionsByPriority(isSystem: false);
+    final previewCollections = <LibraryExportCollectionPreview>[];
+    for (final collection in collections) {
+      previewCollections.add(
+        LibraryExportCollectionPreview(
+          collection: collection,
+          series: await bingeDao.getSeriesForCollection(collection.id),
+        ),
+      );
+    }
+    return LibraryExportPreview(collections: previewCollections);
+  }
+
+  static Future<LibraryImportPreview> previewImport(LibraryImportArchive archive) async {
+    final decodedArchive = ZipDecoder().decodeBytes(archive.bytes);
+    final masterFile = decodedArchive.findFile(masterFileName);
+    if (masterFile == null) {
+      throw const FormatException('Library index not found');
+    }
+
+    final manifest = _readManifestContent(utf8.decode(masterFile.content));
+    _validateArchiveManifestFiles(decodedArchive, manifest);
+
+    final collections = <LibraryImportCollectionPreview>[];
+    for (var i = 0; i < manifest.length; i++) {
+      final manifestCollection = manifest[i];
+      final previewSeries = <LibraryImportSeriesPreview>[];
+      for (final seriesPath in manifestCollection.seriesPaths) {
+        final seriesFile = _resolveManifestArchiveFile(decodedArchive, seriesPath);
+        previewSeries.add(
+          LibraryImportSeriesPreview(
+            path: seriesPath,
+            title: SeryPort.readExportTitle(seriesFile.content),
+          ),
+        );
+      }
+
+      collections.add(
+        LibraryImportCollectionPreview(
+          index: i,
+          name: manifestCollection.name,
+          description: manifestCollection.description,
+          series: previewSeries,
+        ),
+      );
+    }
+
+    return LibraryImportPreview(label: archive.label, collections: collections);
+  }
+
   static Future<String?> exportAll({
+    LibraryExportSelection? selection,
     void Function(LibraryExportProgress progress)? onProgress,
     bool Function()? isCancelled,
   }) async {
     final bytes = await _buildArchiveBytes(
+      selection: selection,
       onProgress: onProgress,
       isCancelled: isCancelled,
     );
@@ -98,6 +239,7 @@ sealed class LibraryPort {
 
   static Future<String?> importAll(
     LibraryImportArchive archive, {
+    LibraryImportSelection? selection,
     void Function(LibraryImportProgress progress)? onProgress,
     bool Function()? isCancelled,
   }) async {
@@ -118,9 +260,10 @@ sealed class LibraryPort {
       return null;
     }
 
-    _validateArchiveManifestFiles(decodedArchive, manifest);
+    final selectedManifest = _filterManifest(manifest, selection);
+    _validateArchiveManifestFiles(decodedArchive, selectedManifest);
     final didComplete = await _importManifest(
-      manifest,
+      selectedManifest,
       onProgress: onProgress,
       isCancelled: isCancelled,
       readSeriesBytes: (seriesPath) async {
@@ -137,12 +280,16 @@ sealed class LibraryPort {
   }
 
   static Future<Uint8List?> _buildArchiveBytes({
+    LibraryExportSelection? selection,
     void Function(LibraryExportProgress progress)? onProgress,
     bool Function()? isCancelled,
   }) async {
     final archive = Archive();
     final bingeDao = BingeDao(Database());
-    final collections = await bingeDao.getCollectionsByPriority(isSystem: false);
+    final allCollections = await bingeDao.getCollectionsByPriority(isSystem: false);
+    final collections = selection == null
+        ? allCollections
+        : allCollections.where((c) => selection.includesCollection(c.id)).toList();
     final collectionIdVsSeries = <int, List<Sery>>{};
     var totalSeries = 0;
 
@@ -150,7 +297,12 @@ sealed class LibraryPort {
       if (_isCancelled(isCancelled)) {
         return null;
       }
-      final series = await bingeDao.getSeriesForCollection(collection.id);
+      final collectionSeries = await bingeDao.getSeriesForCollection(collection.id);
+      final series = selection == null
+          ? collectionSeries
+          : collectionSeries
+                .where((s) => selection.includesSeries(collection.id, s.id))
+                .toList();
       collectionIdVsSeries[collection.id] = series;
       totalSeries += series.length;
     }
@@ -237,6 +389,31 @@ sealed class LibraryPort {
 
   static bool _isCancelled(bool Function()? isCancelled) {
     return isCancelled?.call() ?? false;
+  }
+
+  static List<_LibraryCollectionManifest> _filterManifest(
+    List<_LibraryCollectionManifest> manifest,
+    LibraryImportSelection? selection,
+  ) {
+    if (selection == null) {
+      return manifest;
+    }
+
+    final filtered = <_LibraryCollectionManifest>[];
+    for (var i = 0; i < manifest.length; i++) {
+      if (!selection.includesCollection(i)) {
+        continue;
+      }
+      final collection = manifest[i];
+      filtered.add(
+        collection.copyWith(
+          seriesPaths: collection.seriesPaths
+              .where((path) => selection.includesSeries(i, path))
+              .toList(),
+        ),
+      );
+    }
+    return filtered;
   }
 
   static List<_LibraryCollectionManifest> _readManifestContent(String content) {
@@ -449,4 +626,12 @@ class _LibraryCollectionManifest {
     required this.description,
     required this.seriesPaths,
   });
+
+  _LibraryCollectionManifest copyWith({List<String>? seriesPaths}) {
+    return _LibraryCollectionManifest(
+      name: name,
+      description: description,
+      seriesPaths: seriesPaths ?? this.seriesPaths,
+    );
+  }
 }

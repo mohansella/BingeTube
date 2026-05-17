@@ -41,6 +41,19 @@ sealed class SeryPort {
     return _buildJsonBytes(model);
   }
 
+  static String readExportTitle(Uint8List data) {
+    final dataBytes = GZipDecoder().decodeBytes(data);
+    final value = utf8.decode(dataBytes);
+    final json = jsonDecode(value);
+    if (json is Map<String, dynamic>) {
+      final title = json['title'];
+      if (title is String && title.trim().isNotEmpty) {
+        return title;
+      }
+    }
+    return 'Untitled series';
+  }
+
   static Future<File> exportToTempDirectory(int seryId) async {
     final model = await BingeDao(Database()).streamBingeModel(seryId).first;
     final bytes = exportBytes(model);

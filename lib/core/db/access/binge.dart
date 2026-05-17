@@ -72,13 +72,32 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
 
   Future<void> updateCollection(
     int collectionId, {
-    required int priority,
-    required String description,
+    int? priority,
+    String? name,
+    String? description,
   }) async {
     final query = update(collections)..where((c) => c.id.equals(collectionId));
     await query.write(
-      CollectionsCompanion(priority: Value(priority), description: Value(description)),
+      CollectionsCompanion(
+        priority: priority == null ? const Value.absent() : Value(priority),
+        name: name == null ? const Value.absent() : Value(name),
+        description: description == null ? const Value.absent() : Value(description),
+        updatedAt: Value(DateTime.now()),
+      ),
     );
+  }
+
+  Future<void> reorderCollections(List<int> orderedCollectionIds) async {
+    await transaction(() async {
+      final updatedAt = DateTime.now();
+      for (var i = 0; i < orderedCollectionIds.length; i++) {
+        final query = update(collections)
+          ..where((c) => c.id.equals(orderedCollectionIds[i]));
+        await query.write(
+          CollectionsCompanion(priority: Value(i + 1), updatedAt: Value(updatedAt)),
+        );
+      }
+    });
   }
 
   Future<void> deleteCollection(int collectionId) async {
@@ -96,7 +115,10 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   Future<List<Collection>> getCollectionsByPriority({bool isSystem = false}) {
     final query = select(collections)
       ..where((c) => c.isSystem.equals(isSystem))
-      ..orderBy([(c) => OrderingTerm.asc(c.priority)]);
+      ..orderBy([
+        (c) => OrderingTerm.asc(c.priority),
+        (c) => OrderingTerm.asc(c.createdAt),
+      ]);
     return query.get();
   }
 
@@ -108,14 +130,17 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   }
 
   Stream<List<CollectionModel>> streamCollectionModels({bool isSystem = false}) {
-    final colTotalCount = countAll();
+    final colTotalCount = seriesVsVideos.videoId.count();
     final colCompleteCount = countAll(filter: videoProgress.isFinished.equals(true));
     final query =
         select(collections).join([
-            innerJoin(series, series.collectionId.equalsExp(collections.id)),
-            innerJoin(videos, videos.id.equalsExp(series.coverVideoId)),
-            innerJoin(videoThumbnails, videoThumbnails.id.equalsExp(series.coverVideoId)),
-            innerJoin(
+            leftOuterJoin(series, series.collectionId.equalsExp(collections.id)),
+            leftOuterJoin(videos, videos.id.equalsExp(series.coverVideoId)),
+            leftOuterJoin(
+              videoThumbnails,
+              videoThumbnails.id.equalsExp(series.coverVideoId),
+            ),
+            leftOuterJoin(
               channelThumbnails,
               channelThumbnails.id.equalsExp(videos.channelId),
             ),
@@ -125,7 +150,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
               videoProgress.id.equalsExp(seriesVsVideos.videoId),
             ),
           ])
-          ..groupBy([seriesVsVideos.seriesId])
+          ..groupBy([collections.id, series.id])
           ..addColumns([colTotalCount, colCompleteCount])
           ..where(collections.isSystem.equals(isSystem));
     final toReturn = query.watch().map((result) {
@@ -133,12 +158,15 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       Map<int, List<SeryModel>> idVsSeries = {};
       for (var row in result) {
         final collection = row.readTable(collections);
-        final sery = row.readTable(series);
-        final coverUrl = row.readTable(videoThumbnails).mediumUrl;
-        final iconUrl = row.readTable(channelThumbnails).defaultUrl;
+        idVsCollection[collection.id] = collection;
+        final sery = row.readTableOrNull(series);
+        if (sery == null) {
+          continue;
+        }
+        final coverUrl = row.readTableOrNull(videoThumbnails)?.mediumUrl ?? '';
+        final iconUrl = row.readTableOrNull(channelThumbnails)?.defaultUrl ?? '';
         final totalVideos = row.read(colTotalCount)!;
         final completeVideos = row.read(colCompleteCount)!;
-        idVsCollection[collection.id] = collection;
         idVsSeries
             .putIfAbsent(collection.id, () => <SeryModel>[])
             .add(
@@ -155,9 +183,15 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
         seryies.sort((a, b) => a.sery.priority - b.sery.priority);
       }
       final models = idVsCollection.values
-          .map((c) => CollectionModel(collection: c, series: idVsSeries[c.id]!))
+          .map((c) => CollectionModel(collection: c, series: idVsSeries[c.id] ?? []))
           .toList();
-      models.sort((a, b) => a.collection.priority - b.collection.priority);
+      models.sort((a, b) {
+        final priorityCompare = a.collection.priority.compareTo(b.collection.priority);
+        if (priorityCompare != 0) {
+          return priorityCompare;
+        }
+        return a.collection.createdAt.compareTo(b.collection.createdAt);
+      });
       return models;
     });
     return toReturn;

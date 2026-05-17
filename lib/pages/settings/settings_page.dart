@@ -4,6 +4,7 @@ import 'package:bingetube/core/config/font_size.dart';
 import 'package:bingetube/core/config/player_type.dart';
 import 'package:bingetube/core/db/port/library_port.dart';
 import 'package:bingetube/pages/page_route.dart';
+import 'package:bingetube/pages/settings/widgets/library_tree_selection_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -191,23 +192,27 @@ class SettingsPage extends ConsumerWidget {
       return;
     }
 
-    final confirm = await CustomDialog.show(
-      context,
-      'Import library?',
-      'Import',
-      const Text('This will add exported collections and series to your library.'),
-      cancelText: 'Cancel',
-    );
-    if (!confirm) {
-      return;
-    }
-
-    if (!context.mounted) {
-      return;
-    }
-
     try {
-      final importLabel = await _showImportProgress(context, archive);
+      final preview = await LibraryPort.previewImport(archive);
+      if (!context.mounted) {
+        return;
+      }
+      final treeSelection = await _showImportSelection(context, preview);
+      if (treeSelection == null || treeSelection.isEmpty) {
+        return;
+      }
+      if (!context.mounted) {
+        return;
+      }
+      await _waitForOverlayFrame();
+      if (!context.mounted) {
+        return;
+      }
+      final importLabel = await _showImportProgress(
+        context,
+        archive,
+        _buildImportSelection(treeSelection),
+      );
       if (importLabel == null) {
         return;
       }
@@ -231,7 +236,25 @@ class SettingsPage extends ConsumerWidget {
     }
 
     try {
-      final exportLabel = await _showExportProgress(context);
+      final preview = await LibraryPort.getExportPreview();
+      if (!context.mounted) {
+        return;
+      }
+      final treeSelection = await _showExportSelection(context, preview);
+      if (treeSelection == null || treeSelection.isEmpty) {
+        return;
+      }
+      if (!context.mounted) {
+        return;
+      }
+      await _waitForOverlayFrame();
+      if (!context.mounted) {
+        return;
+      }
+      final exportLabel = await _showExportProgress(
+        context,
+        _buildExportSelection(treeSelection),
+      );
       if (exportLabel == null) {
         return;
       }
@@ -249,9 +272,79 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
+  Future<LibraryTreeSelection?> _showImportSelection(
+    BuildContext context,
+    LibraryImportPreview preview,
+  ) async {
+    await _waitForOverlayFrame();
+    if (!context.mounted) {
+      return null;
+    }
+    return LibraryTreeSelectionSheet.show(
+      context,
+      title: 'Select items to import',
+      actionLabel: 'Import selected',
+      collections: preview.collections.map((collection) {
+        return LibraryTreeCollection(
+          id: '${collection.index}',
+          title: collection.name,
+          subtitle: '${collection.series.length} series',
+          series: collection.series
+              .map((series) => LibraryTreeSeries(id: series.path, title: series.title))
+              .toList(),
+        );
+      }).toList(),
+    );
+  }
+
+  Future<LibraryTreeSelection?> _showExportSelection(
+    BuildContext context,
+    LibraryExportPreview preview,
+  ) async {
+    await _waitForOverlayFrame();
+    if (!context.mounted) {
+      return null;
+    }
+    return LibraryTreeSelectionSheet.show(
+      context,
+      title: 'Select items to export',
+      actionLabel: 'Export selected',
+      collections: preview.collections.map((collection) {
+        return LibraryTreeCollection(
+          id: '${collection.collection.id}',
+          title: collection.collection.name,
+          subtitle: '${collection.series.length} series',
+          series: collection.series
+              .map((series) => LibraryTreeSeries(id: '${series.id}', title: series.name))
+              .toList(),
+        );
+      }).toList(),
+    );
+  }
+
+  LibraryImportSelection _buildImportSelection(LibraryTreeSelection selection) {
+    return LibraryImportSelection({
+      for (final entry in selection.collectionIdVsSeriesIds.entries)
+        int.parse(entry.key): entry.value,
+    });
+  }
+
+  LibraryExportSelection _buildExportSelection(LibraryTreeSelection selection) {
+    return LibraryExportSelection({
+      for (final entry in selection.collectionIdVsSeriesIds.entries)
+        int.parse(entry.key): entry.value.map(int.parse).toSet(),
+    });
+  }
+
+  Future<void> _waitForOverlayFrame() async {
+    await Future<void>.delayed(Duration.zero);
+    await WidgetsBinding.instance.endOfFrame;
+  }
+
   Future<String?> _showImportProgress(
     BuildContext context,
     LibraryImportArchive archive,
+    LibraryImportSelection selection,
   ) async {
     final progressNotifier = ValueNotifier(
       const LibraryImportProgress(imported: 0, total: 1, label: 'Reading library index'),
@@ -259,6 +352,7 @@ class SettingsPage extends ConsumerWidget {
     var cancelRequested = false;
     final importFuture = LibraryPort.importAll(
       archive,
+      selection: selection,
       onProgress: (progress) {
         progressNotifier.value = progress;
       },
@@ -330,7 +424,10 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
-  Future<String?> _showExportProgress(BuildContext context) async {
+  Future<String?> _showExportProgress(
+    BuildContext context,
+    LibraryExportSelection selection,
+  ) async {
     final progressNotifier = ValueNotifier(
       const LibraryExportProgress(
         exported: 0,
@@ -340,6 +437,7 @@ class SettingsPage extends ConsumerWidget {
     );
     var cancelRequested = false;
     final exportFuture = LibraryPort.exportAll(
+      selection: selection,
       onProgress: (progress) {
         progressNotifier.value = progress;
       },
