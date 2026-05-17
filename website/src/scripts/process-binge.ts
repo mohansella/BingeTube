@@ -16,7 +16,6 @@ import ffmpegPath from "ffmpeg-static"
 ffmpeg.setFfmpegPath(ffmpegPath!)
 
 import sharp from "sharp"
-import { MinPriorityQueue } from '@datastructures-js/priority-queue'
 
 const shortHash = (buf: Buffer, length = 12) =>
   createHash("sha256").update(buf).digest("hex").slice(0, length)
@@ -27,9 +26,7 @@ class ProcessBinge {
 
   bingeInfoMap = new Map<string, SeryModel>()
   discoverFolder = ''
-  topThumbnails = new MinPriorityQueue<[string, number]>({
-    compare: (a, b) => a[1] - b[1],
-  })
+  posterThumbnailUrls: string[] = []
 
 
   async processFiles() {
@@ -63,16 +60,27 @@ class ProcessBinge {
       totalVideos: model.videos.length,
     }
     this.bingeInfoMap.set(relativePath, series)
+    this.posterThumbnailUrls.push(this.getMostViewedVideo(model.videos).thumbnails.highUrl)
+  }
 
-    for (const video of model.videos) {
-      const viewCount = video.statistics.viewCount
-      if (typeof viewCount === 'number') {
-        this.topThumbnails.push([video.thumbnails.highUrl, viewCount])
-        if (this.topThumbnails.size() > 100) {
-          this.topThumbnails.dequeue()
-        }
-      }
+  getMostViewedVideo(videos: VideoModel[]) {
+    return videos.reduce((mostViewed, video) => {
+      const mostViewedCount = this.getViewCount(mostViewed)
+      const videoCount = this.getViewCount(video)
+      return videoCount > mostViewedCount ? video : mostViewed
+    }, videos[0])
+  }
+
+  getViewCount(video: VideoModel) {
+    const viewCount = video.statistics.viewCount
+    if (typeof viewCount === 'number' && Number.isFinite(viewCount)) {
+      return viewCount
     }
+    if (typeof viewCount === 'string') {
+      const parsed = Number(viewCount)
+      return Number.isFinite(parsed) ? parsed : 0
+    }
+    return 0
   }
 
   async merge() {
@@ -100,15 +108,9 @@ class ProcessBinge {
   }
 
   async downloadThumbnails(): Promise<Buffer[]> {
-    const thumbImages: Buffer[] = []
     const limit = pLimit(8)
-    const processes = this.topThumbnails.toArray().map(f => limit(async () => {
-      const data = await this.downloadThumbnail(f[0])
-      if (data != null) {
-        thumbImages.push(data)
-      }
-    }))
-    await Promise.all(processes)
+    const processes = this.posterThumbnailUrls.map(url => limit(() => this.downloadThumbnail(url)))
+    const thumbImages = (await Promise.all(processes)).filter((data): data is Buffer => data != null)
     console.log(`thumbImages: ${thumbImages.length}`)
 
     if (thumbImages.length === 0) {
