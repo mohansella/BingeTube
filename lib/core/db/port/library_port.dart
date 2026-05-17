@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/port/sery_port.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/core/utils/file_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 class LibraryExportProgress {
@@ -33,29 +34,79 @@ class LibraryImportProgress {
   });
 }
 
+class LibraryImportArchive {
+  final String label;
+  final Uint8List bytes;
+
+  const LibraryImportArchive({required this.label, required this.bytes});
+}
+
 sealed class LibraryPort {
   static const masterFileName = 'library.json';
+  static const archiveExtension = 'binges';
+  static const archiveFileName = 'bingetube-library.$archiveExtension';
   static final _logger = LogManager.getLogger('LibraryPort');
 
-  static Future<String?> pickExportDirectory() {
-    return FilePicker.getDirectoryPath(
-      dialogTitle: 'Select folder to export your library:',
+  static Future<LibraryImportArchive?> pickImportArchive() async {
+    final result = await FilePicker.pickFiles(
+      dialogTitle: 'Select library export:',
+      type: .custom,
+      allowedExtensions: [archiveExtension],
+      withData: true,
     );
+    final file = result?.files.singleOrNull;
+    final bytes = file?.bytes;
+    if (file == null || bytes == null) {
+      return null;
+    }
+
+    return LibraryImportArchive(label: file.name, bytes: bytes);
   }
 
-  static Future<String?> pickImportDirectory() {
-    return FilePicker.getDirectoryPath(
-      dialogTitle: 'Select folder to import your library:',
-    );
-  }
-
-  static Future<String> exportAllToDirectory(
-    String directoryPath, {
+  static Future<String?> exportAll({
     void Function(LibraryExportProgress progress)? onProgress,
   }) async {
-    final exportDir = Directory(directoryPath);
-    await exportDir.create(recursive: true);
+    final bytes = await _buildArchiveBytes(onProgress: onProgress);
+    final filePath = await FilePicker.saveFile(
+      dialogTitle: 'Save library export:',
+      fileName: archiveFileName,
+      bytes: bytes,
+      type: .custom,
+      allowedExtensions: [archiveExtension],
+    );
 
+    _logger.info('exported library archive at ${filePath ?? archiveFileName}');
+    return filePath ?? (kIsWeb ? archiveFileName : null);
+  }
+
+  static Future<String> importAll(
+    LibraryImportArchive archive, {
+    void Function(LibraryImportProgress progress)? onProgress,
+  }) async {
+    final decodedArchive = ZipDecoder().decodeBytes(archive.bytes);
+    final masterFile = decodedArchive.findFile(masterFileName);
+    if (masterFile == null) {
+      throw const FormatException('Library index not found');
+    }
+
+    final manifest = _readManifestContent(utf8.decode(masterFile.content));
+    _validateArchiveManifestFiles(decodedArchive, manifest);
+    await _importManifest(
+      manifest,
+      onProgress: onProgress,
+      readSeriesBytes: (seriesPath) async {
+        return _resolveManifestArchiveFile(decodedArchive, seriesPath).content;
+      },
+    );
+
+    _logger.info('imported library from archive ${archive.label}');
+    return archive.label;
+  }
+
+  static Future<Uint8List> _buildArchiveBytes({
+    void Function(LibraryExportProgress progress)? onProgress,
+  }) async {
+    final archive = Archive();
     final bingeDao = BingeDao(Database());
     final collections = await bingeDao.getCollectionsByPriority(isSystem: false);
     final collectionIdVsSeries = <int, List<Sery>>{};
@@ -85,8 +136,6 @@ sealed class LibraryPort {
         usedCollectionDirs,
         fallback: 'collection',
       );
-      final collectionDir = Directory(p.join(exportDir.path, collectionDirName));
-      await collectionDir.create(recursive: true);
 
       final usedSeriesFiles = <String>{};
       final seriesPaths = <String>[];
@@ -98,12 +147,11 @@ sealed class LibraryPort {
           SeryPort.buildFileName(model.title),
           usedSeriesFiles,
         );
-        final file = File(p.join(collectionDir.path, fileName));
-
-        await SeryPort.exportToFile(model, file);
+        final relativePath = p.posix.join(collectionDirName, fileName);
+        archive.addFile(ArchiveFile.bytes(relativePath, SeryPort.exportBytes(model)));
 
         exported++;
-        seriesPaths.add(p.posix.join(collectionDirName, fileName));
+        seriesPaths.add(relativePath);
         onProgress?.call(
           LibraryExportProgress(
             exported: exported,
@@ -134,25 +182,61 @@ sealed class LibraryPort {
       'collections': masterCollections,
     };
     const encoder = JsonEncoder.withIndent('  ');
-    final masterFile = File(p.join(exportDir.path, masterFileName));
-    await masterFile.writeAsString('${encoder.convert(masterJson)}\n');
+    archive.addFile(
+      ArchiveFile.string(masterFileName, '${encoder.convert(masterJson)}\n'),
+    );
 
-    _logger.info('exported library to ${exportDir.path}');
-    return exportDir.path;
+    return ZipEncoder().encodeBytes(archive);
   }
 
-  static Future<String> importAllFromDirectory(
-    String directoryPath, {
-    void Function(LibraryImportProgress progress)? onProgress,
-  }) async {
-    final importDir = Directory(directoryPath);
-    final masterFile = File(p.join(importDir.path, masterFileName));
-    if (!await masterFile.exists()) {
-      throw FileSystemException('Library index not found', masterFile.path);
+  static List<_LibraryCollectionManifest> _readManifestContent(String content) {
+    final json = jsonDecode(content);
+    if (json is! Map<String, dynamic>) {
+      throw const FormatException('Invalid library index');
     }
 
-    final manifest = await _readManifest(masterFile);
-    await _validateManifestFiles(importDir, manifest);
+    final collectionsJson = json['collections'];
+    if (collectionsJson is! List) {
+      throw const FormatException('Invalid library collections');
+    }
+
+    final collections = <_LibraryCollectionManifest>[];
+    for (final collectionJson in collectionsJson) {
+      if (collectionJson is! Map<String, dynamic>) {
+        throw const FormatException('Invalid library collection');
+      }
+
+      final name = collectionJson['name'];
+      final description = collectionJson['description'];
+      final seriesJson = collectionJson['series'];
+      if (name is! String || seriesJson is! List) {
+        throw const FormatException('Invalid library collection fields');
+      }
+
+      final seriesPaths = <String>[];
+      for (final seriesPath in seriesJson) {
+        if (seriesPath is! String) {
+          throw const FormatException('Invalid library series path');
+        }
+        seriesPaths.add(seriesPath);
+      }
+
+      collections.add(
+        _LibraryCollectionManifest(
+          name: name,
+          description: description is String ? description : '',
+          seriesPaths: seriesPaths,
+        ),
+      );
+    }
+    return collections;
+  }
+
+  static Future<void> _importManifest(
+    List<_LibraryCollectionManifest> manifest, {
+    void Function(LibraryImportProgress progress)? onProgress,
+    required Future<Uint8List> Function(String seriesPath) readSeriesBytes,
+  }) async {
     final totalSeries = manifest.fold<int>(
       0,
       (total, collection) => total + collection.seriesPaths.length,
@@ -185,8 +269,7 @@ sealed class LibraryPort {
 
       var seriesPriority = 0;
       for (final seriesPath in manifestCollection.seriesPaths) {
-        final file = _resolveManifestFile(importDir, seriesPath);
-        final data = await file.readAsBytes();
+        final data = await readSeriesBytes(seriesPath);
         final sery = await SeryPort.import(
           data,
           collectionId: collection.id,
@@ -199,76 +282,34 @@ sealed class LibraryPort {
         );
       }
     }
-
-    _logger.info('imported library from ${importDir.path}');
-    return importDir.path;
   }
 
-  static Future<List<_LibraryCollectionManifest>> _readManifest(File file) async {
-    final content = await file.readAsString();
-    final json = jsonDecode(content);
-    if (json is! Map<String, dynamic>) {
-      throw FormatException('Invalid library index');
-    }
-
-    final collectionsJson = json['collections'];
-    if (collectionsJson is! List) {
-      throw FormatException('Invalid library collections');
-    }
-
-    final collections = <_LibraryCollectionManifest>[];
-    for (final collectionJson in collectionsJson) {
-      if (collectionJson is! Map<String, dynamic>) {
-        throw FormatException('Invalid library collection');
-      }
-
-      final name = collectionJson['name'];
-      final description = collectionJson['description'];
-      final seriesJson = collectionJson['series'];
-      if (name is! String || seriesJson is! List) {
-        throw FormatException('Invalid library collection fields');
-      }
-
-      final seriesPaths = <String>[];
-      for (final seriesPath in seriesJson) {
-        if (seriesPath is! String) {
-          throw FormatException('Invalid library series path');
-        }
-        seriesPaths.add(seriesPath);
-      }
-
-      collections.add(
-        _LibraryCollectionManifest(
-          name: name,
-          description: description is String ? description : '',
-          seriesPaths: seriesPaths,
-        ),
-      );
-    }
-    return collections;
-  }
-
-  static Future<void> _validateManifestFiles(
-    Directory directory,
+  static void _validateArchiveManifestFiles(
+    Archive archive,
     List<_LibraryCollectionManifest> manifest,
-  ) async {
+  ) {
     for (final collection in manifest) {
       for (final seriesPath in collection.seriesPaths) {
-        final file = _resolveManifestFile(directory, seriesPath);
-        if (!await file.exists()) {
-          throw FileSystemException('Series export not found', file.path);
-        }
+        _resolveManifestArchiveFile(archive, seriesPath);
       }
     }
   }
 
-  static File _resolveManifestFile(Directory directory, String manifestPath) {
+  static ArchiveFile _resolveManifestArchiveFile(Archive archive, String manifestPath) {
+    final normalized = _normalizeManifestPath(manifestPath);
+    final file = archive.findFile(normalized);
+    if (file == null || !file.isFile) {
+      throw FormatException('Series export not found: $manifestPath');
+    }
+    return file;
+  }
+
+  static String _normalizeManifestPath(String manifestPath) {
     final normalized = p.posix.normalize(manifestPath);
     if (p.posix.isAbsolute(normalized) || normalized.startsWith('../')) {
       throw FormatException('Invalid library series path: $manifestPath');
     }
-
-    return File(p.joinAll([directory.path, ...p.posix.split(normalized)]));
+    return normalized;
   }
 
   static String _uniquePathSegment(

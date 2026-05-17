@@ -30,16 +30,20 @@ sealed class SeryPort {
   }
 
   static Future<File> exportToFile(BingeModel model, File file) async {
-    final bytes = _buildJsonBytes(model);
+    final bytes = exportBytes(model);
     await file.parent.create(recursive: true);
     await file.writeAsBytes(bytes);
     SeryPort._logger.info('exported at ${file.path}');
     return file;
   }
 
+  static Uint8List exportBytes(BingeModel model) {
+    return _buildJsonBytes(model);
+  }
+
   static Future<File> exportToTempDirectory(int seryId) async {
     final model = await BingeDao(Database()).streamBingeModel(seryId).first;
-    final bytes = _buildJsonBytes(model);
+    final bytes = exportBytes(model);
     final fileName = buildFileName(model.title, bytes: bytes);
     final file = FileUtils.writeToTempFile(fileName, bytes);
     return file;

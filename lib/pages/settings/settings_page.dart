@@ -182,8 +182,8 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Future<void> _onImportLibrary(BuildContext context) async {
-    final directoryPath = await LibraryPort.pickImportDirectory();
-    if (directoryPath == null) {
+    final archive = await LibraryPort.pickImportArchive();
+    if (archive == null) {
       return;
     }
 
@@ -207,13 +207,13 @@ class SettingsPage extends ConsumerWidget {
     }
 
     try {
-      final importPath = await _showImportProgress(context, directoryPath);
+      final importLabel = await _showImportProgress(context, archive);
       if (!context.mounted) {
         return;
       }
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Library imported from $importPath')));
+      ).showSnackBar(SnackBar(content: Text('Library imported from $importLabel')));
     } catch (error) {
       if (!context.mounted) {
         return;
@@ -223,23 +223,21 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Future<void> _onExportLibrary(BuildContext context) async {
-    final directoryPath = await LibraryPort.pickExportDirectory();
-    if (directoryPath == null) {
-      return;
-    }
-
     if (!context.mounted) {
       return;
     }
 
     try {
-      final exportPath = await _showExportProgress(context, directoryPath);
+      final exportLabel = await _showExportProgress(context);
+      if (exportLabel == null) {
+        return;
+      }
       if (!context.mounted) {
         return;
       }
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Library exported to $exportPath')));
+      ).showSnackBar(SnackBar(content: Text('Library exported to $exportLabel')));
     } catch (error) {
       if (!context.mounted) {
         return;
@@ -248,12 +246,15 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
-  Future<String> _showImportProgress(BuildContext context, String directoryPath) async {
+  Future<String> _showImportProgress(
+    BuildContext context,
+    LibraryImportArchive archive,
+  ) async {
     final progressNotifier = ValueNotifier(
       const LibraryImportProgress(imported: 0, total: 1, label: 'Reading library index'),
     );
-    final importFuture = LibraryPort.importAllFromDirectory(
-      directoryPath,
+    final importFuture = LibraryPort.importAll(
+      archive,
       onProgress: (progress) {
         progressNotifier.value = progress;
       },
@@ -314,7 +315,7 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 
-  Future<String> _showExportProgress(BuildContext context, String directoryPath) async {
+  Future<String?> _showExportProgress(BuildContext context) async {
     final progressNotifier = ValueNotifier(
       const LibraryExportProgress(
         exported: 0,
@@ -322,8 +323,7 @@ class SettingsPage extends ConsumerWidget {
         label: 'Preparing library export',
       ),
     );
-    final exportFuture = LibraryPort.exportAllToDirectory(
-      directoryPath,
+    final exportFuture = LibraryPort.exportAll(
       onProgress: (progress) {
         progressNotifier.value = progress;
       },
