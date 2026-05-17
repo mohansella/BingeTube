@@ -103,6 +103,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             return _buildCollectionEmpty();
           }
         }
+        if (!widget.isSystem && collections.every((c) => c.series.isEmpty)) {
+          return _buildCollectionEmpty();
+        }
         return LayoutBuilder(
           builder: (context, constraints) {
             _width = constraints.maxWidth / 5.2;
@@ -219,8 +222,24 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   }) {
     final theme = Theme.of(context);
     final seriesCount = model.series.length;
+    final accentColor = Themes.colorFromId(
+      model.collection.name,
+      theme.brightness,
+      sat: 0.48,
+      light: 0.58,
+      dark: 0.48,
+    );
     return Row(
       children: [
+        Container(
+          width: 4,
+          height: fontSize * 1.45,
+          decoration: BoxDecoration(
+            color: accentColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             model.collection.name,
@@ -790,9 +809,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     final isCancelled = Mutable(false);
     CustomDialog.show(
       context,
-      'Downloading ${model.sery.name}',
+      'Preparing ${model.sery.name}',
       'Cancel',
-      Row(mainAxisAlignment: .center, children: [CircularProgressIndicator()]),
+      _buildBingeLoadingContent('Initializing this binge for playback...'),
     ).then((v) {
       isCancelled.value = true;
     });
@@ -810,9 +829,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     final isCancelled = Mutable(false);
     CustomDialog.show(
       context,
-      'Updating ${model.sery.name}',
+      'Refreshing ${model.sery.name}',
       'Cancel',
-      Row(mainAxisAlignment: .center, children: [CircularProgressIndicator()]),
+      _buildBingeLoadingContent('Getting the latest binge details...'),
     ).then((v) {
       isCancelled.value = true;
     });
@@ -823,6 +842,25 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       lContext.pop();
     }
     return toReturn;
+  }
+
+  Widget _buildBingeLoadingContent(String message) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const LinearProgressIndicator(),
+        const SizedBox(height: 14),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildSeryImageFallback(

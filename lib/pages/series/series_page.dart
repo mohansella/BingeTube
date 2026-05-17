@@ -24,7 +24,7 @@ class SeriesPage extends ConsumerStatefulWidget {
 }
 
 class _SeriesPageState extends ConsumerState<SeriesPage> {
-  String _loadingText = 'Loading...';
+  String _loadingText = 'Preparing binge...';
   final _isCancelled = Mutable(false);
 
   Map<String, String>? _queryParams;
@@ -48,12 +48,12 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
     Sery? sery = model.sery;
     if (!model.isSaved) {
       setState(() {
-        _loadingText = 'Downloading ${model.sery.name}';
+        _loadingText = 'Preparing ${model.sery.name}';
       });
       sery = await seriesRepo.downloadSery(_isCancelled, collection, model);
     } else if (model.dataHash != model.sery.dataHash) {
       setState(() {
-        _loadingText = 'Updating ${model.sery.name}';
+        _loadingText = 'Refreshing ${model.sery.name}';
       });
       sery = await seriesRepo.updateSery(_isCancelled, collection, model);
     }
@@ -87,22 +87,46 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
   }
 
   Widget buildLoading() {
+    final theme = Theme.of(context);
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Text(_loadingText),
-            SizedBox(height: 16),
-            CircularProgressIndicator(),
-            SizedBox(height: 8),
-            TextButton(
-              onPressed: () {
-                Routes.popOrHome(context);
-              },
-              child: Text('Cancel'),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  _loadingText,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const LinearProgressIndicator(),
+                const SizedBox(height: 12),
+                Text(
+                  'Getting everything ready for playback.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Routes.popOrHome(context);
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
