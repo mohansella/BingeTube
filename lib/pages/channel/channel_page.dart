@@ -6,6 +6,7 @@ import 'package:bingetube/core/db/access/channels.dart';
 import 'package:bingetube/core/db/access/playlists.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/channel_model.dart';
+import 'package:bingetube/core/db/tables/playlists.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/core/utils/model_utils.dart';
 import 'package:bingetube/pages/binge/binge_page.dart';
@@ -51,6 +52,7 @@ class ChannelPage extends ConsumerStatefulWidget {
 class _ChannelPageState extends ConsumerState<ChannelPage> {
   final _channelDao = ChannelsDao(Database());
   final _playlistDao = PlaylistsDao(Database());
+  final _searchController = TextEditingController();
 
   late String _channelId;
   late String _heroId;
@@ -61,8 +63,8 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   late ChannelModel _model;
 
   bool _isFetchInProgress = false;
-  late int _fetchCount;
-  late int _fetchTotal;
+  int _fetchCount = 0;
+  int _fetchTotal = 1;
 
   String _searchQuery = '';
   double get _progress {
@@ -79,6 +81,9 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     _heroImg = params[_Params.heroImg.name]!;
 
     _channelDao.getChannelModelById(_channelId).then((v) {
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isModelLoading = false;
         _model = v;
@@ -87,202 +92,586 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: [_buildChannelInfo(), ..._buildProgress(), _buildSearchField(), _buildPlaylistStream()],
-          ),
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
+      body: SafeArea(
+        child: StreamBuilder(
+          stream: _playlistDao.streamPlaylistModels(_channelId),
+          builder: (context, snapshot) {
+            final allPlaylists = snapshot.hasData
+                ? _buildOrderedPlaylists(snapshot.data!)
+                : null;
+            final filteredPlaylists = allPlaylists == null
+                ? null
+                : _filterPlaylists(allPlaylists);
+            final isSyncQueued =
+                allPlaylists != null &&
+                !_isFetchTriggered &&
+                _shouldSyncPlaylists(allPlaylists);
+            final isSyncingOrQueued = _isFetchInProgress || isSyncQueued;
+
+            if (allPlaylists != null) {
+              _triggerSyncIfNeeded(allPlaylists);
+            }
+
+            return CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(context),
+                SliverToBoxAdapter(child: _buildChannelInfo()),
+                SliverToBoxAdapter(child: _buildProgress()),
+                SliverToBoxAdapter(child: _buildSearchField()),
+                if (filteredPlaylists == null)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildStateView(
+                      icon: Icons.playlist_play_outlined,
+                      title: 'Loading playlists',
+                      message: 'Getting this channel ready.',
+                      isLoading: true,
+                    ),
+                  )
+                else if (filteredPlaylists.isEmpty &&
+                    isSyncingOrQueued &&
+                    _searchQuery.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildStateView(
+                      icon: Icons.playlist_play_outlined,
+                      title: 'Updating playlists',
+                      message: 'Fresh playlist data is on the way.',
+                      isLoading: true,
+                    ),
+                  )
+                else if (filteredPlaylists.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildStateView(
+                      icon: _searchQuery.isEmpty
+                          ? Icons.playlist_remove_outlined
+                          : Icons.search_off_outlined,
+                      title: _searchQuery.isEmpty
+                          ? 'No playlists yet'
+                          : 'No matching playlists',
+                      message: _searchQuery.isEmpty
+                          ? 'This channel has no synced playlists available.'
+                          : 'Try another playlist title or description.',
+                    ),
+                  )
+                else
+                  _buildPlaylistSliver(filteredPlaylists),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  List<Widget> _buildProgress() {
-    return [
-      if (_isFetchInProgress) ...[
-        LinearProgressIndicator(value: _progress),
-        const SizedBox(height: 4),
-        Text(
-          '$_fetchCount / $_fetchTotal playlists updated',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.labelSmall,
-        ),
-      ] else ...[
-        SizedBox(height: 24),
-      ],
-    ];
+  SliverAppBar _buildSliverAppBar(BuildContext context) {
+    final title = _isModelLoading ? 'Channel' : _model.snippet.title;
+
+    return SliverAppBar(
+      pinned: true,
+      title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+    );
   }
 
-  Widget _buildSearchField() {
-    if (_isFetchInProgress) {
-      return const SizedBox(height: 8);
+  List<PlaylistModel> _buildOrderedPlaylists(PlaylistModels data) {
+    var list = data.normals;
+    if (data.uploads != null) {
+      list = [data.uploads!, ...list];
     }
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 2.0),
-      child: SizedBox(
-        height: 40,
-        child: TextField(
-          decoration: InputDecoration(
-            hintText: 'Search...',
-            suffixIcon: const Icon(Icons.search),
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          onChanged: (value) => setState(() => _searchQuery = value.trim()),
-        ),
-      ),
-    );
+    if (data.likes != null) {
+      list = [data.likes!, ...list];
+    }
+    return list;
   }
 
-  Widget _buildPlaylistStream() {
-    return Align(
-      alignment: .center,
-      child: StreamBuilder(
-        stream: _playlistDao.streamPlaylistModels(_channelId),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return CircularProgressIndicator();
-          }
-          final data = snapshot.data!;
-          var list = data.normals;
-          if (data.uploads != null) {
-            list = [data.uploads!, ...list];
-          }
-          if (data.likes != null) {
-            list = [data.likes!, ...list];
-          }
-          final fullList = list;
+  List<PlaylistModel> _filterPlaylists(List<PlaylistModel> list) {
+    final query = _searchQuery.toLowerCase();
+    if (query.isEmpty) {
+      return list;
+    }
 
-          final query = _searchQuery.toLowerCase();
-          if (query.isNotEmpty) {
-            list = list.where((playlist) {
-              final title = playlist.snippet.title.toLowerCase();
-              final description = playlist.snippet.description.toLowerCase();
-              return title.contains(query) || description.contains(query);
-            }).toList();
-          }
+    return list.where((playlist) {
+      final title = playlist.snippet.title.toLowerCase();
+      final description = playlist.snippet.description.toLowerCase();
+      return title.contains(query) || description.contains(query);
+    }).toList();
+  }
 
-          _triggerSyncIfNeeded(fullList);
+  Widget _buildChannelInfo() {
+    final theme = Theme.of(context);
 
-          if (list.isEmpty && !_isFetchInProgress) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                _searchQuery.isEmpty ? 'No playlist available' : 'No playlist match "$_searchQuery"',
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isNarrow = constraints.maxWidth < 420;
+          final avatar = Hero(
+            tag: _heroId,
+            child: ClipOval(
+              child: SizedBox(
+                width: 84,
+                height: 84,
+                child: _buildChannelImage(_heroImg, _heroId),
               ),
+            ),
+          );
+          final details = _buildChannelDetails(theme);
+
+          if (isNarrow) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [avatar, const SizedBox(height: 12), details],
             );
           }
-          return _buildPlaylistRaw(list);
+
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              avatar,
+              const SizedBox(width: 16),
+              Expanded(child: details),
+            ],
+          );
         },
       ),
     );
   }
 
-  ListView _buildPlaylistRaw(List<PlaylistModel> list) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: list.length,
-      itemBuilder: (context, i) {
-        return _buildPlaylistCard(context, list[i]);
-      },
+  Widget _buildChannelDetails(ThemeData theme) {
+    if (_isModelLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Loading channel...',
+            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Syncing channel details and playlists.',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      );
+    }
+
+    final description = _model.snippet.description.trim();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _model.snippet.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        Wrap(spacing: 8, runSpacing: 8, children: _buildStatChips(theme)),
+        if (description.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          ReadMoreText(
+            description,
+            trimLines: 3,
+            trimMode: TrimMode.Line,
+            trimCollapsedText: ' more',
+            trimExpandedText: ' less',
+            colorClickableText: theme.colorScheme.primary,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
-  Widget _buildPlaylistCard(BuildContext contet, PlaylistModel model) {
-    final thumb = model.thumbnails;
-    final imgUrl = ModelUtils.selectImageUrl([
-      thumb.highUrl,
-      thumb.mediumUrl,
-      thumb.defaultUrl,
-    ]);
-    return Card(
-      clipBehavior: .hardEdge,
-      child: InkWell(
-        onTap: () => _onTapPlaylist(model, imgUrl),
-        child: Row(
+  List<Widget> _buildStatChips(ThemeData theme) {
+    final stats = _model.statistics;
+    final chips = <Widget>[];
+    if (!stats.hiddenSubscriberCount) {
+      chips.add(
+        _buildStatChip(
+          theme,
+          Icons.people_outline,
+          _countLabel(stats.subscriberCount, 'subscriber', 'subscribers'),
+        ),
+      );
+    }
+    chips.add(
+      _buildStatChip(
+        theme,
+        Icons.smart_display_outlined,
+        _countLabel(stats.videoCount, 'video', 'videos'),
+      ),
+    );
+    return chips;
+  }
+
+  Widget _buildStatChip(ThemeData theme, IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: theme.colorScheme.onSecondaryContainer),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgress() {
+    final theme = Theme.of(context);
+
+    if (!_isFetchInProgress) {
+      return const SizedBox(height: 10);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(value: _progress, minHeight: 6),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.sync, size: 16, color: theme.colorScheme.primary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Updating playlists: $_fetchCount of $_fetchTotal',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStateView({
+    required IconData icon,
+    required String title,
+    required String message,
+    bool isLoading = false,
+  }) {
+    final theme = Theme.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(32, 24, 32, 96),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            _buildPlaylistImages(model, imgUrl),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: .start,
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    model.snippet.title,
-                    maxLines: 2,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w500),
-                  ),
-                  Text(
-                    '${model.details.itemCount} videos',
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w200),
-                  ),
-                  Text(
-                    model.snippet.description,
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w300),
-                  ),
-                ],
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
+                    )
+                  : Icon(icon, size: 30, color: theme.colorScheme.onSecondaryContainer),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 340),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.35,
+                ),
               ),
             ),
-            const SizedBox(width: 12),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPlaylistImages(PlaylistModel model, String imgUrl) {
-    final id = model.playlist.id;
-    return Stack(
+  Widget _buildSearchField() {
+    if (_isFetchInProgress) {
+      return const SizedBox(height: 8);
+    }
+
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: TextField(
+        controller: _searchController,
+        textInputAction: TextInputAction.search,
+        decoration: InputDecoration(
+          hintText: 'Search playlists',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchQuery.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: 'Clear search',
+                  onPressed: _clearSearch,
+                  icon: const Icon(Icons.close),
+                ),
+          filled: true,
+          fillColor: theme.colorScheme.surfaceContainerHighest.withAlpha(120),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: theme.colorScheme.primary, width: 1.2),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+        onChanged: (value) => setState(() => _searchQuery = value.trim()),
+      ),
+    );
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+    });
+  }
+
+  SliverPadding _buildPlaylistSliver(List<PlaylistModel> list) {
+    final itemCount = list.isEmpty ? 0 : list.length * 2 - 1;
+
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+      sliver: SliverList.builder(
+        itemCount: itemCount,
+        itemBuilder: (context, index) {
+          if (index.isOdd) {
+            return const SizedBox(height: 8);
+          }
+          return _buildPlaylistCard(context, list[index ~/ 2]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildPlaylistCard(BuildContext context, PlaylistModel model) {
+    final theme = Theme.of(context);
+    final thumb = model.thumbnails;
+    final imgUrl = ModelUtils.selectImageUrl([
+      thumb.highUrl,
+      thumb.mediumUrl,
+      thumb.defaultUrl,
+    ]);
+
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
+        onTap: () => _onTapPlaylist(model, imgUrl),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isNarrow = constraints.maxWidth < 430;
+            final image = _buildPlaylistImages(model, imgUrl, isNarrow: isNarrow);
+            final details = _buildPlaylistDetails(context, model);
+
+            if (isNarrow) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  image,
+                  Padding(padding: const EdgeInsets.all(12), child: details),
+                ],
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                image,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+                    child: details,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Icon(
+                    Icons.chevron_right,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaylistDetails(BuildContext context, PlaylistModel model) {
+    final theme = Theme.of(context);
+    final description = model.snippet.description.trim();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Positioned.fill(
-          child: Padding(
-            padding: .only(top: 0.0),
-            child: ClipRRect(
-              borderRadius: .circular(10),
-              child: _buildPlaylistImageFallback(id, alpha: 0.5),
+        Row(
+          children: [
+            _buildPlaylistTypeIcon(context, model),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                model.snippet.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          _playlistVideoCountLabel(model.details.itemCount),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        if (description.isNotEmpty) ...[
+          const SizedBox(height: 5),
+          Text(
+            description,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.3,
             ),
           ),
-        ),
-        Positioned.fill(
-          child: Padding(
-            padding: .only(top: 3.0),
-            child: ClipRRect(
-              borderRadius: .circular(10),
-              child: _buildPlaylistImageFallback(id, alpha: 0.9),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6.0),
-          child: ClipRRect(
-            borderRadius: .circular(10),
-            child: Hero(tag: id, child: _buildPlaylistImage(model, imgUrl)),
-          ),
-        ),
+        ],
       ],
     );
+  }
+
+  Widget _buildPlaylistTypeIcon(BuildContext context, PlaylistModel model) {
+    final theme = Theme.of(context);
+    final icon = switch (model.playlist.type) {
+      PlaylistType.uploads => Icons.video_library_outlined,
+      PlaylistType.likes => Icons.thumb_up_alt_outlined,
+      PlaylistType.normal => Icons.playlist_play_outlined,
+    };
+
+    return Icon(icon, size: 18, color: theme.colorScheme.onSurfaceVariant);
+  }
+
+  Widget _buildPlaylistImages(
+    PlaylistModel model,
+    String imgUrl, {
+    required bool isNarrow,
+  }) {
+    final id = model.playlist.id;
+    final imageStack = AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: _buildPlaylistImageFallback(id, alpha: 0.5),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: _buildPlaylistImageFallback(id, alpha: 0.9),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Hero(tag: id, child: _buildPlaylistImage(model, imgUrl)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (isNarrow) {
+      return imageStack;
+    }
+    return SizedBox(width: 168, child: imageStack);
   }
 
   Widget _buildPlaylistImage(PlaylistModel model, String imgUrl) {
     return Image.network(
       imgUrl,
-      fit: .cover,
-      height: 90,
-      width: 160,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
       frameBuilder: (c, child, frame, wasSyncLoaded) {
         if (frame != null || wasSyncLoaded) {
           return child;
@@ -297,24 +686,27 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
     final color = Themes.colorFromId(id, brightness, alpha: alpha, sat: 0.1);
-    return Container(color: color, alignment: .center);
+    return Container(
+      color: color,
+      alignment: Alignment.center,
+      child: alpha >= 0.99
+          ? Icon(Icons.playlist_play_outlined, color: theme.colorScheme.onSurfaceVariant)
+          : null,
+    );
   }
 
   Future<void> _triggerSyncIfNeeded(List<PlaylistModel> list) async {
     if (_isFetchTriggered) {
       return;
     }
-    final nowTime = DateTime.now();
-    bool isAnyExpired = list.any((p) {
-      final expiresAt = p.playlist.updatedAt.add(
-        CacheConstants.syncChannelSearchResultAfter,
-      );
-      return expiresAt.isBefore(nowTime);
-    });
+    final isAnyExpired = _hasExpiredPlaylists(list);
 
     if (list.isEmpty || isAnyExpired) {
       _isFetchTriggered = true;
       await Future.delayed(Duration.zero);
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _isFetchInProgress = true;
         _fetchCount = 0;
@@ -324,12 +716,18 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
         'triggering fetch. isAnyExpired:$isAnyExpired existing length:${list.length}',
       );
       YoutubeApi.syncPlaylist(ref, _channelId, (count, total) {
+        if (!mounted) {
+          return false;
+        }
         setState(() {
           _fetchCount = count;
           _fetchTotal = total;
         });
         return context.mounted;
       }).whenComplete(() {
+        if (!mounted) {
+          return;
+        }
         setState(() {
           _isFetchInProgress = false;
         });
@@ -337,59 +735,24 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     }
   }
 
-  Widget _buildChannelInfo() {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0),
-      child: Column(
-        crossAxisAlignment: .start,
-        children: [
-          Row(
-            mainAxisSize: .min,
-            children: [
-              Hero(
-                tag: _heroId,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: _buildChannelImage(_heroImg, _heroId),
-                ),
-              ),
-              const SizedBox(width: 8.0),
-              Column(
-                crossAxisAlignment: .start,
-                children: [
-                  if (!_isModelLoading) ...[
-                    Text(_model.snippet.title, style: theme.textTheme.titleLarge),
-                    Text(
-                      _buildSubsAndVideosText(),
-                      style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-          if (!_isModelLoading) ...[
-            const SizedBox(height: 8.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ReadMoreText(
-                _model.snippet.description,
-                style: theme.textTheme.bodySmall,
-                trimLines: 2,
-                trimMode: .Line,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
+  bool _shouldSyncPlaylists(List<PlaylistModel> list) {
+    return list.isEmpty || _hasExpiredPlaylists(list);
+  }
+
+  bool _hasExpiredPlaylists(List<PlaylistModel> list) {
+    final nowTime = DateTime.now();
+    return list.any((p) {
+      final expiresAt = p.playlist.updatedAt.add(
+        CacheConstants.syncChannelSearchResultAfter,
+      );
+      return expiresAt.isBefore(nowTime);
+    });
   }
 
   Widget _buildChannelImage(String url, String id) {
     return Image.network(
       url,
-      fit: .contain,
+      fit: BoxFit.cover,
       frameBuilder: (_, child, frame, wasSyncLoaded) {
         if (frame != null || wasSyncLoaded) {
           return child;
@@ -404,20 +767,11 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     final theme = Theme.of(context);
     final brightness = theme.brightness;
     final color = Themes.colorFromId(id, brightness);
-    return Container(color: color, alignment: .center);
-  }
-
-  String _buildSubsAndVideosText() {
-    final buffer = StringBuffer();
-    if (!_model.statistics.hiddenSubscriberCount) {
-      final count = _model.statistics.subscriberCount;
-      _writeShortNumber(count, buffer);
-      buffer.write(' subscribers * ');
-    }
-    _writeShortNumber(_model.statistics.videoCount, buffer);
-    buffer.write(' videos');
-
-    return buffer.toString();
+    return Container(
+      color: color,
+      alignment: Alignment.center,
+      child: Icon(Icons.person_outline, color: theme.colorScheme.onSurfaceVariant),
+    );
   }
 
   void _onTapPlaylist(PlaylistModel model, String imgUrl) async {
@@ -426,19 +780,32 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     if (!isCompleted) {
       return;
     }
-    final firstVideo = await _playlistDao.getFirstVideoModel(id);
-    final lContext = context;
-    if (lContext.mounted) {
-      lContext.pushNamed(
-        Pages.binge.name,
-        queryParameters: BingePage.buildParams(
-          type: .playlistVideos,
-          id: id,
-          videoId: firstVideo.video.id,
-          heroId: id,
-          heroImg: imgUrl,
-        ),
-      );
+
+    try {
+      final firstVideo = await _playlistDao.getFirstVideoModel(id);
+      final localContext = context;
+      if (localContext.mounted) {
+        localContext.pushNamed(
+          Pages.binge.name,
+          queryParameters: BingePage.buildParams(
+            type: .playlistVideos,
+            id: id,
+            videoId: firstVideo.video.id,
+            heroId: id,
+            heroImg: imgUrl,
+          ),
+        );
+      }
+    } catch (e) {
+      final localContext = context;
+      if (localContext.mounted) {
+        CustomDialog.show(
+          localContext,
+          'No videos available',
+          'Okay',
+          const Text('This playlist does not have any synced videos to play.'),
+        );
+      }
     }
   }
 
@@ -477,10 +844,10 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
                 return localContext.mounted;
               };
               return Column(
-                mainAxisSize: .min,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('$progress of $end items ${isSync ? "synchronized" : "fetched"}'),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   LinearProgressIndicator(value: progress / end),
                 ],
               );
@@ -493,13 +860,30 @@ class _ChannelPageState extends ConsumerState<ChannelPage> {
     return !isCancelled;
   }
 
-  void _writeShortNumber(int count, StringBuffer buffer) {
-    if (count >= 1000000) {
-      buffer.write('${(count / 1000000).toStringAsFixed(1)}M');
-    } else if (count >= 1000) {
-      buffer.write('${(count / 1000).toStringAsFixed(1)}K');
-    } else {
-      buffer.write(count.toString());
+  String _playlistVideoCountLabel(int count) {
+    return _countLabel(count, 'video', 'videos');
+  }
+
+  String _countLabel(int count, String singular, String plural) {
+    return '${_formatCompactCount(count)} ${count == 1 ? singular : plural}';
+  }
+
+  String _formatCompactCount(int value) {
+    if (value < 1000) {
+      return value.toString();
     }
+
+    if (value >= 1000000000) {
+      return '${_formatCompactValue(value / 1000000000)}B';
+    }
+    if (value >= 1000000) {
+      return '${_formatCompactValue(value / 1000000)}M';
+    }
+    return '${_formatCompactValue(value / 1000)}K';
+  }
+
+  String _formatCompactValue(double value) {
+    final formatted = value >= 10 ? value.toStringAsFixed(0) : value.toStringAsFixed(1);
+    return formatted.replaceFirst(RegExp(r'\.0$'), '');
   }
 }
