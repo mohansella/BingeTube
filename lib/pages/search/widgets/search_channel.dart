@@ -1,9 +1,12 @@
 import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/api/youtube_api.dart';
 import 'package:bingetube/core/db/access/search.dart';
+import 'package:bingetube/core/db/models/channel_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
 import 'package:bingetube/pages/channel/channel_page.dart';
 import 'package:bingetube/pages/pages.dart';
+import 'package:bingetube/pages/search/widgets/search_formatters.dart';
+import 'package:bingetube/pages/search/widgets/search_state_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -13,9 +16,15 @@ class SearchChannelWidget extends ConsumerStatefulWidget {
   static final Logger _logger = LogManager.getLogger('SearchChannelWidget');
 
   final String? query;
+  final bool isActive;
   final void Function(ScrollController) scrollListener;
 
-  const SearchChannelWidget(this.query, this.scrollListener, {super.key});
+  const SearchChannelWidget(
+    this.query, {
+    required this.isActive,
+    required this.scrollListener,
+    super.key,
+  });
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SearchChannelState();
@@ -36,83 +45,166 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var text = '';
     if (!_isValidQuery) {
-      text = 'Search channels to add to your collection';
-    } else if (_isLoaded) {
-      if (_model == null) {
-        text = 'Some error occured';
-      } else if (_model!.channels.isEmpty) {
-        text = 'No results found';
-      } else {
-        final channels = _model!.channels;
-        return ListView.builder(
-          controller: _scrollController,
-          itemCount: channels.length,
-          itemBuilder: (context, index) {
-            final channel = channels[index];
-            return Card(
-              child: InkWell(
-                onTap: () {
-                  final params = ChannelPage.buildParams(
-                    channelId: channel.channel.id,
-                    heroId: channel.channel.id,
-                    heroImg: channel.thumbnails.defaultUrl,
-                  );
-                  context.pushNamed(Pages.channel.name, queryParameters: params);
-                },
-                child: ListTile(
-                  leading: Hero(
-                    tag: channel.channel.id,
-                    child: CircleAvatar(
-                      foregroundImage: NetworkImage(channel.thumbnails.defaultUrl),
-                    ),
-                  ),
-                  title: Text(channel.snippet.title),
-                  subtitle: Text(
-                    channel.snippet.description,
-                    maxLines: 2,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w300),
-                  ),
-                  mouseCursor: SystemMouseCursors.click,
-                ),
-              ),
-            );
-          },
-        );
-      }
+      return const SearchStateView(
+        icon: Icons.person_search_outlined,
+        title: 'Search channels',
+        message: 'Find a creator, then open the channel to add playlists to a series.',
+      );
     }
 
-    if (text.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            Text('Loading...'),
-            SizedBox(height: 16),
-            FractionallySizedBox(widthFactor: 0.4, child: LinearProgressIndicator()),
-          ],
-        ),
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.only(top: 24),
-        child: Text(text, textAlign: .center),
+    if (!_isLoaded) {
+      return const SearchStateView(
+        icon: Icons.person_search_outlined,
+        title: 'Searching channels',
+        message: 'Looking through YouTube for matching channels.',
+        isLoading: true,
       );
     }
+
+    if (_model == null) {
+      return const SearchStateView(
+        icon: Icons.cloud_off_outlined,
+        title: 'Search failed',
+        message: 'Check your API key or connection, then try again.',
+      );
+    }
+
+    final channels = _model!.channels;
+    if (channels.isEmpty) {
+      return const SearchStateView(
+        icon: Icons.search_off_outlined,
+        title: 'No channels found',
+        message: 'Try a creator name, topic, or a more specific channel title.',
+      );
+    }
+
+    return ListView.separated(
+      controller: _scrollController,
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+      itemCount: channels.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        return _buildChannelCard(context, channels[index]);
+      },
+    );
+  }
+
+  Widget _buildChannelCard(BuildContext context, ChannelModel channel) {
+    final theme = Theme.of(context);
+    final description = channel.snippet.description.trim();
+
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: InkWell(
+        mouseCursor: SystemMouseCursors.click,
+        onTap: () => _openChannel(channel),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Hero(
+                tag: channel.channel.id,
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  foregroundImage: NetworkImage(channel.thumbnails.defaultUrl),
+                  child: Icon(
+                    Icons.person_outline,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      channel.snippet.title,
+                      maxLines: 1,
+                      overflow: .ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        maxLines: 2,
+                        overflow: .ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 6),
+                    Text(
+                      _buildChannelStatsLabel(channel),
+                      maxLines: 1,
+                      overflow: .ellipsis,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openChannel(ChannelModel channel) {
+    final params = ChannelPage.buildParams(
+      channelId: channel.channel.id,
+      heroId: channel.channel.id,
+      heroImg: channel.thumbnails.defaultUrl,
+    );
+    context.pushNamed(Pages.channel.name, queryParameters: params);
+  }
+
+  String _buildChannelStatsLabel(ChannelModel channel) {
+    final stats = channel.statistics;
+    final parts = <String>[];
+
+    if (!stats.hiddenSubscriberCount) {
+      parts.add(_countLabel(stats.subscriberCount, 'subscriber', 'subscribers'));
+    }
+
+    parts.add(_countLabel(stats.videoCount, 'video', 'videos'));
+    return parts.join(' - ');
+  }
+
+  String _countLabel(int count, String singular, String plural) {
+    return '${formatCompactCount(count)} ${count == 1 ? singular : plural}';
   }
 
   @override
   void didUpdateWidget(covariant SearchChannelWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.query != oldWidget.query) {
-      setState(() {
-        _isValidQuery = false;
-        _isLoaded = false;
-        _model = null;
-      });
+    final queryChanged = widget.query != oldWidget.query;
+    final becameActive = widget.isActive && !oldWidget.isActive;
+
+    if (queryChanged) {
+      _resetSearch();
+    }
+
+    if (widget.isActive && (queryChanged || becameActive)) {
       _processRequest(widget.query);
     }
   }
@@ -127,11 +219,26 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
   void initState() {
     super.initState();
     _scrollController.addListener(() => widget.scrollListener(_scrollController));
-    _processRequest(widget.query);
+    if (widget.isActive) {
+      _processRequest(widget.query);
+    }
+  }
+
+  void _resetSearch() {
+    setState(() {
+      _isValidQuery = false;
+      _isLoaded = false;
+      _model = null;
+    });
   }
 
   void _processRequest(String? query) async {
-    if (query == null) {
+    if (!widget.isActive) {
+      return;
+    }
+
+    final trimmedQuery = query?.trim();
+    if (trimmedQuery == null || trimmedQuery.isEmpty) {
       return;
     }
 
@@ -140,9 +247,14 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
     });
 
     Analytics.logSearchChannels();
-    SearchChannelWidget._logger.info('Initiating channel search for query: $query');
-    final channelsResult = await YoutubeApi.searchChannels(ref, query);
-    if (query == widget.query) {
+    SearchChannelWidget._logger.info(
+      'Initiating channel search for query: $trimmedQuery',
+    );
+    final channelsResult = await YoutubeApi.searchChannels(ref, trimmedQuery);
+    if (!mounted) {
+      return;
+    }
+    if (trimmedQuery == widget.query?.trim()) {
       final channels = channelsResult.fold((l) => l, (e) => null);
       setState(() {
         _model = channels;
@@ -150,7 +262,7 @@ class _SearchChannelState extends ConsumerState<SearchChannelWidget>
       });
     } else {
       SearchChannelWidget._logger.info(
-        'Ignored search results due to user moved to next query:${widget.query} from:$query',
+        'Ignored search results due to user moved to next query:${widget.query} from:$trimmedQuery',
       );
     }
   }

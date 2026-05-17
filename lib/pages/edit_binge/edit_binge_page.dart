@@ -74,7 +74,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   void initAsync() async {
     final model = await _controller.stream.first;
     final collection = model.collectionId == null
-        ? await _bingeDao.getDefaultCollection()
+        ? await _bingeDao.getInitialCollectionForNewSeries()
         : await _bingeDao.getCollection(model.collectionId!);
     _isLoading = false;
     _unfilteredModel = model;

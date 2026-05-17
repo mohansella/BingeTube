@@ -26,6 +26,8 @@ part '../../../generated/core/db/access/binge.g.dart';
 )
 class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   static final _logger = LogManager.getLogger('BingeDao');
+  static const _defaultCollectionName = 'Default Collection';
+  static const _defaultCollectionDescription = 'Default collection created by system';
 
   BingeDao(super.attachedDatabase);
 
@@ -38,13 +40,30 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
     if (result.isEmpty) {
       _logger.info('User Binge collection is empty. so will create one');
       await createCollection(
-        name: 'Default Collection',
-        description: 'Default collection created by system',
+        name: _defaultCollectionName,
+        description: _defaultCollectionDescription,
         isSystem: false,
       );
       result = await query.get();
     }
     return result[0];
+  }
+
+  Future<Collection> getInitialCollectionForNewSeries() async {
+    final userCollections = await getCollectionsByPriority(isSystem: false);
+    if (userCollections.isEmpty) {
+      return getDefaultCollection();
+    }
+
+    return userCollections.firstWhere(
+      (collection) => !_isAutoDefaultCollection(collection),
+      orElse: () => userCollections.first,
+    );
+  }
+
+  bool _isAutoDefaultCollection(Collection collection) {
+    return collection.name == _defaultCollectionName &&
+        collection.description == _defaultCollectionDescription;
   }
 
   Future<Collection> getCollection(int collectionId) async {
