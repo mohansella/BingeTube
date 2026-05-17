@@ -1,13 +1,14 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:bingetube/core/db/access/binge.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/port/sery_port.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/core/utils/file_download.dart' as file_download;
 import 'package:bingetube/core/utils/file_utils.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 class LibraryExportProgress {
@@ -44,7 +45,9 @@ class LibraryImportArchive {
 sealed class LibraryPort {
   static const masterFileName = 'library.json';
   static const archiveExtension = 'binges';
-  static const archiveFileName = 'bingetube-library.$archiveExtension';
+  static const archiveBaseFileName = 'bingetube-library';
+  static const archiveFileName = '$archiveBaseFileName.$archiveExtension';
+  static const archiveMimeType = 'application/octet-stream';
   static final _logger = LogManager.getLogger('LibraryPort');
 
   static Future<LibraryImportArchive?> pickImportArchive() async {
@@ -65,18 +68,32 @@ sealed class LibraryPort {
 
   static Future<String?> exportAll({
     void Function(LibraryExportProgress progress)? onProgress,
+    bool Function()? isCancelled,
   }) async {
-    final bytes = await _buildArchiveBytes(onProgress: onProgress);
-    final filePath = await FilePicker.saveFile(
+    final bytes = await _buildArchiveBytes(
+      onProgress: onProgress,
+      isCancelled: isCancelled,
+    );
+    if (bytes == null || _isCancelled(isCancelled)) {
+      _logger.info('library archive export cancelled');
+      return null;
+    }
+
+    final filePath = await file_download.saveFile(
       dialogTitle: 'Save library export:',
       fileName: archiveFileName,
+      fileBaseName: archiveBaseFileName,
+      extension: archiveExtension,
       bytes: bytes,
-      type: .custom,
-      allowedExtensions: [archiveExtension],
+      mimeType: archiveMimeType,
     );
+    if (filePath == null) {
+      _logger.info('library archive export cancelled');
+      return null;
+    }
 
-    _logger.info('exported library archive at ${filePath ?? archiveFileName}');
-    return filePath ?? (kIsWeb ? archiveFileName : null);
+    _logger.info('exported library archive at $filePath');
+    return filePath;
   }
 
   static Future<String> importAll(
@@ -103,8 +120,9 @@ sealed class LibraryPort {
     return archive.label;
   }
 
-  static Future<Uint8List> _buildArchiveBytes({
+  static Future<Uint8List?> _buildArchiveBytes({
     void Function(LibraryExportProgress progress)? onProgress,
+    bool Function()? isCancelled,
   }) async {
     final archive = Archive();
     final bingeDao = BingeDao(Database());
@@ -113,6 +131,9 @@ sealed class LibraryPort {
     var totalSeries = 0;
 
     for (final collection in collections) {
+      if (_isCancelled(isCancelled)) {
+        return null;
+      }
       final series = await bingeDao.getSeriesForCollection(collection.id);
       collectionIdVsSeries[collection.id] = series;
       totalSeries += series.length;
@@ -131,6 +152,9 @@ sealed class LibraryPort {
     final masterCollections = <Map<String, dynamic>>[];
 
     for (final collection in collections) {
+      if (_isCancelled(isCancelled)) {
+        return null;
+      }
       final collectionDirName = _uniquePathSegment(
         collection.name,
         usedCollectionDirs,
@@ -142,7 +166,13 @@ sealed class LibraryPort {
       final series = collectionIdVsSeries[collection.id] ?? [];
 
       for (final sery in series) {
+        if (_isCancelled(isCancelled)) {
+          return null;
+        }
         final model = await bingeDao.streamBingeModel(sery.id).first;
+        if (_isCancelled(isCancelled)) {
+          return null;
+        }
         final fileName = _uniqueFileName(
           SeryPort.buildFileName(model.title),
           usedSeriesFiles,
@@ -187,6 +217,10 @@ sealed class LibraryPort {
     );
 
     return ZipEncoder().encodeBytes(archive);
+  }
+
+  static bool _isCancelled(bool Function()? isCancelled) {
+    return isCancelled?.call() ?? false;
   }
 
   static List<_LibraryCollectionManifest> _readManifestContent(String content) {

@@ -268,7 +268,8 @@ class SettingsPage extends ConsumerWidget {
           return FutureBuilder(
             future: importFuture,
             builder: (futureContext, snapshot) {
-              if ((snapshot.hasData || snapshot.hasError) && futureContext.mounted) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  futureContext.mounted) {
                 Future.microtask(() {
                   if (futureContext.mounted) {
                     Navigator.of(futureContext).pop();
@@ -323,10 +324,12 @@ class SettingsPage extends ConsumerWidget {
         label: 'Preparing library export',
       ),
     );
+    var cancelRequested = false;
     final exportFuture = LibraryPort.exportAll(
       onProgress: (progress) {
         progressNotifier.value = progress;
       },
+      isCancelled: () => cancelRequested,
     );
 
     try {
@@ -337,7 +340,8 @@ class SettingsPage extends ConsumerWidget {
           return FutureBuilder(
             future: exportFuture,
             builder: (futureContext, snapshot) {
-              if ((snapshot.hasData || snapshot.hasError) && futureContext.mounted) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  futureContext.mounted) {
                 Future.microtask(() {
                   if (futureContext.mounted) {
                     Navigator.of(futureContext).pop();
@@ -373,6 +377,15 @@ class SettingsPage extends ConsumerWidget {
                     );
                   },
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      cancelRequested = true;
+                      Navigator.of(dialogContext).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                ],
               );
             },
           );
