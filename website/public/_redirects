@@ -4,8 +4,8 @@
 /app/discover/* /spa 200
 /app/library /spa 200
 /app/library/* /spa 200
-/app/profile /spa 200
-/app/profile/* /spa 200
+/app/settings /spa 200
+/app/settings/* /spa 200
 /app/keyconfig /spa 200
 /app/keyconfig/* /spa 200
 /app/search /spa 200
