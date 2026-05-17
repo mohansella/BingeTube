@@ -517,7 +517,10 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   void _chooseCollection() async {
-    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(context);
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
+      context,
+      title: 'Save to collection',
+    );
     if (chosenCollection == null) {
       return;
     }
@@ -527,7 +530,10 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   void _onCopyPressed() async {
-    final chosenSery = await ChooseSeryWidget.showChooseCollection(context);
+    final chosenSery = await ChooseSeryWidget.showChooseSeries(
+      context,
+      title: 'Copy to series',
+    );
     if (chosenSery == null) {
       return;
     }

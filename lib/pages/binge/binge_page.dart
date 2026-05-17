@@ -520,7 +520,10 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onActionMoveTo() async {
-    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(context);
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
+      context,
+      title: 'Move to collection',
+    );
     if (chosenCollection == null) {
       return;
     }
@@ -532,7 +535,10 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onActionDuplicate() async {
-    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(context);
+    final chosenCollection = await ChooseCollectionWidget.showChooseCollection(
+      context,
+      title: 'Duplicate to collection',
+    );
     if (chosenCollection == null) {
       return;
     }
