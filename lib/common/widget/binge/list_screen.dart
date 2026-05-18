@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bingetube/common/widget/custom_dialog.dart';
+import 'package:bingetube/common/widget/binge/sery_preview.dart';
 import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
 import 'package:flutter/foundation.dart';
@@ -51,6 +52,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   late bool _droppingOnLeft;
   late int _dropCollectionId;
   late int _dropPriority;
+  String? _hoveredSeryKey;
 
   @override
   void initState() {
@@ -114,6 +116,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             }
             _height = _width * 9.0 / 16.0;
             return ListView.builder(
+              clipBehavior: Clip.none,
               itemCount: collections.length,
               itemBuilder: (c, i) => _buildCollection(collections, i),
             );
@@ -202,6 +205,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
               : SizedBox(
                   height: _height,
                   child: ListView.separated(
+                    clipBehavior: Clip.none,
                     scrollDirection: .horizontal,
                     itemCount: model.series.length,
                     itemBuilder: (_, i) => _buildSery(model, model.series[i]),
@@ -572,6 +576,10 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
   DragItemWidget _buildDragItem(CollectionModel collection, SeryModel model) {
     final heroId = widget.isSystem ? model.dataPath! : model.sery.id.toString();
     final heroImg = model.coverUrl;
+    final ratio = _width / minWidth;
+    final previewKey = _seryPreviewKey(model);
+    final previewEnabled = widget.isSystem;
+    final showDetails = previewEnabled && _hoveredSeryKey == previewKey;
     double dropShift = model.sery.id == _droppingOnSeryId ? 20 : 0;
     dropShift = _droppingOnLeft ? dropShift : -dropShift;
 
@@ -587,12 +595,32 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         return item;
       },
       child: DraggableWidget(
-        child: Material(
-          child: InkWell(
-            onTap: onTap,
+        child: MouseRegion(
+          onEnter: previewEnabled ? (_) => _setHoveredSery(previewKey) : null,
+          onExit: previewEnabled ? (_) => _clearHoveredSery(previewKey) : null,
+          child: AnimatedScale(
+            duration: const Duration(milliseconds: 170),
+            curve: Curves.easeOutCubic,
+            scale: showDetails ? 1.055 : 1,
             child: Transform.translate(
               offset: Offset(dropShift, 0.0),
-              child: _buildActualSery(heroId, heroImg, model),
+              child: Material(
+                color: Colors.transparent,
+                elevation: showDetails ? 10 : 0,
+                shadowColor: Colors.black.withAlpha(120),
+                borderRadius: BorderRadius.circular(4 * ratio),
+                clipBehavior: Clip.antiAlias,
+                animationDuration: const Duration(milliseconds: 170),
+                child: InkWell(
+                  onTap: onTap,
+                  child: _buildActualSery(
+                    heroId,
+                    heroImg,
+                    model,
+                    showDetails: showDetails,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -600,7 +628,12 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Widget _buildActualSery(String heroId, String heroImg, SeryModel model) {
+  Widget _buildActualSery(
+    String heroId,
+    String heroImg,
+    SeryModel model, {
+    required bool showDetails,
+  }) {
     final ratio = _width / minWidth;
     final totalCount = model.totalVideos;
     final viewedCount = model.watchedVideos;
@@ -611,9 +644,9 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       child: Stack(
         children: [
           Hero(tag: heroId, child: _buildSeryImage(heroImg, model)),
-          _buildSeryBottomGradient(ratio),
+          _buildSeryBottomGradient(ratio, showDetails),
           _buildSeryTopRightCount(ratio, totalCount),
-          _buildSeryIconTitle(ratio, channelUrl, model),
+          _buildSeryIconTitle(ratio, channelUrl, model, showDetails: showDetails),
           if (viewedCount > 0) _buildSeryProgress(viewedCount, totalCount, ratio),
         ],
       ),
@@ -634,33 +667,77 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Positioned _buildSeryIconTitle(double ratio, String channelUrl, SeryModel model) {
+  Positioned _buildSeryIconTitle(
+    double ratio,
+    String channelUrl,
+    SeryModel model, {
+    required bool showDetails,
+  }) {
+    final description = SeryPreviewText.description(model);
+    const descriptionLines = 3;
+    final descriptionFontSize = 10 * ratio;
+    final descriptionHeight = showDetails
+        ? (descriptionLines * descriptionFontSize * 1.16) + (5 * ratio)
+        : 0.0;
+
     return Positioned(
       left: 8 * ratio,
       bottom: 10 * ratio,
       right: 8 * ratio,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 18 * ratio,
-            height: 18 * ratio,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 1),
-            ),
-            child: ClipOval(child: Image.network(channelUrl, fit: BoxFit.cover)),
-          ),
-          SizedBox(width: 6 * ratio),
+          Row(
+            children: [
+              Container(
+                width: 18 * ratio,
+                height: 18 * ratio,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+                child: ClipOval(child: Image.network(channelUrl, fit: BoxFit.cover)),
+              ),
+              SizedBox(width: 6 * ratio),
 
-          Expanded(
-            child: Text(
-              model.sery.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12 * ratio,
-                fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  model.sery.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12 * ratio,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 170),
+            curve: Curves.easeOutCubic,
+            height: descriptionHeight,
+            child: ClipRect(
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOut,
+                opacity: showDetails ? 1 : 0,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 5 * ratio),
+                  child: Text(
+                    description,
+                    maxLines: descriptionLines,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white.withAlpha(225),
+                      fontSize: descriptionFontSize,
+                      height: 1.16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -698,23 +775,51 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     );
   }
 
-  Positioned _buildSeryBottomGradient(double ratio) {
+  Positioned _buildSeryBottomGradient(double ratio, bool showDetails) {
     return Positioned.fill(
       child: Align(
         alignment: Alignment.bottomCenter,
-        child: Container(
-          height: 80 * ratio,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 170),
+          curve: Curves.easeOutCubic,
+          height: (showDetails ? 124 : 80) * ratio,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
-              stops: const [0.0, 0.5],
-              colors: [Colors.black.withAlpha(210), Colors.transparent],
+              stops: const [0.0, 0.55, 1.0],
+              colors: [
+                Colors.black.withAlpha(showDetails ? 230 : 210),
+                Colors.black.withAlpha(showDetails ? 120 : 60),
+                Colors.transparent,
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  String _seryPreviewKey(SeryModel model) {
+    return model.dataPath ?? model.sery.id.toString();
+  }
+
+  void _setHoveredSery(String previewKey) {
+    if (_hoveredSeryKey == previewKey) {
+      return;
+    }
+    setState(() {
+      _hoveredSeryKey = previewKey;
+    });
+  }
+
+  void _clearHoveredSery(String previewKey) {
+    if (_hoveredSeryKey != previewKey) {
+      return;
+    }
+    setState(() {
+      _hoveredSeryKey = null;
+    });
   }
 
   Future<void> _addVirtualFile(DragItem item, SeryModel model) async {
@@ -811,7 +916,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       context,
       'Preparing ${model.sery.name}',
       'Cancel',
-      _buildBingeLoadingContent('Initializing this binge for playback...'),
+      _buildBingeLoadingContent('Initializing this binge for playback...', model: model),
     ).then((v) {
       isCancelled.value = true;
     });
@@ -831,7 +936,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
       context,
       'Refreshing ${model.sery.name}',
       'Cancel',
-      _buildBingeLoadingContent('Getting the latest binge details...'),
+      _buildBingeLoadingContent('Getting the latest binge details...', model: model),
     ).then((v) {
       isCancelled.value = true;
     });
@@ -844,22 +949,29 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     return toReturn;
   }
 
-  Widget _buildBingeLoadingContent(String message) {
+  Widget _buildBingeLoadingContent(String message, {SeryModel? model}) {
     final theme = Theme.of(context);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const LinearProgressIndicator(),
-        const SizedBox(height: 14),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 360),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (model != null) ...[
+            SeryLoadingPreviewCard(model: model),
+            const SizedBox(height: 16),
+          ],
+          const LinearProgressIndicator(),
+          const SizedBox(height: 14),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

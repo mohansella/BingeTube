@@ -1,5 +1,7 @@
+import 'package:bingetube/common/widget/binge/sery_preview.dart';
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/db/database.dart';
+import 'package:bingetube/core/db/models/sery_model.dart';
 import 'package:bingetube/core/db/repo/collections_repo.dart';
 import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
@@ -28,6 +30,7 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
   final _isCancelled = Mutable(false);
 
   Map<String, String>? _queryParams;
+  SeryModel? _loadingModel;
 
   @override
   void initState() {
@@ -46,6 +49,12 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
         .firstWhere((s) => s.dataPath == slug);
     final collection = collections.firstWhere((c) => c.series.contains(model));
     Sery? sery = model.sery;
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _loadingModel = model;
+    });
     if (!model.isSaved) {
       setState(() {
         _loadingText = 'Preparing ${model.sery.name}';
@@ -106,6 +115,10 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
                   ),
                 ),
                 const SizedBox(height: 18),
+                if (_loadingModel != null) ...[
+                  SeryLoadingPreviewCard(model: _loadingModel!, descriptionLines: 3),
+                  const SizedBox(height: 18),
+                ],
                 const LinearProgressIndicator(),
                 const SizedBox(height: 12),
                 Text(
