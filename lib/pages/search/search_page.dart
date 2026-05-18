@@ -1,5 +1,6 @@
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/core/config/apikey_util.dart';
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:bingetube/pages/search/widgets/search_channel.dart';
@@ -55,6 +56,7 @@ class SearchPageState extends ConsumerState<SearchPage>
 
   @override
   Widget build(BuildContext context) {
+    final apiKeyMeta = ref.watch(ConfigProviders.apiKeyMeta);
     apiKey = ApiKeyUtil.readApiKey(ref);
     final theme = Theme.of(context);
     return Scaffold(
@@ -64,6 +66,8 @@ class SearchPageState extends ConsumerState<SearchPage>
           children: [
             _buildAppBar(context),
             if (apiKey.isNotEmpty) ...[
+              if (apiKeyMeta.isUsingCommunityKey && _showAppBar)
+                _buildCommunityKeyNotice(context),
               _buildTabBar(context),
               Expanded(
                 child: TabBarView(
@@ -86,6 +90,46 @@ class SearchPageState extends ConsumerState<SearchPage>
               _buildApiKeyRequired(),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommunityKeyNotice(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => context.pushNamed(Pages.keyConfig.name),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: color.secondaryContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.public_outlined, size: 20, color: color.onSecondaryContainer),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Using the community key. Search works, but quota is shared.',
+                  maxLines: 2,
+                  overflow: .ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: color.onSecondaryContainer,
+                    height: 1.25,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, size: 20, color: color.onSecondaryContainer),
+            ],
+          ),
         ),
       ),
     );

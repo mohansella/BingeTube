@@ -1,5 +1,6 @@
 import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/api/youtube_api.dart';
+import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/db/access/search.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/log/log_manager.dart';
@@ -63,10 +64,10 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
     }
 
     if (_model == null) {
-      return const SearchStateView(
+      return SearchStateView(
         icon: Icons.cloud_off_outlined,
         title: 'Search failed',
-        message: 'Check your API key or connection, then try again.',
+        message: _searchFailedMessage(),
       );
     }
 
@@ -308,6 +309,14 @@ class _SearchVideoState extends ConsumerState<SearchVideoWidget>
 
   String _countLabel(int count, String singular, String plural) {
     return '${formatCompactCount(count)} ${count == 1 ? singular : plural}';
+  }
+
+  String _searchFailedMessage() {
+    final meta = ref.read(ConfigProviders.apiKeyMeta);
+    if (meta.isUsingCommunityKey) {
+      return 'The community key may be busy or out of quota. Add your own key or try again later.';
+    }
+    return 'Check your API key or connection, then try again.';
   }
 
   void _resetSearch() {

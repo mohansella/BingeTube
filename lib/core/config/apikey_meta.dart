@@ -40,6 +40,8 @@ class ApiKeyMeta {
   int get quotaUsed => _quotaSections.values.fold(0, (a, b) => a + b);
   bool get isQuotaUsedInvalid => ApiKeyMeta.nextQuotaReset() != nextQuotaResetMillis;
   Map<ApiKeyQuotaType, int> get quotaSections => {..._quotaSections};
+  bool get hasPersonalKey => apiKey.trim().isNotEmpty;
+  bool get isUsingCommunityKey => !hasPersonalKey;
 
   static const int quotaLimit = 10000;
 
