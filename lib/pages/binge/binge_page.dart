@@ -1,5 +1,5 @@
 import 'package:bingetube/app/routes.dart';
-import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/common/widget/binge/binge_video_entry.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/player/player_widget.dart';
@@ -102,17 +102,52 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildPlaylist(BuildContext context, AsyncSnapshot<BingeModel> snapshot) {
-    if (snapshot.hasData) {
-      final videos = snapshot.data!.videos;
-      return SliverList.builder(
-        itemCount: videos.length,
-        itemBuilder: (context, pos) => _buildVideoCard(context, videos[pos]),
+    if (snapshot.hasError) {
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: _buildStateView(
+          icon: Icons.error_outline,
+          title: 'Unable to load playlist',
+          message: '${snapshot.error}',
+        ),
       );
     }
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Center(child: CircularProgressIndicator()),
+
+    if (snapshot.hasData) {
+      final videos = snapshot.data!.videos;
+      if (videos.isEmpty) {
+        return SliverFillRemaining(
+          hasScrollBody: false,
+          child: _buildStateView(
+            icon: Icons.playlist_remove_outlined,
+            title: 'No playlist entries',
+            message: 'This binge does not have any synced videos yet.',
+          ),
+        );
+      }
+
+      return SliverPadding(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
+        sliver: SliverList.builder(
+          itemCount: videos.length * 2 - 1,
+          itemBuilder: (context, index) {
+            if (index.isOdd) {
+              return const SizedBox(height: 8);
+            }
+            final pos = index ~/ 2;
+            return _buildVideoCard(context, videos[pos], pos);
+          },
+        ),
+      );
+    }
+
+    return SliverFillRemaining(
+      hasScrollBody: false,
+      child: _buildStateView(
+        icon: Icons.playlist_play_outlined,
+        title: 'Loading playlist',
+        message: 'Getting your queue ready.',
+        isLoading: true,
       ),
     );
   }
@@ -124,32 +159,41 @@ class _BingePageState extends ConsumerState<BingePage> {
       delegate: _BingeTitleDelegate(
         minHeight: headerHeight,
         maxHeight: headerHeight,
-        child: Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          padding: EdgeInsets.all(8.0),
+        child: _buildHeaderShell(context, snapshot),
+      ),
+    );
+  }
+
+  Widget _buildHeaderShell(BuildContext context, AsyncSnapshot<BingeModel> snapshot) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.colorScheme.surface,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
           child: Column(
             children: [
-              Row(
-                children: [
-                  _buildCollapseIcon(),
-                  _buildTitleColumn(snapshot),
-                  _buildFilterAndModify(snapshot),
-                ],
-              ),
-              if (_showRefine) ...[
-                Container(
-                  padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                  child: BingeRefineWidget(
-                    filter: _controller.filter,
-                    sort: _controller.sort,
-                    minDateTime: _controller.minDateTime,
-                    maxDateTime: _controller.maxDateTime,
-                    onFilterUpdate: _onFilterModified,
-                    onSortUpdate: _onSortModified,
-                    onShowModal: _onRefineOpened,
-                  ),
+              SizedBox(
+                height: 54,
+                child: Row(
+                  children: [
+                    _buildCollapseIcon(),
+                    const SizedBox(width: 4),
+                    _buildTitleColumn(snapshot),
+                    const SizedBox(width: 8),
+                    _buildFilterAndModify(snapshot),
+                  ],
                 ),
-              ],
+              ),
+              if (_showRefine)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: _buildRefine(snapshot),
+                ),
             ],
           ),
         ),
@@ -157,12 +201,28 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
+  Widget _buildRefine(AsyncSnapshot<BingeModel> snapshot) {
+    if (!snapshot.hasData) {
+      return const SizedBox(height: 36);
+    }
+
+    return BingeRefineWidget(
+      filter: _controller.filter,
+      sort: _controller.sort,
+      minDateTime: _controller.minDateTime,
+      maxDateTime: _controller.maxDateTime,
+      onFilterUpdate: _onFilterModified,
+      onSortUpdate: _onSortModified,
+      onShowModal: _onRefineOpened,
+    );
+  }
+
   double _calcHeaderHeight() {
     final fontSize = ref.read(ConfigProviders.appFontSize);
-    final baseHeight = 60.0;
-    var headerHeight = _showRefine ? 100.0 : baseHeight;
+    const baseHeight = 76.0;
+    var headerHeight = _showRefine ? 122.0 : baseHeight;
     if (fontSize == .large) {
-      headerHeight += 7.0;
+      headerHeight += 10.0;
     } else if (fontSize == .small) {
       headerHeight -= 4.0;
     }
@@ -170,26 +230,34 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildTitleColumn(AsyncSnapshot<BingeModel> snapshot) {
+    final theme = Theme.of(context);
+    final model = snapshot.data;
+    final activePos = _controller.activeVideoPos;
+    final count = model?.videos.length ?? 0;
+    final activeLabel = activePos == null ? null : 'Playing ${activePos + 1} of $count';
+
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 40.0),
-        child: Column(
-          mainAxisAlignment: .center,
-          children: [
-            Text(
-              snapshot.data?.title ?? '',
-              style: Theme.of(context).textTheme.titleMedium,
-              maxLines: 1,
-              overflow: .ellipsis,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            model?.title.isNotEmpty == true ? model!.title : 'Binge playlist',
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            activeLabel ?? '$count playlist entries',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
             ),
-            Text(
-              '${snapshot.data?.videos.length ?? 0} videos',
-              maxLines: 1,
-              overflow: .ellipsis,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -215,7 +283,8 @@ class _BingePageState extends ConsumerState<BingePage> {
         }
         final actions = actionSnap.data!;
         return Row(
-          mainAxisAlignment: .end,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
             IconButton(
               tooltip: 'Filter & Sort',
@@ -241,97 +310,70 @@ class _BingePageState extends ConsumerState<BingePage> {
     );
   }
 
-  Widget _buildVideoCard(BuildContext context, VideoModel video) {
+  Widget _buildVideoCard(BuildContext context, VideoModel video, int index) {
     final isActive = video.video.id == _controller.activeVideoId;
-    return Card(
-      color: isActive ? Theme.of(context).colorScheme.primaryContainer : null,
-      shape: RoundedRectangleBorder(),
-      child: InkWell(
-        onTap: isActive ? null : () => _onVideoCardTap(context, video),
-        child: Row(
+    return BingeVideoEntry(
+      video: video,
+      position: index + 1,
+      isActive: isActive,
+      onTap: isActive ? null : () => _onVideoCardTap(context, video),
+      onWatchedPressed: () =>
+          _controller.setVideoWatched(video, !video.progressData.isFinished),
+    );
+  }
+
+  Widget _buildStateView({
+    required IconData icon,
+    required String title,
+    required String message,
+    bool isLoading = false,
+  }) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(32, 24, 32, 96),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
-              width: 160,
-              height: 90,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  _buildVideoCardImage(video),
-                  _buildDuration(video),
-                  LinearProgressIndicator(value: video.progressPercent),
-                ],
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
+                    )
+                  : Icon(icon, size: 30, color: theme.colorScheme.onSecondaryContainer),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 340),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.35,
+                ),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: .start,
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    video.formattedTitle,
-                    maxLines: 2,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w500),
-                  ),
-                  Text(
-                    video.snippet.channelTitle,
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w200),
-                  ),
-                  Text(
-                    video.snippet.description,
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w300),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              tooltip: video.progressData.isFinished ? 'Mark Unwatched' : 'Mark Watched',
-              icon: Icon(
-                video.progressData.isFinished ? Icons.visibility_off : Icons.visibility,
-              ),
-              onPressed: () =>
-                  _controller.setVideoWatched(video, !video.progressData.isFinished),
-            ),
-            const SizedBox(width: 12),
           ],
         ),
       ),
     );
-  }
-
-  Positioned _buildDuration(VideoModel video) {
-    final duration = video.formatDuration();
-    return Positioned(
-      bottom: 8,
-      right: 8,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        decoration: BoxDecoration(
-          color: Colors.black.withAlpha(200),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Text(
-          duration,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 10,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCoverFallback(BuildContext context, String id) {
-    final theme = Theme.of(context);
-    final brightness = theme.brightness;
-    final color = Themes.colorFromId(id, brightness);
-    return Container(color: color, alignment: .center);
   }
 
   List<PopupMenuItem<BingeActions>> _buildMenuItems(
@@ -570,20 +612,6 @@ class _BingePageState extends ConsumerState<BingePage> {
   void _onActionExport(AsyncSnapshot<BingeModel> snapshot) async {
     final model = snapshot.requireData;
     SeryPort.exportWithOSMenu(model);
-  }
-
-  Widget _buildVideoCardImage(VideoModel video) {
-    return Image.network(
-      video.thumbnails.mediumUrl,
-      fit: .cover,
-      frameBuilder: (c, child, frame, wasSyncLoaded) {
-        if (frame != null || wasSyncLoaded) {
-          return child;
-        }
-        return _buildCoverFallback(c, video.video.id);
-      },
-      errorBuilder: (c, _, _) => _buildCoverFallback(c, video.video.id),
-    );
   }
 }
 

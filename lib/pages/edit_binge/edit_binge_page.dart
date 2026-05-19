@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:bingetube/app/routes.dart';
-import 'package:bingetube/app/theme.dart';
+import 'package:bingetube/common/widget/binge/binge_video_entry.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
 import 'package:bingetube/common/widget/binge/choose_sery.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
@@ -61,7 +61,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   TextEditingController? _editTitleController;
   TextEditingController? _editDescriptionController;
 
-  dynamic get _isDrag => _controller.filter == BingeFilter.defaultValue;
+  bool get _isDrag => _controller.filter == BingeFilter.defaultValue;
 
   @override
   void initState() {
@@ -100,7 +100,16 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
       stream: _controller.stream,
       builder: (context, snashot) {
         if (_isLoading || !snashot.hasData) {
-          return Center(child: CircularProgressIndicator());
+          return Scaffold(
+            body: SafeArea(
+              child: _buildStateView(
+                icon: Icons.playlist_play_outlined,
+                title: 'Loading playlist entries',
+                message: 'Getting this binge ready for editing.',
+                isLoading: true,
+              ),
+            ),
+          );
         }
         final model = snashot.data!;
         _filteredVideos = model.videos;
@@ -119,16 +128,44 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
   }
 
   Widget _buildList(List<VideoModel> videos) {
+    if (videos.isEmpty) {
+      return _buildStateView(
+        icon: Icons.playlist_remove_outlined,
+        title: 'No playlist entries',
+        message: 'Adjust the filters or select another binge to edit.',
+      );
+    }
+
     return ReorderableListView.builder(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
       itemBuilder: (context, i) => _buildVideoCard(videos[i], i),
       itemCount: videos.length,
       onReorder: _onReorder,
       buildDefaultDragHandles: false,
+      proxyDecorator: (child, index, animation) {
+        return AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            final value = Curves.easeOut.transform(animation.value);
+            return Transform.scale(
+              scale: 1 + value * 0.015,
+              child: Material(
+                color: Colors.transparent,
+                elevation: 8 * value,
+                borderRadius: BorderRadius.circular(8),
+                child: child,
+              ),
+            );
+          },
+          child: child,
+        );
+      },
     );
   }
 
   AppBar _buildAppBar(BuildContext context, List<VideoModel> filteredVideos) {
     return AppBar(
+      toolbarHeight: 64,
       actionsPadding: EdgeInsets.only(right: 16.0),
       leading: IconButton(
         onPressed: () => Routes.popOrHome(context),
@@ -160,7 +197,7 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
         ),
       ],
       bottom: PreferredSize(
-        preferredSize: Size.fromHeight(_showTitle ? 162 : 50),
+        preferredSize: Size.fromHeight(_showTitle ? 228 : 58),
         child: Center(
           child: Column(
             children: [
@@ -175,117 +212,157 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
 
   Widget _buildEditTitle() {
     final model = _unfilteredModel;
+    final theme = Theme.of(context);
     _editTitleController ??= TextEditingController(text: model.title);
     _editDescriptionController ??= TextEditingController(text: model.description);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Tooltip(
-            message: 'Choose Collection',
-            child: InkWell(
-              onTap: _chooseCollection,
-              child: Row(
-                mainAxisSize: .min,
-                children: [
-                  Icon(Icons.folder),
-                  SizedBox(width: 8),
-                  Text(
-                    _collection.name,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withAlpha(120),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Tooltip(
+                message: 'Choose Collection',
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(6),
+                  onTap: _chooseCollection,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.folder_outlined,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _collection.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ],
+                    ),
                   ),
-                  Icon(Icons.chevron_right),
-                ],
+                ),
               ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          Tooltip(
-            message: 'Edit Binge Title',
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Icon(Icons.title),
-                ),
-                Expanded(
-                  child: TextField(
-                    maxLines: 1,
-                    autofocus: true,
-                    controller: _editTitleController,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
-                    decoration: const InputDecoration.collapsed(hintText: 'Binge title'),
+              const SizedBox(height: 10),
+              TextField(
+                maxLines: 1,
+                autofocus: true,
+                controller: _editTitleController,
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: 'Binge title',
+                  prefixIcon: const Icon(Icons.title, size: 18),
+                  filled: true,
+                  fillColor: theme.colorScheme.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 11,
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
-          Tooltip(
-            message: 'Edit Binge Description',
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Icon(Icons.subject),
-                ),
-                Expanded(
-                  child: TextField(
-                    maxLines: 1,
-                    controller: _editDescriptionController,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    decoration: const InputDecoration.collapsed(hintText: 'Description'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                maxLines: 1,
+                controller: _editDescriptionController,
+                style: theme.textTheme.bodySmall,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: 'Description',
+                  prefixIcon: const Icon(Icons.subject, size: 18),
+                  filled: true,
+                  fillColor: theme.colorScheme.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 11,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-
-          const SizedBox(height: 12),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildTitle(BuildContext context, List<VideoModel> filteredVideos) {
-    final model = _unfilteredModel;
-    String subtitle;
-    String prefix;
-    if (_controller.filter == BingeFilter.defaultValue) {
-      subtitle = '${model.videos.length} videos';
-    } else {
-      subtitle = 'showing ${filteredVideos.length} of ${model.videos.length} videos';
-    }
-    if (_checkMarked.isEmpty) {
-      prefix = '';
-    } else {
-      prefix = '${_checkMarked.length} checked · ';
-    }
+  Widget _buildStateView({
+    required IconData icon,
+    required String title,
+    required String message,
+    bool isLoading = false,
+  }) {
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(left: 32.0),
+        padding: const EdgeInsets.fromLTRB(32, 24, 32, 96),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Edit Binge',
-              maxLines: 1,
-              overflow: .ellipsis,
-              style: Theme.of(context).textTheme.titleMedium,
+            Container(
+              width: 58,
+              height: 58,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: isLoading
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: theme.colorScheme.onSecondaryContainer,
+                      ),
+                    )
+                  : Icon(icon, size: 30, color: theme.colorScheme.onSecondaryContainer),
             ),
+            const SizedBox(height: 16),
             Text(
-              '$prefix$subtitle',
-              maxLines: 1,
-              overflow: .ellipsis,
-              style: Theme.of(context).textTheme.bodySmall,
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 340),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.35,
+                ),
+              ),
             ),
           ],
         ),
@@ -293,10 +370,56 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
     );
   }
 
+  Widget _buildTitle(BuildContext context, List<VideoModel> filteredVideos) {
+    final theme = Theme.of(context);
+    final model = _unfilteredModel;
+    String subtitle;
+    String prefix;
+    if (_controller.filter == BingeFilter.defaultValue) {
+      subtitle = '${model.videos.length} playlist entries';
+    } else {
+      subtitle = 'Showing ${filteredVideos.length} of ${model.videos.length} entries';
+    }
+    if (_checkMarked.isEmpty) {
+      prefix = '';
+    } else {
+      prefix = '${_checkMarked.length} selected - ';
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Edit Binge',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          '$prefix$subtitle',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildAppBarBottom(List<VideoModel> filteredVideos) {
-    final isAllSelected = filteredVideos.every((v) => _checkMarked.contains(v.video.id));
+    if (_unfilteredModel.videos.isEmpty) {
+      return const SizedBox(height: 50);
+    }
+
+    final isAllSelected =
+        filteredVideos.isNotEmpty &&
+        filteredVideos.every((v) => _checkMarked.contains(v.video.id));
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.fromLTRB(4, 0, 16, 8),
       child: Row(
         children: [
           Padding(
@@ -333,123 +456,19 @@ class _EditBingePageState extends ConsumerState<EditBingePage> {
 
   Widget _buildVideoCard(VideoModel video, int index) {
     final isChecked = _checkMarked.contains(video.video.id);
-    final theme = Theme.of(context);
-    return Card(
-      key: Key(video.video.id),
-      color: isChecked ? theme.colorScheme.primaryContainer : null,
-      shape: RoundedRectangleBorder(),
-      child: InkWell(
+    return Padding(
+      key: ValueKey(video.video.id),
+      padding: const EdgeInsets.only(bottom: 8),
+      child: BingeVideoEntry(
+        video: video,
+        position: index + 1,
+        isSelected: isChecked,
+        showSelection: true,
+        isDragEnabled: _isDrag,
+        dragIndex: index,
         onTap: () => _onToggleTap(video),
-        child: Row(
-          children: [
-            ReorderableDragStartListener(
-              index: index,
-              enabled: _isDrag,
-              child: MouseRegion(
-                cursor: _isDrag ? SystemMouseCursors.grab : MouseCursor.defer,
-                child: SizedBox(
-                  width: 160,
-                  height: 90,
-                  child: Stack(
-                    alignment: .bottomCenter,
-                    children: [
-                      Image.network(
-                        video.thumbnails.mediumUrl,
-                        fit: .cover,
-                        frameBuilder: (c, child, frame, wasSyncLoaded) {
-                          if (frame != null || wasSyncLoaded) {
-                            return child;
-                          }
-                          return _buildCoverFallback(c, video.video.id);
-                        },
-                        errorBuilder: (c, _, _) => _buildCoverFallback(c, video.video.id),
-                      ),
-                      Container(color: Colors.black.withAlpha(50)),
-                      LinearProgressIndicator(value: video.progressPercent),
-                      _buildDuration(video),
-                      if (_isDrag) ...[
-                        Center(
-                          child: Icon(
-                            Icons.drag_handle_outlined,
-                            size: 100,
-                            color: Colors.white.withAlpha(120),
-                          ),
-                        ),
-                      ],
-                      Positioned(
-                        left: 4.0,
-                        top: 4.0,
-                        child: Icon(
-                          isChecked ? Icons.check_box : Icons.check_box_outline_blank,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: .start,
-                crossAxisAlignment: .start,
-                children: [
-                  Text(
-                    video.formattedTitle,
-                    maxLines: 2,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w500),
-                  ),
-                  Text(
-                    video.snippet.channelTitle,
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w200),
-                  ),
-                  Text(
-                    video.snippet.description,
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                    style: TextStyle(fontWeight: .w300),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-          ],
-        ),
       ),
     );
-  }
-
-  Positioned _buildDuration(VideoModel video) {
-    final duration = video.formatDuration();
-    return Positioned(
-      bottom: 8,
-      right: 8,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        decoration: BoxDecoration(
-          color: Colors.black.withAlpha(200),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Text(
-          duration,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 10,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCoverFallback(BuildContext context, String id) {
-    final theme = Theme.of(context);
-    final brightness = theme.brightness;
-    final color = Themes.colorFromId(id, brightness);
-    return Container(color: color, alignment: .center);
   }
 
   void _onFilterModified(BingeFilter filter) {
