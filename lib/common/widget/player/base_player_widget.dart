@@ -131,10 +131,68 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
           ),
           if (widget.isFullscreen)
             Align(
-              alignment: Alignment.topCenter,
-              child: _buildFullscreenToolbar(context),
+              alignment: _usesSideFullscreenControls(context)
+                  ? Alignment.centerLeft
+                  : Alignment.topCenter,
+              child: _buildFullscreenControls(context),
             ),
         ],
+      ),
+    );
+  }
+
+  bool _usesSideFullscreenControls(BuildContext context) {
+    return MediaQuery.sizeOf(context).shortestSide < 600;
+  }
+
+  Widget _buildFullscreenControls(BuildContext context) {
+    if (_usesSideFullscreenControls(context)) {
+      return _buildFullscreenSideRail(context);
+    }
+    return _buildFullscreenToolbar(context);
+  }
+
+  Widget _buildFullscreenSideRail(BuildContext context) {
+    const iconSize = 28.0;
+    return SafeArea(
+      right: false,
+      child: SizedBox(
+        width: 58,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildIconControl(
+                () => widget.onEvent(.onBack),
+                Icons.arrow_back,
+                iconSize,
+                'Back',
+              ),
+              const SizedBox(height: 10),
+              buildIconControl(
+                controller.isPrevVideoExists ? () => widget.onEvent(.onPrev) : null,
+                Icons.skip_previous,
+                iconSize,
+                'Previous Episode',
+              ),
+              const SizedBox(height: 10),
+              buildIconControl(
+                controller.isNextVideoExists ? () => widget.onEvent(.onNext) : null,
+                Icons.skip_next,
+                iconSize,
+                'Next Episode',
+              ),
+              const SizedBox(height: 10),
+              buildIconControl(
+                () => widget.onEvent(.onListToggle),
+                Icons.format_list_bulleted,
+                iconSize,
+                'Episodes',
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

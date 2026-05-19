@@ -579,7 +579,14 @@ class _BingePageState extends ConsumerState<BingePage> {
     if (size.height == 0) {
       return false;
     }
+    if (_isCompactScreen(context)) {
+      return true;
+    }
     return size.width / size.height >= 1.1;
+  }
+
+  bool _isCompactScreen(BuildContext context) {
+    return MediaQuery.sizeOf(context).shortestSide < 600;
   }
 
   void _showEpisodeList() {
@@ -663,6 +670,13 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _onCollapsePressed() {
+    if (!_isPlayerFullscreen &&
+        _keepWindowFullscreenForList &&
+        _isCompactScreen(context) &&
+        ref.read(ConfigProviders.playerType) == PlayerType.internal) {
+      _setPlayerFullscreen(true);
+      return;
+    }
     _parentScroll.animateTo(
       _isCollapsed ? _playerHeight : 0,
       duration: Duration(milliseconds: 200),
