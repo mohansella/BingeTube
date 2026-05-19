@@ -31,6 +31,9 @@ abstract class BasePlayerWidget extends PlayerWidget {
 }
 
 abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
+  static const _fullscreenSideRailWidth = 58.0;
+  static const _fullscreenToolbarHeight = 56.0;
+
   VideoModel? get model => _model;
   double get playerWidth => _width;
   double get playerHeight => _height;
@@ -64,7 +67,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
       },
       child: LayoutBuilder(
         builder: (context, constrains) {
-          _fitPlayerTo(constrains);
+          _fitPlayerTo(_playerConstraintsFor(context, constrains));
           if (!widget.isFullscreen) {
             widget.onEvent(.onHeight, data: _height);
           }
@@ -116,27 +119,65 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     }
   }
 
+  BoxConstraints _playerConstraintsFor(BuildContext context, BoxConstraints constrains) {
+    if (!widget.isFullscreen) {
+      return constrains;
+    }
+
+    final safePadding = MediaQuery.paddingOf(context);
+    if (_usesSideFullscreenControls(context)) {
+      return constrains.deflate(
+        EdgeInsets.only(left: _fullscreenSideRailWidth + safePadding.left),
+      );
+    }
+
+    return constrains.deflate(
+      EdgeInsets.only(top: _fullscreenToolbarHeight + safePadding.top),
+    );
+  }
+
   Widget _buildPlayerStage(BuildContext context) {
+    if (widget.isFullscreen) {
+      return _buildFullscreenPlayerStage(context);
+    }
+
     return ColoredBox(
       color: Colors.black,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Center(
-            child: SizedBox(
-              width: _width,
-              height: _height,
-              child: _buildPlayerStack(width: _width),
+      child: Center(
+        child: SizedBox(
+          width: _width,
+          height: _height,
+          child: _buildPlayerStack(width: _width),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFullscreenPlayerStage(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black,
+      child: _usesSideFullscreenControls(context)
+          ? Row(
+              children: [
+                _buildFullscreenSideRail(context),
+                Expanded(child: _buildPlayerFrame()),
+              ],
+            )
+          : Column(
+              children: [
+                _buildFullscreenToolbar(context),
+                Expanded(child: _buildPlayerFrame()),
+              ],
             ),
-          ),
-          if (widget.isFullscreen)
-            Align(
-              alignment: _usesSideFullscreenControls(context)
-                  ? Alignment.centerLeft
-                  : Alignment.topCenter,
-              child: _buildFullscreenControls(context),
-            ),
-        ],
+    );
+  }
+
+  Widget _buildPlayerFrame() {
+    return Center(
+      child: SizedBox(
+        width: _width,
+        height: _height,
+        child: _buildPlayerStack(width: _width),
       ),
     );
   }
@@ -145,19 +186,12 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     return MediaQuery.sizeOf(context).shortestSide < 600;
   }
 
-  Widget _buildFullscreenControls(BuildContext context) {
-    if (_usesSideFullscreenControls(context)) {
-      return _buildFullscreenSideRail(context);
-    }
-    return _buildFullscreenToolbar(context);
-  }
-
   Widget _buildFullscreenSideRail(BuildContext context) {
     const iconSize = 28.0;
     return SafeArea(
       right: false,
       child: SizedBox(
-        width: 58,
+        width: _fullscreenSideRailWidth,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
           child: Column(
@@ -202,7 +236,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     return SafeArea(
       bottom: false,
       child: SizedBox(
-        height: 56,
+        height: _fullscreenToolbarHeight,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
@@ -404,7 +438,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
           ] else if (_error != null) ...[
             Center(child: Text('error: $_error')),
           ],
-          buildControls(context),
+          if (!widget.isFullscreen) buildControls(context),
         ],
       ),
     );
