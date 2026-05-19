@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bingetube/common/widget/player/player/player.dart';
 import 'package:bingetube/core/analytics/analytics.dart';
 import 'package:bingetube/core/db/access/videos.dart';
@@ -30,9 +32,13 @@ class InternalPlayerWidget extends BasePlayerWidget {
 class _InternalPlayerState extends BasePlayerState
     with RouteAware
     implements PlayerListener {
+  static const _maxLoadingOverlayDuration = Duration(seconds: 3);
+
   late Player player;
+  Timer? _loadingOverlayTimer;
   bool _hasPlayerReadyEvent = false;
   bool _isPlayerReady = false;
+  bool _showPlayerLoadingOverlay = true;
 
   _InternalPlayerState() {
     player = Player.create(this);
@@ -47,6 +53,7 @@ class _InternalPlayerState extends BasePlayerState
 
   @override
   void dispose() {
+    _loadingOverlayTimer?.cancel();
     Routes.getRouteObserver().unsubscribe(this);
     player.pause();
     super.dispose();
@@ -83,7 +90,7 @@ class _InternalPlayerState extends BasePlayerState
         children: [
           Image.network(widget.controller.heroImg, fit: BoxFit.contain),
           player.build(widget.videoId),
-          if (!_isPlayerReady) _buildPlayerLoadingOverlay(),
+          if (_showPlayerLoadingOverlay) _buildPlayerLoadingOverlay(),
         ],
       ),
     );
@@ -124,6 +131,8 @@ class _InternalPlayerState extends BasePlayerState
   void restartState() {
     _hasPlayerReadyEvent = false;
     _isPlayerReady = false;
+    _showPlayerLoadingOverlay = true;
+    _startLoadingOverlayTimer();
     super.restartState();
   }
 
@@ -238,6 +247,8 @@ class _InternalPlayerState extends BasePlayerState
     }
 
     _isPlayerReady = true;
+    _showPlayerLoadingOverlay = false;
+    _loadingOverlayTimer?.cancel();
     player.startProgressTracking();
     final pos = widget.resumeProgress ? activeModel.progressData.watchPosition : 0;
     player.seekTo(pos);
@@ -245,6 +256,18 @@ class _InternalPlayerState extends BasePlayerState
     if (mounted) {
       setState(() {});
     }
+  }
+
+  void _startLoadingOverlayTimer() {
+    _loadingOverlayTimer?.cancel();
+    _loadingOverlayTimer = Timer(_maxLoadingOverlayDuration, () {
+      if (!mounted || _isPlayerReady || !_showPlayerLoadingOverlay) {
+        return;
+      }
+      setState(() {
+        _showPlayerLoadingOverlay = false;
+      });
+    });
   }
 
   @override
