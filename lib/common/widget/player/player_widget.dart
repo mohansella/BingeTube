@@ -25,6 +25,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
   final List<Widget> slivers;
   final Function(PlayerEventType, {Object? data}) onEvent;
   final bool isCollapsed;
+  final bool resumeProgress;
 
   factory PlayerWidget({
     Key? key,
@@ -36,6 +37,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
     required ScrollController parentScroll,
     required ScrollController childScroll,
     required bool isCollapsed,
+    bool resumeProgress = true,
   }) {
     if (playerType == .internal) {
       return InternalPlayerWidget(
@@ -46,6 +48,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
         onEvent: onEvent,
         slivers: slivers,
         isCollapsed: isCollapsed,
+        resumeProgress: resumeProgress,
       );
     }
     return ExternalPlayerWidget(
@@ -57,6 +60,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
       onEvent: onEvent,
       slivers: slivers,
       isCollapsed: isCollapsed,
+      resumeProgress: resumeProgress,
     );
   }
 
@@ -69,5 +73,6 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
     required this.onEvent,
     required this.slivers,
     required this.isCollapsed,
+    required this.resumeProgress,
   });
 }

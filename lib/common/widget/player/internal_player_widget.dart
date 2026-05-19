@@ -20,6 +20,7 @@ class InternalPlayerWidget extends BasePlayerWidget {
     required super.onEvent,
     required super.slivers,
     required super.isCollapsed,
+    required super.resumeProgress,
   });
 
   @override
@@ -30,6 +31,8 @@ class _InternalPlayerState extends BasePlayerState
     with RouteAware
     implements PlayerListener {
   late Player player;
+  bool _hasPlayerReadyEvent = false;
+  bool _isPlayerReady = false;
 
   _InternalPlayerState() {
     player = Player.create(this);
@@ -80,6 +83,30 @@ class _InternalPlayerState extends BasePlayerState
         children: [
           Image.network(widget.controller.heroImg, fit: BoxFit.contain),
           player.build(widget.videoId),
+          if (!_isPlayerReady) _buildPlayerLoadingOverlay(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlayerLoadingOverlay() {
+    final imageUrl =
+        model?.thumbnails.maxresUrl ??
+        model?.thumbnails.standardUrl ??
+        model?.thumbnails.highUrl ??
+        widget.controller.heroImg;
+
+    return ColoredBox(
+      color: Colors.black,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
+            errorBuilder: (_, _, _) => const SizedBox(),
+          ),
+          const Center(child: CircularProgressIndicator()),
         ],
       ),
     );
@@ -88,6 +115,21 @@ class _InternalPlayerState extends BasePlayerState
   @override
   Widget buildControls(BuildContext context) {
     return SizedBox();
+  }
+
+  @override
+  bool get handlesMediaLoadingOverlay => true;
+
+  @override
+  void restartState() {
+    _hasPlayerReadyEvent = false;
+    _isPlayerReady = false;
+    super.restartState();
+  }
+
+  @override
+  void didLoadActiveVideoModel(_) {
+    _startReadyPlayerIfPossible();
   }
 
   AppBar? _buildAppBar() {
@@ -185,10 +227,24 @@ class _InternalPlayerState extends BasePlayerState
 
   @override
   void onPlayerReady() {
+    _hasPlayerReadyEvent = true;
+    _startReadyPlayerIfPossible();
+  }
+
+  void _startReadyPlayerIfPossible() {
+    final activeModel = model;
+    if (_isPlayerReady || !_hasPlayerReadyEvent || activeModel == null) {
+      return;
+    }
+
+    _isPlayerReady = true;
     player.startProgressTracking();
-    final pos = model!.progressData.watchPosition;
+    final pos = widget.resumeProgress ? activeModel.progressData.watchPosition : 0;
     player.seekTo(pos);
     Analytics.logVideoStarted();
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override

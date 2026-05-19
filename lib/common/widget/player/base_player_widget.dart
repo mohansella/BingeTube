@@ -22,6 +22,7 @@ abstract class BasePlayerWidget extends PlayerWidget {
     required super.onEvent,
     required super.slivers,
     required super.isCollapsed,
+    required super.resumeProgress,
   }) : super.internal();
 
   @override
@@ -46,6 +47,10 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
 
   Widget buildMedia();
   Widget buildPlayPause();
+  bool get handlesMediaLoadingOverlay => false;
+
+  @protected
+  void didLoadActiveVideoModel(VideoModel model) {}
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +113,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
           _model = value;
           _loading = false;
         });
+        didLoadActiveVideoModel(value);
         if (_parentScroll.hasClients) {
           _parentScroll.animateTo(
             0.0,
@@ -240,7 +246,7 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
         children: [
           //ColoredBox(color: Colors.black),
           buildMedia(),
-          if (_loading) ...[
+          if (_loading && !handlesMediaLoadingOverlay) ...[
             Center(child: CircularProgressIndicator()),
           ] else if (_error != null) ...[
             Center(child: Text('error: $_error')),

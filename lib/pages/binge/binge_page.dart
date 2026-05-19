@@ -60,6 +60,7 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   double _playerHeight = 0;
   bool _isCollapsed = false;
+  bool _resumeActiveVideo = true;
 
   bool _showRefine = false;
 
@@ -94,6 +95,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 _buildPlaylist(context, snapshot),
               ],
               isCollapsed: _isCollapsed,
+              resumeProgress: _resumeActiveVideo,
             ),
           ),
         );
@@ -423,6 +425,7 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   void _onVideoCardTap(BuildContext context, VideoModel video) {
     setState(() {
+      _resumeActiveVideo = false;
       _controller.setActiveVideoId(video.video.id);
     });
   }
@@ -434,6 +437,7 @@ class _BingePageState extends ConsumerState<BingePage> {
         break;
       case .onPrev:
         setState(() {
+          _resumeActiveVideo = false;
           _controller.setPrevVideo();
           updateQueryParams(context);
         });
@@ -441,6 +445,7 @@ class _BingePageState extends ConsumerState<BingePage> {
         break;
       case .onNext:
         setState(() {
+          _resumeActiveVideo = false;
           _controller.setNextVideo();
           updateQueryParams(context);
         });

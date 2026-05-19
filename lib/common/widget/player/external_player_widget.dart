@@ -17,6 +17,7 @@ class ExternalPlayerWidget extends BasePlayerWidget {
     required super.onEvent,
     required super.slivers,
     required super.isCollapsed,
+    required super.resumeProgress,
   });
 
   @override
