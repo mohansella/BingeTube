@@ -15,6 +15,7 @@ enum PlayerEventType {
   onHeight,
   onScrollEnd,
   onListToggle,
+  onFullscreenToggle,
 }
 
 abstract class PlayerWidget extends ConsumerStatefulWidget {
@@ -25,6 +26,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
   final List<Widget> slivers;
   final Function(PlayerEventType, {Object? data}) onEvent;
   final bool isCollapsed;
+  final bool isFullscreen;
   final bool resumeProgress;
 
   factory PlayerWidget({
@@ -37,6 +39,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
     required ScrollController parentScroll,
     required ScrollController childScroll,
     required bool isCollapsed,
+    required bool isFullscreen,
     bool resumeProgress = true,
   }) {
     if (playerType == .internal) {
@@ -48,6 +51,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
         onEvent: onEvent,
         slivers: slivers,
         isCollapsed: isCollapsed,
+        isFullscreen: isFullscreen,
         resumeProgress: resumeProgress,
       );
     }
@@ -60,6 +64,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
       onEvent: onEvent,
       slivers: slivers,
       isCollapsed: isCollapsed,
+      isFullscreen: isFullscreen,
       resumeProgress: resumeProgress,
     );
   }
@@ -73,6 +78,7 @@ abstract class PlayerWidget extends ConsumerStatefulWidget {
     required this.onEvent,
     required this.slivers,
     required this.isCollapsed,
+    required this.isFullscreen,
     required this.resumeProgress,
   });
 }

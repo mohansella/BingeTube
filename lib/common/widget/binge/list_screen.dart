@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/common/widget/binge/sery_preview.dart';
+import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/config/player_type.dart';
 import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
+import 'package:bingetube/core/utils/app_fullscreen.dart' as app_fullscreen;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -873,8 +877,12 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     String heroId,
     String heroImg,
   ) async {
+    final requestedFullscreen = _requestFullscreenForInternalPlayer();
     if (widget.isSystem) {
-      await _onTapSystemSery(context, collection, model);
+      final didOpen = await _onTapSystemSery(context, collection, model);
+      if (!didOpen && requestedFullscreen) {
+        unawaited(app_fullscreen.exitFullscreen());
+      }
     } else {
       context.pushNamed(
         Pages.binge.name,
@@ -889,7 +897,7 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     }
   }
 
-  Future<void> _onTapSystemSery(
+  Future<bool> _onTapSystemSery(
     BuildContext context,
     CollectionModel collection,
     SeryModel model,
@@ -903,10 +911,19 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
     } else {
       ListScreenWidget._logger.info('opening sery:${model.sery.name}');
     }
-    if (sery == null) return;
-    if (!context.mounted) return;
+    if (sery == null) return false;
+    if (!context.mounted) return false;
     final slug = _properDataPath(sery);
     context.pushNamed(Pages.series.name, pathParameters: {'slug': slug});
+    return true;
+  }
+
+  bool _requestFullscreenForInternalPlayer() {
+    if (ConfigStore().get(ConfigKey.playerType) != PlayerType.internal) {
+      return false;
+    }
+    unawaited(app_fullscreen.enterFullscreen());
+    return true;
   }
 
   Future<Sery?> _downloadSery(CollectionModel collection, SeryModel model) async {

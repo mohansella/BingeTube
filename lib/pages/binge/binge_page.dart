@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bingetube/app/routes.dart';
 import 'package:bingetube/common/widget/binge/binge_video_entry.dart';
 import 'package:bingetube/common/widget/binge/choose_collection.dart';
@@ -7,15 +9,18 @@ import 'package:bingetube/common/widget/refine/refine_widget.dart';
 import 'package:bingetube/core/binge/binge_filter.dart';
 import 'package:bingetube/core/binge/binge_sort.dart';
 import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/config/player_type.dart';
 import 'package:bingetube/core/db/models/binge_model.dart';
 import 'package:bingetube/core/db/models/video_model.dart';
 import 'package:bingetube/core/db/port/sery_port.dart';
 import 'package:bingetube/core/log/log_manager.dart';
+import 'package:bingetube/core/utils/app_fullscreen.dart' as app_fullscreen;
 import 'package:bingetube/pages/binge/binge_controller.dart';
 import 'package:bingetube/pages/edit_binge/edit_binge_page.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -60,7 +65,11 @@ class _BingePageState extends ConsumerState<BingePage> {
 
   double _playerHeight = 0;
   bool _isCollapsed = false;
+  bool _isPlayerFullscreen = false;
+  bool _keepWindowFullscreenForList = false;
+  bool _isBrowserFullscreenRequested = false;
   bool _resumeActiveVideo = true;
+  StreamSubscription<bool>? _fullscreenSubscription;
 
   bool _showRefine = false;
 
@@ -68,10 +77,29 @@ class _BingePageState extends ConsumerState<BingePage> {
   void initState() {
     super.initState();
     _controller = BingeController(widget.params);
+    _isPlayerFullscreen = ref.read(ConfigProviders.playerType) == PlayerType.internal;
+    if (_isPlayerFullscreen) {
+      unawaited(_applyPlatformFullscreen(true));
+    }
+    _fullscreenSubscription = app_fullscreen.fullscreenChanges.listen((isFullscreen) {
+      if (!isFullscreen && mounted) {
+        setState(() {
+          _isPlayerFullscreen = false;
+          _keepWindowFullscreenForList = false;
+          _isBrowserFullscreenRequested = false;
+        });
+        unawaited(_applyPlatformFullscreen(false));
+      }
+    });
   }
 
   @override
   void dispose() {
+    _fullscreenSubscription?.cancel();
+    if (_isPlayerFullscreen || _keepWindowFullscreenForList) {
+      unawaited(_applyPlatformFullscreen(false));
+      unawaited(app_fullscreen.exitFullscreen());
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -81,10 +109,23 @@ class _BingePageState extends ConsumerState<BingePage> {
     return StreamBuilder(
       stream: _controller.stream,
       builder: (context, snapshot) {
-        return SafeArea(
-          child: Scaffold(
-            body: PlayerWidget(
-              playerType: ref.read(ConfigProviders.playerType),
+        final playerType = ref.watch(ConfigProviders.playerType);
+        final isInternalPlayer = playerType == PlayerType.internal;
+        final useFullscreenLayout =
+            _isPlayerFullscreen &&
+            isInternalPlayer &&
+            _shouldUseFullscreenLayout(context);
+        final useWindowFullscreen =
+            isInternalPlayer && (_isPlayerFullscreen || _keepWindowFullscreenForList);
+        _syncBrowserFullscreen(useWindowFullscreen);
+        return Scaffold(
+          body: SafeArea(
+            top: !useFullscreenLayout,
+            bottom: !useFullscreenLayout,
+            left: !useFullscreenLayout,
+            right: !useFullscreenLayout,
+            child: PlayerWidget(
+              playerType: playerType,
               videoId: _controller.activeVideoId,
               controller: _controller,
               parentScroll: _parentScroll,
@@ -95,6 +136,7 @@ class _BingePageState extends ConsumerState<BingePage> {
                 _buildPlaylist(context, snapshot),
               ],
               isCollapsed: _isCollapsed,
+              isFullscreen: useFullscreenLayout,
               resumeProgress: _resumeActiveVideo,
             ),
           ),
@@ -277,6 +319,9 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   Widget _buildFilterAndModify(AsyncSnapshot<BingeModel> snapshot) {
+    final isInternalPlayer = ref.watch(ConfigProviders.playerType) == PlayerType.internal;
+    final useFullscreenLayout =
+        _isPlayerFullscreen && isInternalPlayer && _shouldUseFullscreenLayout(context);
     return FutureBuilder(
       future: _controller.supportedActions(),
       builder: (_, actionSnap) {
@@ -293,6 +338,16 @@ class _BingePageState extends ConsumerState<BingePage> {
               onPressed: _onFilterPressed,
               icon: Icon(Icons.tune),
             ),
+            if (isInternalPlayer)
+              IconButton(
+                tooltip: useFullscreenLayout ? 'Exit Fullscreen' : 'Fullscreen',
+                onPressed: useFullscreenLayout
+                    ? _togglePlayerFullscreen
+                    : _enterPlayerFullscreen,
+                icon: Icon(
+                  useFullscreenLayout ? Icons.fullscreen_exit : Icons.fullscreen,
+                ),
+              ),
             if (actions.length == 1 && actions[0] == .add) ...[
               IconButton(
                 tooltip: 'Add',
@@ -428,6 +483,9 @@ class _BingePageState extends ConsumerState<BingePage> {
       _resumeActiveVideo = false;
       _controller.setActiveVideoId(video.video.id);
     });
+    if (ref.read(ConfigProviders.playerType) == PlayerType.internal) {
+      _setPlayerFullscreen(true);
+    }
   }
 
   void _onPlayerEvent(BuildContext context, PlayerEventType eventType, {Object? data}) {
@@ -458,10 +516,119 @@ class _BingePageState extends ConsumerState<BingePage> {
         _updateCollapseState();
         break;
       case .onListToggle:
-        _onCollapsePressed();
+        if (_isPlayerFullscreen) {
+          _showEpisodeList();
+        } else {
+          _onCollapsePressed();
+        }
+        break;
+      case .onFullscreenToggle:
+        _togglePlayerFullscreen();
         break;
       default:
         BingePage._logger.warning('unhandled eventType:$eventType');
+    }
+  }
+
+  void _togglePlayerFullscreen() {
+    _setPlayerFullscreen(!_isPlayerFullscreen);
+  }
+
+  void _enterPlayerFullscreen() {
+    _setPlayerFullscreen(true);
+  }
+
+  void _setPlayerFullscreen(bool enabled, {bool keepWindowFullscreen = false}) {
+    final shouldKeepWindowFullscreen =
+        keepWindowFullscreen &&
+        ref.read(ConfigProviders.playerType) == PlayerType.internal;
+    if (_isPlayerFullscreen == enabled) {
+      if (enabled) {
+        _keepWindowFullscreenForList = false;
+        if (_parentScroll.hasClients) {
+          _parentScroll.jumpTo(0);
+        }
+        unawaited(_applyPlatformFullscreen(true));
+      } else if (_keepWindowFullscreenForList != shouldKeepWindowFullscreen) {
+        setState(() {
+          _keepWindowFullscreenForList = shouldKeepWindowFullscreen;
+        });
+        if (!shouldKeepWindowFullscreen) {
+          unawaited(_applyPlatformFullscreen(false));
+        }
+      }
+      return;
+    }
+    setState(() {
+      _isPlayerFullscreen = enabled;
+      _keepWindowFullscreenForList = enabled ? false : shouldKeepWindowFullscreen;
+      if (enabled) {
+        _isCollapsed = false;
+      }
+    });
+    if (enabled && _parentScroll.hasClients) {
+      _parentScroll.jumpTo(0);
+    }
+    if (enabled || !shouldKeepWindowFullscreen) {
+      unawaited(_applyPlatformFullscreen(enabled));
+    }
+  }
+
+  bool _shouldUseFullscreenLayout(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    if (size.height == 0) {
+      return false;
+    }
+    return size.width / size.height >= 1.1;
+  }
+
+  void _showEpisodeList() {
+    _setPlayerFullscreen(false, keepWindowFullscreen: true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_parentScroll.hasClients) {
+        return;
+      }
+      final target = _playerHeight.clamp(0.0, _parentScroll.position.maxScrollExtent);
+      _parentScroll.animateTo(
+        target,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  void _syncBrowserFullscreen(bool enabled) {
+    if (_isBrowserFullscreenRequested == enabled) {
+      return;
+    }
+    _isBrowserFullscreenRequested = enabled;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      if (enabled) {
+        unawaited(app_fullscreen.enterFullscreen());
+      } else {
+        unawaited(app_fullscreen.exitFullscreen());
+      }
+    });
+  }
+
+  Future<void> _applyPlatformFullscreen(bool enabled) async {
+    try {
+      if (enabled) {
+        await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ]);
+        return;
+      }
+
+      await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+      await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    } catch (e) {
+      BingePage._logger.warning('Unable to update fullscreen system UI: $e');
     }
   }
 
@@ -482,6 +649,9 @@ class _BingePageState extends ConsumerState<BingePage> {
   }
 
   void _scrollToActiveVideo() {
+    if (!_childScroll.hasClients) {
+      return;
+    }
     const headerHeight = 0;
     const itemHeight = 98.0;
     final currPos = _controller.activeVideoPos!;

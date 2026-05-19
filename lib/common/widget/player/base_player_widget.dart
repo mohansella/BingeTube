@@ -22,6 +22,7 @@ abstract class BasePlayerWidget extends PlayerWidget {
     required super.onEvent,
     required super.slivers,
     required super.isCollapsed,
+    required super.isFullscreen,
     required super.resumeProgress,
   }) : super.internal();
 
@@ -54,43 +55,135 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constrains) {
-        final aspectWidth = constrains.maxHeight * 16.0 / 9.0;
-        final aspectHeight = constrains.maxWidth * 9.0 / 16.0;
-        final maxWidth = constrains.maxWidth;
-        final maxHeight = constrains.maxHeight;
-        if (aspectWidth < maxWidth) {
-          _width = aspectWidth;
-          _height = constrains.maxHeight;
-        } else {
-          _width = constrains.maxWidth;
-          _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
+    return PopScope(
+      canPop: !widget.isFullscreen,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && widget.isFullscreen) {
+          widget.onEvent(.onFullscreenToggle);
         }
-        widget.onEvent(.onHeight, data: _height);
-        return NotificationListener<ScrollEndNotification>(
-          onNotification: _scrollEndListener,
-          child: NestedScrollView(
-            controller: _parentScroll,
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  automaticallyImplyLeading: false,
-                  expandedHeight: _height,
-                  flexibleSpace: FlexibleSpaceBar(background: _buildPlayerStack()),
-                ),
-              ];
-            },
-            body: NotificationListener<ScrollNotification>(
-              onNotification: _onChildScroll,
-              child: CustomScrollView(
-                controller: _childScroll,
-                slivers: widget.slivers, //SliverList
-              ),
+      },
+      child: LayoutBuilder(
+        builder: (context, constrains) {
+          _fitPlayerTo(constrains);
+          if (!widget.isFullscreen) {
+            widget.onEvent(.onHeight, data: _height);
+          }
+
+          final headerHeight = widget.isFullscreen ? constrains.maxHeight : _height;
+          return NotificationListener<ScrollEndNotification>(
+            onNotification: widget.isFullscreen ? (_) => false : _scrollEndListener,
+            child: NestedScrollView(
+              controller: _parentScroll,
+              physics: widget.isFullscreen ? const NeverScrollableScrollPhysics() : null,
+              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    automaticallyImplyLeading: false,
+                    expandedHeight: headerHeight,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: _buildPlayerStage(context),
+                    ),
+                  ),
+                ];
+              },
+              body: widget.isFullscreen
+                  ? const ColoredBox(color: Colors.black)
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: _onChildScroll,
+                      child: CustomScrollView(
+                        controller: _childScroll,
+                        slivers: widget.slivers, //SliverList
+                      ),
+                    ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _fitPlayerTo(BoxConstraints constrains) {
+    final aspectWidth = constrains.maxHeight * 16.0 / 9.0;
+    final aspectHeight = constrains.maxWidth * 9.0 / 16.0;
+    final maxWidth = constrains.maxWidth;
+    final maxHeight = constrains.maxHeight;
+    if (aspectWidth < maxWidth) {
+      _width = aspectWidth;
+      _height = constrains.maxHeight;
+    } else {
+      _width = constrains.maxWidth;
+      _height = aspectHeight < maxHeight ? aspectHeight : maxHeight;
+    }
+  }
+
+  Widget _buildPlayerStage(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Center(
+            child: SizedBox(
+              width: _width,
+              height: _height,
+              child: _buildPlayerStack(width: _width),
             ),
           ),
-        );
-      },
+          if (widget.isFullscreen)
+            Align(
+              alignment: Alignment.topCenter,
+              child: _buildFullscreenToolbar(context),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFullscreenToolbar(BuildContext context) {
+    const iconSize = 28.0;
+    return SafeArea(
+      bottom: false,
+      child: SizedBox(
+        height: 56,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              buildIconControl(
+                () => widget.onEvent(.onBack),
+                Icons.arrow_back,
+                iconSize,
+                'Back',
+                colorDecoration: false,
+              ),
+              const Spacer(),
+              buildIconControl(
+                controller.isPrevVideoExists ? () => widget.onEvent(.onPrev) : null,
+                Icons.skip_previous,
+                iconSize,
+                'Previous Episode',
+                colorDecoration: false,
+              ),
+              const SizedBox(width: 8),
+              buildIconControl(
+                controller.isNextVideoExists ? () => widget.onEvent(.onNext) : null,
+                Icons.skip_next,
+                iconSize,
+                'Next Episode',
+                colorDecoration: false,
+              ),
+              const Spacer(),
+              buildIconControl(
+                () => widget.onEvent(.onListToggle),
+                Icons.format_list_bulleted,
+                iconSize,
+                'Episodes',
+                colorDecoration: false,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -222,10 +315,12 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
         child: Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: onTap == null
-                ? Colors.white.withAlpha(10)
-                : Colors.black.withAlpha(100),
-            borderRadius: BorderRadius.circular(12),
+            color: colorDecoration
+                ? (onTap == null
+                      ? Colors.white.withAlpha(10)
+                      : Colors.black.withAlpha(100))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
@@ -237,10 +332,10 @@ abstract class BasePlayerState extends ConsumerState<BasePlayerWidget> {
     );
   }
 
-  Widget _buildPlayerStack() {
+  Widget _buildPlayerStack({double? width}) {
     return SizedBox(
       height: _height,
-      width: double.infinity,
+      width: width ?? double.infinity,
       child: Stack(
         fit: .expand,
         children: [

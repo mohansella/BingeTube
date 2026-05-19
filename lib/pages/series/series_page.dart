@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:bingetube/common/widget/binge/sery_preview.dart';
 import 'package:bingetube/app/routes.dart';
+import 'package:bingetube/core/config/configuration.dart';
+import 'package:bingetube/core/config/player_type.dart';
 import 'package:bingetube/core/db/database.dart';
 import 'package:bingetube/core/db/models/sery_model.dart';
 import 'package:bingetube/core/db/repo/collections_repo.dart';
 import 'package:bingetube/core/db/repo/series_repo.dart';
 import 'package:bingetube/core/lang/mutable.dart';
+import 'package:bingetube/core/utils/app_fullscreen.dart' as app_fullscreen;
 import 'package:bingetube/pages/binge/binge_page.dart';
 import 'package:bingetube/pages/page_route.dart';
 import 'package:flutter/material.dart';
@@ -31,11 +36,29 @@ class _SeriesPageState extends ConsumerState<SeriesPage> {
 
   Map<String, String>? _queryParams;
   SeryModel? _loadingModel;
+  bool _requestedFullscreen = false;
 
   @override
   void initState() {
     super.initState();
+    _requestFullscreenForInternalPlayer();
     init();
+  }
+
+  @override
+  void dispose() {
+    if (_requestedFullscreen) {
+      unawaited(app_fullscreen.exitFullscreen());
+    }
+    super.dispose();
+  }
+
+  void _requestFullscreenForInternalPlayer() {
+    if (ref.read(ConfigProviders.playerType) != PlayerType.internal) {
+      return;
+    }
+    _requestedFullscreen = true;
+    unawaited(app_fullscreen.enterFullscreen());
   }
 
   void init() async {

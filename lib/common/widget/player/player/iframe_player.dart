@@ -44,7 +44,7 @@ class IframePlayer extends Player {
         ..style.border = 'none'
         ..style.width = '100%'
         ..style.height = '100%'
-        ..allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        ..allow = 'autoplay; encrypted-media; picture-in-picture';
       _iframeElement = element;
 
       if (_videoId != null) {

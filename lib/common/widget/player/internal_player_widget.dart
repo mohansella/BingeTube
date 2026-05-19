@@ -22,6 +22,7 @@ class InternalPlayerWidget extends BasePlayerWidget {
     required super.onEvent,
     required super.slivers,
     required super.isCollapsed,
+    required super.isFullscreen,
     required super.resumeProgress,
   });
 
@@ -142,7 +143,7 @@ class _InternalPlayerState extends BasePlayerState
   }
 
   AppBar? _buildAppBar() {
-    if (!widget.isCollapsed) {
+    if (!widget.isCollapsed || widget.isFullscreen) {
       return null;
     }
     final iconSize = 28.0;
