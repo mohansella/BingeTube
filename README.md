@@ -1,5 +1,10 @@
 # BingeTube
 
+## Prerequisites
+
+- **Git LFS** — install from [git-lfs.com](https://git-lfs.com/) and run `git lfs install`; the clone step pulls `.binge` data files.
+- **Firebase (optional)** — checked-in settings are placeholders. Configure your project with FlutterFire to enable Analytics and Crashlytics.
+
 > **Transform YouTube browsing into a binge-watching experience** — watch channels like TV series, organized and distraction-free.
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.10%2B-blue?logo=flutter)](https://flutter.dev)
@@ -107,8 +112,12 @@ YouTube is powerful but unorganized. BingeTube solves this:
 ### Prerequisites
 - **Flutter** 3.10 or later ([Install](https://flutter.dev/docs/get-started/install))
 - **Dart** 3.10+ (included with Flutter)
-- **iOS** 12.0+ or **Android** API 21+ (for mobile)
-- **macOS** 10.15+ or **Windows** 10+ or **Linux** (for desktop)
+- **iOS** 15.0+ or **Android** API 21+ (for mobile)
+- **macOS** 12.0+ or **Windows** 10+ or **Linux** (for desktop)
+
+### Configure Firebase for macOS
+
+Firebase is optional. Configure it with `dart pub global activate flutterfire_cli` and `flutterfire configure --project=<project-id> --platforms=macos`. Crashlytics symbol uploads are opt-in; set `FIREBASE_CRASHLYTICS_UPLOAD_SYMBOLS=1` to enable them.
 
 ### Installation
 
@@ -116,6 +125,7 @@ YouTube is powerful but unorganized. BingeTube solves this:
    ```bash
    git clone https://github.com/mohansella/BingeTube.git
    cd BingeTube
+   git lfs pull
    ```
 
 2. **Get dependencies**

@@ -246,8 +246,10 @@ class ProcessBinge {
     await processBinge.processFiles()
     console.timeEnd('BingeProcess')
     await processBinge.merge()
-    await processBinge.createPoster()
-    await processBinge.transformPoster()
+    if (!process.argv.includes('--data-only')) {
+      await processBinge.createPoster()
+      await processBinge.transformPoster()
+    }
   }
 
 }

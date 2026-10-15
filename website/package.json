@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "node --experimental-strip-types src/scripts/process-binge.ts --data-only",
     "dev": "astro dev",
     "prebuild": "tsx src/scripts/process-binge.ts",
     "build": "astro build",
