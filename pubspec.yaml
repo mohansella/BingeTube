@@ -76,6 +76,10 @@ dev_dependencies:
   drift_dev: ^2.30.0
   freezed: ^3.2.3
 
+dependency_overrides:
+  # The stable Android implementation uses a ProGuard file rejected by AGP 9.
+  flutter_inappwebview_android: 1.2.0-beta.3
+
 flutter_launcher_icons:
   android: true
   ios: true
