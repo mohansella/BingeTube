@@ -124,7 +124,7 @@ jobs:
       - run: echo "${{ secrets.FIREBASE_OPTIONS_DART_FILE }}" | base64 --decode > lib/firebase_options.dart
       - run: echo "${{ secrets.GOOGLESERVICE_INFO_PLIST_FILE }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
       - run: flutter pub get
-      - run: flutter build ipa --release --no-codesign --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
+      - run: flutter build ipa --verbose --release --no-codesign --dart-define=APP_ENV=${{ needs.version-check.outputs.app_env }}
       - name: Package iOS IPA
         run: |
           # Create IPA from xcarchive (unsigned)
