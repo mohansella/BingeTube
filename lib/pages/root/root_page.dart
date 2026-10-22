@@ -1,3 +1,4 @@
+import 'package:bingetube/common/contact_support.dart';
 import 'package:bingetube/core/constants/assets.dart';
 import 'package:bingetube/pages/pages.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,11 @@ class RootPageState extends State<RootPage> {
       leadingWidth: 45,
       titleSpacing: 0,
       actions: [
+        IconButton(
+          tooltip: 'Contact & feedback',
+          onPressed: () => ContactSupport.openEmail(context),
+          icon: const Icon(Icons.mail_outline),
+        ),
         if (_bottomNavBarIndex != 2) ...[
           IconButton(
             onPressed: () => context.pushNamed(Pages.keyConfig.name),

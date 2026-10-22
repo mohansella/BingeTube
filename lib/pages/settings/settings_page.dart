@@ -1,3 +1,4 @@
+import 'package:bingetube/common/contact_support.dart';
 import 'package:bingetube/common/widget/custom_dialog.dart';
 import 'package:bingetube/core/config/configuration.dart';
 import 'package:bingetube/core/config/font_size.dart';
@@ -30,6 +31,9 @@ class SettingsPage extends ConsumerWidget {
                 const Divider(height: 32),
                 _buildSectionHeader(context, 'Library data'),
                 _buildDataActions(context),
+                const Divider(height: 32),
+                _buildSectionHeader(context, 'Support & feedback'),
+                _buildContactAction(context),
                 _buildVersionInfo(),
               ],
             ),
@@ -55,6 +59,16 @@ class SettingsPage extends ConsumerWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildContactAction(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.mail_outline),
+      title: const Text('Report a problem or request a feature'),
+      subtitle: const Text(ContactSupport.email),
+      trailing: const Icon(Icons.open_in_new),
+      onTap: () => ContactSupport.openEmail(context),
     );
   }
 
