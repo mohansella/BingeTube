@@ -9,6 +9,7 @@ class SeryModel {
 
   final String? dataPath;
   final String? dataHash;
+  final int? featuredRank;
   final bool isSaved;
 
   SeryModel({
@@ -19,6 +20,7 @@ class SeryModel {
     required this.watchedVideos,
     this.dataPath,
     this.dataHash,
+    this.featuredRank,
     this.isSaved = true,
   });
 }

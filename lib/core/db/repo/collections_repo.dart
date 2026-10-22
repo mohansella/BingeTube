@@ -47,6 +47,7 @@ class CollectionsRepo {
               totalVideos: sSery.totalVideos,
               dataPath: ds.dataPath,
               dataHash: ds.dataHash,
+              featuredRank: ds.featuredRank,
             );
           }
           return ds;
@@ -172,6 +173,11 @@ class CollectionsRepo {
     final toReturn = <CollectionModel>[];
     final jCollections = response['collections'] as List;
     final jModels = response['models'] as Map<String, dynamic>;
+    final featuredRanks = <String, int>{};
+    final topPicks = response['top_picks'] as List? ?? const [];
+    for (var i = 0; i < topPicks.length; i++) {
+      featuredRanks['${topPicks[i]}.binge'] = i;
+    }
 
     int currCollectionId = 0;
     int currCollectionPriority = 0;
@@ -231,6 +237,7 @@ class CollectionsRepo {
           totalVideos: totalVideos,
           dataPath: dataPath,
           dataHash: dataHash,
+          featuredRank: featuredRanks[dataPath],
           isSaved: false,
         );
         seryModels.add(seryModel);

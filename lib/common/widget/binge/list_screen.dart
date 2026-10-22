@@ -32,7 +32,8 @@ class ListScreenWidget extends StatefulWidget {
   static final _logger = LogManager.getLogger('ListScreenWidget');
 
   final bool isSystem;
-  const ListScreenWidget({super.key, required this.isSystem});
+  final Widget Function(List<CollectionModel> collections)? headerBuilder;
+  const ListScreenWidget({super.key, required this.isSystem, this.headerBuilder});
 
   @override
   State<ListScreenWidget> createState() => _ListScreenWidgetState();
@@ -121,8 +122,14 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             _height = _width * 9.0 / 16.0;
             return ListView.builder(
               clipBehavior: Clip.none,
-              itemCount: collections.length,
-              itemBuilder: (c, i) => _buildCollection(collections, i),
+              itemCount: collections.length + (widget.headerBuilder == null ? 0 : 1),
+              itemBuilder: (c, i) {
+                if (widget.headerBuilder != null) {
+                  if (i == 0) return widget.headerBuilder!(collections);
+                  i--;
+                }
+                return _buildCollection(collections, i);
+              },
             );
           },
         );
