@@ -6,6 +6,7 @@ class SeryModel {
   final String iconUrl;
   final int totalVideos;
   final int watchedVideos;
+  final int inProgressVideos;
 
   final String? dataPath;
   final String? dataHash;
@@ -18,6 +19,7 @@ class SeryModel {
     required this.iconUrl,
     required this.totalVideos,
     required this.watchedVideos,
+    this.inProgressVideos = 0,
     this.dataPath,
     this.dataHash,
     this.featuredRank,

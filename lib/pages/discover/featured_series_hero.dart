@@ -29,6 +29,7 @@ class _FeaturedSeriesHeroState extends State<FeaturedSeriesHero> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isCompact = constraints.maxWidth < 520;
+        final textScale = (constraints.maxWidth / 520).clamp(0.82, 1.3).toDouble();
         final height = isCompact
             ? (constraints.maxWidth * 0.62).clamp(220.0, 360.0).toDouble()
             : (constraints.maxWidth * 0.34).clamp(240.0, 320.0).toDouble();
@@ -69,22 +70,30 @@ class _FeaturedSeriesHeroState extends State<FeaturedSeriesHero> {
                           children: [
                             Text(
                               'FEATURED TODAY',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: Colors.white.withAlpha(220),
-                                letterSpacing: 1.2,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style:
+                                  _scaledTextStyle(
+                                    theme.textTheme.labelMedium,
+                                    textScale,
+                                  )?.copyWith(
+                                    color: Colors.white.withAlpha(220),
+                                    letterSpacing: 1.2,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               widget.model.sery.name,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w800,
-                                height: 1.05,
-                              ),
+                              style:
+                                  _scaledTextStyle(
+                                    theme.textTheme.headlineSmall,
+                                    textScale,
+                                  )?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                    height: 1.05,
+                                  ),
                             ),
                             if (!isCompact &&
                                 widget.model.sery.description.trim().isNotEmpty) ...[
@@ -93,10 +102,14 @@ class _FeaturedSeriesHeroState extends State<FeaturedSeriesHero> {
                                 widget.model.sery.description.trim(),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.white.withAlpha(225),
-                                  height: 1.3,
-                                ),
+                                style:
+                                    _scaledTextStyle(
+                                      theme.textTheme.bodySmall,
+                                      textScale,
+                                    )?.copyWith(
+                                      color: Colors.white.withAlpha(225),
+                                      height: 1.3,
+                                    ),
                               ),
                             ],
                             const SizedBox(height: 14),
@@ -111,6 +124,10 @@ class _FeaturedSeriesHeroState extends State<FeaturedSeriesHero> {
                                   style: FilledButton.styleFrom(
                                     backgroundColor: Colors.white,
                                     foregroundColor: Colors.black,
+                                    textStyle: _scaledTextStyle(
+                                      theme.textTheme.labelLarge,
+                                      textScale,
+                                    ),
                                   ),
                                 ),
                                 OutlinedButton.icon(
@@ -128,6 +145,10 @@ class _FeaturedSeriesHeroState extends State<FeaturedSeriesHero> {
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: Colors.white,
                                     side: BorderSide(color: Colors.white.withAlpha(180)),
+                                    textStyle: _scaledTextStyle(
+                                      theme.textTheme.labelLarge,
+                                      textScale,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -144,6 +165,12 @@ class _FeaturedSeriesHeroState extends State<FeaturedSeriesHero> {
         );
       },
     );
+  }
+
+  TextStyle? _scaledTextStyle(TextStyle? style, double scale) {
+    final fontSize = style?.fontSize;
+    if (style == null || fontSize == null) return style;
+    return style.copyWith(fontSize: fontSize * scale);
   }
 
   Widget _buildCover(BuildContext context) {

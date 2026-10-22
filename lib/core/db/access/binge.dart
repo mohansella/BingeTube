@@ -151,6 +151,11 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
   Stream<List<CollectionModel>> streamCollectionModels({bool isSystem = false}) {
     final colTotalCount = seriesVsVideos.videoId.count();
     final colCompleteCount = countAll(filter: videoProgress.isFinished.equals(true));
+    final colStartedCount = countAll(
+      filter:
+          videoProgress.watchPosition.isBiggerThanValue(0) &
+          videoProgress.isFinished.equals(false),
+    );
     final query =
         select(collections).join([
             leftOuterJoin(series, series.collectionId.equalsExp(collections.id)),
@@ -170,7 +175,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
             ),
           ])
           ..groupBy([collections.id, series.id])
-          ..addColumns([colTotalCount, colCompleteCount])
+          ..addColumns([colTotalCount, colCompleteCount, colStartedCount])
           ..where(collections.isSystem.equals(isSystem));
     final toReturn = query.watch().map((result) {
       Map<int, Collection> idVsCollection = {};
@@ -186,6 +191,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
         final iconUrl = row.readTableOrNull(channelThumbnails)?.defaultUrl ?? '';
         final totalVideos = row.read(colTotalCount)!;
         final completeVideos = row.read(colCompleteCount)!;
+        final startedVideos = row.read(colStartedCount)!;
         idVsSeries
             .putIfAbsent(collection.id, () => <SeryModel>[])
             .add(
@@ -195,6 +201,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
                 iconUrl: iconUrl,
                 totalVideos: totalVideos,
                 watchedVideos: completeVideos,
+                inProgressVideos: startedVideos,
               ),
             );
       }
@@ -402,6 +409,7 @@ class BingeDao extends DatabaseAccessor<Database> with _$BingeDaoMixin {
       collectionId: collectionId == null ? Value.absent() : Value(collectionId),
       dataPath: dataPath == null ? Value.absent() : Value(dataPath),
       dataHash: dataHash == null ? Value.absent() : Value(dataHash),
+      updatedAt: Value(DateTime.now()),
     );
     final query = update(series)..where((s) => s.id.equals(seryId));
     await query.write(comp);

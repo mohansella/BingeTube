@@ -44,6 +44,7 @@ class CollectionsRepo {
               coverUrl: sSery.coverUrl,
               iconUrl: sSery.iconUrl,
               watchedVideos: sSery.watchedVideos,
+              inProgressVideos: sSery.inProgressVideos,
               totalVideos: sSery.totalVideos,
               dataPath: ds.dataPath,
               dataHash: ds.dataHash,
