@@ -4,6 +4,25 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ContactSupport {
   static const email = 'mohansella.store@gmail.com';
+  static const discordInviteUrl = 'https://discord.gg/Gwc3zsxxC';
+
+  static Future<void> openDiscord(BuildContext context) async {
+    try {
+      if (await launchUrl(
+        Uri.parse(discordInviteUrl),
+        mode: LaunchMode.externalApplication,
+      )) {
+        return;
+      }
+    } catch (_) {
+      // Show a message if no browser or Discord app can handle the invite.
+    }
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Could not open the Discord invite.')));
+  }
 
   static Future<void> openEmail(BuildContext context) async {
     final uri = Uri(

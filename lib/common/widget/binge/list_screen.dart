@@ -33,7 +33,13 @@ class ListScreenWidget extends StatefulWidget {
 
   final bool isSystem;
   final Widget Function(List<CollectionModel> collections)? headerBuilder;
-  const ListScreenWidget({super.key, required this.isSystem, this.headerBuilder});
+  final Widget Function(BuildContext context)? footerBuilder;
+  const ListScreenWidget({
+    super.key,
+    required this.isSystem,
+    this.headerBuilder,
+    this.footerBuilder,
+  });
 
   @override
   State<ListScreenWidget> createState() => _ListScreenWidgetState();
@@ -105,7 +111,12 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
         final collections = snapshot.data!;
         if (collections.isEmpty) {
           if (widget.isSystem) {
-            return _buildSystemEmpty();
+            return Column(
+              children: [
+                Expanded(child: _buildSystemEmpty()),
+                if (widget.footerBuilder != null) widget.footerBuilder!(context),
+              ],
+            );
           } else {
             return _buildCollectionEmpty();
           }
@@ -122,11 +133,17 @@ class _ListScreenWidgetState extends State<ListScreenWidget>
             _height = _width * 9.0 / 16.0;
             return ListView.builder(
               clipBehavior: Clip.none,
-              itemCount: collections.length + (widget.headerBuilder == null ? 0 : 1),
+              itemCount:
+                  collections.length +
+                  (widget.headerBuilder == null ? 0 : 1) +
+                  (widget.footerBuilder == null ? 0 : 1),
               itemBuilder: (c, i) {
                 if (widget.headerBuilder != null) {
                   if (i == 0) return widget.headerBuilder!(collections);
                   i--;
+                }
+                if (i == collections.length) {
+                  return widget.footerBuilder!(c);
                 }
                 return _buildCollection(collections, i);
               },

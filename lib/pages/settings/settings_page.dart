@@ -63,12 +63,23 @@ class SettingsPage extends ConsumerWidget {
   }
 
   Widget _buildContactAction(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.mail_outline),
-      title: const Text('Report a problem or request a feature'),
-      subtitle: const Text(ContactSupport.email),
-      trailing: const Icon(Icons.open_in_new),
-      onTap: () => ContactSupport.openEmail(context),
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.discord),
+          title: const Text('Join us on Discord'),
+          subtitle: const Text('Chat with the BingeTube community'),
+          trailing: const Icon(Icons.open_in_new),
+          onTap: () => ContactSupport.openDiscord(context),
+        ),
+        ListTile(
+          leading: const Icon(Icons.mail_outline),
+          title: const Text('Email us'),
+          subtitle: const Text(ContactSupport.email),
+          trailing: const Icon(Icons.open_in_new),
+          onTap: () => ContactSupport.openEmail(context),
+        ),
+      ],
     );
   }
 
